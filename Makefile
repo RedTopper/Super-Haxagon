@@ -33,9 +33,11 @@ BUILD			:=	build
 SOURCES			:=	source
 DATA			:=	data
 INCLUDES		:=	include
-APP_TITLE		:=	Super Haxagon
-APP_DESCRIPTION	:=	A Super Hexagon Clone
-APP_AUTHOR		:=	RedHat
+APP_TITLE		:=	"Super Haxagon"
+APP_DESCRIPTION	:=	"A Super Hexagon Clone"
+APP_AUTHOR		:=	"RedHat"
+#smdh exported manually using bannertool
+NO_SMDH			:=  true 
 #ROMFS		:=	romfs
 
 #---------------------------------------------------------------------------------
@@ -138,6 +140,9 @@ all: $(BUILD)
 $(BUILD):
 	@[ -d $@ ] || mkdir -p $@
 	@$(MAKE) --no-print-directory -C $(BUILD) -f $(CURDIR)/Makefile
+	
+#This stuff probably should not be done here... but it works so whatever.
+	@$(RESOURCE)/bannertool.exe makesmdh -s $(APP_TITLE) -l $(APP_DESCRIPTION) -p $(APP_AUTHOR) -i $(RESOURCE)/icon.png  -o $(TARGET).smdh
 	@$(RESOURCE)/bannertool.exe makebanner -i $(RESOURCE)/banner.png -a $(RESOURCE)/audio.wav -o $(RESOURCE)/banner.bin
 	@$(RESOURCE)/makerom.exe -f cia -o $(TARGET).cia -DAPP_ENCRYPTED=false -rsf $(RESOURCE)/cia.rsf -target t -exefslogo -elf $(TARGET).elf -icon $(TARGET).smdh -banner $(RESOURCE)/banner.bin
 	

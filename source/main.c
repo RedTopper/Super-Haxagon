@@ -144,15 +144,22 @@ void drawTriangle(u8* fb, bool top, Point p0, Point p1, Point p2)
 	}
 }
 
-double compTimeTaken = 0.0;
-
 int main()
 {
+	//Used to calculate the lagometer.
+	double compTimeTaken = 0.0;
+	
 	//Default color of the background.
 	Point BACKGROUND_COLOR;
 	BACKGROUND_COLOR.r = 0x50;
 	BACKGROUND_COLOR.g = 0x0C;
 	BACKGROUND_COLOR.b = 0x01;
+	
+	//Default color of the second background.
+	Point BACKGROUND_COLOR_2;
+	BACKGROUND_COLOR_2.r = 0x61;
+	BACKGROUND_COLOR_2.g = 0x12;
+	BACKGROUND_COLOR_2.b = 0x01;
 
 	//Default color of the foreground.
 	Point FOREGROUND_COLOR;	
@@ -161,8 +168,8 @@ int main()
 	FOREGROUND_COLOR.b = 0x13;
 	
 	//Inside hexagon style
-	double FULL_LEN = 50;
-	double BORDER_LEN = 10;
+	double FULL_LEN = 30;
+	double BORDER_LEN = 5;
 	
 	gfxInitDefault();
 	//gfxSet3D(true); // uncomment if using stereoscopic 3D
@@ -195,24 +202,40 @@ int main()
 		Point edges[6];
 		center.x = TOP_WIDTH/2;
 		center.y = SCREEN_HEIGHT/2;
-		for(int concentricHexes = 0; concentricHexes < 2; concentricHexes++) {
+		for(int concentricHexes = 0; concentricHexes < 3; concentricHexes++) {
+			double len = 0.0;
 			if(concentricHexes == 0) {
-				//outer color painted first
+				//second background painted first
+				center.r = BACKGROUND_COLOR_2.r;
+				center.g = BACKGROUND_COLOR_2.g;
+				center.b = BACKGROUND_COLOR_2.b;
+				len = TOP_WIDTH;
+			}
+			if(concentricHexes == 1) {
+				//outer color painted after
 				center.r = FOREGROUND_COLOR.r;
 				center.g = FOREGROUND_COLOR.g;
 				center.b = FOREGROUND_COLOR.b;
-			} else {
-				//inner color painted over it.
+				len = (double)FULL_LEN;
+			}
+			if(concentricHexes == 2) {
+				//inner color painted over it all.
 				center.r = BACKGROUND_COLOR.r;
 				center.g = BACKGROUND_COLOR.g;
-				center.b = BACKGROUND_COLOR.b;	
+				center.b = BACKGROUND_COLOR.b;
+				len = (double)(FULL_LEN - BORDER_LEN);
 			}
 			for(int i = 0; i <= 6; i++) {
 				if(i < 6) {
-					edges[i].x = (int)((concentricHexes == 0 ? (double)FULL_LEN : (double)(FULL_LEN - BORDER_LEN)) * cos(radians + (double)i * TAU/6.0) + (double)TOP_WIDTH/2.0);
-					edges[i].y = (int)((concentricHexes == 0 ? (double)FULL_LEN : (double)(FULL_LEN - BORDER_LEN)) * sin(radians + (double)i * TAU/6.0) + (double)SCREEN_HEIGHT/2.0);
+					edges[i].x = (int)(len * cos(radians + (double)i * TAU/6.0) + (double)TOP_WIDTH/2.0);
+					edges[i].y = (int)(len * sin(radians + (double)i * TAU/6.0) + (double)SCREEN_HEIGHT/2.0);
 				}
 				if(i > 0) {
+					if(concentricHexes == 0) {
+						if(i % 2 == 0) {
+							continue;
+						}
+					}
 					drawTriangle(fb, true, center, edges[i-1], (i==6 ? edges[0] : edges[i]));
 				}
 			}	
@@ -231,15 +254,15 @@ int main()
 			setPixel(fb, false, time);
 		}
 		
+		////FLUSH AND CALC LAGOMETER
 		u64 end_time = svcGetSystemTick ();
-
 		gfxFlushBuffers();
 		gfxSwapBuffers();
 		gspWaitForVBlank();
-		
 		u64 end_screen = svcGetSystemTick ();
 		compTimeTaken = (double)(end_time - start_time) / (double)(end_screen - start_time);
 		
+		////ROTATE
 		radians = (radians + TAU/30.0);
 		if(radians > TAU) {
 			radians -= TAU;

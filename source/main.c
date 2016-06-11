@@ -168,8 +168,14 @@ int main()
 	FOREGROUND_COLOR.b = 0x13;
 	
 	//Inside hexagon style
-	double FULL_LEN = 30;
-	double BORDER_LEN = 5;
+	double FULL_LEN = 30.0;
+	double BORDER_LEN = 5.0;
+	
+	//Human triangle style
+	double HUMAN_WIDTH = TAU/30;
+	double HUMAN_HEIGHT = 5.0;
+	double HUMAN_PADDING = 5.0;
+	double HUMAN_STEP = TAU/120.0;
 	
 	gfxInitDefault();
 	//gfxSet3D(true); // uncomment if using stereoscopic 3D
@@ -180,13 +186,13 @@ int main()
 	while (aptMainLoop()) {
 		hidScanInput();
 		u32 kDown = hidKeysDown();
-		if (kDown & KEY_START) break; // break in order to return to hbmenu
+		if(kDown & KEY_START) break; // break in order to return to hbmenu
 		
-		if (kDown & KEY_L) cursor = (cursor + TAU/240.0);
-		if (kDown & KEY_R) cursor = (cursor - TAU/240.0);
-		if(cursor > TAU || cursor < 0) {
-			cursor = 0;
-		}
+		u32 kHold = hidKeysHeld();
+		if(kHold & KEY_L) cursor = (cursor + HUMAN_STEP);
+		if(kHold & KEY_R) cursor = (cursor - HUMAN_STEP);
+		if(cursor > TAU) cursor-=TAU;
+		if(cursor < 0) cursor+=TAU;
 
 		u64 start_time = svcGetSystemTick ();
 		
@@ -198,6 +204,7 @@ int main()
 			}
 		}
 		
+		//This draws the main background and hexagon.
 		Point center;
 		Point edges[6];
 		center.x = TOP_WIDTH/2;
@@ -209,26 +216,26 @@ int main()
 				center.r = BACKGROUND_COLOR_2.r;
 				center.g = BACKGROUND_COLOR_2.g;
 				center.b = BACKGROUND_COLOR_2.b;
-				len = TOP_WIDTH;
+				len = TOP_WIDTH / 1.5;
 			}
 			if(concentricHexes == 1) {
 				//outer color painted after
 				center.r = FOREGROUND_COLOR.r;
 				center.g = FOREGROUND_COLOR.g;
 				center.b = FOREGROUND_COLOR.b;
-				len = (double)FULL_LEN;
+				len = FULL_LEN;
 			}
 			if(concentricHexes == 2) {
 				//inner color painted over it all.
 				center.r = BACKGROUND_COLOR.r;
 				center.g = BACKGROUND_COLOR.g;
 				center.b = BACKGROUND_COLOR.b;
-				len = (double)(FULL_LEN - BORDER_LEN);
+				len = FULL_LEN - BORDER_LEN;
 			}
 			for(int i = 0; i <= 6; i++) {
 				if(i < 6) {
-					edges[i].x = (int)(len * cos(radians + (double)i * TAU/6.0) + (double)TOP_WIDTH/2.0);
-					edges[i].y = (int)(len * sin(radians + (double)i * TAU/6.0) + (double)SCREEN_HEIGHT/2.0);
+					edges[i].x = (int)(len * cos(radians + (double)i * TAU/6.0) + center.x);
+					edges[i].y = (int)(len * sin(radians + (double)i * TAU/6.0) + center.y);
 				}
 				if(i > 0) {
 					if(concentricHexes == 0) {
@@ -240,6 +247,30 @@ int main()
 				}
 			}	
 		}
+		
+		//This draws the human cursor.
+		Point humanTriangle[3];
+		humanTriangle[0].r = FOREGROUND_COLOR.r;
+		humanTriangle[0].g = FOREGROUND_COLOR.g;
+		humanTriangle[0].b = FOREGROUND_COLOR.b;
+		for(int i = 0; i < 3; i++) {
+			double len = 0.0;
+			double position = 0.0;
+			if(i == 0) {
+				len = FULL_LEN + HUMAN_PADDING + HUMAN_HEIGHT;
+				position = cursor + radians;
+			} else {
+				len = FULL_LEN + HUMAN_PADDING;
+				if(i==1) {
+					position = cursor + HUMAN_WIDTH/2 + radians;
+				} else {
+					position = cursor - HUMAN_WIDTH/2 + radians;
+				}
+			}
+			humanTriangle[i].x = (int)(len * cos(position) + center.x);
+			humanTriangle[i].y = (int)(len * sin(position) + center.y);
+		}
+		drawTriangle(fb, true, humanTriangle[0], humanTriangle[1], humanTriangle[2]);
 		
 		////RENDER BOTTOM SCREEN
 		fb = gfxGetFramebuffer(GFX_BOTTOM, GFX_LEFT, NULL, NULL);
@@ -263,7 +294,7 @@ int main()
 		compTimeTaken = (double)(end_time - start_time) / (double)(end_screen - start_time);
 		
 		////ROTATE
-		radians = (radians + TAU/30.0);
+		radians = (radians + TAU/240.0);
 		if(radians > TAU) {
 			radians -= TAU;
 		}

@@ -144,6 +144,8 @@ void drawTriangle(u8* fb, bool top, Point p0, Point p1, Point p2)
 	}
 }
 
+double compTimeTaken = 0.0;
+
 int main()
 {
 	gfxInitDefault();
@@ -152,49 +154,67 @@ int main()
 	double radians = 0;
 	
 	while (aptMainLoop()) {
-		gspWaitForVBlank();
 		hidScanInput();
-
 		u32 kDown = hidKeysDown();
 		if (kDown & KEY_START)
 			break; // break in order to return to hbmenu
 
+		u64 start_time = svcGetSystemTick ();
+		
+		////RENDER TOP SCREEN
 		u8* fb = gfxGetFramebuffer(GFX_TOP, GFX_LEFT, NULL, NULL);
 		memset(fb, 0, SCREEN_HEIGHT*TOP_WIDTH*3);
 		
 		Point center;
 		Point edges[6];
-		center.r = 0xFF;
-		center.g = 0xFF;
-		center.b = 0xFF;
 		center.x = TOP_WIDTH/2;
 		center.y = SCREEN_HEIGHT/2;
 		
-		for(int i = 0; i <= 6; i++) {
-			if(i < 6) {
-				edges[i].x = (int)(50.0 * cos(radians + (double)i * TAU/6.0) + (double)TOP_WIDTH/2.0);
-				edges[i].y = (int)(50.0 * sin(radians + (double)i * TAU/6.0) + (double)SCREEN_HEIGHT/2.0);
+		for(int len = 100; len > 10; len-=10) {
+			if(len%20 == 0) {
+				center.r = 0xFF;
+				center.g = 0xFF;
+				center.b = 0xFF;
+			} else {
+				center.r = 0xFF;
+				center.g = 0x00;
+				center.b = 0x00;
 			}
-			if(i > 0) {
-				drawTriangle(fb, true, center, edges[i-1], (i==6 ? edges[0] : edges[i]));
+			
+			for(int i = 0; i <= 6; i++) {
+				if(i < 6) {
+					edges[i].x = (int)((double)len * cos(radians + (double)i * TAU/6.0) + (double)TOP_WIDTH/2.0);
+					edges[i].y = (int)((double)len * sin(radians + (double)i * TAU/6.0) + (double)SCREEN_HEIGHT/2.0);
+				}
+				if(i > 0) {
+					drawTriangle(fb, true, center, edges[i-1], (i==6 ? edges[0] : edges[i]));
+				}
 			}
 		}
 		
-		center.r = 0x00;
-		center.g = 0x00;
-		center.b = 0x00;
-		for(int i = 0; i <= 6; i++) {
-			if(i < 6) {
-				edges[i].x = (int)(40.0 * cos(radians + (double)i * TAU/6.0) + (double)TOP_WIDTH/2.0);
-				edges[i].y = (int)(40.0 * sin(radians + (double)i * TAU/6.0) + (double)SCREEN_HEIGHT/2.0);
-			}
-			if(i > 0) {
-				drawTriangle(fb, true, center, edges[i-1], (i==6 ? edges[0] : edges[i]));
-			}
+		////RENDER BOTTOM SCREEN
+		fb = gfxGetFramebuffer(GFX_BOTTOM, GFX_LEFT, NULL, NULL);
+		memset(fb, 0, SCREEN_HEIGHT*BOT_WIDTH*3);
+		
+		Point time;
+		time.r = 0xFF;
+		time.g = 0x00;
+		time.b = 0x00;
+		time.y = 0;
+		for(time.x = 0; time.x < (int)((double)BOT_WIDTH * compTimeTaken); time.x++) {
+			setPixel(fb, false, time);
 		}
+		
+		u64 end_time = svcGetSystemTick ();
 
 		gfxFlushBuffers();
 		gfxSwapBuffers();
+		gspWaitForVBlank();
+		
+		u64 end_screen = svcGetSystemTick ();
+		
+		compTimeTaken = (double)(end_time - start_time) / (double)(end_screen - start_time);
+		
 		radians = (radians + TAU/240.0);
 		if(radians > TAU) {
 			radians = 0.0;

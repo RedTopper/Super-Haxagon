@@ -116,8 +116,14 @@ void drawTriangle(u8* fb, bool top, Point p0, Point p1, Point p2)
 	int y;
 
 	for (y = 0; y < SCREEN_HEIGHT; y++) {
-		ContourX[y][0] = INT_MAX; // min X
-		ContourX[y][1] = INT_MIN; // max X
+		int width = 0;
+		if(top) {
+			width = TOP_WIDTH;
+		} else {
+			width = BOT_WIDTH;
+		}
+		ContourX[y][0] = width; // min X
+		ContourX[y][1] = 0; // max X
 	}
 
 	scanLine(p0.x, p0.y, p1.x, p1.y);
@@ -166,8 +172,21 @@ int main()
 		
 		for(int i = 0; i <= 6; i++) {
 			if(i < 6) {
-				edges[i].x = (int)(100.0 * cos(radians + (double)i * TAU/6.0) + (double)TOP_WIDTH/2.0);
-				edges[i].y = (int)(100.0 * sin(radians + (double)i * TAU/6.0) + (double)SCREEN_HEIGHT/2.0);
+				edges[i].x = (int)(50.0 * cos(radians + (double)i * TAU/6.0) + (double)TOP_WIDTH/2.0);
+				edges[i].y = (int)(50.0 * sin(radians + (double)i * TAU/6.0) + (double)SCREEN_HEIGHT/2.0);
+			}
+			if(i > 0) {
+				drawTriangle(fb, true, center, edges[i-1], (i==6 ? edges[0] : edges[i]));
+			}
+		}
+		
+		center.r = 0x00;
+		center.g = 0x00;
+		center.b = 0x00;
+		for(int i = 0; i <= 6; i++) {
+			if(i < 6) {
+				edges[i].x = (int)(40.0 * cos(radians + (double)i * TAU/6.0) + (double)TOP_WIDTH/2.0);
+				edges[i].y = (int)(40.0 * sin(radians + (double)i * TAU/6.0) + (double)SCREEN_HEIGHT/2.0);
 			}
 			if(i > 0) {
 				drawTriangle(fb, true, center, edges[i-1], (i==6 ? edges[0] : edges[i]));
@@ -176,7 +195,7 @@ int main()
 
 		gfxFlushBuffers();
 		gfxSwapBuffers();
-		radians = (radians + TAU/120.0);
+		radians = (radians + TAU/240.0);
 		if(radians > TAU) {
 			radians = 0.0;
 		}

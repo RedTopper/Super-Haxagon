@@ -73,7 +73,7 @@ void scanLine(int x1, int y1, int x2, int y2) {
 	cnt = m + 1;
 	k = n / 2;
 
-	while (cnt--) {
+	while (cnt-- > 0) {
 		if ((y >= 0) && (y < SCREEN_HEIGHT)) {
 			if (x < ContourX[y][0]) ContourX[y][0] = x;
 			if (x > ContourX[y][1]) ContourX[y][1] = x;
@@ -130,7 +130,7 @@ void drawTriangle(u8* fb, bool top, Point p0, Point p1, Point p2)
 			int len = 1 + ContourX[trianglePoint.y][1] - ContourX[trianglePoint.y][0];
 
 			// Can draw a horizontal line instead of individual pixels here
-			while (len--) {
+			while (len-- > 0) {
 				trianglePoint.x++;
 				setPixel(fb, top, trianglePoint);
 			}

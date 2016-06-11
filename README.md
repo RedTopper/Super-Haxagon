@@ -1,5 +1,7 @@
 # Super-Haxagon
 
+![Super Haxagon](./resource/banner.png "Banner")
+
 ### What is this?
 
 A Super Hexagon Clone for the Nintendo 3DS.

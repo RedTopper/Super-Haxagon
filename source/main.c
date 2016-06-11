@@ -152,12 +152,18 @@ int main()
 	//gfxSet3D(true); // uncomment if using stereoscopic 3D
 
 	double radians = 0;
+	double cursor = 0;
 	
 	while (aptMainLoop()) {
 		hidScanInput();
 		u32 kDown = hidKeysDown();
-		if (kDown & KEY_START)
-			break; // break in order to return to hbmenu
+		if (kDown & KEY_START) break; // break in order to return to hbmenu
+		
+		if (kDown & KEY_L) cursor = (cursor + TAU/240.0);
+		if (kDown & KEY_R) cursor = (cursor - TAU/240.0);
+		if(cursor > TAU || cursor < 0) {
+			cursor = 0;
+		}
 
 		u64 start_time = svcGetSystemTick ();
 		
@@ -170,26 +176,27 @@ int main()
 		center.x = TOP_WIDTH/2;
 		center.y = SCREEN_HEIGHT/2;
 		
-		for(int len = 100; len > 10; len-=10) {
-			if(len%20 == 0) {
-				center.r = 0xFF;
-				center.g = 0xFF;
-				center.b = 0xFF;
-			} else {
-				center.r = 0xFF;
-				center.g = 0x00;
-				center.b = 0x00;
-			}
-			
+		double FULL_LEN = 50;
+		double BORDER_LEN = 10;
+		
+		//outer color
+		center.r = 0xF6;
+		center.g = 0x48;
+		center.b = 0x13;
+		for(int concentricHexes = 0; concentricHexes < 2; concentricHexes++) {
 			for(int i = 0; i <= 6; i++) {
 				if(i < 6) {
-					edges[i].x = (int)((double)len * cos(radians + (double)i * TAU/6.0) + (double)TOP_WIDTH/2.0);
-					edges[i].y = (int)((double)len * sin(radians + (double)i * TAU/6.0) + (double)SCREEN_HEIGHT/2.0);
+					edges[i].x = (int)((concentricHexes == 0 ? (double)FULL_LEN : (double)(FULL_LEN - BORDER_LEN)) * cos(radians + (double)i * TAU/6.0) + (double)TOP_WIDTH/2.0);
+					edges[i].y = (int)((concentricHexes == 0 ? (double)FULL_LEN : (double)(FULL_LEN - BORDER_LEN)) * sin(radians + (double)i * TAU/6.0) + (double)SCREEN_HEIGHT/2.0);
 				}
 				if(i > 0) {
 					drawTriangle(fb, true, center, edges[i-1], (i==6 ? edges[0] : edges[i]));
 				}
 			}
+			//inner color
+			center.r = 0x50;
+			center.g = 0x0C;
+			center.b = 0x01;		
 		}
 		
 		////RENDER BOTTOM SCREEN
@@ -212,7 +219,6 @@ int main()
 		gspWaitForVBlank();
 		
 		u64 end_screen = svcGetSystemTick ();
-		
 		compTimeTaken = (double)(end_time - start_time) / (double)(end_screen - start_time);
 		
 		radians = (radians + TAU/240.0);

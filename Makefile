@@ -28,6 +28,7 @@ include $(DEVKITARM)/3ds_rules
 #     - <libctru folder>/default_icon.png
 #---------------------------------------------------------------------------------
 TARGET			:=	$(notdir $(CURDIR))
+RESOURCE		:=  resource
 BUILD			:=	build
 SOURCES			:=	source
 DATA			:=	data
@@ -137,13 +138,14 @@ all: $(BUILD)
 $(BUILD):
 	@[ -d $@ ] || mkdir -p $@
 	@$(MAKE) --no-print-directory -C $(BUILD) -f $(CURDIR)/Makefile
-	@$(TOPDIR)/makerom.exe -f cia -o $(TARGET).cia -DAPP_ENCRYPTED=false -rsf $(TOPDIR)/cia.rsf -target t -exefslogo -elf $(TARGET).elf -icon $(TARGET).smdh -banner $(TOPDIR)/banner.bin
+	@$(RESOURCE)/bannertool.exe makebanner -i $(RESOURCE)/banner.png -a $(RESOURCE)/audio.wav -o $(RESOURCE)/banner.bin
+	@$(RESOURCE)/makerom.exe -f cia -o $(TARGET).cia -DAPP_ENCRYPTED=false -rsf $(RESOURCE)/cia.rsf -target t -exefslogo -elf $(TARGET).elf -icon $(TARGET).smdh -banner $(RESOURCE)/banner.bin
 	
 
 #---------------------------------------------------------------------------------
 clean:
 	@echo clean ...
-	@rm -fr $(BUILD) $(TARGET).3dsx $(OUTPUT).smdh $(TARGET).elf
+	@rm -fr $(BUILD) $(TARGET).3dsx $(OUTPUT).smdh $(TARGET).elf $(TARGET).cia
 
 
 #---------------------------------------------------------------------------------

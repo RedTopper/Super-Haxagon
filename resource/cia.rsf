@@ -1,7 +1,7 @@
 BasicInfo:
   Title                   : "Super Haxagon"
   ProductCode             : "CTR-P-HAXA" # You can make this whatever you want, it doesn't have to follow the Nintendo standard
-  Logo                    : Distributed # Nintendo / Licensed / Distributed / iQue / iQueForSystem
+  Logo                    : Distributed # Nintendo / Licensed / Distributed / iQue / iQueForSystem (Just because)
 
 #RomFs:
   # Specifies the root path of the read only file system to include in the ROM.

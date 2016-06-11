@@ -148,6 +148,22 @@ double compTimeTaken = 0.0;
 
 int main()
 {
+	//Default color of the background.
+	Point BACKGROUND_COLOR;
+	BACKGROUND_COLOR.r = 0x50;
+	BACKGROUND_COLOR.g = 0x0C;
+	BACKGROUND_COLOR.b = 0x01;
+
+	//Default color of the foreground.
+	Point FOREGROUND_COLOR;	
+	FOREGROUND_COLOR.r = 0xF6;
+	FOREGROUND_COLOR.g = 0x48;
+	FOREGROUND_COLOR.b = 0x13;
+	
+	//Inside hexagon style
+	double FULL_LEN = 50;
+	double BORDER_LEN = 10;
+	
 	gfxInitDefault();
 	//gfxSet3D(true); // uncomment if using stereoscopic 3D
 
@@ -169,21 +185,28 @@ int main()
 		
 		////RENDER TOP SCREEN
 		u8* fb = gfxGetFramebuffer(GFX_TOP, GFX_LEFT, NULL, NULL);
-		memset(fb, 0, SCREEN_HEIGHT*TOP_WIDTH*3);
+		for(BACKGROUND_COLOR.x = 0; BACKGROUND_COLOR.x < TOP_WIDTH; BACKGROUND_COLOR.x++) {
+			for(BACKGROUND_COLOR.y = 0; BACKGROUND_COLOR.y < SCREEN_HEIGHT; BACKGROUND_COLOR.y++) {
+				setPixel(fb, true, BACKGROUND_COLOR);
+			}
+		}
 		
 		Point center;
 		Point edges[6];
 		center.x = TOP_WIDTH/2;
 		center.y = SCREEN_HEIGHT/2;
-		
-		double FULL_LEN = 50;
-		double BORDER_LEN = 10;
-		
-		//outer color
-		center.r = 0xF6;
-		center.g = 0x48;
-		center.b = 0x13;
 		for(int concentricHexes = 0; concentricHexes < 2; concentricHexes++) {
+			if(concentricHexes == 0) {
+				//outer color painted first
+				center.r = FOREGROUND_COLOR.r;
+				center.g = FOREGROUND_COLOR.g;
+				center.b = FOREGROUND_COLOR.b;
+			} else {
+				//inner color painted over it.
+				center.r = BACKGROUND_COLOR.r;
+				center.g = BACKGROUND_COLOR.g;
+				center.b = BACKGROUND_COLOR.b;	
+			}
 			for(int i = 0; i <= 6; i++) {
 				if(i < 6) {
 					edges[i].x = (int)((concentricHexes == 0 ? (double)FULL_LEN : (double)(FULL_LEN - BORDER_LEN)) * cos(radians + (double)i * TAU/6.0) + (double)TOP_WIDTH/2.0);
@@ -192,11 +215,7 @@ int main()
 				if(i > 0) {
 					drawTriangle(fb, true, center, edges[i-1], (i==6 ? edges[0] : edges[i]));
 				}
-			}
-			//inner color
-			center.r = 0x50;
-			center.g = 0x0C;
-			center.b = 0x01;		
+			}	
 		}
 		
 		////RENDER BOTTOM SCREEN
@@ -221,9 +240,9 @@ int main()
 		u64 end_screen = svcGetSystemTick ();
 		compTimeTaken = (double)(end_time - start_time) / (double)(end_screen - start_time);
 		
-		radians = (radians + TAU/240.0);
+		radians = (radians + TAU/30.0);
 		if(radians > TAU) {
-			radians = 0.0;
+			radians -= TAU;
 		}
 	}
 

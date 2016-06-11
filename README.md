@@ -14,5 +14,6 @@ This game uses a software rendering function. This could probably be redone usin
 
 The start of something:
 
+![Humble Beginnings](./media/scr_2_MERGED.png "Human Arrow")
 ![Humble Beginnings](./media/scr_1_MERGED.png "Screenshot")
 

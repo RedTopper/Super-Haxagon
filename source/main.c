@@ -23,7 +23,7 @@ const double HUMAN_HEIGHT = 5.0;
 const double HUMAN_PADDING = 5.0;
 
 //Hexagon Constants
-const int FRAMES_PER_ONE_SIDE_ROTATION = 10; //Take rotationStep into consideration when changing this!!!
+const int FRAMES_PER_ONE_SIDE_ROTATION = 10;
 
 ////DYNAMIC VARS
 int transition; //0 = no transition // 1 = forwards // -1 = backwards
@@ -35,7 +35,6 @@ int level;
 int levelLast;
 int totalLevels;
 
-
 void init() {
 	////DYNAMIC VARS
 	transition = 0;
@@ -46,8 +45,9 @@ void init() {
 	level = 0;
 	levelLast = 0;
 	totalLevels = sizeof(levelColor)/sizeof(levelColor[0]);
-	
-	////LEVELS
+}
+
+void initLevels() {
 	//Level 0
 	levelColor[0][FG].r = 0xF6;
 	levelColor[0][FG].g = 0x48;
@@ -206,9 +206,24 @@ void doMainMenu() {
 	drawTriangle(fb, true, humanTriangle[0], humanTriangle[1], humanTriangle[2]);
 }
 
+void lagometer() {
+	u8* fb = gfxGetFramebuffer(GFX_BOTTOM, GFX_LEFT, NULL, NULL);
+	memset(fb, 0, SCREEN_HEIGHT*BOT_WIDTH*3);
+	
+	Point time;
+	time.r = 0xFF;
+	time.g = 0x00;
+	time.b = 0x00;
+	time.y = 0;
+	for(time.x = 0; time.x < (int)((double)BOT_WIDTH * compTimeTaken); time.x++) {
+		setPixel(fb, false, time);
+	}
+}
+
 int main()
 {
 	init();
+	initLevels();
 	//Used to calculate the lagometer.
 	double compTimeTaken = 0.0;
 	
@@ -225,17 +240,7 @@ int main()
 		doMainMenu();
 		
 		////RENDER BOTTOM SCREEN
-		u8* fb = gfxGetFramebuffer(GFX_BOTTOM, GFX_LEFT, NULL, NULL);
-		memset(fb, 0, SCREEN_HEIGHT*BOT_WIDTH*3);
-		
-		Point time;
-		time.r = 0xFF;
-		time.g = 0x00;
-		time.b = 0x00;
-		time.y = 0;
-		for(time.x = 0; time.x < (int)((double)BOT_WIDTH * compTimeTaken); time.x++) {
-			setPixel(fb, false, time);
-		}
+		doLagometer();
 		
 		////FLUSH AND CALC LAGOMETER
 		u64 end_time = svcGetSystemTick ();

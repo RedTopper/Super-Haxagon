@@ -65,7 +65,7 @@ void setPixel(sf2d_texture* fb, Point p) {
 			return;
 		}
 	}
-	sf2d_set_pixel(fb, p.x, SCREEN_HEIGHT - p.y, RGBA8(p.r, p.g, p.b, 0xFF));
+	sf2d_set_pixel(fb, p.x, SCREEN_HEIGHT - 1 - p.y, RGBA8(p.r, p.g, p.b, 0xFF));
 }
 
 void drawTriangle(sf2d_texture* fb, Point p0, Point p1, Point p2)

@@ -12,7 +12,7 @@
 #define BG1 1
 #define BG2 2
 
-Point levelColor[3][3];
+Point levelColor[6][3];
 
 ////STATIC VARS
 //Inside hexagon style
@@ -36,7 +36,7 @@ double g_humanStep;
 int g_level;
 int g_levelLast;
 int g_totallevels;
-double g_compTimeTaken = 0.0; //Used to calculate the lagometer.
+double g_fps; //Used to calculate the lagometer.
 
 sf2d_texture* g_top;
 sf2d_texture* g_bot;
@@ -51,55 +51,46 @@ void init() {
 	g_level = 0;
 	g_levelLast = 0;
 	g_totallevels = sizeof(levelColor)/sizeof(levelColor[0]);
-	g_compTimeTaken = 0.0;
+	g_fps = 0.0;
 	
 	sf2d_texfmt format = TEXFMT_RGBA8;
 	sf2d_place place = SF2D_PLACE_RAM;
 	g_top = sf2d_create_texture(TOP_WIDTH, SCREEN_HEIGHT, format, place);
 	sf2d_texture_tile32(g_top);
-	g_bot = sf2d_create_texture(TOP_WIDTH, SCREEN_HEIGHT, format, place);
+	g_bot = sf2d_create_texture(BOT_WIDTH, 1, format, place); //Just for lagometer.
 	sf2d_texture_tile32(g_bot);
 }
 
 void initLevels() {
 	//level 0
-	levelColor[0][FG].r = 0xF6;
-	levelColor[0][FG].g = 0x48;
-	levelColor[0][FG].b = 0x13;
-	
-	levelColor[0][BG1].r = 0x50;
-	levelColor[0][BG1].g = 0x0C;
-	levelColor[0][BG1].b = 0x01;
-	
-	levelColor[0][BG2].r = 0x61;
-	levelColor[0][BG2].g = 0x12;
-	levelColor[0][BG2].b = 0x01;
+	levelColor[0][FG].r = 0xF6;		levelColor[0][BG1].r = 0x50;		levelColor[0][BG2].r = 0x61;
+	levelColor[0][FG].g = 0x48;		levelColor[0][BG1].g = 0x0C;		levelColor[0][BG2].g = 0x12;
+	levelColor[0][FG].b = 0x13;		levelColor[0][BG1].b = 0x01;		levelColor[0][BG2].b = 0x01;
 	
 	//level 1
-	levelColor[1][FG].r = 0x33;
-	levelColor[1][FG].g = 0xE5;
-	levelColor[1][FG].b = 0x66;
-	
-	levelColor[1][BG1].r = 0x08;
-	levelColor[1][BG1].g = 0x24;
-	levelColor[1][BG1].b = 0x10;
-	
-	levelColor[1][BG2].r = 0x00;
-	levelColor[1][BG2].g = 0x00;
-	levelColor[1][BG2].b = 0x00;
+	levelColor[1][FG].r = 0x33;		levelColor[1][BG1].r = 0x08;		levelColor[1][BG2].r = 0x00;
+	levelColor[1][FG].g = 0xE5;		levelColor[1][BG1].g = 0x24;		levelColor[1][BG2].g = 0x00;
+	levelColor[1][FG].b = 0x66;		levelColor[1][BG1].b = 0x10;		levelColor[1][BG2].b = 0x00;
 	
 	//level 2
-	levelColor[2][FG].r = 0x6D;
-	levelColor[2][FG].g = 0x10;
-	levelColor[2][FG].b = 0xF9;
+	levelColor[2][FG].r = 0x6D;		levelColor[2][BG1].r = 0x22;		levelColor[2][BG2].r = 0x18;
+	levelColor[2][FG].g = 0x10;		levelColor[2][BG1].g = 0x00;		levelColor[2][BG2].g = 0x00;
+	levelColor[2][FG].b = 0xF9;		levelColor[2][BG1].b = 0x63;		levelColor[2][BG2].b = 0x52;
 	
-	levelColor[2][BG1].r = 0x22;
-	levelColor[2][BG1].g = 0x00;
-	levelColor[2][BG1].b = 0x63;
+	//level 3
+	levelColor[3][FG].r = 0xF1;		levelColor[3][BG1].r = 0x63;		levelColor[3][BG2].r = 0x52;
+	levelColor[3][FG].g = 0xF9;		levelColor[3][BG1].g = 0x60;		levelColor[3][BG2].g = 0x4C;
+	levelColor[3][FG].b = 0x10;		levelColor[3][BG1].b = 0x01;		levelColor[3][BG2].b = 0x00;
 	
-	levelColor[2][BG2].r = 0x18;
-	levelColor[2][BG2].g = 0x00;
-	levelColor[2][BG2].b = 0x52;
+	//level 4
+	levelColor[4][FG].r = 0xF4;		levelColor[4][BG1].r = 0xFF;		levelColor[4][BG2].r = 0xFD;
+	levelColor[4][FG].g = 0x05;		levelColor[4][BG1].g = 0xFF;		levelColor[4][BG2].g = 0xD7;
+	levelColor[4][FG].b = 0x86;		levelColor[4][BG1].b = 0xFF;		levelColor[4][BG2].b = 0xEC;
+	
+	//level 5
+	levelColor[5][FG].r = 0xFF;		levelColor[5][BG1].r = 0x00;		levelColor[5][BG2].r = 0x00;
+	levelColor[5][FG].g = 0xFF;		levelColor[5][BG1].g = 0x00;		levelColor[5][BG2].g = 0x00;
+	levelColor[5][FG].b = 0xFF;		levelColor[5][BG1].b = 0x00;		levelColor[5][BG2].b = 0x00;
 }
 
 void fillBuffer(sf2d_texture* fb, Point p) {
@@ -166,6 +157,7 @@ void doMainMenu() {
 		bg1 = levelColor[g_level][BG1];
 		bg2 = levelColor[g_level][BG2];
 	} 
+	sf2d_set_clear_color(RGBA8(bg1.r, bg1.g, bg1.b, 0xFF));
 	
 	////RENDER TOP SCREEN
 	sf2d_start_frame(GFX_TOP, GFX_LEFT);
@@ -246,23 +238,25 @@ void doMainMenu() {
 	Point p;
 	writeFont(p,"Meme");
 	sf2d_end_frame();
-	sf2d_set_clear_color(RGBA8(bg1.r, bg1.g, bg1.b, 0xFF));
 }
 
 void doLagometer() {
 	sf2d_start_frame(GFX_BOTTOM, GFX_LEFT);
-	////NOT THE RIGHT WAY TO DO THIS!!!!!
-	memset(g_bot->data, 0, g_bot->width * g_bot->height * 4);
-	
 	Point time;
 	time.r = 0x00;
-	time.g = 0xFF;
+	time.g = 0x00;
 	time.b = 0x00;
-	time.y = 0;
-	for(time.x = 0; time.x < (int)((double)BOT_WIDTH * g_compTimeTaken); time.x++) {
+	time.y = SCREEN_HEIGHT - 1;
+	for(time.x = 0; time.x < BOT_WIDTH; time.x++) {
 		setPixel(g_bot, time);
 	}
-	sf2d_draw_texture(g_bot, 0, 0);
+	time.r = 0xFF;
+	time.g = 0x00;
+	time.b = 0x00;
+	for(time.x = 0; time.x < (int)((double)BOT_WIDTH * ((double)g_fps/60.0)); time.x++) {
+		setPixel(g_bot, time);
+	}
+	sf2d_draw_texture(g_bot, 0, SCREEN_HEIGHT - 1);
 	sf2d_end_frame();
 }
 
@@ -281,19 +275,16 @@ int main() {
 		hidScanInput();
 		u32 kDown = hidKeysDown();
 		if(kDown & KEY_START) break; // break in order to return to hbmenu
-		u64 start_time = svcGetSystemTick ();
 		
 		////DRAW MENU
-		doMainMenu(); //THIS FUNCTION WILL START THE RENDERER!
+		doMainMenu();
 		
 		////DRAW LAGOMETER
 		doLagometer();
 		
 		////FLUSH AND CALC LAGOMETER
-		u64 end_time = svcGetSystemTick ();
 		sf2d_swapbuffers();
-		u64 end_screen = svcGetSystemTick ();
-		g_compTimeTaken = (double)(end_time - start_time) / (double)(end_screen - start_time);
+		g_fps = sf2d_get_fps();
 	}
 	
 	sf2d_fini();

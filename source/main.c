@@ -25,30 +25,32 @@ const double HUMAN_PADDING = 5.0;
 //Hexagon Constants
 const int FRAMES_PER_ONE_SIDE_ROTATION = 10;
 
-////DYNAMIC VARS
-int transition; //0 = no transition // 1 = forwards // -1 = backwards
-int transitionFrame;
-double rotationOffset;
-double rotationStep;
-double humanStep;
-int level;
-int levelLast;
-int totalLevels;
+////DYNAMIC VARS. g_ means global btw.
+int g_transition; //0 = no transition // 1 = forwards // -1 = backwards
+int g_transitionFrame;
+double g_rotationOffset;
+double g_rotationStep;
+double g_humanStep;
+int g_level;
+int g_levelLast;
+int g_totallevels;
+double g_compTimeTaken = 0.0; //Used to calculate the lagometer.
 
 void init() {
 	////DYNAMIC VARS
-	transition = 0;
-	transitionFrame = 0;
-	rotationOffset = 0.0;
-	rotationStep = TAU/60.0;
-	humanStep = TAU/60.0;
-	level = 0;
-	levelLast = 0;
-	totalLevels = sizeof(levelColor)/sizeof(levelColor[0]);
+	g_transition = 0;
+	g_transitionFrame = 0;
+	g_rotationOffset = 0.0;
+	g_rotationStep = TAU/60.0;
+	g_humanStep = TAU/60.0;
+	g_level = 0;
+	g_levelLast = 0;
+	g_totallevels = sizeof(levelColor)/sizeof(levelColor[0]);
+	g_compTimeTaken = 0.0;
 }
 
-void initLevels() {
-	//Level 0
+void initg_levels() {
+	//g_level 0
 	levelColor[0][FG].r = 0xF6;
 	levelColor[0][FG].g = 0x48;
 	levelColor[0][FG].b = 0x13;
@@ -61,7 +63,7 @@ void initLevels() {
 	levelColor[0][BG2].g = 0x12;
 	levelColor[0][BG2].b = 0x01;
 	
-	//Level 1
+	//g_level 1
 	levelColor[1][FG].r = 0x33;
 	levelColor[1][FG].g = 0xE5;
 	levelColor[1][FG].b = 0x66;
@@ -84,46 +86,46 @@ Point tweenColor(Point original, Point new, int frame) {
 }
 
 void doMainMenu() {
-	double radians = (double)transitionFrame / (double)FRAMES_PER_ONE_SIDE_ROTATION * TAU/6.0;
-	if(transition == -1) { //if the user is going to the left, flip the radians so the animation plays backwards.
+	double radians = (double)g_transitionFrame / (double)FRAMES_PER_ONE_SIDE_ROTATION * TAU/6.0;
+	if(g_transition == -1) { //if the user is going to the left, flip the radians so the animation plays backwards.
 		radians *= -1;
 	}
-	if(levelLast % 2 == 1) { //We need to offset the hexagon if the selection is odd. Otherwise the bg colors flip!
+	if(g_levelLast % 2 == 1) { //We need to offset the hexagon if the selection is odd. Otherwise the bg colors flip!
 		radians += TAU/6.0;
 	}
 	
 	u32 kHold = hidKeysHeld();
-	if(!transition) {
+	if(!g_transition) {
 		if(kHold & KEY_R) {
-			level++;
-			transition = 1;
+			g_level++;
+			g_transition = 1;
 		} 
 		if(kHold & KEY_L) {
-			level--;
-			transition = -1;
+			g_level--;
+			g_transition = -1;
 		} 
 	}
-	if(level < 0) level = totalLevels - 1;
-	if(level >= totalLevels) level = 0;
+	if(g_level < 0) g_level = g_totallevels - 1;
+	if(g_level >= g_totallevels) g_level = 0;
 	
 	////CALCULATE COLORS
 	Point fg;
 	Point bg1;
 	Point bg2;
-	if(transition && transitionFrame < FRAMES_PER_ONE_SIDE_ROTATION) {
-		fg = tweenColor(levelColor[levelLast][FG], levelColor[level][FG], transitionFrame);
-		bg1 = tweenColor(levelColor[levelLast][BG1], levelColor[level][BG1], transitionFrame);
-		bg2 = tweenColor(levelColor[levelLast][BG2], levelColor[level][BG2], transitionFrame);
-		transitionFrame++;
+	if(g_transition && g_transitionFrame < FRAMES_PER_ONE_SIDE_ROTATION) {
+		fg = tweenColor(levelColor[g_levelLast][FG], levelColor[g_level][FG], g_transitionFrame);
+		bg1 = tweenColor(levelColor[g_levelLast][BG1], levelColor[g_level][BG1], g_transitionFrame);
+		bg2 = tweenColor(levelColor[g_levelLast][BG2], levelColor[g_level][BG2], g_transitionFrame);
+		g_transitionFrame++;
 	} else {
-		levelLast = level;
-		transitionFrame = 0;
-		transition = false;
+		g_levelLast = g_level;
+		g_transitionFrame = 0;
+		g_transition = false;
 	}
-	if(!transition) {
-		fg = levelColor[level][FG];
-		bg1 = levelColor[level][BG1];
-		bg2 = levelColor[level][BG2];
+	if(!g_transition) {
+		fg = levelColor[g_level][FG];
+		bg1 = levelColor[g_level][BG1];
+		bg2 = levelColor[g_level][BG2];
 	} 
 	
 	////RENDER TOP SCREEN
@@ -206,7 +208,7 @@ void doMainMenu() {
 	drawTriangle(fb, true, humanTriangle[0], humanTriangle[1], humanTriangle[2]);
 }
 
-void lagometer() {
+void doLagometer() {
 	u8* fb = gfxGetFramebuffer(GFX_BOTTOM, GFX_LEFT, NULL, NULL);
 	memset(fb, 0, SCREEN_HEIGHT*BOT_WIDTH*3);
 	
@@ -215,7 +217,7 @@ void lagometer() {
 	time.g = 0x00;
 	time.b = 0x00;
 	time.y = 0;
-	for(time.x = 0; time.x < (int)((double)BOT_WIDTH * compTimeTaken); time.x++) {
+	for(time.x = 0; time.x < (int)((double)BOT_WIDTH * g_compTimeTaken); time.x++) {
 		setPixel(fb, false, time);
 	}
 }
@@ -223,9 +225,7 @@ void lagometer() {
 int main()
 {
 	init();
-	initLevels();
-	//Used to calculate the lagometer.
-	double compTimeTaken = 0.0;
+	initg_levels();
 	
 	gfxInitDefault();
 	//gfxSet3D(true); // uncomment if using stereoscopic 3D
@@ -239,7 +239,7 @@ int main()
 		////DRAW MENU
 		doMainMenu();
 		
-		////RENDER BOTTOM SCREEN
+		////DRAW LAGOMETER
 		doLagometer();
 		
 		////FLUSH AND CALC LAGOMETER
@@ -248,7 +248,7 @@ int main()
 		gfxSwapBuffers();
 		gspWaitForVBlank();
 		u64 end_screen = svcGetSystemTick ();
-		compTimeTaken = (double)(end_time - start_time) / (double)(end_screen - start_time);
+		g_compTimeTaken = (double)(end_time - start_time) / (double)(end_screen - start_time);
 	}
 
 	gfxExit();

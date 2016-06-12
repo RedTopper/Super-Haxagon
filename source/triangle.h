@@ -1,6 +1,7 @@
 #pragma once
 
 #include <3ds.h>
+#include <sf2d.h>
 
 #define SCREEN_HEIGHT 240
 #define TOP_WIDTH  400
@@ -35,5 +36,5 @@ long ContourX[SCREEN_HEIGHT][2];
  * I have no idea what is happening here.
  */
 void scanLine(int x1, int y1, int x2, int y2);
-void setPixel(u8* fb, bool top, Point p);
-void drawTriangle(u8* fb, bool top, Point p0, Point p1, Point p2);
+void setPixel(sf2d_texture* fb, Point p);
+void drawTriangle(sf2d_texture* fb, Point p0, Point p1, Point p2);

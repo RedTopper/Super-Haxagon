@@ -2,6 +2,7 @@
 #include <limits.h>
 #include <math.h>
 #include <3ds.h>
+#include <sf2d.h>
 
 #include "triangle.h"
 #include "font.h"
@@ -37,6 +38,9 @@ int g_levelLast;
 int g_totallevels;
 double g_compTimeTaken = 0.0; //Used to calculate the lagometer.
 
+sf2d_texture* g_top;
+sf2d_texture* g_bot;
+
 void init() {
 	////DYNAMIC VARS
 	g_transition = 0;
@@ -48,6 +52,11 @@ void init() {
 	g_levelLast = 0;
 	g_totallevels = sizeof(levelColor)/sizeof(levelColor[0]);
 	g_compTimeTaken = 0.0;
+	
+	sf2d_texfmt format = TEXFMT_RGBA8;
+	sf2d_place place = SF2D_PLACE_RAM;
+	g_top = sf2d_create_texture(TOP_WIDTH, SCREEN_HEIGHT, format, place);
+	g_bot = sf2d_create_texture(TOP_WIDTH, SCREEN_HEIGHT, format, place);
 }
 
 void initLevels() {
@@ -89,6 +98,20 @@ void initLevels() {
 	levelColor[2][BG2].r = 0x18;
 	levelColor[2][BG2].g = 0x00;
 	levelColor[2][BG2].b = 0x52;
+}
+
+void fillBuffer(sf2d_texture* fb, Point p) {
+	int width = 0;
+	if(sf2d_get_current_screen() == GFX_TOP) {
+		width = TOP_WIDTH;
+	} else {
+		width = BOT_WIDTH;
+	}
+	for(p.x = 0; p.x < width; p.x++) {
+		for(p.y = 0; p.y < SCREEN_HEIGHT; p.y++) {
+			setPixel(fb, p);
+		}
+	}
 }
 
 Point tweenColor(Point original, Point new, int frame) {
@@ -143,12 +166,9 @@ void doMainMenu() {
 	} 
 	
 	////RENDER TOP SCREEN
-	u8* fb = gfxGetFramebuffer(GFX_TOP, GFX_LEFT, NULL, NULL);
-	for(bg1.x = 0; bg1.x < TOP_WIDTH; bg1.x++) {
-		for(bg1.y = 0; bg1.y < SCREEN_HEIGHT; bg1.y++) {
-			setPixel(fb, true, bg1);
-		}
-	}
+	sf2d_start_frame(GFX_TOP, GFX_LEFT);
+	////NOT THE RIGHT WAY TO DO THIS!!!!!
+	memset(g_top->data, 0, g_top->width * g_top->height * 4);
 	
 	//This draws the main background and hexagon.
 	Point center;
@@ -189,7 +209,7 @@ void doMainMenu() {
 						continue;
 					}
 				}
-				drawTriangle(fb, true, center, edges[i-1], (i==6 ? edges[0] : edges[i]));
+				drawTriangle(g_top, center, edges[i-1], (i==6 ? edges[0] : edges[i]));
 			}
 		}	
 	}
@@ -219,12 +239,18 @@ void doMainMenu() {
 		humanTriangle[i].x = (int)(len * cos(position) + center.x);
 		humanTriangle[i].y = (int)(len * sin(position) + center.y);
 	}
-	drawTriangle(fb, true, humanTriangle[0], humanTriangle[1], humanTriangle[2]);
+	drawTriangle(g_top, humanTriangle[0], humanTriangle[1], humanTriangle[2]);
+	sf2d_texture_tile32(g_top);
+	sf2d_draw_texture(g_top, 0, 0);
+	Point p;
+	writeFont(p,"Meme");
+	sf2d_end_frame();
 }
 
 void doLagometer() {
-	u8* fb = gfxGetFramebuffer(GFX_BOTTOM, GFX_LEFT, NULL, NULL);
-	memset(fb, 0, SCREEN_HEIGHT*BOT_WIDTH*3);
+	sf2d_start_frame(GFX_BOTTOM, GFX_LEFT);
+	////NOT THE RIGHT WAY TO DO THIS!!!!!
+	memset(g_bot->data, 0, g_bot->width * g_bot->height * 4);
 	
 	Point time;
 	time.r = 0x00;
@@ -232,16 +258,23 @@ void doLagometer() {
 	time.b = 0x00;
 	time.y = 0;
 	for(time.x = 0; time.x < (int)((double)BOT_WIDTH * g_compTimeTaken); time.x++) {
-		setPixel(fb, false, time);
+		setPixel(g_bot, time);
 	}
+	sf2d_texture_tile32(g_bot);
+	sf2d_draw_texture(g_bot, 0, 0);
+	sf2d_end_frame();
 }
 
 int main() {
+	//3ds init
+	gfxInitDefault();
+	sf2d_init();
+	sf2d_set_vblank_wait(1);
+	romfsInit();
+	
+	//program init
 	init();
 	initLevels();
-	
-	gfxInitDefault();
-	//gfxSet3D(true); // uncomment if using stereoscopic 3D
 	
 	while (aptMainLoop()) {
 		hidScanInput();
@@ -250,24 +283,21 @@ int main() {
 		u64 start_time = svcGetSystemTick ();
 		
 		////DRAW MENU
-		doMainMenu();
+		doMainMenu(); //THIS FUNCTION WILL START THE RENDERER!
 		
 		////DRAW LAGOMETER
 		doLagometer();
 		
-		////SOMETHING WITH FONT
-		Point p;
-		writeFont(p,"Meme");
-		
 		////FLUSH AND CALC LAGOMETER
 		u64 end_time = svcGetSystemTick ();
-		gfxFlushBuffers();
-		gfxSwapBuffers();
-		gspWaitForVBlank();
+		sf2d_swapbuffers();
 		u64 end_screen = svcGetSystemTick ();
 		g_compTimeTaken = (double)(end_time - start_time) / (double)(end_screen - start_time);
 	}
+	
+	sf2d_fini();
 
+	romfsExit();
 	gfxExit();
 	return 0;
 }

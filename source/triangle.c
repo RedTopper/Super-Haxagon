@@ -55,8 +55,8 @@ void scanLine(int x1, int y1, int x2, int y2) {
 	}
 }
 
-void setPixel(u8* fb, bool top, Point p) {
-	if(top) {
+void setPixel(sf2d_texture* fb, Point p) {
+	if(sf2d_get_current_screen() == GFX_TOP) {
 		if(p.x < 0 || p.y < 0 || p.x >= TOP_WIDTH || p.y >= SCREEN_HEIGHT) {
 			return;
 		}
@@ -65,12 +65,10 @@ void setPixel(u8* fb, bool top, Point p) {
 			return;
 		}
 	}
-	fb[3*(p.y+p.x*SCREEN_HEIGHT)] = p.b;
-	fb[3*(p.y+p.x*SCREEN_HEIGHT) + 1] = p.g;
-	fb[3*(p.y+p.x*SCREEN_HEIGHT) + 2] = p.r;
+	sf2d_set_pixel(fb, p.x, p.y, RGBA8(p.r, p.g, p.b, 0xFF));
 }
 
-void drawTriangle(u8* fb, bool top, Point p0, Point p1, Point p2)
+void drawTriangle(sf2d_texture* fb, Point p0, Point p1, Point p2)
 {
 	Point trianglePoint;
 	trianglePoint.r = p0.r;
@@ -80,13 +78,7 @@ void drawTriangle(u8* fb, bool top, Point p0, Point p1, Point p2)
 	int y;
 
 	for (y = 0; y < SCREEN_HEIGHT; y++) {
-		int width = 0;
-		if(top) {
-			width = TOP_WIDTH;
-		} else {
-			width = BOT_WIDTH;
-		}
-		ContourX[y][0] = width; // min X
+		ContourX[y][0] = TOP_WIDTH; // min X
 		ContourX[y][1] = 0; // max X
 	}
 
@@ -102,7 +94,7 @@ void drawTriangle(u8* fb, bool top, Point p0, Point p1, Point p2)
 			// Can draw a horizontal line instead of individual pixels here
 			while (len-- > 0) {
 				trianglePoint.x++;
-				setPixel(fb, top, trianglePoint);
+				setPixel(fb, trianglePoint);
 			}
 		}
 	}

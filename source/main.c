@@ -56,7 +56,9 @@ void init() {
 	sf2d_texfmt format = TEXFMT_RGBA8;
 	sf2d_place place = SF2D_PLACE_RAM;
 	g_top = sf2d_create_texture(TOP_WIDTH, SCREEN_HEIGHT, format, place);
+	sf2d_texture_tile32(g_top);
 	g_bot = sf2d_create_texture(TOP_WIDTH, SCREEN_HEIGHT, format, place);
+	sf2d_texture_tile32(g_bot);
 }
 
 void initLevels() {
@@ -167,8 +169,8 @@ void doMainMenu() {
 	
 	////RENDER TOP SCREEN
 	sf2d_start_frame(GFX_TOP, GFX_LEFT);
-	////NOT THE RIGHT WAY TO DO THIS!!!!!
-	memset(g_top->data, 0, g_top->width * g_top->height * 4);
+	////NOT THE RIGHT WAY TO DO THIS!!!!! HELP, I HAVE NO IDEA IF THIS COULD RUIN ANYTHING!!!!!
+	memset(g_top->data, 0, g_top->pow2_w * g_top->pow2_h * 4);
 	
 	//This draws the main background and hexagon.
 	Point center;
@@ -240,11 +242,11 @@ void doMainMenu() {
 		humanTriangle[i].y = (int)(len * sin(position) + center.y);
 	}
 	drawTriangle(g_top, humanTriangle[0], humanTriangle[1], humanTriangle[2]);
-	sf2d_texture_tile32(g_top);
 	sf2d_draw_texture(g_top, 0, 0);
 	Point p;
 	writeFont(p,"Meme");
 	sf2d_end_frame();
+	sf2d_set_clear_color(RGBA8(bg1.r, bg1.g, bg1.b, 0xFF));
 }
 
 void doLagometer() {
@@ -260,7 +262,6 @@ void doLagometer() {
 	for(time.x = 0; time.x < (int)((double)BOT_WIDTH * g_compTimeTaken); time.x++) {
 		setPixel(g_bot, time);
 	}
-	sf2d_texture_tile32(g_bot);
 	sf2d_draw_texture(g_bot, 0, 0);
 	sf2d_end_frame();
 }

@@ -236,7 +236,73 @@ void doMainMenu() {
 	drawTriangle(g_top, humanTriangle[0], humanTriangle[1], humanTriangle[2]);
 	sf2d_draw_texture(g_top, 0, 0);
 	Point p;
-	writeFont(p,"Meme");
+	p.x = 4;
+	p.y = 4;
+	p.r = 0xFF;
+	p.g = 0xFF;
+	p.b = 0xFF;
+	
+	Point sub;
+	sub.x = 4;
+	sub.y = 40;
+	sub.r = 0xFF;
+	sub.g = 0xFF;
+	sub.b = 0xFF;
+	
+	Point sub2;
+	sub2.x = 4;
+	sub2.y = 56;
+	sub2.r = 0xFF;
+	sub2.g = 0xFF;
+	sub2.b = 0xFF;
+	
+	Point time;
+	time.x = 4;
+	time.y = SCREEN_HEIGHT - 16;
+	time.r = 0xFF;
+	time.g = 0xFF;
+	time.b = 0xFF;
+	
+	sf2d_draw_rectangle(0,0,TOP_WIDTH, sub2.y + 16 + 2, RGBA8(0, 0, 0, 0xFF));
+	sf2d_draw_rectangle(0,time.y - 4,13/*chars*/ * 16 + 4, 16 + 8, RGBA8(0, 0, 0, 0xFF));
+	switch(g_level) {
+		case 0:
+			writeFont(p,"HEXAGON", true);
+			writeFont(sub,"DIFFICULTY: HARD", false);
+			writeFont(sub2,"MODE: NORMAL", false);
+			writeFont(time,"BEST TIME: 000:00", false);
+			break;
+		case 1:
+			writeFont(p,"HEXAGONER", true);
+			writeFont(sub,"DIFFICULTY: HARDER", false);
+			writeFont(sub2,"MODE: NORMAL", false);
+			writeFont(time,"BEST TIME: 000:00", false);
+			break;
+		case 2:
+			writeFont(p,"HEXAGONEST", true);
+			writeFont(sub,"DIFFICULTY: HARDEST", false);
+			writeFont(sub2,"MODE: NORMAL", false);
+			writeFont(time,"BEST TIME: 000:00", false);
+			break;
+		case 3:
+			writeFont(p,"HEXAGON", true);
+			writeFont(sub,"DIFFICULTY: HARDESTER", false);
+			writeFont(sub2,"MODE: HYPER", false);
+			writeFont(time,"BEST TIME: 000:00", false);
+			break;
+		case 4:
+			writeFont(p,"HEXAGONER", true);
+			writeFont(sub,"DIFFICULTY: HARDESTEST", false);
+			writeFont(sub2,"MODE: HYPER", false);
+			writeFont(time,"BEST TIME: 000:00", false);
+			break;
+		case 5:
+			writeFont(p,"HEXAGONEST", true);
+			writeFont(sub,"DIFFICULTY: HARDESTESTEST", false);
+			writeFont(sub2,"MODE: HYPER", false);
+			writeFont(time,"BEST TIME: 000:00", false);
+			break;
+	}
 	sf2d_end_frame();
 }
 

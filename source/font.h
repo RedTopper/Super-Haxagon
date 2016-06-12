@@ -11,7 +11,7 @@
 extern "C" {
 #endif
 
-void writeFont(Point p, const char* s);
+void writeFont(Point p, const char* s, bool large);
 
 #ifdef __cplusplus
 }

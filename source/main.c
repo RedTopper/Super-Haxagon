@@ -4,13 +4,14 @@
 #include <3ds.h>
 
 #include "triangle.h"
+#include "font.h"
 
 #define TAU 6.28318530718
 #define FG 0
 #define BG1 1
 #define BG2 2
 
-Point levelColor[2][3];
+Point levelColor[3][3];
 
 ////STATIC VARS
 //Inside hexagon style
@@ -49,8 +50,8 @@ void init() {
 	g_compTimeTaken = 0.0;
 }
 
-void initg_levels() {
-	//g_level 0
+void initLevels() {
+	//level 0
 	levelColor[0][FG].r = 0xF6;
 	levelColor[0][FG].g = 0x48;
 	levelColor[0][FG].b = 0x13;
@@ -63,7 +64,7 @@ void initg_levels() {
 	levelColor[0][BG2].g = 0x12;
 	levelColor[0][BG2].b = 0x01;
 	
-	//g_level 1
+	//level 1
 	levelColor[1][FG].r = 0x33;
 	levelColor[1][FG].g = 0xE5;
 	levelColor[1][FG].b = 0x66;
@@ -75,6 +76,19 @@ void initg_levels() {
 	levelColor[1][BG2].r = 0x00;
 	levelColor[1][BG2].g = 0x00;
 	levelColor[1][BG2].b = 0x00;
+	
+	//level 2
+	levelColor[2][FG].r = 0x6D;
+	levelColor[2][FG].g = 0x10;
+	levelColor[2][FG].b = 0xF9;
+	
+	levelColor[2][BG1].r = 0x22;
+	levelColor[2][BG1].g = 0x00;
+	levelColor[2][BG1].b = 0x63;
+	
+	levelColor[2][BG2].r = 0x18;
+	levelColor[2][BG2].g = 0x00;
+	levelColor[2][BG2].b = 0x52;
 }
 
 Point tweenColor(Point original, Point new, int frame) {
@@ -213,8 +227,8 @@ void doLagometer() {
 	memset(fb, 0, SCREEN_HEIGHT*BOT_WIDTH*3);
 	
 	Point time;
-	time.r = 0xFF;
-	time.g = 0x00;
+	time.r = 0x00;
+	time.g = 0xFF;
 	time.b = 0x00;
 	time.y = 0;
 	for(time.x = 0; time.x < (int)((double)BOT_WIDTH * g_compTimeTaken); time.x++) {
@@ -222,10 +236,10 @@ void doLagometer() {
 	}
 }
 
-int main()
-{
+int main() {
 	init();
-	initg_levels();
+	initLevels();
+	initFont();
 	
 	gfxInitDefault();
 	//gfxSet3D(true); // uncomment if using stereoscopic 3D

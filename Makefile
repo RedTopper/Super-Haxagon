@@ -37,8 +37,7 @@ APP_TITLE		:=	"Super Haxagon"
 APP_DESCRIPTION	:=	"A Super Hexagon Clone"
 APP_AUTHOR		:=	"RedHat"
 #smdh exported manually using bannertool
-NO_SMDH			:=  true 
-#ROMFS		:=	romfs
+ROMFS			:=  romfs
 
 #---------------------------------------------------------------------------------
 # options for code generation
@@ -138,13 +137,15 @@ endif
 all: $(BUILD)
 
 $(BUILD):
+#This stuff probably should not be done here... but it works so whatever.
+	@$(RESOURCE)/bannertool.exe makesmdh -s $(APP_TITLE) -l $(APP_DESCRIPTION) -p $(APP_AUTHOR) -i $(RESOURCE)/icon.png  -o $(OUTPUT).smdh
+	@$(RESOURCE)/bannertool.exe makebanner -i $(RESOURCE)/banner.png -a $(RESOURCE)/audio.wav -o $(RESOURCE)/banner.bin
+	
 	@[ -d $@ ] || mkdir -p $@
 	@$(MAKE) --no-print-directory -C $(BUILD) -f $(CURDIR)/Makefile
 	
-#This stuff probably should not be done here... but it works so whatever.
-	@$(RESOURCE)/bannertool.exe makesmdh -s $(APP_TITLE) -l $(APP_DESCRIPTION) -p $(APP_AUTHOR) -i $(RESOURCE)/icon.png  -o $(TARGET).smdh
-	@$(RESOURCE)/bannertool.exe makebanner -i $(RESOURCE)/banner.png -a $(RESOURCE)/audio.wav -o $(RESOURCE)/banner.bin
-	@$(RESOURCE)/makerom.exe -f cia -o $(TARGET).cia -DAPP_ENCRYPTED=false -rsf $(RESOURCE)/cia.rsf -target t -exefslogo -elf $(TARGET).elf -icon $(TARGET).smdh -banner $(RESOURCE)/banner.bin
+#Also this...
+	@$(RESOURCE)/makerom.exe -f cia -o $(TARGET).cia -DAPP_ENCRYPTED=false -rsf $(RESOURCE)/cia.rsf -target t -exefslogo -elf $(TARGET).elf -icon $(OUTPUT).smdh -banner $(RESOURCE)/banner.bin
 
 #This is used to deploy to OwnCloud. A QR code is then used to upload to FBI.
 	@cp $(TARGET).cia G:\ownCloud\3DS\$(TARGET).cia

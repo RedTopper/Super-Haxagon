@@ -31,9 +31,6 @@ bool initFont() {
 	if(IS_CIA) {
 		Result rc = romfsInit();
 		if (rc) {
-			initConsole();
-			printf("romfsInit: %08lX\n", rc);
-			waitConsole();
 			return false;
 		}
 		if(!readFile(g_font12, "romfs:/font12.bin") &&

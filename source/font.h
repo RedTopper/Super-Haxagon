@@ -1,17 +1,18 @@
 #pragma once
 
 #include <3ds.h>
-#include <string.h>
 #include <stdio.h>
-#include <stdlib.h>
 
 #include "triangle.h"
 
-char* g_letters[6];
+#ifdef __cplusplus
+#include "font/source/BmpFont.h"
+#include "font/source/BmpFont.cpp" //This is probably incorrect but it compiles.
+extern "C" {
+#endif
 
-u8* g_font12;
-u8* g_font24;
+void writeFont(Point p, const char* s);
 
-bool readFile(u8* buffer, const char* path);
-bool initFont();
-void write12(Point p, const char* s);
+#ifdef __cplusplus
+}
+#endif

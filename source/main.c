@@ -239,7 +239,6 @@ void doLagometer() {
 int main() {
 	init();
 	initLevels();
-	initFont();
 	
 	gfxInitDefault();
 	//gfxSet3D(true); // uncomment if using stereoscopic 3D
@@ -255,6 +254,10 @@ int main() {
 		
 		////DRAW LAGOMETER
 		doLagometer();
+		
+		////SOMETHING WITH FONT
+		Point p;
+		writeFont(p,"Meme");
 		
 		////FLUSH AND CALC LAGOMETER
 		u64 end_time = svcGetSystemTick ();

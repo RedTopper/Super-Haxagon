@@ -6,13 +6,14 @@
 
 #include "triangle.h"
 #include "font.h"
+#include "levels.h"
 
 #define TAU 6.28318530718
 #define FG 0
 #define BG1 1
 #define BG2 2
 
-Point levelColor[6][3];
+Point levelColor[TOTAL_LEVELS][3];
 
 ////STATIC VARS
 //Inside hexagon style
@@ -30,13 +31,10 @@ const int FRAMES_PER_ONE_SIDE_ROTATION = 10;
 ////DYNAMIC VARS. g_ means global btw.
 int g_transition; //0 = no transition // 1 = forwards // -1 = backwards
 int g_transitionFrame;
-double g_rotationOffset;
-double g_rotationStep;
-double g_humanStep;
 int g_level;
 int g_levelLast;
-int g_totallevels;
 double g_fps; //Used to calculate the lagometer.
+bool g_playing;
 
 sf2d_texture* g_top;
 sf2d_texture* g_bot;
@@ -45,13 +43,10 @@ void init() {
 	////DYNAMIC VARS
 	g_transition = 0;
 	g_transitionFrame = 0;
-	g_rotationOffset = 0.0;
-	g_rotationStep = TAU/60.0;
-	g_humanStep = TAU/60.0;
 	g_level = 0;
 	g_levelLast = 0;
-	g_totallevels = sizeof(levelColor)/sizeof(levelColor[0]);
 	g_fps = 0.0;
+	g_playing = false;
 	
 	sf2d_texfmt format = TEXFMT_RGBA8;
 	sf2d_place place = SF2D_PLACE_RAM;
@@ -115,7 +110,84 @@ Point tweenColor(Point original, Point new, int frame) {
 	return returnPoint;
 }
 
-void doMainMenu() {
+void drawMainHexagon(Point center, Point fg, Point bg, double radians) {
+	//This draws the hexagon.
+	Point edges[6];
+	for(int concentricHexes = 0; concentricHexes < 2; concentricHexes++) {
+		double len = 0.0;
+		if(concentricHexes == 0) {
+			//outer color painted after
+			center.r = fg.r;
+			center.g = fg.g;
+			center.b = fg.b;
+			len = FULL_LEN;
+		}
+		if(concentricHexes == 1) {
+			//inner color painted over it all.
+			center.r = bg.r;
+			center.g = bg.g;
+			center.b = bg.b;
+			len = FULL_LEN - BORDER_LEN;
+		}
+		for(int i = 0; i <= 6; i++) {
+			if(i < 6) {
+				edges[i].x = (int)(len * cos(radians + (double)i * TAU/6.0) + center.x);
+				edges[i].y = (int)(len * sin(radians + (double)i * TAU/6.0) + center.y);
+			}
+			if(i > 0) {
+				drawTriangle(g_top, center, edges[i-1], (i==6 ? edges[0] : edges[i]));
+			}
+		}	
+	}
+}
+
+void drawBackground(Point center, Point bg, double len, double radians) {
+	//This draws the main background.
+	Point edges[6];
+	center.r = bg.r;
+	center.g = bg.g;
+	center.b = bg.b;
+	for(int i = 0; i <= 6; i++) {
+		if(i < 6) {
+			edges[i].x = (int)(len * cos(radians + (double)i * TAU/6.0) + center.x);
+			edges[i].y = (int)(len * sin(radians + (double)i * TAU/6.0) + center.y);
+		}
+		if(i > 0) {
+			if(i % 2 == 0) {
+				continue;
+			}
+			drawTriangle(g_top, center, edges[i-1], (i==6 ? edges[0] : edges[i]));
+		}
+	}
+}
+
+void drawHumanCursor(Point center, Point fg, double cursor, double radians) {
+	//This draws the human cursor.
+	Point humanTriangle[3];
+	humanTriangle[0].r = fg.r;
+	humanTriangle[0].g = fg.g;
+	humanTriangle[0].b = fg.b;
+	for(int i = 0; i < 3; i++) {
+		double len = 0.0;
+		double position = 0.0;
+		if(i == 0) {
+			len = FULL_LEN + HUMAN_PADDING + HUMAN_HEIGHT;
+			position = cursor + radians;
+		} else {
+			len = FULL_LEN + HUMAN_PADDING;
+			if(i==1) {
+				position = cursor + HUMAN_WIDTH/2 + radians;
+			} else {
+				position = cursor - HUMAN_WIDTH/2 + radians;
+			}
+		}
+		humanTriangle[i].x = (int)(len * cos(position) + center.x);
+		humanTriangle[i].y = (int)(len * sin(position) + center.y);
+	}
+	drawTriangle(g_top, humanTriangle[0], humanTriangle[1], humanTriangle[2]);
+}
+
+int doMainMenu() {
 	double radians = (double)g_transitionFrame / (double)FRAMES_PER_ONE_SIDE_ROTATION * TAU/6.0;
 	if(g_transition == -1) { //if the user is going to the left, flip the radians so the animation plays backwards.
 		radians *= -1;
@@ -126,6 +198,9 @@ void doMainMenu() {
 	
 	u32 kHold = hidKeysHeld();
 	if(!g_transition) {
+		if(kHold & KEY_A) {
+			return g_level;
+		} 
 		if(kHold & KEY_R) {
 			g_level++;
 			g_transition = 1;
@@ -135,8 +210,8 @@ void doMainMenu() {
 			g_transition = -1;
 		} 
 	}
-	if(g_level < 0) g_level = g_totallevels - 1;
-	if(g_level >= g_totallevels) g_level = 0;
+	if(g_level < 0) g_level = TOTAL_LEVELS - 1;
+	if(g_level >= TOTAL_LEVELS) g_level = 0;
 	
 	////CALCULATE COLORS
 	Point fg;
@@ -164,76 +239,14 @@ void doMainMenu() {
 	////NOT THE RIGHT WAY TO DO THIS!!!!! HELP, I HAVE NO IDEA IF THIS COULD RUIN ANYTHING!!!!!
 	memset(g_top->data, 0, g_top->pow2_w * g_top->pow2_h * 4);
 	
-	//This draws the main background and hexagon.
 	Point center;
-	Point edges[6];
 	center.x = TOP_WIDTH/2;
 	center.y = SCREEN_HEIGHT/2 - 40;
-	for(int concentricHexes = 0; concentricHexes < 3; concentricHexes++) {
-		double len = 0.0;
-		if(concentricHexes == 0) {
-			//second background painted first
-			center.r = bg2.r;
-			center.g = bg2.g;
-			center.b = bg2.b;
-			len = TOP_WIDTH / 1.5;
-		}
-		if(concentricHexes == 1) {
-			//outer color painted after
-			center.r = fg.r;
-			center.g = fg.g;
-			center.b = fg.b;
-			len = FULL_LEN;
-		}
-		if(concentricHexes == 2) {
-			//inner color painted over it all.
-			center.r = bg1.r;
-			center.g = bg1.g;
-			center.b = bg1.b;
-			len = FULL_LEN - BORDER_LEN;
-		}
-		for(int i = 0; i <= 6; i++) {
-			if(i < 6) {
-				edges[i].x = (int)(len * cos(radians + (double)i * TAU/6.0) + center.x);
-				edges[i].y = (int)(len * sin(radians + (double)i * TAU/6.0) + center.y);
-			}
-			if(i > 0) {
-				if(concentricHexes == 0) {
-					if(i % 2 == 0) {
-						continue;
-					}
-				}
-				drawTriangle(g_top, center, edges[i-1], (i==6 ? edges[0] : edges[i]));
-			}
-		}	
-	}
 	
-	//This draws the human cursor.
-	Point humanTriangle[3];
+	drawBackground(center, bg2, TOP_WIDTH / 1.5, radians); //1.5 is used so the renderer doesn't go overboard. FIXME: magic number.
+	drawMainHexagon(center, fg, bg1, radians);
+	drawHumanCursor(center, fg, TAU/4.0, 0); //Draw cursor fixed quarter circle, no movement.
 	
-	//Main menu cursor is fixed in the up position.
-	double cursor = TAU/4;
-	humanTriangle[0].r = fg.r;
-	humanTriangle[0].g = fg.g;
-	humanTriangle[0].b = fg.b;
-	for(int i = 0; i < 3; i++) {
-		double len = 0.0;
-		double position = 0.0;
-		if(i == 0) {
-			len = FULL_LEN + HUMAN_PADDING + HUMAN_HEIGHT;
-			position = cursor;
-		} else {
-			len = FULL_LEN + HUMAN_PADDING;
-			if(i==1) {
-				position = cursor + HUMAN_WIDTH/2;
-			} else {
-				position = cursor - HUMAN_WIDTH/2;
-			}
-		}
-		humanTriangle[i].x = (int)(len * cos(position) + center.x);
-		humanTriangle[i].y = (int)(len * sin(position) + center.y);
-	}
-	drawTriangle(g_top, humanTriangle[0], humanTriangle[1], humanTriangle[2]);
 	sf2d_draw_texture(g_top, 0, 0);
 	Point p;
 	p.x = 4;
@@ -304,6 +317,45 @@ void doMainMenu() {
 			break;
 	}
 	sf2d_end_frame();
+	return -1; //Level not selected yet.
+}
+
+bool doPlayGame() {
+	u32 kHold = hidKeysHeld();
+	if(kHold & KEY_B) return false;
+	if(kHold & KEY_L) g_levelData[g_level].cursor = (g_levelData[g_level].cursor + g_levelData[g_level].rotStepHuman);
+	if(kHold & KEY_R) g_levelData[g_level].cursor = (g_levelData[g_level].cursor - g_levelData[g_level].rotStepHuman);
+	if(g_levelData[g_level].cursor > TAU) g_levelData[g_level].cursor-=TAU;
+	if(g_levelData[g_level].cursor < 0) g_levelData[g_level].cursor+=TAU;
+		
+	Point fg = levelColor[g_level][FG];
+	Point bg1 = levelColor[g_level][BG1];
+	Point bg2 = levelColor[g_level][BG2];
+		
+	sf2d_set_clear_color(RGBA8(bg1.r, bg1.g, bg1.b, 0xFF));
+	
+	////RENDER TOP SCREEN
+	sf2d_start_frame(GFX_TOP, GFX_LEFT);
+	////NOT THE RIGHT WAY TO DO THIS!!!!! HELP, I HAVE NO IDEA IF THIS COULD RUIN ANYTHING!!!!!
+	memset(g_top->data, 0, g_top->pow2_w * g_top->pow2_h * 4);
+	
+	Point center;
+	center.x = TOP_WIDTH/2;
+	center.y = SCREEN_HEIGHT/2;
+	
+	drawBackground(center, bg2, TOP_WIDTH / 1.5, g_levelData[g_level].radians);
+	drawMainHexagon(center, fg, bg1, g_levelData[g_level].radians);
+	drawHumanCursor(center, fg, g_levelData[g_level].cursor, g_levelData[g_level].radians); //Draw cursor fixed quarter circle, no movement.
+	
+	sf2d_draw_texture(g_top, 0, 0);
+	
+	////ROTATE
+	g_levelData[g_level].radians = (g_levelData[g_level].radians + g_levelData[g_level].rotStep);
+	if(g_levelData[g_level].radians > TAU) {
+		g_levelData[g_level].radians -= TAU;
+	}
+	sf2d_end_frame();
+	return true;
 }
 
 void doLagometer() {
@@ -336,14 +388,25 @@ int main() {
 	//program init
 	init();
 	initLevels();
+	initLevelData();
 	
 	while (aptMainLoop()) {
+		int level = -1;
 		hidScanInput();
 		u32 kDown = hidKeysDown();
 		if(kDown & KEY_START) break; // break in order to return to hbmenu
 		
-		////DRAW MENU
-		doMainMenu();
+		if(g_playing) {
+			////PLAY GAME
+			g_playing = doPlayGame();
+		} else {
+			////DRAW MENU
+			level = doMainMenu();
+		}
+		
+		if(level >= 0) {
+			g_playing = true;
+		}
 		
 		////DRAW LAGOMETER
 		doLagometer();
@@ -352,7 +415,8 @@ int main() {
 		sf2d_swapbuffers();
 		g_fps = sf2d_get_fps();
 	}
-	
+	sf2d_free_texture(g_top);
+	sf2d_free_texture(g_bot);
 	sf2d_fini();
 
 	romfsExit();

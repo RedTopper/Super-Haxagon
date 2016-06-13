@@ -7,6 +7,7 @@
 #include "triangle.h"
 #include "font.h"
 #include "levels.h"
+#include "sound.h"
 
 #define TAU 6.28318530718
 #define FG 0

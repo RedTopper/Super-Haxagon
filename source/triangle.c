@@ -6,7 +6,7 @@ void scanLine(int x1, int y1, int x2, int y2) {
 	sx = x2 - x1;
 	sy = y2 - y1;
 
-	if (sy < 0 || sy == 0 && sx < 0) {
+	if (sy < 0 || (sy == 0 && sx < 0)) {
 		k = x1; x1 = x2; x2 = k;
 		k = y1; y1 = y2; y2 = k;
 		sx = -sx;

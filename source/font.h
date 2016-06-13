@@ -7,7 +7,7 @@
 
 #ifdef __cplusplus
 #include "font/source/BmpFont.h"
-#include "font/source/BmpFont.cpp" //This is probably incorrect but it compiles.
+#include "font/source/BmpFont.cpp"
 extern "C" {
 #endif
 

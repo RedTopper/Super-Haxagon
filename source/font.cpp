@@ -3,11 +3,12 @@
 BmpFont *font16 = NULL;
 BmpFont *font32 = NULL;
 
-bool g_loadSDMC = false;
+//Used for compiling sdmc access instead of ROMFS. Might go unused.
+const bool LOAD_SDMC = false;
 
 void writeFont(Point p, const char* s, bool large) {
 	if(font16 == NULL) {
-		if(g_loadSDMC) {
+		if(LOAD_SDMC) {
 			font16 = new BmpFont("font16.bff"); //Load font file
 		} else {
 			font16 = new BmpFont("romfs:/font16.bff"); //Load font file
@@ -15,7 +16,7 @@ void writeFont(Point p, const char* s, bool large) {
 
 	}
 	if(font32 == NULL) {
-		if(g_loadSDMC) {
+		if(LOAD_SDMC) {
 			font32 = new BmpFont("font32.bff"); //Load font file
 		} else {
 			font32 = new BmpFont("romfs:/font32.bff"); //Load font file

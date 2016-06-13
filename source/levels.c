@@ -11,7 +11,7 @@ int g_patterns[NUM_PATTERNS][3][MAX_ELEMENTS_PER_PATTERN] =
 
 void initLevelData() { 
 	g_levelData[0].rotStep = TAU/240.0;
-	g_levelData[0].rotStepHuman = TAU/180.0;
+	g_levelData[0].rotStepHuman = TAU/60.0;
 	g_levelData[0].pulseSpeed = 10.0;
 }
 

@@ -196,9 +196,10 @@ int doMainMenu() {
 		radians += TAU/6.0;
 	}
 	
+	u32 kDown = hidKeysDown();
 	u32 kHold = hidKeysHeld();
 	if(!g_transition) {
-		if(kHold & KEY_A) {
+		if(kDown & KEY_A) {
 			return g_level;
 		} 
 		if(kHold & KEY_R) {
@@ -321,8 +322,9 @@ int doMainMenu() {
 }
 
 bool doPlayGame() {
+	u32 kDown = hidKeysDown();
 	u32 kHold = hidKeysHeld();
-	if(kHold & KEY_B) return false;
+	if(kDown & KEY_B) return false;
 	if(kHold & KEY_L) g_levelData[g_level].cursor = (g_levelData[g_level].cursor + g_levelData[g_level].rotStepHuman);
 	if(kHold & KEY_R) g_levelData[g_level].cursor = (g_levelData[g_level].cursor - g_levelData[g_level].rotStepHuman);
 	if(g_levelData[g_level].cursor > TAU) g_levelData[g_level].cursor-=TAU;

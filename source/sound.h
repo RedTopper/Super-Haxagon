@@ -19,5 +19,6 @@ Track g_begin;
 Track g_over;
 Track g_bgm;
 
+bool audioPlay(Track *sound, bool loop);
 void audioUnload();
 void initSounds();

@@ -33,7 +33,7 @@ void audioFree(Track *sound) {
 	}
 }
 
-void audioPlay(Track *sound, bool loop) {
+bool audioPlay(Track *sound, bool loop) {
 	if (sound->loaded) {
 		u32 flags;
 		if (loop) {
@@ -42,16 +42,19 @@ void audioPlay(Track *sound, bool loop) {
 			flags = SOUND_FORMAT_16BIT;
 		}
 		csndPlaySound(sound->channel, flags, 44100, 1, 0, sound->sndbuffer, sound->sndbuffer, sound->sndsize);
+		return true;
+	} else {
+		return false;
 	}
 }
 
-void audioUnload(){
+void audioUnload() {
 	csndExecCmds(true);
 
-	CSND_SetPlayState(1, 0);
-	CSND_SetPlayState(2, 0);
-	CSND_SetPlayState(3, 0);
-	CSND_SetPlayState(4, 0);
+	CSND_SetPlayState(SOUND_CHANNEL(8), 0);
+	CSND_SetPlayState(SOUND_CHANNEL(9), 0);
+	CSND_SetPlayState(SOUND_CHANNEL(10), 0);
+	CSND_SetPlayState(SOUND_CHANNEL(11), 0);
 
 	audioFree(&g_hexagon);
 	audioFree(&g_select);
@@ -62,14 +65,14 @@ void audioUnload(){
 
 void initSounds() {
 	if(LOAD_SDMC) {
-		audioLoad("sound/hexagon.bin", &g_hexagon, 1);
-		audioLoad("sound/select.bin", &g_select, 2);
-		audioLoad("sound/begin.bin", &g_begin, 3);
-		audioLoad("sound/over.bin", &g_over, 4);
+		audioLoad("sound/hexagon.bin", &g_hexagon, SOUND_CHANNEL(8));
+		audioLoad("sound/select.bin", &g_select, SOUND_CHANNEL(9));
+		audioLoad("sound/begin.bin", &g_begin, SOUND_CHANNEL(10));
+		audioLoad("sound/over.bin", &g_over, SOUND_CHANNEL(11));
 	} else {
-		audioLoad("romfs:/sound/hexagon.bin", &g_hexagon, 1);
-		audioLoad("romfs:/sound/select.bin", &g_select, 2);
-		audioLoad("romfs:/sound/begin.bin", &g_begin, 3);
-		audioLoad("romfs:/sound/over.bin", &g_over, 4);
+		audioLoad("romfs:/sound/hexagon.bin", &g_hexagon, SOUND_CHANNEL(8));
+		audioLoad("romfs:/sound/select.bin", &g_select,SOUND_CHANNEL(9));
+		audioLoad("romfs:/sound/begin.bin", &g_begin, SOUND_CHANNEL(10));
+		audioLoad("romfs:/sound/over.bin", &g_over, SOUND_CHANNEL(11));
 	}
 }

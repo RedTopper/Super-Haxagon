@@ -206,10 +206,12 @@ int doMainMenu() {
 		if(kHold & KEY_R) {
 			g_level++;
 			g_transition = 1;
+			audioPlay(&g_select, false);
 		} 
 		if(kHold & KEY_L) {
 			g_level--;
 			g_transition = -1;
+			audioPlay(&g_select, false);
 		} 
 	}
 	if(g_level < 0) g_level = TOTAL_LEVELS - 1;
@@ -387,11 +389,15 @@ int main() {
 	sf2d_init();
 	sf2d_set_vblank_wait(1);
 	romfsInit();
+	csndInit();
 	
 	//program init
 	init();
 	initLevels();
 	initLevelData();
+	initSounds();
+	
+	audioPlay(&g_hexagon, false);
 	
 	while (aptMainLoop()) {
 		int level = -1;
@@ -418,6 +424,8 @@ int main() {
 		sf2d_swapbuffers();
 		g_fps = sf2d_get_fps();
 	}
+	audioUnload();
+	csndExit();
 	sf2d_free_texture(g_top);
 	sf2d_free_texture(g_bot);
 	sf2d_fini();

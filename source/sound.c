@@ -46,13 +46,16 @@ bool audioPlay(Track *sound, bool loop) {
 }
 
 void audioUnload() {
-	csndExecCmds(true);
-
 	CSND_SetPlayState(SOUND_CHANNEL(8), 0);
+	csndExecCmds(true);
 	CSND_SetPlayState(SOUND_CHANNEL(9), 0);
+	csndExecCmds(true);
 	CSND_SetPlayState(SOUND_CHANNEL(10), 0);
+	csndExecCmds(true);
 	CSND_SetPlayState(SOUND_CHANNEL(11), 0);
+	csndExecCmds(true);
 	CSND_SetPlayState(SOUND_CHANNEL(12), 0);
+	csndExecCmds(true);
 
 	audioFree(&g_hexagon);
 	audioFree(&g_select);
@@ -70,8 +73,9 @@ void initSounds() {
 }
 
 void playLevelBGM(int level) {
+	CSND_SetPlayState(SOUND_CHANNEL(12), 0);
+	csndExecCmds(true);
 	if(g_bgm.level != level) {
-		CSND_SetPlayState(SOUND_CHANNEL(12), 0);
 		audioFree(&g_bgm);
 		switch(level) {
 			case 0:
@@ -89,6 +93,5 @@ void playLevelBGM(int level) {
 		}
 		g_bgm.level = level;
 	}
-	CSND_SetPlayState(SOUND_CHANNEL(12), 0);
 	audioPlay(&g_bgm, true);
 }

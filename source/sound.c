@@ -82,7 +82,7 @@ bool audioPlay(Track *sound, bool loop) {
 		
 		DSP_FlushDataCache(sound->data, sound->dataSize);
 		
-		ndspChnWaveBufAdd(sound->ndspChannel, &waveBuffs[sound->ndspChannel]);  ////IT CRASHES HERE
+		ndspChnWaveBufAdd(sound->ndspChannel, &waveBuffs[sound->ndspChannel]);
 		return true;
 	} else {
 		return false;

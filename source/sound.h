@@ -10,6 +10,7 @@ typedef struct {
     u32 sndsize;
     int channel;
     int duration;
+	int level;
 	bool loaded;
 } Track;
 
@@ -22,3 +23,4 @@ Track g_bgm;
 bool audioPlay(Track *sound, bool loop);
 void audioUnload();
 void initSounds();
+void playLevelBGM(int level);

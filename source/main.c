@@ -414,6 +414,7 @@ int main() {
 		}
 		
 		if(level >= 0) {
+			playLevelBGM(level);
 			g_playing = true;
 		}
 		

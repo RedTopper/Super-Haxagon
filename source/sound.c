@@ -50,11 +50,6 @@ void audioLoad(const char *path, Track *sound, int channel) {
 		sound->ndspFormat = (sound->channels == 1) ? NDSP_FORMAT_MONO_PCM16 : NDSP_FORMAT_STEREO_PCM16;
 	}
 	
-	ndspChnReset(channel);
-	ndspChnSetInterp(channel, NDSP_INTERP_NONE);
-	ndspChnSetRate(channel, sound->sampleRate);
-	ndspChnSetFormat(channel, sound->ndspFormat);
-	
 	sound->loaded = true;
 	sound->ndspChannel = channel;
 }
@@ -66,20 +61,28 @@ void audioFree(Track *sound) {
 	}
 }
 
+// Thanks Rinnegatamante
+void createDspBlock(ndspWaveBuf* waveBuf, u16 bps, u32 size, bool loop, u32* data){
+	waveBuf->data_vaddr = (void*)data;
+	waveBuf->nsamples = size / bps;
+	waveBuf->looping = loop;
+	waveBuf->offset = 0;	
+	DSP_FlushDataCache(data, size);
+}
+
 bool audioPlay(Track *sound, bool loop) {
 	if (sound->loaded) {
 		ndspChnReset(sound->ndspChannel);
-		ndspWaveBuf waveBuf;
-		memset(&waveBuf, 0, sizeof(ndspWaveBuf)); //not sure if this is needed.
+		ndspChnWaveBufClear(sound->ndspChannel);
+		ndspChnSetInterp(sound->ndspChannel, NDSP_INTERP_LINEAR);
+		ndspChnSetRate(sound->ndspChannel, sound->sampleRate);
+		ndspChnSetFormat(sound->ndspChannel, sound->ndspFormat);
 		
-		waveBuf.data_vaddr = (u32 *)(sound->data);
-		waveBuf.nsamples = sound->dataSize / (sound->bitsPerSample >> 3); //wtf
-		waveBuf.looping = loop;
-		waveBuf.status = NDSP_WBUF_FREE;
+		createDspBlock(&waveBuffs[sound->ndspChannel], sound->bitsPerSample >> 3, sound->dataSize, true, (u32*)sound->data);
 		
 		DSP_FlushDataCache(sound->data, sound->dataSize);
 		
-		ndspChnWaveBufAdd(sound->ndspChannel, &waveBuf);  ////IT CRASHES HERE
+		ndspChnWaveBufAdd(sound->ndspChannel, &waveBuffs[sound->ndspChannel]);  ////IT CRASHES HERE
 		return true;
 	} else {
 		return false;

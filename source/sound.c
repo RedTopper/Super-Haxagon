@@ -1,8 +1,5 @@
 #include "sound.h"
 
-//Used for compiling sdmc access instead of ROMFS. Might go unused.
-const bool LOAD_SDMC = false;
-
 void audioLoad(const char *path, Track *sound, int channel) {
 	FILE *file = fopen(path, "rb");
 	if(file != NULL){
@@ -55,6 +52,7 @@ void audioUnload() {
 	CSND_SetPlayState(SOUND_CHANNEL(9), 0);
 	CSND_SetPlayState(SOUND_CHANNEL(10), 0);
 	CSND_SetPlayState(SOUND_CHANNEL(11), 0);
+	CSND_SetPlayState(SOUND_CHANNEL(12), 0);
 
 	audioFree(&g_hexagon);
 	audioFree(&g_select);
@@ -64,15 +62,31 @@ void audioUnload() {
 }
 
 void initSounds() {
-	if(LOAD_SDMC) {
-		audioLoad("sound/hexagon.bin", &g_hexagon, SOUND_CHANNEL(8));
-		audioLoad("sound/select.bin", &g_select, SOUND_CHANNEL(9));
-		audioLoad("sound/begin.bin", &g_begin, SOUND_CHANNEL(10));
-		audioLoad("sound/over.bin", &g_over, SOUND_CHANNEL(11));
-	} else {
-		audioLoad("romfs:/sound/hexagon.bin", &g_hexagon, SOUND_CHANNEL(8));
-		audioLoad("romfs:/sound/select.bin", &g_select,SOUND_CHANNEL(9));
-		audioLoad("romfs:/sound/begin.bin", &g_begin, SOUND_CHANNEL(10));
-		audioLoad("romfs:/sound/over.bin", &g_over, SOUND_CHANNEL(11));
+	audioLoad("romfs:/sound/hexagon.bin", &g_hexagon, SOUND_CHANNEL(8));
+	audioLoad("romfs:/sound/select.bin", &g_select,SOUND_CHANNEL(9));
+	audioLoad("romfs:/sound/begin.bin", &g_begin, SOUND_CHANNEL(10));
+	audioLoad("romfs:/sound/over.bin", &g_over, SOUND_CHANNEL(11));
+}
+
+void playLevelBGM(int level) {
+	if(g_bgm.level != level) {
+		CSND_SetPlayState(SOUND_CHANNEL(12), 0);
+		audioFree(&g_bgm);
+		switch(level) {
+			case 0:
+				audioLoad("romfs:/music/drFinkelfracken.bin", &g_bgm, 12); break;
+			case 1:
+				audioLoad("romfs:/music/jackRussel.bin", &g_bgm, 12); break;
+			case 2:
+				audioLoad("romfs:/music/callMeKatla.bin", &g_bgm, 12); break;
+			case 3:
+				audioLoad("romfs:/music/captainCool.bin", &g_bgm, 12); break;
+			case 4:
+				audioLoad("romfs:/music/commandoSteve.bin", &g_bgm, 12); break;
+			case 5:
+				audioLoad("romfs:/music/mazeOfMayonnaise.bin", &g_bgm, 12); break;
+		}
 	}
+	CSND_SetPlayState(SOUND_CHANNEL(12), 0);
+	audioPlay(&g_bgm, true);
 }

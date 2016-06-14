@@ -426,6 +426,7 @@ int main() {
 		sf2d_swapbuffers();
 		g_fps = sf2d_get_fps();
 	}
+	freeFonts();
 	audioUnload();
 	ndspExit();
 	sf2d_free_texture(g_top);

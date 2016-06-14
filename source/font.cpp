@@ -16,3 +16,8 @@ void writeFont(Point p, const char* s, bool large) {
 		font16->drawStr(s, p.x, p.y, RGBA8(p.r, p.g, p.b, 0xFF));
 	}
 }
+
+void freeFonts() {
+	font16->free();
+	font32->free();
+}

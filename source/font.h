@@ -12,6 +12,7 @@ extern "C" {
 #endif
 
 void writeFont(Point p, const char* s, bool large);
+void freeFonts();
 
 #ifdef __cplusplus
 }

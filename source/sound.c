@@ -78,7 +78,7 @@ bool audioPlay(Track *sound, bool loop) {
 		ndspChnSetRate(sound->ndspChannel, sound->sampleRate);
 		ndspChnSetFormat(sound->ndspChannel, sound->ndspFormat);
 		
-		createDspBlock(&waveBuffs[sound->ndspChannel], sound->bitsPerSample >> 3, sound->dataSize, true, (u32*)sound->data);
+		createDspBlock(&waveBuffs[sound->ndspChannel], sound->bitsPerSample >> 3, sound->dataSize, loop, (u32*)sound->data);
 		
 		DSP_FlushDataCache(sound->data, sound->dataSize);
 		

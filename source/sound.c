@@ -66,6 +66,7 @@ void initSounds() {
 	audioLoad("romfs:/sound/select.bin", &g_select,SOUND_CHANNEL(9));
 	audioLoad("romfs:/sound/begin.bin", &g_begin, SOUND_CHANNEL(10));
 	audioLoad("romfs:/sound/over.bin", &g_over, SOUND_CHANNEL(11));
+	g_bgm.level = -1;
 }
 
 void playLevelBGM(int level) {
@@ -86,6 +87,7 @@ void playLevelBGM(int level) {
 			case 5:
 				audioLoad("romfs:/music/mazeOfMayonnaise.bin", &g_bgm, 12); break;
 		}
+		g_bgm.level = level;
 	}
 	CSND_SetPlayState(SOUND_CHANNEL(12), 0);
 	audioPlay(&g_bgm, true);

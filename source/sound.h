@@ -6,10 +6,13 @@
 #include <stdlib.h>
 
 typedef struct {
-    u8* sndbuffer;
-    u32 sndsize;
-    int channel;
-    int duration;
+    u8* data;
+	u32 sampleRate;
+	u32 dataSize;
+	u16 channels;
+	u16 bitsPerSample;
+	u16 ndspFormat;
+    int ndspChannel;
 	int level;
 	bool loaded;
 } Track;

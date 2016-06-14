@@ -389,7 +389,8 @@ int main() {
 	sf2d_init();
 	sf2d_set_vblank_wait(1);
 	romfsInit();
-	csndInit();
+	ndspInit();
+	ndspSetOutputMode(NDSP_OUTPUT_STEREO);
 	
 	//program init
 	init();
@@ -426,7 +427,7 @@ int main() {
 		g_fps = sf2d_get_fps();
 	}
 	audioUnload();
-	csndExit();
+	ndspExit();
 	sf2d_free_texture(g_top);
 	sf2d_free_texture(g_bot);
 	sf2d_fini();

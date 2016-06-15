@@ -56,11 +56,12 @@ void scanLine(int x1, int y1, int x2, int y2) {
 }
 
 void drawTriangle(Point p0, Point p1, Point p2) {
+	int SCREEN_WIDTH = (sf2d_get_current_screen() == GFX_TOP ? TOP_WIDTH : BOT_WIDTH);
 	int y;
 
 	for (y = 0; y < SCREEN_HEIGHT; y++) {
-		ContourX[y][0] = TOP_WIDTH; // min X
-		ContourX[y][1] = 0; // max X
+		ContourX[y][0] = INT_MAX; // min X
+		ContourX[y][1] = INT_MIN; // max X
 	}
 
 	scanLine(p0.x, p0.y, p1.x, p1.y);
@@ -70,6 +71,10 @@ void drawTriangle(Point p0, Point p1, Point p2) {
 	for (int y = 0; y < SCREEN_HEIGHT; y++) {
 		if (ContourX[y][1] >= ContourX[y][0]) {
 			int inverseY = SCREEN_HEIGHT - 1 - y;
+			if(ContourX[y][0] < 0) ContourX[y][0] = 0;
+			if(ContourX[y][1] < 0) ContourX[y][1] = 0;
+			if(ContourX[y][0] >= SCREEN_WIDTH) ContourX[y][0] = SCREEN_WIDTH - 1;
+			if(ContourX[y][1] >= SCREEN_WIDTH) ContourX[y][1] = SCREEN_WIDTH - 1;
 			sf2d_draw_line(ContourX[y][0], inverseY, ContourX[y][1], inverseY, 1, RGBA8(p0.r, p0.g, p0.b, 0xFF));
 		}
 	}

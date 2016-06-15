@@ -55,20 +55,6 @@ void scanLine(int x1, int y1, int x2, int y2) {
 	}
 }
 
-//@depricated
-void setPixel(sf2d_texture* fb, Point p) {
-	if(sf2d_get_current_screen() == GFX_TOP) {
-		if(p.x < 0 || p.y < 0 || p.x >= TOP_WIDTH || p.y >= SCREEN_HEIGHT) {
-			return;
-		}
-	} else {
-		if(p.x < 0 || p.y < 0 || p.x >= BOT_WIDTH || p.y >= SCREEN_HEIGHT) {
-			return;
-		}
-	}
-	sf2d_set_pixel(fb, p.x, SCREEN_HEIGHT - 1 - p.y, RGBA8(p.r, p.g, p.b, 0xFF));
-}
-
 void drawTriangle(Point p0, Point p1, Point p2) {
 	int y;
 

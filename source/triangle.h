@@ -36,5 +36,4 @@ long ContourX[SCREEN_HEIGHT][2];
  * I have no idea what is happening here.
  */
 void scanLine(int x1, int y1, int x2, int y2);
-void setPixel(sf2d_texture* fb, Point p);
 void drawTriangle(Point p0, Point p1, Point p2);

@@ -18,8 +18,8 @@ Point levelColor[TOTAL_LEVELS][3];
 
 ////STATIC VARS
 //Inside hexagon style
-const double FULL_LEN = 30.0;
-const double BORDER_LEN = 5.0;
+const double FULL_LEN = 24.0;
+const double BORDER_LEN = 4.0;
 
 //Human triangle style
 const double HUMAN_WIDTH = TAU/30;
@@ -27,7 +27,7 @@ const double HUMAN_HEIGHT = 5.0;
 const double HUMAN_PADDING = 5.0;
 
 //Hexagon Constants
-const int FRAMES_PER_ONE_SIDE_ROTATION = 10;
+const int FRAMES_PER_ONE_SIDE_ROTATION = 16;
 
 ////DYNAMIC VARS. g_ means global btw.
 int g_transition; //0 = no transition // 1 = forwards // -1 = backwards
@@ -49,42 +49,41 @@ void init() {
 
 void initLevels() {
 	//level 0
-	levelColor[0][FG].r = 0xF6;		levelColor[0][BG1].r = 0x50;		levelColor[0][BG2].r = 0x61;
-	levelColor[0][FG].g = 0x48;		levelColor[0][BG1].g = 0x0C;		levelColor[0][BG2].g = 0x12;
-	levelColor[0][FG].b = 0x13;		levelColor[0][BG1].b = 0x01;		levelColor[0][BG2].b = 0x01;
+	levelColor[0][FG].color = RGBA8(0xF6, 0x48, 0x13, 0xFF);
+	levelColor[0][BG1].color = RGBA8(0x50, 0x0C, 0x01, 0xFF);
+	levelColor[0][BG2].color = RGBA8(0x61, 0x12, 0x01, 0xFF);
 	
 	//level 1
-	levelColor[1][FG].r = 0x33;		levelColor[1][BG1].r = 0x08;		levelColor[1][BG2].r = 0x00;
-	levelColor[1][FG].g = 0xE5;		levelColor[1][BG1].g = 0x24;		levelColor[1][BG2].g = 0x00;
-	levelColor[1][FG].b = 0x66;		levelColor[1][BG1].b = 0x10;		levelColor[1][BG2].b = 0x00;
+	levelColor[1][FG].color = RGBA8(0x33, 0xE5, 0x66, 0xFF);
+	levelColor[1][BG1].color = RGBA8(0x08, 0x24, 0x10, 0xFF);
+	levelColor[1][BG2].color = RGBA8(0x00, 0x00, 0x00, 0xFF);
 	
 	//level 2
-	levelColor[2][FG].r = 0x6D;		levelColor[2][BG1].r = 0x22;		levelColor[2][BG2].r = 0x18;
-	levelColor[2][FG].g = 0x10;		levelColor[2][BG1].g = 0x00;		levelColor[2][BG2].g = 0x00;
-	levelColor[2][FG].b = 0xF9;		levelColor[2][BG1].b = 0x63;		levelColor[2][BG2].b = 0x52;
+	levelColor[2][FG].color = RGBA8(0x6D, 0x10, 0xF9, 0xFF);
+	levelColor[2][BG1].color = RGBA8(0x22, 0x00, 0x63, 0xFF);
+	levelColor[2][BG2].color = RGBA8(0x18, 0x00, 0x52, 0xFF);
 	
 	//level 3
-	levelColor[3][FG].r = 0xF1;		levelColor[3][BG1].r = 0x63;		levelColor[3][BG2].r = 0x52;
-	levelColor[3][FG].g = 0xF9;		levelColor[3][BG1].g = 0x60;		levelColor[3][BG2].g = 0x4C;
-	levelColor[3][FG].b = 0x10;		levelColor[3][BG1].b = 0x01;		levelColor[3][BG2].b = 0x00;
+	levelColor[3][FG].color = RGBA8(0xF1, 0xF9, 0x10, 0xFF);
+	levelColor[3][BG1].color = RGBA8(0x63, 0x60, 0x01, 0xFF);
+	levelColor[3][BG2].color = RGBA8(0x52, 0x4C, 0x00, 0xFF);
 	
 	//level 4
-	levelColor[4][FG].r = 0xF4;		levelColor[4][BG1].r = 0xFF;		levelColor[4][BG2].r = 0xFD;
-	levelColor[4][FG].g = 0x05;		levelColor[4][BG1].g = 0xFF;		levelColor[4][BG2].g = 0xD7;
-	levelColor[4][FG].b = 0x86;		levelColor[4][BG1].b = 0xFF;		levelColor[4][BG2].b = 0xEC;
+	levelColor[4][FG].color = RGBA8(0xF4, 0x05, 0x86, 0xFF);
+	levelColor[4][BG1].color = RGBA8(0xFF, 0xFF, 0xFF, 0xFF);
+	levelColor[4][BG2].color = RGBA8(0xFD, 0xD7, 0xEC, 0xFF);
 	
 	//level 5
-	levelColor[5][FG].r = 0xFF;		levelColor[5][BG1].r = 0x00;		levelColor[5][BG2].r = 0x00;
-	levelColor[5][FG].g = 0xFF;		levelColor[5][BG1].g = 0x00;		levelColor[5][BG2].g = 0x00;
-	levelColor[5][FG].b = 0xFF;		levelColor[5][BG1].b = 0x00;		levelColor[5][BG2].b = 0x00;
+	levelColor[5][FG].color = RGBA8(0xFF, 0xFF, 0xFF, 0xFF);
+	levelColor[5][BG1].color = RGBA8(0x00, 0x00, 0x00, 0xFF);
+	levelColor[5][BG2].color = RGBA8(0x00, 0x00, 0x00, 0xFF);
 }
 
-Point tweenColor(Point original, Point new, int frame) {
-	Point returnPoint;
-	returnPoint.r = (char)((double)(new.r - original.r) * ((double)frame / (double)FRAMES_PER_ONE_SIDE_ROTATION) + (double)original.r);
-	returnPoint.g = (char)((double)(new.g - original.g) * ((double)frame / (double)FRAMES_PER_ONE_SIDE_ROTATION) + (double)original.g);
-	returnPoint.b = (char)((double)(new.b - original.b) * ((double)frame / (double)FRAMES_PER_ONE_SIDE_ROTATION) + (double)original.b);
-	return returnPoint;
+u32 tweenColor(u32 original, u32 new, int frame) {
+	int red = (double)((int)RGBA8_GET_R(new) - (int)RGBA8_GET_R(original)) * ((double)frame / (double)FRAMES_PER_ONE_SIDE_ROTATION) + (double)RGBA8_GET_R(original);
+	int green = (double)((int)RGBA8_GET_G(new) - (int)RGBA8_GET_G(original)) * ((double)frame / (double)FRAMES_PER_ONE_SIDE_ROTATION) + (double)RGBA8_GET_G(original);
+	int blue = (double)((int)RGBA8_GET_B(new) - (int)RGBA8_GET_B(original)) * ((double)frame / (double)FRAMES_PER_ONE_SIDE_ROTATION) + (double)RGBA8_GET_B(original);
+	return RGBA8(red, green, blue, 0xFF);
 }
 
 void drawMainHexagon(Point center, Point fg, Point bg, double radians) {
@@ -94,16 +93,12 @@ void drawMainHexagon(Point center, Point fg, Point bg, double radians) {
 		double len = 0.0;
 		if(concentricHexes == 0) {
 			//outer color painted after
-			center.r = fg.r;
-			center.g = fg.g;
-			center.b = fg.b;
+			center.color = fg.color;
 			len = FULL_LEN;
 		}
 		if(concentricHexes == 1) {
 			//inner color painted over it all.
-			center.r = bg.r;
-			center.g = bg.g;
-			center.b = bg.b;
+			center.color = bg.color;
 			len = FULL_LEN - BORDER_LEN;
 		}
 		for(int i = 0; i <= 6; i++) {
@@ -121,9 +116,7 @@ void drawMainHexagon(Point center, Point fg, Point bg, double radians) {
 void drawBackground(Point center, Point bg, double len, double radians) {
 	//This draws the main background.
 	Point edges[6];
-	center.r = bg.r;
-	center.g = bg.g;
-	center.b = bg.b;
+	center.color = bg.color;
 	for(int i = 0; i <= 6; i++) {
 		if(i < 6) {
 			edges[i].x = (int)(len * cos(radians + (double)i * TAU/6.0) + center.x);
@@ -141,9 +134,7 @@ void drawBackground(Point center, Point bg, double len, double radians) {
 void drawHumanCursor(Point center, Point fg, double cursor, double radians) {
 	//This draws the human cursor.
 	Point humanTriangle[3];
-	humanTriangle[0].r = fg.r;
-	humanTriangle[0].g = fg.g;
-	humanTriangle[0].b = fg.b;
+	humanTriangle[0].color = fg.color;
 	for(int i = 0; i < 3; i++) {
 		double len = 0.0;
 		double position = 0.0;
@@ -198,9 +189,9 @@ int doMainMenu() {
 	Point bg1;
 	Point bg2;
 	if(g_transition && g_transitionFrame < FRAMES_PER_ONE_SIDE_ROTATION) {
-		fg = tweenColor(levelColor[g_levelLast][FG], levelColor[g_level][FG], g_transitionFrame);
-		bg1 = tweenColor(levelColor[g_levelLast][BG1], levelColor[g_level][BG1], g_transitionFrame);
-		bg2 = tweenColor(levelColor[g_levelLast][BG2], levelColor[g_level][BG2], g_transitionFrame);
+		fg.color = tweenColor(levelColor[g_levelLast][FG].color, levelColor[g_level][FG].color, g_transitionFrame);
+		bg1.color = tweenColor(levelColor[g_levelLast][BG1].color, levelColor[g_level][BG1].color, g_transitionFrame);
+		bg2.color = tweenColor(levelColor[g_levelLast][BG2].color, levelColor[g_level][BG2].color, g_transitionFrame);
 		g_transitionFrame++;
 	} else {
 		g_levelLast = g_level;
@@ -212,7 +203,7 @@ int doMainMenu() {
 		bg1 = levelColor[g_level][BG1];
 		bg2 = levelColor[g_level][BG2];
 	} 
-	sf2d_set_clear_color(RGBA8(bg1.r, bg1.g, bg1.b, 0xFF));
+	sf2d_set_clear_color(bg1.color);
 	
 	////RENDER TOP SCREEN
 	sf2d_start_frame(GFX_TOP, GFX_LEFT);
@@ -228,30 +219,22 @@ int doMainMenu() {
 	Point p;
 	p.x = 4;
 	p.y = 4;
-	p.r = 0xFF;
-	p.g = 0xFF;
-	p.b = 0xFF;
+	p.color = RGBA8(0xFF,0xFF,0xFF,0xFF);
 	
 	Point sub;
 	sub.x = 4;
 	sub.y = 40;
-	sub.r = 0xFF;
-	sub.g = 0xFF;
-	sub.b = 0xFF;
+	sub.color = RGBA8(0xFF,0xFF,0xFF,0xFF);
 	
 	Point sub2;
 	sub2.x = 4;
 	sub2.y = 56;
-	sub2.r = 0xFF;
-	sub2.g = 0xFF;
-	sub2.b = 0xFF;
+	sub2.color = RGBA8(0xFF,0xFF,0xFF,0xFF);
 	
 	Point time;
 	time.x = 4;
 	time.y = SCREEN_HEIGHT - 16;
-	time.r = 0xFF;
-	time.g = 0xFF;
-	time.b = 0xFF;
+	time.color = RGBA8(0xFF,0xFF,0xFF,0xFF);
 	
 	sf2d_draw_rectangle(0,0,TOP_WIDTH, sub2.y + 16 + 2, RGBA8(0, 0, 0, 0xFF));
 	sf2d_draw_rectangle(0,time.y - 4,13/*chars*/ * 16 + 4, 16 + 8, RGBA8(0, 0, 0, 0xFF));
@@ -310,7 +293,7 @@ bool doPlayGame() {
 	Point bg1 = levelColor[g_level][BG1];
 	Point bg2 = levelColor[g_level][BG2];
 		
-	sf2d_set_clear_color(RGBA8(bg1.r, bg1.g, bg1.b, 0xFF));
+	sf2d_set_clear_color(bg1.color);
 	
 	////RENDER TOP SCREEN
 	sf2d_start_frame(GFX_TOP, GFX_LEFT);
@@ -334,19 +317,13 @@ bool doPlayGame() {
 
 void doLagometer(int level) {
 	sf2d_start_frame(GFX_BOTTOM, GFX_LEFT);
-	Point time;
-	time.r = 0xFF;
-	time.g = 0x00;
-	time.b = 0x00;
-	sf2d_draw_line(0, SCREEN_HEIGHT - 1, (int)((double)BOT_WIDTH * ((double)g_fps/60.0)), SCREEN_HEIGHT - 1, 1, RGBA8(time.r, time.g, time.b, 0xFF));
+	sf2d_draw_line(0, SCREEN_HEIGHT - 1, (int)((double)BOT_WIDTH * ((double)g_fps/60.0)), SCREEN_HEIGHT - 1, 1, RGBA8(0xFF,0,0,0xFF));
 	if(level >= 0) {
 		sf2d_draw_rectangle(0,0,TOP_WIDTH, 32 + 4, RGBA8(0, 0, 0, 0xFF));
 		Point p;
 		p.x = 14;
 		p.y = 4;
-		p.r = 0xFF;
-		p.g = 0xFF;
-		p.b = 0xFF;
+		p.color = RGBA8(0xFF,0xFF,0xFF,0xFF);
 		writeFont(p,"LOADING BGM", true);
 	}
 	sf2d_end_frame();
@@ -383,13 +360,13 @@ int main() {
 			level = doMainMenu();
 		}
 		
+		////DRAW LAGOMETER
+		doLagometer(level);
+		
 		if(level >= 0) {
 			playLevelBGM(level);
 			g_playing = true;
 		}
-		
-		////DRAW LAGOMETER
-		doLagometer(level);
 		
 		////FLUSH AND CALC LAGOMETER
 		sf2d_swapbuffers();

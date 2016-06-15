@@ -75,7 +75,7 @@ void drawTriangle(Point p0, Point p1, Point p2) {
 			if(ContourX[y][1] < 0) ContourX[y][1] = 0;
 			if(ContourX[y][0] >= SCREEN_WIDTH) ContourX[y][0] = SCREEN_WIDTH - 1;
 			if(ContourX[y][1] >= SCREEN_WIDTH) ContourX[y][1] = SCREEN_WIDTH - 1;
-			sf2d_draw_line(ContourX[y][0], inverseY, ContourX[y][1], inverseY, 1, RGBA8(p0.r, p0.g, p0.b, 0xFF));
+			sf2d_draw_line(ContourX[y][0], inverseY, ContourX[y][1], inverseY, 1, p0.color);
 		}
 	}
 }

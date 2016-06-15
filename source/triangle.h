@@ -21,9 +21,7 @@ typedef struct {
 typedef struct
 {
   long x, y;
-  char r;
-  char g;
-  char b;
+  u32 color;
 } Point;
 
 long ContourX[SCREEN_HEIGHT][2];

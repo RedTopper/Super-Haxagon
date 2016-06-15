@@ -1,11 +1,11 @@
 #include "levels.h"
 
 int g_patterns[NUM_PATTERNS][3][MAX_ELEMENTS_PER_PATTERN] =
-  {{{200,200,230,230,260,260},
+  {{{0	,0	,30	,30	,60	,60},
 	{1	,4	,2	,5	,3	,6	},
 	{15	,15	,15	,15	,15	,15	}}, //3 on each side, spiral like
 
-   {{200,200,230,230,260,260},
+   {{0	,0	,30	,30	,60	,60},
 	{1	,4	,2	,5	,3	,6	},
 	{15	,15	,15	,15	,15	,15	}}}; //3 on each side, spiral like
 

@@ -55,6 +55,7 @@ void scanLine(int x1, int y1, int x2, int y2) {
 	}
 }
 
+//@depricated
 void setPixel(sf2d_texture* fb, Point p) {
 	if(sf2d_get_current_screen() == GFX_TOP) {
 		if(p.x < 0 || p.y < 0 || p.x >= TOP_WIDTH || p.y >= SCREEN_HEIGHT) {
@@ -68,13 +69,7 @@ void setPixel(sf2d_texture* fb, Point p) {
 	sf2d_set_pixel(fb, p.x, SCREEN_HEIGHT - 1 - p.y, RGBA8(p.r, p.g, p.b, 0xFF));
 }
 
-void drawTriangle(sf2d_texture* fb, Point p0, Point p1, Point p2)
-{
-	Point trianglePoint;
-	trianglePoint.r = p0.r;
-	trianglePoint.g = p0.g;
-	trianglePoint.b = p0.b;
-	
+void drawTriangle(Point p0, Point p1, Point p2) {
 	int y;
 
 	for (y = 0; y < SCREEN_HEIGHT; y++) {
@@ -86,16 +81,10 @@ void drawTriangle(sf2d_texture* fb, Point p0, Point p1, Point p2)
 	scanLine(p1.x, p1.y, p2.x, p2.y);
 	scanLine(p2.x, p2.y, p0.x, p0.y);
 	
-	for (trianglePoint.y = 0; trianglePoint.y < SCREEN_HEIGHT; trianglePoint.y++) {
-		if (ContourX[trianglePoint.y][1] >= ContourX[trianglePoint.y][0]) {
-			trianglePoint.x = ContourX[trianglePoint.y][0];
-			int len = 1 + ContourX[trianglePoint.y][1] - ContourX[trianglePoint.y][0];
-
-			// Can draw a horizontal line instead of individual pixels here
-			while (len-- > 0) {
-				trianglePoint.x++;
-				setPixel(fb, trianglePoint);
-			}
+	for (int y = 0; y < SCREEN_HEIGHT; y++) {
+		if (ContourX[y][1] >= ContourX[y][0]) {
+			int inverseY = SCREEN_HEIGHT - 1 - y;
+			sf2d_draw_line(ContourX[y][0], inverseY, ContourX[y][1], inverseY, 1, RGBA8(p0.r, p0.g, p0.b, 0xFF));
 		}
 	}
 }

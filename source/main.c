@@ -37,9 +37,6 @@ int g_levelLast;
 double g_fps; //Used to calculate the lagometer.
 bool g_playing;
 
-sf2d_texture* g_top;
-sf2d_texture* g_bot;
-
 void init() {
 	////DYNAMIC VARS
 	g_transition = 0;
@@ -48,13 +45,6 @@ void init() {
 	g_levelLast = 0;
 	g_fps = 0.0;
 	g_playing = false;
-	
-	sf2d_texfmt format = TEXFMT_RGBA8;
-	sf2d_place place = SF2D_PLACE_RAM;
-	g_top = sf2d_create_texture(TOP_WIDTH, SCREEN_HEIGHT, format, place);
-	sf2d_texture_tile32(g_top);
-	g_bot = sf2d_create_texture(BOT_WIDTH, 1, format, place); //Just for lagometer.
-	sf2d_texture_tile32(g_bot);
 }
 
 void initLevels() {
@@ -136,7 +126,7 @@ void drawMainHexagon(Point center, Point fg, Point bg, double radians) {
 				edges[i].y = (int)(len * sin(radians + (double)i * TAU/6.0) + center.y);
 			}
 			if(i > 0) {
-				drawTriangle(g_top, center, edges[i-1], (i==6 ? edges[0] : edges[i]));
+				drawTriangle(center, edges[i-1], (i==6 ? edges[0] : edges[i]));
 			}
 		}	
 	}
@@ -157,7 +147,7 @@ void drawBackground(Point center, Point bg, double len, double radians) {
 			if(i % 2 == 0) {
 				continue;
 			}
-			drawTriangle(g_top, center, edges[i-1], (i==6 ? edges[0] : edges[i]));
+			drawTriangle(center, edges[i-1], (i==6 ? edges[0] : edges[i]));
 		}
 	}
 }
@@ -185,7 +175,7 @@ void drawHumanCursor(Point center, Point fg, double cursor, double radians) {
 		humanTriangle[i].x = (int)(len * cos(position) + center.x);
 		humanTriangle[i].y = (int)(len * sin(position) + center.y);
 	}
-	drawTriangle(g_top, humanTriangle[0], humanTriangle[1], humanTriangle[2]);
+	drawTriangle(humanTriangle[0], humanTriangle[1], humanTriangle[2]);
 }
 
 int doMainMenu() {
@@ -240,8 +230,6 @@ int doMainMenu() {
 	
 	////RENDER TOP SCREEN
 	sf2d_start_frame(GFX_TOP, GFX_LEFT);
-	////NOT THE RIGHT WAY TO DO THIS!!!!! HELP, I HAVE NO IDEA IF THIS COULD RUIN ANYTHING!!!!!
-	memset(g_top->data, 0, g_top->pow2_w * g_top->pow2_h * 4);
 	
 	Point center;
 	center.x = TOP_WIDTH/2;
@@ -250,8 +238,7 @@ int doMainMenu() {
 	drawBackground(center, bg2, TOP_WIDTH / 1.5, radians); //1.5 is used so the renderer doesn't go overboard. FIXME: magic number.
 	drawMainHexagon(center, fg, bg1, radians);
 	drawHumanCursor(center, fg, TAU/4.0, 0); //Draw cursor fixed quarter circle, no movement.
-	
-	sf2d_draw_texture(g_top, 0, 0);
+
 	Point p;
 	p.x = 4;
 	p.y = 4;
@@ -341,8 +328,6 @@ bool doPlayGame() {
 	
 	////RENDER TOP SCREEN
 	sf2d_start_frame(GFX_TOP, GFX_LEFT);
-	////NOT THE RIGHT WAY TO DO THIS!!!!! HELP, I HAVE NO IDEA IF THIS COULD RUIN ANYTHING!!!!!
-	memset(g_top->data, 0, g_top->pow2_w * g_top->pow2_h * 4);
 	
 	Point center;
 	center.x = TOP_WIDTH/2;
@@ -351,8 +336,6 @@ bool doPlayGame() {
 	drawBackground(center, bg2, TOP_WIDTH / 1.5, g_levelData[g_level].radians);
 	drawMainHexagon(center, fg, bg1, g_levelData[g_level].radians);
 	drawHumanCursor(center, fg, g_levelData[g_level].cursor, g_levelData[g_level].radians); //Draw cursor fixed quarter circle, no movement.
-	
-	sf2d_draw_texture(g_top, 0, 0);
 	
 	////ROTATE
 	g_levelData[g_level].radians = (g_levelData[g_level].radians + g_levelData[g_level].rotStep);
@@ -363,23 +346,23 @@ bool doPlayGame() {
 	return true;
 }
 
-void doLagometer() {
+void doLagometer(int level) {
 	sf2d_start_frame(GFX_BOTTOM, GFX_LEFT);
 	Point time;
-	time.r = 0x00;
-	time.g = 0x00;
-	time.b = 0x00;
-	time.y = SCREEN_HEIGHT - 1;
-	for(time.x = 0; time.x < BOT_WIDTH; time.x++) {
-		setPixel(g_bot, time);
-	}
 	time.r = 0xFF;
 	time.g = 0x00;
 	time.b = 0x00;
-	for(time.x = 0; time.x < (int)((double)BOT_WIDTH * ((double)g_fps/60.0)); time.x++) {
-		setPixel(g_bot, time);
+	sf2d_draw_line(0, SCREEN_HEIGHT - 1, (int)((double)BOT_WIDTH * ((double)g_fps/60.0)), SCREEN_HEIGHT - 1, 1, RGBA8(time.r, time.g, time.b, 0xFF));
+	if(level >= 0) {
+		sf2d_draw_rectangle(0,0,TOP_WIDTH, 32 + 4, RGBA8(0, 0, 0, 0xFF));
+		Point p;
+		p.x = 14;
+		p.y = 4;
+		p.r = 0xFF;
+		p.g = 0xFF;
+		p.b = 0xFF;
+		writeFont(p,"LOADING BGM", true);
 	}
-	sf2d_draw_texture(g_bot, 0, SCREEN_HEIGHT - 1);
 	sf2d_end_frame();
 }
 
@@ -420,7 +403,7 @@ int main() {
 		}
 		
 		////DRAW LAGOMETER
-		doLagometer();
+		doLagometer(level);
 		
 		////FLUSH AND CALC LAGOMETER
 		sf2d_swapbuffers();
@@ -429,8 +412,6 @@ int main() {
 	freeFonts();
 	audioUnload();
 	ndspExit();
-	sf2d_free_texture(g_top);
-	sf2d_free_texture(g_bot);
 	sf2d_fini();
 
 	romfsExit();

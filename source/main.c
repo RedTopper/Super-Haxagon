@@ -79,20 +79,6 @@ void initLevels() {
 	levelColor[5][FG].b = 0xFF;		levelColor[5][BG1].b = 0x00;		levelColor[5][BG2].b = 0x00;
 }
 
-void fillBuffer(sf2d_texture* fb, Point p) {
-	int width = 0;
-	if(sf2d_get_current_screen() == GFX_TOP) {
-		width = TOP_WIDTH;
-	} else {
-		width = BOT_WIDTH;
-	}
-	for(p.x = 0; p.x < width; p.x++) {
-		for(p.y = 0; p.y < SCREEN_HEIGHT; p.y++) {
-			setPixel(fb, p);
-		}
-	}
-}
-
 Point tweenColor(Point original, Point new, int frame) {
 	Point returnPoint;
 	returnPoint.r = (char)((double)(new.r - original.r) * ((double)frame / (double)FRAMES_PER_ONE_SIDE_ROTATION) + (double)original.r);

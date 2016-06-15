@@ -2,6 +2,7 @@
 
 #include <3ds.h>
 #include <sf2d.h>
+#include <limits.h>
 
 #define SCREEN_HEIGHT 240
 #define TOP_WIDTH  400

@@ -9,6 +9,7 @@
 #include "levels.h"
 #include "sound.h"
 
+#define ABS(x) ((x >= 0) ? x : -x)
 #define TAU 6.28318530718
 #define FG 0
 #define BG1 1
@@ -27,9 +28,17 @@ const double HUMAN_HEIGHT = 5.0;
 const double HUMAN_PADDING = 5.0;
 
 //Hexagon Constants
-const int FRAMES_PER_ONE_SIDE_ROTATION = 16;
+const int FRAMES_PER_ONE_SIDE_ROTATION = 12;
+
+//Overflow so you don't get glitchy lines between hexagons.
+const double OVERFLOW_OFFSET = TAU/600.0;
+
+//Screen (calculated with a physical calculator)
+int TOP_SCREEN_DIAG_CENTER = 257;
 
 ////DYNAMIC VARS. g_ means global btw.
+int g_renderedWalls;
+int g_score;
 int g_transition; //0 = no transition // 1 = forwards // -1 = backwards
 int g_transitionFrame;
 int g_level;
@@ -39,6 +48,8 @@ bool g_playing;
 
 void init() {
 	////DYNAMIC VARS
+	g_renderedWalls = 0;
+	g_score = 0;
 	g_transition = 0;
 	g_transitionFrame = 0;
 	g_level = 0;
@@ -84,6 +95,25 @@ u32 tweenColor(u32 original, u32 new, int frame) {
 	int green = (double)((int)RGBA8_GET_G(new) - (int)RGBA8_GET_G(original)) * ((double)frame / (double)FRAMES_PER_ONE_SIDE_ROTATION) + (double)RGBA8_GET_G(original);
 	int blue = (double)((int)RGBA8_GET_B(new) - (int)RGBA8_GET_B(original)) * ((double)frame / (double)FRAMES_PER_ONE_SIDE_ROTATION) + (double)RGBA8_GET_B(original);
 	return RGBA8(red, green, blue, 0xFF);
+}
+
+void drawWall(Point center, Point fg, int distanceFromCenter, int length, int side, double radians) {
+	if(distanceFromCenter + length < FULL_LEN) return; //too close
+	if(sqrt(pow((double)distanceFromCenter * cos(TAU/8.0),2) + pow((double)distanceFromCenter * sin(TAU/8.0),2)) > TOP_SCREEN_DIAG_CENTER) return; //too far
+	if(distanceFromCenter < FULL_LEN - 2/*To make sure it draws correctly*/) {
+		distanceFromCenter = FULL_LEN - 2; //Should never be 0!!!
+	}
+	Point edges[4];
+	edges[0].color = fg.color;
+	for(int i = 0; i < 4; i++) {
+		int addLength = (i == 1 || i == 2 ? length : 0);
+		double leftOrRightSide = (i == 0 || i == 1 ? side/*left*/ : side + 1/*right*/);
+		double offset = (i == 0 || i == 1 ? -OVERFLOW_OFFSET/*left*/ : OVERFLOW_OFFSET/*right*/);
+		edges[i].x = (int)(((double)(distanceFromCenter + addLength) * cos(radians + leftOrRightSide * TAU/6.0 + offset) + (double)(center.x)));
+		edges[i].y = (int)(((double)(distanceFromCenter + addLength) * sin(radians + leftOrRightSide * TAU/6.0 + offset) + (double)(center.y)));
+	}
+	g_renderedWalls++;
+	drawPoly(edges, 4);
 }
 
 void drawMainHexagon(Point center, Point fg, Point bg, double radians) {
@@ -229,47 +259,47 @@ int doMainMenu() {
 	
 	Point time;
 	time.x = 4;
-	time.y = SCREEN_HEIGHT - 16;
+	time.y = SCREEN_HEIGHT - 18;
 	time.color = RGBA8(0xFF,0xFF,0xFF,0xFF);
 	
 	sf2d_draw_rectangle(0,0,TOP_WIDTH, sub2.y + 16 + 2, RGBA8(0, 0, 0, 0xFF));
-	sf2d_draw_rectangle(0,time.y - 4,13/*chars*/ * 16 + 4, 16 + 8, RGBA8(0, 0, 0, 0xFF));
+	sf2d_draw_rectangle(0,time.y - 4,11/*chars*/ * 16, 16 + 8, RGBA8(0, 0, 0, 0xFF));
 	switch(g_level) {
 		case 0:
 			writeFont(p,"HEXAGON", true);
 			writeFont(sub,"DIFFICULTY: HARD", false);
 			writeFont(sub2,"MODE: NORMAL", false);
-			writeFont(time,"BEST TIME: 000:00", false);
+			writeFont(time,"SCORE: 000000", false);
 			break;
 		case 1:
 			writeFont(p,"HEXAGONER", true);
 			writeFont(sub,"DIFFICULTY: HARDER", false);
 			writeFont(sub2,"MODE: NORMAL", false);
-			writeFont(time,"BEST TIME: 000:00", false);
+			writeFont(time,"SCORE: 000000", false);
 			break;
 		case 2:
 			writeFont(p,"HEXAGONEST", true);
 			writeFont(sub,"DIFFICULTY: HARDEST", false);
 			writeFont(sub2,"MODE: NORMAL", false);
-			writeFont(time,"BEST TIME: 000:00", false);
+			writeFont(time,"SCORE: 000000", false);
 			break;
 		case 3:
 			writeFont(p,"HEXAGON", true);
 			writeFont(sub,"DIFFICULTY: HARDESTER", false);
 			writeFont(sub2,"MODE: HYPER", false);
-			writeFont(time,"BEST TIME: 000:00", false);
+			writeFont(time,"SCORE: 000000", false);
 			break;
 		case 4:
 			writeFont(p,"HEXAGONER", true);
 			writeFont(sub,"DIFFICULTY: HARDESTEST", false);
 			writeFont(sub2,"MODE: HYPER", false);
-			writeFont(time,"BEST TIME: 000:00", false);
+			writeFont(time,"SCORE: 000000", false);
 			break;
 		case 5:
 			writeFont(p,"HEXAGONEST", true);
 			writeFont(sub,"DIFFICULTY: HARDESTESTEST", false);
 			writeFont(sub2,"MODE: HYPER", false);
-			writeFont(time,"BEST TIME: 000:00", false);
+			writeFont(time,"SCORE: 000000", false);
 			break;
 	}
 	sf2d_end_frame();
@@ -277,9 +307,13 @@ int doMainMenu() {
 }
 
 bool doPlayGame() {
+	double radians = g_levelData[g_level].radians;
 	u32 kDown = hidKeysDown();
 	u32 kHold = hidKeysHeld();
-	if(kDown & KEY_B) return false;
+	if(kDown & KEY_B) {
+		g_score = 0;
+		return false;
+	}
 	if(kHold & KEY_L) g_levelData[g_level].cursor = (g_levelData[g_level].cursor + g_levelData[g_level].rotStepHuman);
 	if(kHold & KEY_R) g_levelData[g_level].cursor = (g_levelData[g_level].cursor - g_levelData[g_level].rotStepHuman);
 	if(g_levelData[g_level].cursor > TAU) g_levelData[g_level].cursor-=TAU;
@@ -298,16 +332,21 @@ bool doPlayGame() {
 	center.x = TOP_WIDTH/2;
 	center.y = SCREEN_HEIGHT/2;
 	
-	drawBackground(center, bg2, TOP_WIDTH / 1.5, g_levelData[g_level].radians);
-	drawMainHexagon(center, fg, bg1, g_levelData[g_level].radians);
-	drawHumanCursor(center, fg, g_levelData[g_level].cursor, g_levelData[g_level].radians); //Draw cursor fixed quarter circle, no movement.
+	drawBackground(center, bg2, TOP_WIDTH / 1.5, radians);
+	for(int i = 0; i < 12; i++) {
+		drawWall(center, fg, 40 + (i > 4 ? i*14 : 0), 20  + (i <= 4 ? i*14 : 0), i%6, radians);
+	}
+	drawMainHexagon(center, fg, bg1, radians);
+	drawHumanCursor(center, fg, g_levelData[g_level].cursor, radians); //Draw cursor fixed quarter circle, no movement.
 	
 	////ROTATE
-	g_levelData[g_level].radians = (g_levelData[g_level].radians + g_levelData[g_level].rotStep);
-	if(g_levelData[g_level].radians > TAU) {
-		g_levelData[g_level].radians -= TAU;
+	radians = (radians + g_levelData[g_level].rotStep);
+	if(radians > TAU) {
+		radians -= TAU;
 	}
+	g_levelData[g_level].radians = radians;
 	sf2d_end_frame();
+	g_score++;
 	return true;
 }
 
@@ -321,6 +360,20 @@ void doLagometer(int level) {
 		p.y = 4;
 		p.color = RGBA8(0xFF,0xFF,0xFF,0xFF);
 		writeFont(p,"LOADING BGM", true);
+	}
+	if(g_playing) {
+		Point p;
+		p.color = RGBA8(0xFF,0xFF,0xFF,0xFF);
+		sf2d_draw_rectangle(0,0,TOP_WIDTH, 22, RGBA8(0, 0, 0, 0xFF));
+		p.x = 4;
+		p.y = 4;
+		writeFont(p,"POINT", false);
+		p.x = 230;
+		p.y = 4;
+		char buffer[6+1];
+		sprintf(buffer,"%06d", g_score);
+		writeFont(p,buffer, false);
+		sf2d_draw_rectangle(0,23,TOP_WIDTH, 4, RGBA8(0, 0xFF, 0, 0xFF));
 	}
 	sf2d_end_frame();
 }
@@ -346,27 +399,27 @@ int main() {
 		int level = -1;
 		hidScanInput();
 		u32 kDown = hidKeysDown();
-		if(kDown & KEY_START) break; // break in order to return to hbmenu
+		if(kDown & KEY_START) break;
 		
 		if(g_playing) {
-			////PLAY GAME
-			g_playing = doPlayGame();
+			g_playing = doPlayGame(); ////PLAY GAME
 		} else {
-			////DRAW MENU
-			level = doMainMenu();
+			level = doMainMenu(); ////DRAW MENU
 		}
 		
 		////DRAW LAGOMETER
 		doLagometer(level);
 		
+		////FLUSH AND CALC LAGOMETER
+		sf2d_swapbuffers();
+		g_fps = sf2d_get_fps();
+		
+		////START GAME IF NEEDED
 		if(level >= 0) {
 			playLevelBGM(level);
 			g_playing = true;
 		}
-		
-		////FLUSH AND CALC LAGOMETER
-		sf2d_swapbuffers();
-		g_fps = sf2d_get_fps();
+		g_renderedWalls = 0;
 	}
 	freeFonts();
 	audioUnload();

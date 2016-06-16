@@ -55,19 +55,22 @@ void scanLine(int x1, int y1, int x2, int y2) {
 	}
 }
 
-void drawTriangle(Point p0, Point p1, Point p2) {
+void drawPoly(Point points[], int length) {
 	int SCREEN_WIDTH = (sf2d_get_current_screen() == GFX_TOP ? TOP_WIDTH : BOT_WIDTH);
-	int y;
 
-	for (y = 0; y < SCREEN_HEIGHT; y++) {
-		ContourX[y][0] = INT_MAX; // min X
-		ContourX[y][1] = INT_MIN; // max X
+	for (int y = 0; y < SCREEN_HEIGHT; y++) {
+		ContourX[y][0] = INT_MAX; // We will min this, so set it max.
+		ContourX[y][1] = INT_MIN; // We will max this, so set it min.
+	}
+	
+	for(int num = 0; num < length; num++) {
+		if(num == length - 1) {
+			scanLine(points[num].x, points[num].y, points[0].x, points[0].y);
+		} else {
+			scanLine(points[num].x, points[num].y, points[num + 1].x, points[num + 1].y);
+		}
 	}
 
-	scanLine(p0.x, p0.y, p1.x, p1.y);
-	scanLine(p1.x, p1.y, p2.x, p2.y);
-	scanLine(p2.x, p2.y, p0.x, p0.y);
-	
 	for (int y = 0; y < SCREEN_HEIGHT; y++) {
 		if (ContourX[y][1] >= ContourX[y][0]) {
 			int inverseY = SCREEN_HEIGHT - 1 - y;
@@ -75,7 +78,7 @@ void drawTriangle(Point p0, Point p1, Point p2) {
 			if(ContourX[y][1] < 0) ContourX[y][1] = 0;
 			if(ContourX[y][0] >= SCREEN_WIDTH) ContourX[y][0] = SCREEN_WIDTH - 1;
 			if(ContourX[y][1] >= SCREEN_WIDTH) ContourX[y][1] = SCREEN_WIDTH - 1;
-			sf2d_draw_line(ContourX[y][0], inverseY, ContourX[y][1], inverseY, 1, p0.color);
+			sf2d_draw_line(ContourX[y][0], inverseY, ContourX[y][1], inverseY, 1, points[0].color);
 		}
 	}
 }

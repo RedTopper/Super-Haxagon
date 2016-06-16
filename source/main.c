@@ -93,41 +93,37 @@ void drawMainHexagon(Point center, Point fg, Point bg, double radians) {
 		double len = 0.0;
 		if(concentricHexes == 0) {
 			//outer color painted after
-			center.color = fg.color;
+			edges[0].color = fg.color;
 			len = FULL_LEN;
 		}
 		if(concentricHexes == 1) {
 			//inner color painted over it all.
-			center.color = bg.color;
+			edges[0].color = bg.color;
 			len = FULL_LEN - BORDER_LEN;
 		}
-		for(int i = 0; i <= 6; i++) {
-			if(i < 6) {
-				edges[i].x = (int)(len * cos(radians + (double)i * TAU/6.0) + center.x);
-				edges[i].y = (int)(len * sin(radians + (double)i * TAU/6.0) + center.y);
-			}
-			if(i > 0) {
-				drawTriangle(center, edges[i-1], (i==6 ? edges[0] : edges[i]));
-			}
-		}	
+		for(int i = 0; i < 6; i++) {
+			edges[i].x = (int)(len * cos(radians + (double)i * TAU/6.0) + center.x);
+			edges[i].y = (int)(len * sin(radians + (double)i * TAU/6.0) + center.y);
+		}
+		drawPoly(edges, 6);
 	}
 }
 
 void drawBackground(Point center, Point bg, double len, double radians) {
 	//This draws the main background.
 	Point edges[6];
-	center.color = bg.color;
-	for(int i = 0; i <= 6; i++) {
-		if(i < 6) {
-			edges[i].x = (int)(len * cos(radians + (double)i * TAU/6.0) + center.x);
-			edges[i].y = (int)(len * sin(radians + (double)i * TAU/6.0) + center.y);
-		}
-		if(i > 0) {
-			if(i % 2 == 0) {
-				continue;
-			}
-			drawTriangle(center, edges[i-1], (i==6 ? edges[0] : edges[i]));
-		}
+	for(int i = 0; i < 6; i++) {
+		edges[i].x = (int)(len * cos(radians + (double)i * TAU/6.0) + center.x);
+		edges[i].y = (int)(len * sin(radians + (double)i * TAU/6.0) + center.y);
+	}
+	
+	Point triangle[3];
+	triangle[0] = center;
+	triangle[0].color = bg.color;
+	for(int i = 0; i < 6; i = i + 2) {
+		triangle[1] = edges[i];
+		triangle[2] = edges[i + 1];
+		drawPoly(triangle, 3);
 	}
 }
 
@@ -152,7 +148,7 @@ void drawHumanCursor(Point center, Point fg, double cursor, double radians) {
 		humanTriangle[i].x = (int)(len * cos(position) + center.x);
 		humanTriangle[i].y = (int)(len * sin(position) + center.y);
 	}
-	drawTriangle(humanTriangle[0], humanTriangle[1], humanTriangle[2]);
+	drawPoly(humanTriangle, 3);
 }
 
 int doMainMenu() {

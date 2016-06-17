@@ -95,6 +95,7 @@ public class Main {
 		System.out.println("c: create pattern");
 		System.out.println("d: destroy pattern");
 		System.out.println("e: edit pattern");
+		System.out.println("r: run code");
 		System.out.println("v: view pattern");
 		System.out.println("q: Save and quit");
 		boolean running = true;
@@ -147,6 +148,14 @@ public class Main {
 				} catch (IndexOutOfBoundsException e) {
 					System.out.println("Psych, that's the wrong number! (Patterns are 0 indexed)");
 				}
+				break;
+			case "r":
+				ArrayList<Pattern> patternsToAdd =ArbitraryCode.runCode();
+				for(Pattern pattern : patternsToAdd) {
+					contents.add(pattern);
+					System.out.println(pattern);
+				}
+				System.out.println("All " + patternsToAdd.size() +  " patterns coded were added to the file.");
 				break;
 			case "q":
 				running = false;

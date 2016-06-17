@@ -1,7 +1,6 @@
 #include "levels.h"
 
-Pattern g_patterns[TOTAL_PATTERNS];
-
+/*
 Pattern writePattern(int numberOfWalls, int* distanceFromCenter, int* side, int* length) {
 	Pattern p;
 	p.numberOfWalls = numberOfWalls;
@@ -17,6 +16,51 @@ Pattern writePattern(int numberOfWalls, int* distanceFromCenter, int* side, int*
 	p.side = s;
 	p.length = l;
 	return p;
+}
+*/
+
+bool readPatterns() {
+	FILE *file = fopen("romfs:/patterns.leve", "rb");
+	if(file == NULL){
+		return false;
+	}
+	
+	char sig[4];
+	fread(sig, 1, 4, file);
+	fseek(file, 4, SEEK_CUR);
+	
+	if(sig[0] != 'L' && sig[1] != 'E' && sig[2] != 'V' && sig[3] != 'E'){
+		fclose(file);
+		return false;
+	}
+	
+	if(!(fread(&(g_patterns.numberOfPatterns), 4, 1, file))) {
+		fclose(file);
+		return false;
+	} fseek(file, 4, SEEK_CUR);
+	
+	
+	g_patterns.patterns = malloc(sizeof(Pattern *) * g_patterns.numberOfPatterns);
+	if(!g_patterns.patterns) {
+		fclose(file);
+		return false;
+	}
+	
+	for(int pattern = 0; pattern < g_patterns.numberOfPatterns; pattern++) {
+		if(!(fread(&(g_patterns.patterns[pattern]->numberOfWalls), 4, 1, file))) {
+			fclose(file);
+			return false;
+		} fseek(file, 4, SEEK_CUR);
+		
+		g_patterns.patterns[pattern]->walls = malloc(sizeof(Wall *) * g_patterns.patterns[pattern]->numberOfWalls);
+		for(int wall = 0; wall < g_patterns.patterns[pattern]->numberOfWalls; wall++) {
+			if(!(fread(&(g_patterns.patterns[pattern]->walls[wall]), 6, 1, file))) {
+				fclose(file);
+				return false;
+			} fseek(file, 6, SEEK_CUR);
+		}
+	}
+	return true; //I hate C arrays.
 }
 	
 void initLevelData() { 

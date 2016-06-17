@@ -373,7 +373,7 @@ void doLagometer(int level, bool success) {
 		sf2d_draw_rectangle(0,23,TOP_WIDTH, 4, RGBA8(0, 0xFF, 0, 0xFF));
 	}
 	char buffer[6+1];
-	sprintf(buffer,"%06d", g_patterns.patterns[0]->numberOfWalls);
+	sprintf(buffer,"%06d", g_patterns.patterns[0]->walls[0]->length);
 	Point p;
 	p.color = RGBA8(0xFF,0xFF,0xFF,0xFF);
 	sf2d_draw_rectangle(0,80,TOP_WIDTH, 22, RGBA8((success ? 0 : 0xFF), (success ? 0xFF : 0), 0, 0xFF));

@@ -27,7 +27,6 @@ bool readPatterns() {
 	
 	char sig[4];
 	fread(sig, 1, 4, file);
-	fseek(file, 4, SEEK_CUR);
 	
 	if(sig[0] != 'L' && sig[1] != 'E' && sig[2] != 'V' && sig[3] != 'E'){
 		fclose(file);
@@ -37,27 +36,40 @@ bool readPatterns() {
 	if(!(fread(&(g_patterns.numberOfPatterns), 4, 1, file))) {
 		fclose(file);
 		return false;
-	} fseek(file, 4, SEEK_CUR);
+	}
 	
 	
-	g_patterns.patterns = malloc(sizeof(Pattern *) * g_patterns.numberOfPatterns);
+	g_patterns.patterns = malloc(sizeof(Pattern *) * g_patterns.numberOfPatterns); //Alloc pointers to patterns
 	if(!g_patterns.patterns) {
 		fclose(file);
 		return false;
 	}
 	
 	for(int pattern = 0; pattern < g_patterns.numberOfPatterns; pattern++) {
+		g_patterns.patterns[pattern] = malloc(sizeof(Pattern)); //Alloc atual pattern.
+		if(!g_patterns.patterns[pattern]) {
+			fclose(file);
+			return false;
+		}
+		
 		if(!(fread(&(g_patterns.patterns[pattern]->numberOfWalls), 4, 1, file))) {
 			fclose(file);
 			return false;
-		} fseek(file, 4, SEEK_CUR);
+		}
 		
-		g_patterns.patterns[pattern]->walls = malloc(sizeof(Wall *) * g_patterns.patterns[pattern]->numberOfWalls);
+		g_patterns.patterns[pattern]->walls = malloc(sizeof(Wall *) * g_patterns.patterns[pattern]->numberOfWalls); //Alloc pointers to wall
+		if(!g_patterns.patterns[pattern]->walls) {
+			fclose(file);
+			return false;
+		}
+	
 		for(int wall = 0; wall < g_patterns.patterns[pattern]->numberOfWalls; wall++) {
+			g_patterns.patterns[pattern]->walls[wall] = malloc(sizeof(Wall)); //Alloc atual wall
+			
 			if(!(fread(&(g_patterns.patterns[pattern]->walls[wall]), 6, 1, file))) {
 				fclose(file);
 				return false;
-			} fseek(file, 6, SEEK_CUR);
+			}
 		}
 	}
 	return true; //I hate C arrays.

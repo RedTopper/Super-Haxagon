@@ -347,7 +347,7 @@ bool doPlayGame() {
 	return true;
 }
 
-void doLagometer(int level) {
+void doLagometer(int level, bool success) {
 	sf2d_start_frame(GFX_BOTTOM, GFX_LEFT);
 	sf2d_draw_line(0, SCREEN_HEIGHT - 1, (int)((double)BOT_WIDTH * ((double)g_fps/60.0)), SCREEN_HEIGHT - 1, 1, RGBA8(0xFF,0,0,0xFF));
 	if(level >= 0) {
@@ -372,6 +372,14 @@ void doLagometer(int level) {
 		writeFont(p,buffer, false);
 		sf2d_draw_rectangle(0,23,TOP_WIDTH, 4, RGBA8(0, 0xFF, 0, 0xFF));
 	}
+	char buffer[6+1];
+	sprintf(buffer,"%06d", g_patterns.patterns[0]->numberOfWalls);
+	Point p;
+	p.color = RGBA8(0xFF,0xFF,0xFF,0xFF);
+	sf2d_draw_rectangle(0,80,TOP_WIDTH, 22, RGBA8((success ? 0 : 0xFF), (success ? 0xFF : 0), 0, 0xFF));
+	p.x = 4;
+	p.y = 84;
+	writeFont(p,buffer, false);
 	sf2d_end_frame();
 }
 
@@ -386,6 +394,7 @@ int main() {
 	
 	//program init
 	init();
+	bool success = readPatterns();
 	initLevels();
 	initLevelData();
 	initSounds();
@@ -405,7 +414,7 @@ int main() {
 		}
 		
 		////DRAW LAGOMETER
-		doLagometer(level);
+		doLagometer(level, success);
 		
 		////FLUSH AND CALC LAGOMETER
 		sf2d_swapbuffers();

@@ -25,7 +25,7 @@ typedef struct {
 
 typedef struct {
 	int numberOfWalls;
-	Wall* walls;
+	Wall** walls;
 } Pattern;
 
 typedef struct {
@@ -36,6 +36,6 @@ typedef struct {
 LevelData g_levelData[TOTAL_LEVELS];
 Patterns g_patterns;
 
-Pattern writePattern(int numberOfWalls, int* distanceFromCenter, int* side, int* length);
+bool readPatterns();
 void initLevelData();
 void resetLevelData();

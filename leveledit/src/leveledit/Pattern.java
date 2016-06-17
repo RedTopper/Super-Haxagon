@@ -49,4 +49,20 @@ public class Pattern {
 	public int size() {
 		return walls.size();
 	}
+	
+	public String toString() {
+		String side =  				 "Sides:    {";
+		String distanceFromCenter =  "Distance: {";
+		String length =				 "Length:   {";
+		for(Wall wall : walls) {
+			side = side + padRight(wall.side,4) + ",";
+			distanceFromCenter = distanceFromCenter + padRight(wall.distanceFromCenter,4) + ",";
+			length = length + padRight(wall.length,4) + ",";
+		}
+		return side.substring(0, side.length() - 2) + "}\n" + distanceFromCenter.substring(0, side.length() - 2) + "}\n" + length.substring(0, side.length() - 2) + "}";
+	}
+	
+	public static String padRight(int number, int len) {
+	     return String.format("%1$-" + len + "d", number);  
+	}
 }

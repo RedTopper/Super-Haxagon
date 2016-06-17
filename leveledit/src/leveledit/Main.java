@@ -99,6 +99,7 @@ public class Main {
 		System.out.println("q: Save and quit");
 		boolean running = true;
 		while(running) {
+			System.out.println("----------------MAIN MENU----------------");
 			System.out.println("There are " + contents.size() + " patterns in this file.");
 			System.out.print("> ");
 			String in = reader.next().trim().toLowerCase();
@@ -109,11 +110,12 @@ public class Main {
 				boolean run = true;
 				while(run) {
 					try {
-						System.out.print("Side wall will appear on        >");
+						System.out.println(p);
+						System.out.print("Side    >");
 						short side = reader.nextShort();
-						System.out.print("Distance from center of hexagon >");
+						System.out.print("Distance>");
 						short distanceFromCenter = reader.nextShort();
-						System.out.print("Total length of the wall        >");
+						System.out.print("Length  >");
 						short length = reader.nextShort();
 						p.addWall(new Wall(side, distanceFromCenter, length));
 					} catch (InputMismatchException e) {
@@ -127,6 +129,27 @@ public class Main {
 						run = false;
 					}
 				}
+				break;
+			case "d":
+			case "v":
+				System.out.println("Witch one?:");
+				System.out.print(">");
+				try {
+					int index = reader.nextInt();
+					if(in.equals("d")) {
+						System.out.println(contents.remove(index));
+					} else {
+						System.out.println(contents.get(index));
+					}
+				} catch (InputMismatchException e) {
+					reader.next(); //consume
+					System.out.println("Psych, that's the wrong number!");
+				} catch (IndexOutOfBoundsException e) {
+					System.out.println("Psych, that's the wrong number! (Patterns are 0 indexed)");
+				}
+				break;
+			case "q":
+				running = false;
 				break;
 			}
 			System.out.println("Autosaving work...");

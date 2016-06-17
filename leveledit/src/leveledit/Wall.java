@@ -7,7 +7,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
 public class Wall {
-	short distanceFromCenter, side, length;
+	public short distanceFromCenter, side, length;
 	public Wall(short side, short distanceFromCenter, short length) {
 		this.side = side;
 		this.distanceFromCenter = distanceFromCenter;

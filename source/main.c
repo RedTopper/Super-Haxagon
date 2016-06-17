@@ -333,9 +333,6 @@ bool doPlayGame() {
 	center.y = SCREEN_HEIGHT/2;
 	
 	drawBackground(center, bg2, TOP_WIDTH / 1.5, radians);
-	for(int i = 0; i < 12; i++) {
-		drawWall(center, fg, 40 + (i > 4 ? i*14 : 0), 20  + (i <= 4 ? i*14 : 0), i%6, radians);
-	}
 	drawMainHexagon(center, fg, bg1, radians);
 	drawHumanCursor(center, fg, g_levelData[g_level].cursor, radians); //Draw cursor fixed quarter circle, no movement.
 	

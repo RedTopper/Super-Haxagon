@@ -1,6 +1,9 @@
 #pragma once
 
 #include <3ds.h>
+#include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 #define TAU 6.28318530718
 #define TOTAL_LEVELS 6
@@ -15,13 +18,23 @@ typedef struct {
 } LevelData;
 
 typedef struct {
+	short side;
+	short distanceFromCenter;
+	short length;
+} Wall;
+
+typedef struct {
 	int numberOfWalls;
-	int* distanceFromCenter;
-	int* side;
-	int* length;
+	Wall* walls;
 } Pattern;
 
+typedef struct {
+	int numberOfPatterns;
+	Pattern** patterns; 
+} Patterns;
+
 LevelData g_levelData[TOTAL_LEVELS];
+Patterns g_patterns;
 
 Pattern writePattern(int numberOfWalls, int* distanceFromCenter, int* side, int* length);
 void initLevelData();

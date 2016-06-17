@@ -1,5 +1,6 @@
 package leveledit;
 
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -13,15 +14,18 @@ public class Wall {
 		this.length = length;
 	}
 	
-	public Wall(byte[] read) throws UnsupportedOperationException {
-		if(read.length != 3 * 2) {
-			throw new UnsupportedOperationException("Byte array is not 3 \"2 byte\" shorts");
+	public Wall(FileInputStream file) throws UnsupportedOperationException {
+		try {
+			byte[] data = new byte[3 * 2];
+			file.read(data, 0, 3 * 2);
+			ByteBuffer bb = ByteBuffer.wrap(data);
+			bb.order(ByteOrder.LITTLE_ENDIAN);
+			side = bb.getShort();
+			distanceFromCenter = bb.getShort();
+			length = bb.getShort();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
-		ByteBuffer bb = ByteBuffer.wrap(read);
-		bb.order(ByteOrder.LITTLE_ENDIAN);
-		side = bb.getShort();
-		distanceFromCenter = bb.getShort();
-		length = bb.getShort();
 	}
 	
 	public void writeObject(FileOutputStream file) {

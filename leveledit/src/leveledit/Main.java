@@ -1,14 +1,56 @@
 package leveledit;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.util.ArrayList;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class Main {
-	private static void readContents(FileInputStream file) {
+	public static void main(String[] args) {
+		Scanner reader = new Scanner(System.in);
+		String path = "";
+		FileInputStream file = null;
+		System.out.println("Welcome to the level editor 2000");
+		do {
+			System.out.println("Please type a file you would like to open or create:");
+			System.out.print("> ");
+		} while ((file = openFile((path = reader.next()))) == null);
 		
+		ArrayList<Pattern> contents = readContents(file);
+		
+		mainmenu(contents, reader, path);
+		
+		try {
+			file.close();
+			reader.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private static ArrayList<Pattern> readContents(FileInputStream file) {
+		ArrayList<Pattern> patterns = new ArrayList<>();
+		try {
+			
+			byte[] len = new byte[4];
+			if(file.read(len, 0, 4) == -1) return patterns;
+			for(byte b : len) {
+				System.out.print((int)b + ",");
+			}
+			ByteBuffer bb = ByteBuffer.wrap(len);
+			bb.order(ByteOrder.LITTLE_ENDIAN);
+			int length = bb.getInt();
+			for(int i = 0; i < length; i++) {
+				patterns.add(new Pattern(file));
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return patterns;
 	}
 	
 	static void createFile(String path) {
@@ -22,7 +64,7 @@ public class Main {
 		}
 	}
 	
-	static FileInputStream createOrOpenFile(String path) {
+	static FileInputStream openFile(String path) {
 		FileInputStream file = null;
 	    try {
 			file = new FileInputStream(path);
@@ -36,29 +78,75 @@ public class Main {
 			createFile(path);
 			try {
 				file = new FileInputStream(path);
-			} catch (FileNotFoundException e1) {
-				System.out.println("That file is protected. Check the error!");
+				byte[] array = new byte[4];
+				file.read(array, 0, 4);
+			    if(!('L' == array[0] && 'E' == array[1] && 'V' == array[2] && 'E' == array[3])) {
+			    	System.out.println("That isn't the right file type!");
+			    	return null;
+			    }
+			} catch (IOException e1) {
+				System.out.println("That file is protected!");
 			}
 		}
 	    return file;
 	}
-	
-	public static void main(String[] args) {
-		Scanner reader = new Scanner(System.in);
-		FileInputStream file = null;
-		System.out.println("Welcome to the level editor 2000");
-		String openmessage = "Please type a file you would like to open or create:";
-		System.out.println(openmessage);
-		while ((file = createOrOpenFile(reader.next())) == null) {
-			System.out.println(openmessage);
-		}
-		readContents(file);
-		
-		try {
-			file.close();
-			reader.close();
-		} catch (IOException e) {
-			e.printStackTrace();
+
+	private static void mainmenu(ArrayList<Pattern> contents, Scanner reader, String path) {
+		System.out.println("c: create pattern");
+		System.out.println("d: destroy pattern");
+		System.out.println("e: edit pattern");
+		System.out.println("v: view pattern");
+		System.out.println("q: Save and quit");
+		boolean running = true;
+		while(running) {
+			System.out.println("There are " + contents.size() + " patterns in this file.");
+			System.out.print("> ");
+			String in = reader.next().trim().toLowerCase();
+			switch(in) {
+			case "c":
+				System.out.println("Type anything else but a number to exit.");
+				Pattern p = new Pattern();
+				boolean run = true;
+				while(run) {
+					try {
+						System.out.print("Side wall will appear on        >");
+						short side = reader.nextShort();
+						System.out.print("Distance from center of hexagon >");
+						short distanceFromCenter = reader.nextShort();
+						System.out.print("Total length of the wall        >");
+						short length = reader.nextShort();
+						p.addWall(new Wall(side, distanceFromCenter, length));
+					} catch (InputMismatchException e) {
+						reader.next(); //consume
+						if(p.size() > 0) {
+							System.out.println("Pattern saved.");
+							contents.add(p);
+						} else {
+							System.out.println("Pattern discarded because there were no full entries.");
+						}
+						run = false;
+					}
+				}
+				break;
+			}
+			System.out.println("Autosaving work...");
+			try {
+				FileOutputStream out = new FileOutputStream(path);
+				byte[] data = "LEVE".getBytes();
+				out.write(data);
+				
+				ByteBuffer bb = ByteBuffer.allocate(4);
+				bb.order(ByteOrder.LITTLE_ENDIAN);
+				bb.putInt(contents.size());
+				out.write(bb.array());
+				
+				for(Pattern p : contents) {
+					p.writeObject(out);
+				}
+				out.close();
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
 		}
 	}
 }

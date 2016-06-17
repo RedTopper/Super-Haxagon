@@ -1,5 +1,6 @@
 package leveledit;
 
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -9,23 +10,24 @@ import java.util.ArrayList;
 public class Pattern {
 	ArrayList<Wall> walls = new ArrayList<>();
 	
-	public void addWall(Wall wall) {
-		walls.add(wall);
+	public Pattern() {
 	}
 	
-	public Pattern(byte[] read) throws UnsupportedOperationException {
-		ByteBuffer bb = ByteBuffer.wrap(read);
-		bb.order(ByteOrder.LITTLE_ENDIAN);
-		int length = bb.getInt();
-		for(int i = 0; i < length; i++) {
-			byte wall[] = new byte[3 * 2];
-			for(int b = 0; b < 3 * 2; b++) {
-				wall[b] = read[b + i * (3 * 2)];
+	public Pattern(FileInputStream file) throws UnsupportedOperationException {
+		try {
+			byte[] len = new byte[4];
+			file.read(len, 0, 4);
+			ByteBuffer bb = ByteBuffer.wrap(len);
+			bb.order(ByteOrder.LITTLE_ENDIAN);
+			int length = bb.getInt();
+			for(int i = 0; i < length; i++) {
+				walls.add(new Wall(file));
 			}
-			walls.add(new Wall(wall));
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
-	
+
 	public void writeObject(FileOutputStream file) {
 		ByteBuffer bb = ByteBuffer.allocate(4);
 		bb.order(ByteOrder.LITTLE_ENDIAN);
@@ -38,5 +40,13 @@ public class Pattern {
 		for(Wall wall : walls) {
 			wall.writeObject(file);
 		}
+	}
+	
+	public void addWall(Wall wall) {
+		walls.add(wall);
+	}
+	
+	public int size() {
+		return walls.size();
 	}
 }

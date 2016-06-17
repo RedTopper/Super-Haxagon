@@ -1,14 +1,24 @@
 #include "levels.h"
 
-int g_patterns[NUM_PATTERNS][3][MAX_ELEMENTS_PER_PATTERN] =
-  {{{0	,0	,30	,30	,60	,60	},
-	{1	,4	,2	,5	,3	,6	},
-	{15	,15	,15	,15	,15	,15	}}, //3 on each side, spiral like
+Pattern g_patterns[TOTAL_PATTERNS];
 
-   {{0	,0	,30	,30	,60	,60	},
-	{1	,4	,2	,5	,3	,6	},
-	{15	,15	,15	,15	,15	,15	}}}; //3 on each side, spiral like
-
+Pattern writePattern(int numberOfWalls, int* distanceFromCenter, int* side, int* length) {
+	Pattern p;
+	p.numberOfWalls = numberOfWalls;
+	int dfc[numberOfWalls];
+	int s[numberOfWalls];
+	int l[numberOfWalls];
+	for(int i = 0; i < numberOfWalls; i++) {
+		dfc[i] = distanceFromCenter[i];
+		s[i] = side[i];
+		l[i] = length[i];
+	} 
+	p.distanceFromCenter = dfc;
+	p.side = s;
+	p.length = l;
+	return p;
+}
+	
 void initLevelData() { 
 	//level 0
 	g_levelData[0].rotStep = TAU/240.0;
@@ -39,6 +49,18 @@ void initLevelData() {
 	g_levelData[5].rotStep = 0;
 	g_levelData[5].rotStepHuman = TAU/60.0;
 	g_levelData[5].pulseSpeed = 10.0;
+	
+	int distanceFromCenter[100], side[100], length[100];
+	
+	distanceFromCenter = 	(int[6]){0	,0	,30	,30	,60	,60	};
+	side = 				(int[6]){1	,4	,2	,5	,3	,6	};
+	length = 				(int[6]){15	,15	,15	,15	,15	,15	};
+	g_patterns[0] = writePattern(6, distanceFromCenter, side, length);
+	
+	distanceFromCenter = 	(int[6]){0	,0	,30	,30	,60	,60	};
+	side = 					(int[6]){1	,4	,2	,5	,3	,6	};
+	length = 				(int[6]){15	,15	,15	,15	,15	,15	};
+	g_patterns[1] = writePattern(6, distanceFromCenter, side, length);
 }
 
 void resetLevelData() {

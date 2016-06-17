@@ -28,16 +28,20 @@ include $(DEVKITARM)/3ds_rules
 #     - <libctru folder>/default_icon.png
 #---------------------------------------------------------------------------------
 TARGET			:=	$(notdir $(CURDIR))
-RESOURCE		:=  resource
+RESOURCE		:=  $(TOPDIR)/resource
 BUILD			:=	build
 SOURCES			:=	source
 DATA			:=	data
 INCLUDES		:=	include
-APP_TITLE		:=	"Super Haxagon"
-APP_DESCRIPTION	:=	"A Super Hexagon Clone"
-APP_AUTHOR		:=	"RedHat"
-#smdh exported manually using bannertool
 ROMFS			:=  romfs
+
+APP_TITLE		:=	Super Haxagon
+APP_DESCRIPTION	:=	A Super Hexagon Clone
+APP_AUTHOR		:=	RedHat
+APP_ICON		:=	$(RESOURCE)/icon.png
+
+# Gets the operating system.
+UNAME := $(shell uname)
 
 #---------------------------------------------------------------------------------
 # options for code generation
@@ -137,24 +141,13 @@ endif
 all: $(BUILD)
 
 $(BUILD):
-#This stuff probably should not be done here... but it works so whatever.
-	@$(RESOURCE)/bannertool.exe makesmdh -s $(APP_TITLE) -l $(APP_DESCRIPTION) -p $(APP_AUTHOR) -i $(RESOURCE)/icon.png  -o $(OUTPUT).smdh
-	@$(RESOURCE)/bannertool.exe makebanner -i $(RESOURCE)/banner.png -a $(RESOURCE)/audio.wav -o $(RESOURCE)/banner.bin
-	
 	@[ -d $@ ] || mkdir -p $@
 	@$(MAKE) --no-print-directory -C $(BUILD) -f $(CURDIR)/Makefile
-	
-#Also this...
-	@$(RESOURCE)/makerom.exe -f cia -o $(TARGET).cia -DAPP_ENCRYPTED=false -rsf $(RESOURCE)/cia.rsf -target t -exefslogo -elf $(TARGET).elf -icon $(OUTPUT).smdh -banner $(RESOURCE)/banner.bin
-
-#This is used to deploy to OwnCloud. A QR code is then used to upload to FBI.
-	@cp $(TARGET).cia G:\ownCloud\3DS\$(TARGET).cia
-	
 
 #---------------------------------------------------------------------------------
 clean:
 	@echo clean ...
-	@rm -fr $(BUILD) $(TARGET).3dsx $(OUTPUT).smdh $(TARGET).elf $(TARGET).cia
+	@rm -fr $(BUILD) $(TARGET).3dsx $(OUTPUT).smdh $(TARGET).elf $(TARGET).cia icon.bin banner.bin
 
 
 #---------------------------------------------------------------------------------
@@ -166,12 +159,49 @@ DEPENDS	:=	$(OFILES:.o=.d)
 # main targets
 #---------------------------------------------------------------------------------
 ifeq ($(strip $(NO_SMDH)),)
-$(OUTPUT).3dsx	:	$(OUTPUT).elf $(OUTPUT).smdh
+$(OUTPUT).3dsx	:	$(OUTPUT).elf $(OUTPUT).smdh icon.bin banner.bin $(OUTPUT).cia
 else
-$(OUTPUT).3dsx	:	$(OUTPUT).elf
+$(OUTPUT).3dsx	:	$(OUTPUT).elf icon.bin banner.bin $(OUTPUT).cia
 endif
 
+
+#---------------------------------------------------------------------------------
+icon.bin	:
+#---------------------------------------------------------------------------------
+ifeq ($(UNAME), Linux)
+	@$(RESOURCE)/tools/linux/bannertool makesmdh -s $(APP_TITLE) -l $(APP_DESCRIPTION) -p $(APP_AUTHOR) -i $(APP_ICON) -o $(TOPDIR)/icon.bin
+else ifeq ($(UNAME), Darwin)
+	@$(RESOURCE)/tools/mac/bannertool makesmdh -s $(APP_TITLE) -l $(APP_DESCRIPTION) -p $(APP_AUTHOR) -i $(APP_ICON) -o $(TOPDIR)/icon.bin
+else
+	@$(RESOURCE)/tools/windows/bannertool.exe makesmdh -s $(APP_TITLE) -l $(APP_DESCRIPTION) -p $(APP_AUTHOR) -i $(APP_ICON) -o $(TOPDIR)/icon.bin
+endif
+
+#---------------------------------------------------------------------------------
+banner.bin	:
+#---------------------------------------------------------------------------------
+ifeq ($(UNAME), Linux)
+	@$(RESOURCE)/tools/linux/bannertool makebanner -i $(RESOURCE)/banner.png -a $(RESOURCE)/audio.wav -o $(TOPDIR)/banner.bin
+else ifeq ($(UNAME), Darwin)
+	@$(RESOURCE)/tools/mac/bannertool makebanner -i $(RESOURCE)/banner.png -a $(RESOURCE)/audio.wav -o $(TOPDIR)/banner.bin
+else
+	@$(RESOURCE)/tools/windows/bannertool.exe makebanner -i $(RESOURCE)/banner.png -a $(RESOURCE)/audio.wav -o $(TOPDIR)/banner.bin
+endif
+
+#---------------------------------------------------------------------------------
 $(OUTPUT).elf	:	$(OFILES)
+#---------------------------------------------------------------------------------
+
+#---------------------------------------------------------------------------------
+$(OUTPUT).cia	:	$(OUTPUT).elf icon.bin banner.bin
+#---------------------------------------------------------------------------------
+ifeq ($(UNAME), Linux)
+	@$(RESOURCE)/tools/linux/makerom -DAPP_ROMFS=$(TOPDIR)/$(ROMFS) -f cia -o $(OUTPUT).cia -DAPP_ENCRYPTED=false -rsf $(RESOURCE)/cia.rsf -target t -exefslogo -elf $(OUTPUT).elf -icon $(TOPDIR)/icon.bin -banner $(TOPDIR)/banner.bin
+else ifeq ($(UNAME), Darwin)
+	@$(RESOURCE)/tools/mac/makerom -DAPP_ROMFS=$(TOPDIR)/$(ROMFS) -f cia -o $(OUTPUT).cia -DAPP_ENCRYPTED=false -rsf $(RESOURCE)/cia.rsf -target t -exefslogo -elf $(OUTPUT).elf -icon $(TOPDIR)/icon.bin -banner $(TOPDIR)/banner.bin
+else
+	@$(RESOURCE)/tools/windows/makerom.exe -DAPP_ROMFS=$(TOPDIR)/$(ROMFS) -f cia -o $(OUTPUT).cia -DAPP_ENCRYPTED=false -rsf $(RESOURCE)/cia.rsf -target t -exefslogo -elf $(OUTPUT).elf -icon $(TOPDIR)/icon.bin -banner $(TOPDIR)/banner.bin
+endif
+	@echo Created CIA \"$(OUTPUT).cia\"
 
 #---------------------------------------------------------------------------------
 # you need a rule like this for each extension you use as binary data

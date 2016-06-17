@@ -46,7 +46,7 @@ bool readPatterns() {
 	}
 	
 	for(int pattern = 0; pattern < g_patterns.numberOfPatterns; pattern++) {
-		g_patterns.patterns[pattern] = malloc(sizeof(Pattern)); //Alloc atual pattern.
+		g_patterns.patterns[pattern] = malloc(sizeof(Pattern)); //Alloc actual pattern.
 		if(!g_patterns.patterns[pattern]) {
 			fclose(file);
 			return false;
@@ -64,9 +64,21 @@ bool readPatterns() {
 		}
 	
 		for(int wall = 0; wall < g_patterns.patterns[pattern]->numberOfWalls; wall++) {
-			g_patterns.patterns[pattern]->walls[wall] = malloc(sizeof(Wall)); //Alloc atual wall
+			g_patterns.patterns[pattern]->walls[wall] = malloc(sizeof(Wall)); //Alloc actual wall
+			if(!g_patterns.patterns[pattern]->walls[wall]) {
+				fclose(file);
+				return false;
+			}
 			
-			if(!(fread(&(g_patterns.patterns[pattern]->walls[wall]), 6, 1, file))) {
+			if(!(fread(&(g_patterns.patterns[pattern]->walls[wall]->side), 2, 1, file))) {
+				fclose(file);
+				return false;
+			}
+			if(!(fread(&(g_patterns.patterns[pattern]->walls[wall]->distanceFromCenter), 2, 1, file))) {
+				fclose(file);
+				return false;
+			}
+			if(!(fread(&(g_patterns.patterns[pattern]->walls[wall]->length), 2, 1, file))) {
 				fclose(file);
 				return false;
 			}

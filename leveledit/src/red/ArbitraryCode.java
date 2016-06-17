@@ -23,7 +23,7 @@ public class ArbitraryCode {
 		p = new Pattern();
 		for(int i = 0; i < 12; i++) {
 			if(i != 0 && i != 9) {
-				p.addWall(new Wall(i%6, (i > 5 ? 40 : 140), 16));
+				p.addWall(new Wall(i%6, (i <= 5 ? 40 : 140), 16));
 			}
 		}
 		patterns.add(p);

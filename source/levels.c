@@ -49,18 +49,6 @@ void initLevelData() {
 	g_levelData[5].rotStep = 0;
 	g_levelData[5].rotStepHuman = TAU/60.0;
 	g_levelData[5].pulseSpeed = 10.0;
-	
-	int distanceFromCenter[100], side[100], length[100];
-	
-	distanceFromCenter = 	(int[6]){0	,0	,30	,30	,60	,60	};
-	side = 				(int[6]){1	,4	,2	,5	,3	,6	};
-	length = 				(int[6]){15	,15	,15	,15	,15	,15	};
-	g_patterns[0] = writePattern(6, distanceFromCenter, side, length);
-	
-	distanceFromCenter = 	(int[6]){0	,0	,30	,30	,60	,60	};
-	side = 					(int[6]){1	,4	,2	,5	,3	,6	};
-	length = 				(int[6]){15	,15	,15	,15	,15	,15	};
-	g_patterns[1] = writePattern(6, distanceFromCenter, side, length);
 }
 
 void resetLevelData() {

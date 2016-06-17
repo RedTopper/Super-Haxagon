@@ -14,6 +14,18 @@ public class Wall {
 		this.length = length;
 	}
 	
+	/**
+	 * WARNING This will auto cast an int to a short!
+	 * @param side
+	 * @param distanceFromCenter
+	 * @param length
+	 */
+	public Wall(int side, int distanceFromCenter, int length) {
+		this.side = (short)side;
+		this.distanceFromCenter = (short)distanceFromCenter;
+		this.length = (short)length;
+	}
+	
 	public Wall(FileInputStream file) throws UnsupportedOperationException {
 		try {
 			byte[] data = new byte[3 * 2];

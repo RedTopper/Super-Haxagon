@@ -29,6 +29,7 @@ typedef struct {
 } Pattern;
 
 typedef struct {
+	bool loaded;
 	int numberOfPatterns;
 	Pattern** patterns; 
 } Patterns;
@@ -37,5 +38,6 @@ LevelData g_levelData[TOTAL_LEVELS];
 Patterns g_patterns;
 
 bool readPatterns();
+void freePatterns()
 void initLevelData();
 void resetLevelData();

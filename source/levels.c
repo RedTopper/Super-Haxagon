@@ -20,6 +20,7 @@ Pattern writePattern(int numberOfWalls, int* distanceFromCenter, int* side, int*
 */
 
 bool readPatterns() {
+	g_patterns.loaded = false;
 	FILE *file = fopen("romfs:/patterns.leve", "rb");
 	if(file == NULL){
 		return false;
@@ -84,7 +85,31 @@ bool readPatterns() {
 			}
 		}
 	}
+	g_patterns.loaded = true;
 	return true; //I hate C arrays.
+}
+
+void freePatterns() {
+	if(!g_patterns.patterns) {
+		return; //Check to see if pattern pointers are alloced
+	}
+	for(int pattern = 0; pattern < g_patterns.numberOfPatterns; pattern++) {
+		if(!g_patterns.patterns[pattern]) {
+			continue; //Check to see if an individual pattern is alloced
+		}
+		if(!g_patterns.patterns[pattern].walls) {
+			continue; //Check to see if wall pointers of the pattern are alloced
+		}
+		for(int wall = 0; wall < g_patterns.patterns[pattern]->numberOfWalls; wall++) {
+			if(!g_patterns.patterns[pattern]->walls[wall]) {
+				continue; //Check to see if an individual wall of the individual pattern is alloced
+			}
+			free(g_patterns.patterns[pattern]->walls[wall]) //Free wall of pattern
+		}
+		free(g_patterns.patterns[pattern]->walls) //Free wall pointers of pattern
+		free(g_patterns.patterns[pattern]) //Free pattern
+	}
+	free(g_patterns.patterns) //Free pattern pointers
 }
 	
 void initLevelData() { 

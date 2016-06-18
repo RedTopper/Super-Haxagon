@@ -38,6 +38,6 @@ LevelData g_levelData[TOTAL_LEVELS];
 Patterns g_patterns;
 
 bool readPatterns();
-void freePatterns()
+void freePatterns();
 void initLevelData();
 void resetLevelData();

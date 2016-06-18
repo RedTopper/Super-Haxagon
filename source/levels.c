@@ -97,19 +97,19 @@ void freePatterns() {
 		if(!g_patterns.patterns[pattern]) {
 			continue; //Check to see if an individual pattern is alloced
 		}
-		if(!g_patterns.patterns[pattern].walls) {
+		if(!g_patterns.patterns[pattern]->walls) {
 			continue; //Check to see if wall pointers of the pattern are alloced
 		}
 		for(int wall = 0; wall < g_patterns.patterns[pattern]->numberOfWalls; wall++) {
 			if(!g_patterns.patterns[pattern]->walls[wall]) {
 				continue; //Check to see if an individual wall of the individual pattern is alloced
 			}
-			free(g_patterns.patterns[pattern]->walls[wall]) //Free wall of pattern
+			free(g_patterns.patterns[pattern]->walls[wall]); //Free wall of pattern
 		}
-		free(g_patterns.patterns[pattern]->walls) //Free wall pointers of pattern
-		free(g_patterns.patterns[pattern]) //Free pattern
+		free(g_patterns.patterns[pattern]->walls); //Free wall pointers of pattern
+		free(g_patterns.patterns[pattern]); //Free pattern
 	}
-	free(g_patterns.patterns) //Free pattern pointers
+	free(g_patterns.patterns); //Free pattern pointers
 }
 	
 void initLevelData() { 

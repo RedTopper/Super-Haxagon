@@ -143,6 +143,7 @@ int drawWall(Point center, Point fg, int distanceFromCenter, int length, int sid
 }
 
 void drawWalls(Point center, Point fg, double radians) {
+	bool shouldShift = false;
 	for(int pattern = 0; pattern < TOTAL_PATTERNS_AT_ONE_TIME; pattern++) {
 		int lastReturn = 0;
 		if(!g_patternTracker[pattern].running) {
@@ -163,17 +164,20 @@ void drawWalls(Point center, Point fg, double radians) {
 				break;
 			}
 		}
-		if(lastReturn == -1 && pattern == 0) { //We are going to shift the other patterns forward.
-			for(int shift = 1; shift < TOTAL_PATTERNS_AT_ONE_TIME; shift++) {
-				g_patternTracker[shift - 1].patternNumber = g_patternTracker[shift].patternNumber;
-				g_patternTracker[shift - 1].sideOffset = g_patternTracker[shift].sideOffset;
-				g_patternTracker[shift - 1].distanceFromCenter = g_patternTracker[shift].distanceFromCenter;
-				g_patternTracker[shift - 1].distanceFromCenterLastWall = g_patternTracker[shift].distanceFromCenterLastWall;
-				g_patternTracker[shift - 1].running = g_patternTracker[shift].running;
-			}
-			g_patternTracker[TOTAL_PATTERNS_AT_ONE_TIME - 1].running = false;
+		if(lastReturn == -1 && pattern == 0) {
+			shouldShift = true;
 		}
 		g_patternTracker[pattern].distanceFromCenter -= g_levelData[g_level].wallSpeed;
+	}
+	if(shouldShift) { //We are going to shift the other patterns forward.
+		for(int shift = 1; shift < TOTAL_PATTERNS_AT_ONE_TIME; shift++) {
+			g_patternTracker[shift - 1].patternNumber = g_patternTracker[shift].patternNumber;
+			g_patternTracker[shift - 1].sideOffset = g_patternTracker[shift].sideOffset;
+			g_patternTracker[shift - 1].distanceFromCenter = g_patternTracker[shift].distanceFromCenter;
+			g_patternTracker[shift - 1].distanceFromCenterLastWall = g_patternTracker[shift].distanceFromCenterLastWall;
+			g_patternTracker[shift - 1].running = g_patternTracker[shift].running;
+		}
+		g_patternTracker[TOTAL_PATTERNS_AT_ONE_TIME - 1].running = false;
 	}
 }
 

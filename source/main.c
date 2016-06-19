@@ -9,13 +9,22 @@
 #include "levels.h"
 #include "sound.h"
 
-#define ABS(x) ((x >= 0) ? x : -x)
 #define TAU 6.28318530718
 #define FG 0
 #define BG1 1
 #define BG2 2
+#define TOTAL_PATTERNS_AT_ONE_TIME 2
 
-Point levelColor[TOTAL_LEVELS][3];
+typedef struct {
+	bool running;
+	int distanceFromCenter;
+	int distanceFromCenterLastWall; //This should also include the leingth of said wall.
+	int patternNumber;
+	int sideOffset;
+} PatternTracker;
+
+Point g_levelColor[TOTAL_LEVELS][3];
+PatternTracker g_patternTracker[TOTAL_PATTERNS_AT_ONE_TIME];
 
 ////STATIC VARS
 //Inside hexagon style
@@ -29,12 +38,13 @@ const double HUMAN_PADDING = 5.0;
 
 //Hexagon Constants
 const int FRAMES_PER_ONE_SIDE_ROTATION = 12;
+const int MIN_DISTANCE_FROM_LAST_PATTERN = 40;
 
 //Overflow so you don't get glitchy lines between hexagons.
 const double OVERFLOW_OFFSET = TAU/600.0;
 
 //Screen (calculated with a physical calculator)
-int TOP_SCREEN_DIAG_CENTER = 257;
+const int TOP_SCREEN_DIAG_CENTER = 257;
 
 ////DYNAMIC VARS. g_ means global btw.
 int g_renderedWalls;
@@ -56,38 +66,43 @@ void init() {
 	g_levelLast = 0;
 	g_fps = 0.0;
 	g_playing = false;
+	for(int i = 0; i < TOTAL_PATTERNS_AT_ONE_TIME; i++) {
+		g_patternTracker[i].running = false;
+		g_patternTracker[i].distanceFromCenter = 0;
+		g_patternTracker[i].sideOffset = 0;
+	}
 }
 
 void initLevels() {
 	//level 0
-	levelColor[0][FG].color = RGBA8(0xF6, 0x48, 0x13, 0xFF);
-	levelColor[0][BG1].color = RGBA8(0x50, 0x0C, 0x01, 0xFF);
-	levelColor[0][BG2].color = RGBA8(0x61, 0x12, 0x01, 0xFF);
+	g_levelColor[0][FG].color = RGBA8(0xF6, 0x48, 0x13, 0xFF);
+	g_levelColor[0][BG1].color = RGBA8(0x50, 0x0C, 0x01, 0xFF);
+	g_levelColor[0][BG2].color = RGBA8(0x61, 0x12, 0x01, 0xFF);
 	
 	//level 1
-	levelColor[1][FG].color = RGBA8(0x33, 0xE5, 0x66, 0xFF);
-	levelColor[1][BG1].color = RGBA8(0x08, 0x24, 0x10, 0xFF);
-	levelColor[1][BG2].color = RGBA8(0x00, 0x00, 0x00, 0xFF);
+	g_levelColor[1][FG].color = RGBA8(0x33, 0xE5, 0x66, 0xFF);
+	g_levelColor[1][BG1].color = RGBA8(0x08, 0x24, 0x10, 0xFF);
+	g_levelColor[1][BG2].color = RGBA8(0x00, 0x00, 0x00, 0xFF);
 	
 	//level 2
-	levelColor[2][FG].color = RGBA8(0x6D, 0x10, 0xF9, 0xFF);
-	levelColor[2][BG1].color = RGBA8(0x22, 0x00, 0x63, 0xFF);
-	levelColor[2][BG2].color = RGBA8(0x18, 0x00, 0x52, 0xFF);
+	g_levelColor[2][FG].color = RGBA8(0x6D, 0x10, 0xF9, 0xFF);
+	g_levelColor[2][BG1].color = RGBA8(0x22, 0x00, 0x63, 0xFF);
+	g_levelColor[2][BG2].color = RGBA8(0x18, 0x00, 0x52, 0xFF);
 	
 	//level 3
-	levelColor[3][FG].color = RGBA8(0xF1, 0xF9, 0x10, 0xFF);
-	levelColor[3][BG1].color = RGBA8(0x63, 0x60, 0x01, 0xFF);
-	levelColor[3][BG2].color = RGBA8(0x52, 0x4C, 0x00, 0xFF);
+	g_levelColor[3][FG].color = RGBA8(0xF1, 0xF9, 0x10, 0xFF);
+	g_levelColor[3][BG1].color = RGBA8(0x63, 0x60, 0x01, 0xFF);
+	g_levelColor[3][BG2].color = RGBA8(0x52, 0x4C, 0x00, 0xFF);
 	
 	//level 4
-	levelColor[4][FG].color = RGBA8(0xF4, 0x05, 0x86, 0xFF);
-	levelColor[4][BG1].color = RGBA8(0xFF, 0xFF, 0xFF, 0xFF);
-	levelColor[4][BG2].color = RGBA8(0xFD, 0xD7, 0xEC, 0xFF);
+	g_levelColor[4][FG].color = RGBA8(0xF4, 0x05, 0x86, 0xFF);
+	g_levelColor[4][BG1].color = RGBA8(0xFF, 0xFF, 0xFF, 0xFF);
+	g_levelColor[4][BG2].color = RGBA8(0xFD, 0xD7, 0xEC, 0xFF);
 	
 	//level 5
-	levelColor[5][FG].color = RGBA8(0xFF, 0xFF, 0xFF, 0xFF);
-	levelColor[5][BG1].color = RGBA8(0x00, 0x00, 0x00, 0xFF);
-	levelColor[5][BG2].color = RGBA8(0x00, 0x00, 0x00, 0xFF);
+	g_levelColor[5][FG].color = RGBA8(0xFF, 0xFF, 0xFF, 0xFF);
+	g_levelColor[5][BG1].color = RGBA8(0x00, 0x00, 0x00, 0xFF);
+	g_levelColor[5][BG2].color = RGBA8(0x00, 0x00, 0x00, 0xFF);
 }
 
 u32 tweenColor(u32 original, u32 new, int frame) {
@@ -97,10 +112,11 @@ u32 tweenColor(u32 original, u32 new, int frame) {
 	return RGBA8(red, green, blue, 0xFF);
 }
 
-void drawWall(Point center, Point fg, int distanceFromCenter, int length, int side, double radians) {
-	if(distanceFromCenter + length < FULL_LEN) return; //too close
-	if(sqrt(pow((double)distanceFromCenter * cos(TAU/8.0),2) + pow((double)distanceFromCenter * sin(TAU/8.0),2)) > TOP_SCREEN_DIAG_CENTER) return; //too far
+int drawWall(Point center, Point fg, int distanceFromCenter, int length, int side, double radians) {
+	if(distanceFromCenter + length < FULL_LEN) return -1; //too close
+	if(sqrt(pow((double)distanceFromCenter * cos(TAU/12.0),2) + pow((double)distanceFromCenter * sin(TAU/12.0),2)) > TOP_SCREEN_DIAG_CENTER) return 1; //too far. Might be expensive to calc?
 	if(distanceFromCenter < FULL_LEN - 2/*To make sure it draws correctly*/) {
+		length -= FULL_LEN - 2 - distanceFromCenter;
 		distanceFromCenter = FULL_LEN - 2; //Should never be 0!!!
 	}
 	Point edges[4];
@@ -114,6 +130,42 @@ void drawWall(Point center, Point fg, int distanceFromCenter, int length, int si
 	}
 	g_renderedWalls++;
 	drawPoly(edges, 4);
+	return 0;
+}
+
+void drawWalls(Point center, Point fg, double radians) {
+	for(int pattern = 0; pattern < TOTAL_PATTERNS_AT_ONE_TIME; pattern++) {
+		int lastReturn = 0;
+		if(!g_patternTracker[pattern].running) {
+			g_patternTracker[pattern].patternNumber = rand() % g_patterns.numberOfPatterns; //Who cares about uniformity anyway?
+			g_patternTracker[pattern].sideOffset = rand() % 6;
+			g_patternTracker[pattern].distanceFromCenter = (pattern == 0 ? TOP_SCREEN_DIAG_CENTER : g_patternTracker[pattern - 1].distanceFromCenterLastWall);
+			g_patternTracker[pattern].running = true;
+		}
+		for(int i_wall = 0; i_wall < g_patterns.patterns[g_patternTracker[pattern].patternNumber]->numberOfWalls; i_wall++) {
+			Wall* wall = g_patterns.patterns[g_patternTracker[pattern].patternNumber]->walls[i_wall];
+			lastReturn = drawWall(center, fg, wall->distanceFromCenter + g_patternTracker[pattern].distanceFromCenter, wall->length, wall->side + g_patternTracker[pattern].sideOffset, radians); //draw the actual wall finally.
+			g_patternTracker[pattern].distanceFromCenterLastWall = wall->distanceFromCenter + wall->length + g_patternTracker[pattern].distanceFromCenter;
+			if(lastReturn == 1) {
+				//The next line is the last wall of the last wall of the random pattern.
+				//Because the loop is ending prematurely, we want to still make sure we have the distance of the last wall saved.
+				wall = g_patterns.patterns[g_patternTracker[pattern].patternNumber]->walls[g_patterns.patterns[g_patternTracker[pattern].patternNumber]->numberOfWalls - 1];
+				g_patternTracker[pattern].distanceFromCenterLastWall = wall->distanceFromCenter + wall->length + g_patternTracker[pattern].distanceFromCenter;
+				break;
+			}
+		}
+		if(lastReturn == -1 && pattern == 0) { //We are going to shift the other patterns forward.
+			for(int shift = 1; shift < TOTAL_PATTERNS_AT_ONE_TIME; shift++) {
+				g_patternTracker[shift - 1].patternNumber = g_patternTracker[shift].patternNumber;
+				g_patternTracker[shift - 1].sideOffset = g_patternTracker[shift].sideOffset;
+				g_patternTracker[shift - 1].distanceFromCenter = g_patternTracker[shift].distanceFromCenter;
+				g_patternTracker[shift - 1].distanceFromCenterLastWall = g_patternTracker[shift].distanceFromCenterLastWall;
+				g_patternTracker[shift - 1].running = g_patternTracker[shift].running;
+			}
+			g_patternTracker[TOTAL_PATTERNS_AT_ONE_TIME - 1].running = false;
+		}
+		g_patternTracker[pattern].distanceFromCenter -= g_levelData[g_level].wallSpeed;
+	}
 }
 
 void drawMainHexagon(Point center, Point fg, Point bg, double radians) {
@@ -215,9 +267,9 @@ int doMainMenu() {
 	Point bg1;
 	Point bg2;
 	if(g_transition && g_transitionFrame < FRAMES_PER_ONE_SIDE_ROTATION) {
-		fg.color = tweenColor(levelColor[g_levelLast][FG].color, levelColor[g_level][FG].color, g_transitionFrame);
-		bg1.color = tweenColor(levelColor[g_levelLast][BG1].color, levelColor[g_level][BG1].color, g_transitionFrame);
-		bg2.color = tweenColor(levelColor[g_levelLast][BG2].color, levelColor[g_level][BG2].color, g_transitionFrame);
+		fg.color = tweenColor(g_levelColor[g_levelLast][FG].color, g_levelColor[g_level][FG].color, g_transitionFrame);
+		bg1.color = tweenColor(g_levelColor[g_levelLast][BG1].color, g_levelColor[g_level][BG1].color, g_transitionFrame);
+		bg2.color = tweenColor(g_levelColor[g_levelLast][BG2].color, g_levelColor[g_level][BG2].color, g_transitionFrame);
 		g_transitionFrame++;
 	} else {
 		g_levelLast = g_level;
@@ -225,9 +277,9 @@ int doMainMenu() {
 		g_transition = false;
 	}
 	if(!g_transition) {
-		fg = levelColor[g_level][FG];
-		bg1 = levelColor[g_level][BG1];
-		bg2 = levelColor[g_level][BG2];
+		fg = g_levelColor[g_level][FG];
+		bg1 = g_levelColor[g_level][BG1];
+		bg2 = g_levelColor[g_level][BG2];
 	} 
 	sf2d_set_clear_color(bg1.color);
 	
@@ -319,9 +371,9 @@ bool doPlayGame() {
 	if(g_levelData[g_level].cursor > TAU) g_levelData[g_level].cursor-=TAU;
 	if(g_levelData[g_level].cursor < 0) g_levelData[g_level].cursor+=TAU;
 		
-	Point fg = levelColor[g_level][FG];
-	Point bg1 = levelColor[g_level][BG1];
-	Point bg2 = levelColor[g_level][BG2];
+	Point fg = g_levelColor[g_level][FG];
+	Point bg1 = g_levelColor[g_level][BG1];
+	Point bg2 = g_levelColor[g_level][BG2];
 		
 	sf2d_set_clear_color(bg1.color);
 	
@@ -333,6 +385,7 @@ bool doPlayGame() {
 	center.y = SCREEN_HEIGHT/2;
 	
 	drawBackground(center, bg2, TOP_WIDTH / 1.5, radians);
+	drawWalls(center, fg, radians);
 	drawMainHexagon(center, fg, bg1, radians);
 	drawHumanCursor(center, fg, g_levelData[g_level].cursor, radians); //Draw cursor fixed quarter circle, no movement.
 	
@@ -347,7 +400,7 @@ bool doPlayGame() {
 	return true;
 }
 
-void doLagometer(int level, bool success) {
+void doLagometer(int level) {
 	sf2d_start_frame(GFX_BOTTOM, GFX_LEFT);
 	sf2d_draw_line(0, SCREEN_HEIGHT - 1, (int)((double)BOT_WIDTH * ((double)g_fps/60.0)), SCREEN_HEIGHT - 1, 1, RGBA8(0xFF,0,0,0xFF));
 	if(level >= 0) {
@@ -376,7 +429,7 @@ void doLagometer(int level, bool success) {
 	sprintf(buffer,"%06d", g_patterns.patterns[0]->walls[0]->length);
 	Point p;
 	p.color = RGBA8(0xFF,0xFF,0xFF,0xFF);
-	sf2d_draw_rectangle(0,80,TOP_WIDTH, 22, RGBA8((success ? 0 : 0xFF), (success ? 0xFF : 0), 0, 0xFF));
+	sf2d_draw_rectangle(0,80,TOP_WIDTH, 22, RGBA8((g_patterns.loaded ? 0 : 0xFF), (g_patterns.loaded ? 0xFF : 0), 0, 0xFF));
 	p.x = 4;
 	p.y = 84;
 	writeFont(p,buffer, false);
@@ -394,10 +447,11 @@ int main() {
 	
 	//program init
 	init();
-	bool success = readPatterns();
+	initPatterns();
 	initLevels();
 	initLevelData();
 	initSounds();
+	srand(svcGetSystemTick());
 	
 	audioPlay(&g_hexagon, false);
 	
@@ -414,7 +468,7 @@ int main() {
 		}
 		
 		////DRAW LAGOMETER
-		doLagometer(level, success);
+		doLagometer(level);
 		
 		////FLUSH AND CALC LAGOMETER
 		sf2d_swapbuffers();

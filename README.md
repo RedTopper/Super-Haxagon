@@ -15,6 +15,9 @@ Contributing to the project will help create a better game for everyone! If you 
  * 6 selectable levels
  * Open source AND readable code
  * Sound using ndsp
+ * Level Editor written in Java
+ * Walls actually move to the player
+ * Level patterns dynamically loaded from a .LEVE file.
  * Fonts via [flarn2006/SF2DBmpFont](https://github.com/flarn2006/SF2DBmpFont)
  * Audio from [Open Hexagon](http://vittorioromeo.info/projects.html)
  * Render from [xerpi/sf2dlib](https://github.com/xerpi/sf2dlib)
@@ -22,10 +25,12 @@ Contributing to the project will help create a better game for everyone! If you 
 ### To Improve
 
  * This game uses a software rendering function. This could probably be redone using the GPU but whatever.
- * Need to make levels themselves work.
+ * Collision
+ * Game over screen
 
 ### Screenshots
 
+![Walls](./media/scr_5_MERGED.png "The walls move twoards you!")
 ![Spirallll!](./media/scr_4_MERGED.png "Spiralllll!")
 ![Music](./media/scr_5_MERGED.png "Music!")
 ![Title Screen](./media/scr_3_MERGED.png "One of the many modes")

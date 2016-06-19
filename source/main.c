@@ -129,7 +129,16 @@ int drawWall(Point center, Point fg, int distanceFromCenter, int length, int sid
 		edges[i].y = (int)(((double)(distanceFromCenter + addLength) * sin(radians + leftOrRightSide * TAU/6.0 + offset) + (double)(center.y)));
 	}
 	g_renderedWalls++;
-	drawPoly(edges, 4);
+	Point triangle1[3];
+	triangle1[0] = edges[0];
+	triangle1[1] = edges[1];
+	triangle1[2] = edges[2];
+	Point triangle2[3];
+	triangle2[0] = edges[0];
+	triangle2[1] = edges[2];
+	triangle2[2] = edges[3];
+	drawTriangle(triangle1);
+	drawTriangle(triangle2);
 	return 0;
 }
 
@@ -170,24 +179,28 @@ void drawWalls(Point center, Point fg, double radians) {
 
 void drawMainHexagon(Point center, Point fg, Point bg, double radians) {
 	//This draws the hexagon.
-	Point edges[6];
+	Point triangle[3];
+	triangle[0].x = center.x;
+	triangle[0].y = center.y;
 	for(int concentricHexes = 0; concentricHexes < 2; concentricHexes++) {
 		double len = 0.0;
 		if(concentricHexes == 0) {
 			//outer color painted after
-			edges[0].color = fg.color;
+			triangle[0].color = fg.color;
 			len = FULL_LEN;
 		}
 		if(concentricHexes == 1) {
 			//inner color painted over it all.
-			edges[0].color = bg.color;
+			triangle[0].color = bg.color;
 			len = FULL_LEN - BORDER_LEN;
 		}
-		for(int i = 0; i < 6; i++) {
-			edges[i].x = (int)(len * cos(radians + (double)i * TAU/6.0) + center.x);
-			edges[i].y = (int)(len * sin(radians + (double)i * TAU/6.0) + center.y);
+		for(int i = 0; i < 7; i++) {
+			triangle[(i % 2) + 1].x = (int)(len * cos(radians + (double)i * TAU/6.0) + center.x);
+			triangle[(i % 2) + 1].y = (int)(len * sin(radians + (double)i * TAU/6.0) + center.y);
+			if(i != 0) {
+				drawTriangle(triangle);
+			}
 		}
-		drawPoly(edges, 6);
 	}
 }
 
@@ -205,7 +218,7 @@ void drawBackground(Point center, Point bg, double len, double radians) {
 	for(int i = 0; i < 6; i = i + 2) {
 		triangle[1] = edges[i];
 		triangle[2] = edges[i + 1];
-		drawPoly(triangle, 3);
+		drawTriangle(triangle);
 	}
 }
 
@@ -230,7 +243,7 @@ void drawHumanCursor(Point center, Point fg, double cursor, double radians) {
 		humanTriangle[i].x = (int)(len * cos(position) + center.x);
 		humanTriangle[i].y = (int)(len * sin(position) + center.y);
 	}
-	drawPoly(humanTriangle, 3);
+	drawTriangle(humanTriangle);
 }
 
 int doMainMenu() {

@@ -30,7 +30,7 @@ Contributing to the project will help create a better game for everyone! If you 
 
 ### Screenshots
 
-![Walls](./media/scr_5_MERGED.png "The walls move twoards you!")
+![Walls](./media/scr_6_MERGED.png "The walls move twoards you!")
 ![Spirallll!](./media/scr_4_MERGED.png "Spiralllll!")
 ![Music](./media/scr_5_MERGED.png "Music!")
 ![Title Screen](./media/scr_3_MERGED.png "One of the many modes")

@@ -7,7 +7,6 @@
 
 #define TAU 6.28318530718
 #define TOTAL_LEVELS 6
-#define TOTAL_PATTERNS 2
 
 typedef struct {
 	double radians;
@@ -15,6 +14,7 @@ typedef struct {
 	double rotStep;
 	double rotStepHuman;
 	double pulseSpeed;
+	int wallSpeed;
 } LevelData;
 
 typedef struct {
@@ -37,7 +37,7 @@ typedef struct {
 LevelData g_levelData[TOTAL_LEVELS];
 Patterns g_patterns;
 
-bool readPatterns();
+bool initPatterns();
 void freePatterns();
 void initLevelData();
 void resetLevelData();

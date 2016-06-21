@@ -140,7 +140,7 @@ void initLevelData() {
 
 void resetLevelData() {
 	for(int i = 0; i < TOTAL_LEVELS; i++) {
-		g_levelData[i].cursor = TAU/4.0;
+		g_levelData[i].cursor = TAU/4.0 + g_levelData[i].rotStepHuman/2.0; //So the player never looks between to walls.
 		g_levelData[i].radians = 0;
 	}
 }

@@ -29,6 +29,17 @@ typedef enum {
 	RENDERED,
 } RenderState;
 
+typedef enum {
+	MAIN_MENU,
+	PLAYING,
+	GAME_OVER,
+} GameState;
+
+typedef enum {
+	FULL_RESET,
+	PARTIAL_RESET,
+} ResetType;
+
 typedef struct {
 	bool running;
 	int distanceFromCenter;
@@ -60,26 +71,35 @@ const double OVERFLOW_OFFSET = TAU/900.0; //This is really just some arbituary n
 //Screen (calculated with a physical calculator)
 const int TOP_SCREEN_DIAG_CENTER = 257;
 
+//Game over screen
+const double GAME_OVER_ACCEL_RATE = 1.1;
+const double GAME_OVER_ROT_SPEED = TAU/240.0;
+const int FRAMES_PER_GAME_OVER = 80;
+
 ////DYNAMIC VARS. g_ means global btw.
 int g_renderedWalls;
 int g_score;
 int g_transition; //0 = no transition // 1 = forwards // -1 = backwards
 int g_transitionFrame;
-int g_level;
-int g_levelLast;
-double g_fps; //Used to calculate the lagometer.
-bool g_playing;
+	int g_level;
+	int g_levelLast;
+	double g_fps; //Used to calculate the lagometer.
+double g_gameOverDistance;
+GameState g_gameState;
 
-void init() {
+void init(ResetType reset) {
 	////DYNAMIC VARS
 	g_renderedWalls = 0;
 	g_score = 0;
 	g_transition = 0;
 	g_transitionFrame = 0;
-	g_level = 0;
-	g_levelLast = 0;
-	g_fps = 0.0;
-	g_playing = false;
+	if(reset == FULL_RESET) {
+		g_level = 0;
+		g_levelLast = 0;
+		g_fps = 0.0;
+	}
+	g_gameOverDistance = 0.0;
+	g_gameState = MAIN_MENU;
 	for(int i = 0; i < TOTAL_PATTERNS_AT_ONE_TIME; i++) {
 		g_patternTracker[i].running = false;
 		g_patternTracker[i].distanceFromCenter = 0;
@@ -210,7 +230,7 @@ RenderState drawWall(Point center, Point fg, int distanceFromCenter, int length,
 	return RENDERED;
 }
 
-MovementState drawWalls(Point center, Point fg, double radians) {
+MovementState drawWalls(Point center, Point fg, double radians, int manualOffset) {
 	bool shouldShift = false;
 	MovementState collision = CAN_MOVE;
 	for(int pattern = 0; pattern < TOTAL_PATTERNS_AT_ONE_TIME; pattern++) {
@@ -247,8 +267,13 @@ MovementState drawWalls(Point center, Point fg, double radians) {
 		if(lastRender == TOO_CLOSE && pattern == 0) {
 			shouldShift = true;
 		}
-		g_patternTracker[pattern].distanceFromCenter -= g_levelData[g_level].wallSpeed;
-		g_patternTracker[pattern].distanceFromCenterLastWall -= g_levelData[g_level].wallSpeed;
+		if(!manualOffset) {
+			g_patternTracker[pattern].distanceFromCenter -= g_levelData[g_level].wallSpeed;
+			g_patternTracker[pattern].distanceFromCenterLastWall -= g_levelData[g_level].wallSpeed;
+		} else {
+			g_patternTracker[pattern].distanceFromCenter -= manualOffset;
+			g_patternTracker[pattern].distanceFromCenterLastWall -= manualOffset;
+		}
 	}
 	if(shouldShift) { //We are going to shift the other patterns forward.
 		for(int shift = 1; shift < TOTAL_PATTERNS_AT_ONE_TIME; shift++) {
@@ -440,7 +465,6 @@ int doMainMenu() {
 	u32 kHold = hidKeysHeld();
 	if(!g_transition) {
 		if(kDown & KEY_A) {
-			resetLevelData();
 			return g_level;
 		} 
 		if(kHold & KEY_R) {
@@ -458,7 +482,7 @@ int doMainMenu() {
 	return -1; //Level not selected yet.
 }
 
-bool doPlayGame() {
+GameState doPlayGame() {
 	double radians = g_levelData[g_level].radians;
 		
 	Point fg = g_levelColor[g_level][FG];
@@ -475,11 +499,11 @@ bool doPlayGame() {
 	center.y = SCREEN_HEIGHT/2;
 	
 	drawBackground(center, bg2, TOP_WIDTH / 1.5, radians);
-	MovementState collision = drawWalls(center, fg, radians);
+	MovementState collision = drawWalls(center, fg, radians, 0);
 	drawMainHexagon(center, fg, bg1, radians);
 	drawHumanCursor(center, fg, g_levelData[g_level].cursor, radians); //Draw cursor fixed quarter circle, no movement.
 	
-	if(collision == DEAD) return false;
+	if(collision == DEAD) return GAME_OVER;
 	
 	////ROTATE
 	radians = (radians + g_levelData[g_level].rotStep);
@@ -494,13 +518,59 @@ bool doPlayGame() {
 	u32 kDown = hidKeysDown();
 	u32 kHold = hidKeysHeld();
 	if(kDown & KEY_B) {
-		return false;
+		return GAME_OVER; //Theoretically can be switched to MAIN_MENU.
 	}
 	if(kHold & KEY_L && collision != CANNOT_MOVE_LEFT) g_levelData[g_level].cursor = (g_levelData[g_level].cursor + g_levelData[g_level].rotStepHuman);
 	if(kHold & KEY_R && collision != CANNOT_MOVE_RIGHT) g_levelData[g_level].cursor = (g_levelData[g_level].cursor - g_levelData[g_level].rotStepHuman);
 	if(g_levelData[g_level].cursor >= TAU) g_levelData[g_level].cursor-=TAU;
 	if(g_levelData[g_level].cursor < 0) g_levelData[g_level].cursor+=TAU;
-	return true;
+	return PLAYING;
+}
+
+GameState doGameOver() {
+	double radians = g_levelData[g_level].radians;
+	
+	if(g_transition && g_transitionFrame < FRAMES_PER_GAME_OVER) {
+		g_gameOverDistance = -pow(GAME_OVER_ACCEL_RATE, g_transitionFrame);
+		g_transitionFrame++;
+	} else {
+		g_transitionFrame = 0;
+		g_transition = false;
+	}
+		
+	Point fg = g_levelColor[g_level][FG];
+	Point bg1 = g_levelColor[g_level][BG1];
+	Point bg2 = g_levelColor[g_level][BG2];
+		
+	sf2d_set_clear_color(bg1.color);
+	
+	////RENDER TOP SCREEN
+	sf2d_start_frame(GFX_TOP, GFX_LEFT);
+	
+	Point center;
+	center.x = TOP_WIDTH/2;
+	center.y = SCREEN_HEIGHT/2;
+	
+	drawBackground(center, bg2, TOP_WIDTH / 1.5, radians);
+	drawWalls(center, fg, radians, g_gameOverDistance);
+	drawMainHexagon(center, fg, bg1, radians);
+	drawHumanCursor(center, fg, g_levelData[g_level].cursor, radians); //Draw cursor fixed quarter circle, no movement.
+	
+	////ROTATE
+	radians = (radians + GAME_OVER_ROT_SPEED);
+	if(radians >= TAU) {
+		radians -= TAU;
+	}
+	g_levelData[g_level].radians = radians;
+	sf2d_end_frame();
+	
+	//KEYS
+	u32 kDown = hidKeysDown();
+	if(!g_transition) {
+		if(kDown & KEY_B) return MAIN_MENU;
+		if(kDown & KEY_A) return PLAYING;
+	} 
+	return GAME_OVER;
 }
 
 void doLagometer(int level) {
@@ -514,7 +584,7 @@ void doLagometer(int level) {
 		p.color = RGBA8(0xFF,0xFF,0xFF,0xFF);
 		writeFont(p,"LOADING BGM", true);
 	}
-	if(g_playing) {
+	if(g_gameState == PLAYING) {
 		sf2d_draw_rectangle(0,0,TOP_WIDTH, 22, RGBA8(0, 0, 0, 0xFF));
 		Point p;
 		p.color = RGBA8(0xFF,0xFF,0xFF,0xFF);
@@ -543,7 +613,7 @@ int main() {
 	ndspSetOutputMode(NDSP_OUTPUT_STEREO);
 	
 	//program init
-	init();
+	init(FULL_RESET);
 	initPatterns();
 	initLevels();
 	initLevelData();
@@ -558,10 +628,30 @@ int main() {
 		u32 kDown = hidKeysDown();
 		if(kDown & KEY_START) break;
 		
-		if(g_playing) {
-			g_playing = doPlayGame(); ////PLAY GAME
-		} else {
-			level = doMainMenu(); ////DRAW MENU
+		////DRAW MENU
+		if(g_gameState == MAIN_MENU) {
+			level = doMainMenu();
+			if(level != -1) { //Ran when main menu exits.
+				resetLevelData();
+				init(PARTIAL_RESET);
+			}
+		} else
+		
+		////PLAY GAME
+		if(g_gameState == PLAYING) {
+			g_gameState = doPlayGame(); 
+			if(g_gameState != PLAYING) { //Ran when playing exits (either to main or game over)
+				if(g_gameState == GAME_OVER) g_transition = true;
+			}
+		} else
+		
+		////GAME OVER
+		if(g_gameState == GAME_OVER) {
+			g_gameState = doGameOver(); 
+			if(g_gameState != GAME_OVER) { //Ran when game over exits (either to main or playing)
+				resetLevelData();
+				init(PARTIAL_RESET);
+			}
 		}
 		
 		////DRAW LAGOMETER
@@ -574,7 +664,7 @@ int main() {
 		////START GAME IF NEEDED
 		if(level >= 0) {
 			playLevelBGM(level);
-			g_playing = true;
+			g_gameState = PLAYING;
 		}
 		g_renderedWalls = 0;
 	}

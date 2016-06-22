@@ -109,33 +109,33 @@ void initLevelData() {
 	
 	//level 1
 	g_levelData[1].rotStep = TAU/200.0;
-	g_levelData[1].rotStepHuman = TAU/60.0;
+	g_levelData[1].rotStepHuman = TAU/38.0;
 	g_levelData[1].pulseSpeed = 10.0;
-	g_levelData[1].wallSpeed = 1;
+	g_levelData[1].wallSpeed = 2;
 	
 	//level 2
-	g_levelData[2].rotStep = TAU/100.0;
-	g_levelData[2].rotStepHuman = TAU/40.0;
+	g_levelData[2].rotStep = TAU/160.0;
+	g_levelData[2].rotStepHuman = TAU/32.0;
 	g_levelData[2].pulseSpeed = 10.0;
-	g_levelData[2].wallSpeed = 1;
+	g_levelData[2].wallSpeed = 3;
 	
 	//level 3
-	g_levelData[3].rotStep = TAU/200.0;
-	g_levelData[3].rotStepHuman = TAU/60.0;
+	g_levelData[3].rotStep = TAU/120.0;
+	g_levelData[3].rotStepHuman = TAU/36.0;
 	g_levelData[3].pulseSpeed = 10.0;
-	g_levelData[3].wallSpeed = 1;
+	g_levelData[3].wallSpeed = 2;
 	
 	//level 4
-	g_levelData[4].rotStep = TAU/160.0;
-	g_levelData[4].rotStepHuman = TAU/60.0;
+	g_levelData[4].rotStep = TAU/110.0;
+	g_levelData[4].rotStepHuman = TAU/30.0;
 	g_levelData[4].pulseSpeed = 10.0;
-	g_levelData[4].wallSpeed = 1;
+	g_levelData[4].wallSpeed = 3;
 	
 	//level 5
 	g_levelData[5].rotStep = 0;
-	g_levelData[5].rotStepHuman = TAU/60.0;
+	g_levelData[5].rotStepHuman = TAU/32.0;
 	g_levelData[5].pulseSpeed = 10.0;
-	g_levelData[5].wallSpeed = 1;
+	g_levelData[5].wallSpeed = 3;
 }
 
 void resetLevelData() {

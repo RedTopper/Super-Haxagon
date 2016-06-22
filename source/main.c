@@ -42,6 +42,7 @@ typedef enum {
 
 typedef struct {
 	bool running;
+	bool inverted;
 	int distanceFromCenter;
 	int distanceFromCenterLastWall; //This should also include the leingth of said wall.
 	int patternNumber;
@@ -244,23 +245,25 @@ MovementState drawWalls(Point center, Point fg, double radians, int manualOffset
 			g_patternTracker[pattern].distanceFromCenter = (pattern == 0 ? TOP_SCREEN_DIAG_CENTER : g_patternTracker[pattern - 1].distanceFromCenterLastWall);
 			g_patternTracker[pattern].distanceFromCenterLastWall = g_patternTracker[pattern].distanceFromCenter + wall->distanceFromCenter + wall->length + MIN_DISTANCE_FROM_LAST_PATTERN;
 			g_patternTracker[pattern].running = true;
+			g_patternTracker[pattern].inverted = rand() % 2;
 		}
 		
 		for(int i_wall = 0; i_wall < g_patterns.patterns[g_patternTracker[pattern].patternNumber]->numberOfWalls; i_wall++) {
 			Wall* wall = g_patterns.patterns[g_patternTracker[pattern].patternNumber]->walls[i_wall];
-			lastRender = drawWall(
-				center,
-				fg,
+			int preSide = (wall->side + g_patternTracker[pattern].sideOffset) % 6;
+			int side = (g_patternTracker[pattern].inverted ? 5 - preSide : preSide);
+			
+			lastRender = drawWall(center, fg,
 				g_patternTracker[pattern].distanceFromCenter + wall->distanceFromCenter,
 				wall->length,
-				(wall->side + g_patternTracker[pattern].sideOffset) % 6,
+				side,
 				radians); //draw the actual wall finally.
 			if(lastRender == TOO_FAR) break;
 				
 			MovementState collisionCheck = checkCollision(
 				g_patternTracker[pattern].distanceFromCenter + wall->distanceFromCenter, 
 				wall->length,
-				(wall->side + g_patternTracker[pattern].sideOffset) % 6);
+				side);
 			if(collision == CAN_MOVE) collision = collisionCheck; //If we can move, try and replace it with something else
 			if((collision == CANNOT_MOVE_LEFT || collision == CANNOT_MOVE_RIGHT) && collisionCheck == DEAD) collision = collisionCheck;
 		}
@@ -282,6 +285,7 @@ MovementState drawWalls(Point center, Point fg, double radians, int manualOffset
 			g_patternTracker[shift - 1].distanceFromCenter = g_patternTracker[shift].distanceFromCenter;
 			g_patternTracker[shift - 1].distanceFromCenterLastWall = g_patternTracker[shift].distanceFromCenterLastWall;
 			g_patternTracker[shift - 1].running = g_patternTracker[shift].running;
+			g_patternTracker[shift - 1].inverted = g_patternTracker[shift].inverted;
 		}
 		g_patternTracker[TOTAL_PATTERNS_AT_ONE_TIME - 1].running = false;
 	}
@@ -601,7 +605,7 @@ void doLagometer(int level) {
 		writeFont(p,buffer, false);
 	}
 	if(g_gameState == GAME_OVER) {
-		sf2d_draw_rectangle(0,0,TOP_WIDTH, 120, RGBA8(0, 0, 0, 0xFF));
+		sf2d_draw_rectangle(0,0,TOP_WIDTH, 112, RGBA8(0, 0, 0, 0xFF));
 		Point p;
 		p.color = RGBA8(0xFF,0xFF,0xFF,0xFF);
 		p.x = 44;
@@ -657,6 +661,7 @@ int main() {
 			if(level != -1) { //Ran when main menu exits.
 				resetLevelData();
 				init(PARTIAL_RESET);
+				audioPlay(&g_begin, false);
 			}
 		} else
 		

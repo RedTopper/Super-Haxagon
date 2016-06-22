@@ -701,7 +701,6 @@ int main() {
 		}
 		g_renderedWalls = 0;
 	}
-	freeFonts();
 	freePatterns();
 	audioUnload();
 	ndspExit();

@@ -2,11 +2,11 @@
 
 ![Super Haxagon](./resource/banner.png "Banner")
 
-This is a Super Hexagon clone for the Nintendo 3DS. This should run on both o3ds, n3ds, and ~~Citra homebrew environments~~ nevermind, it can't emulate it fast enough. The Makefile also creates a CFW compatible CIA too, for those who are into that kind of stuff. A banner is included.
+This is a Super Hexagon clone for the Nintendo 3DS. This should run on both o3ds, n3ds, and Citra homebrew environments. The Makefile also creates a CFW compatible CIA too, for those who are into that kind of stuff. A banner is included.
 
 ### Download
 
-None yet! This is still in development. You can either compile it for now by yourself or wait for me to make it stable enough for the masses.
+Downloads are available from the [releases page](https://github.com/RedInquisitive/Super-Haxagon/releases).
 
 Contributing to the project will help create a better game for everyone! If you would like to help, feel free to create a pull request. I know for a fact I messed up somewhere in the code here. If you are implementing a new feature, I'd be happy to acccept it! 
 

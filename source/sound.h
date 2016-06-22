@@ -26,6 +26,7 @@ Track g_bgm;
 ndspWaveBuf waveBuffs[23];
 
 bool audioPlay(Track *sound, bool loop);
+void audioStop(Track *sound);
 void audioUnload();
 void initSounds();
 void playLevelBGM(int level);

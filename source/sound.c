@@ -89,6 +89,12 @@ bool audioPlay(Track *sound, bool loop) {
 	}
 }
 
+void audioStop(Track *sound) {
+	if (sound->loaded) {
+		ndspChnReset(sound->ndspChannel);
+	}
+}
+
 void audioUnload() {
 	ndspChnWaveBufClear(1);
 	ndspChnWaveBufClear(2);

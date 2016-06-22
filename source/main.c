@@ -74,18 +74,18 @@ const int TOP_SCREEN_DIAG_CENTER = 257;
 //Game over screen
 const double GAME_OVER_ACCEL_RATE = 1.1;
 const double GAME_OVER_ROT_SPEED = TAU/240.0;
-const int FRAMES_PER_GAME_OVER = 80;
+const int FRAMES_PER_GAME_OVER = 60;
 
 ////DYNAMIC VARS. g_ means global btw.
 int g_renderedWalls;
 int g_score;
 int g_transition; //0 = no transition // 1 = forwards // -1 = backwards
 int g_transitionFrame;
-	int g_level;
-	int g_levelLast;
-	double g_fps; //Used to calculate the lagometer.
-double g_gameOverDistance;
+int g_level;
+int g_levelLast;
 GameState g_gameState;
+double g_fps; //Used to calculate the lagometer.
+double g_gameOverDistance;
 
 void init(ResetType reset) {
 	////DYNAMIC VARS
@@ -97,9 +97,9 @@ void init(ResetType reset) {
 		g_level = 0;
 		g_levelLast = 0;
 		g_fps = 0.0;
+		g_gameState = MAIN_MENU;
 	}
 	g_gameOverDistance = 0.0;
-	g_gameState = MAIN_MENU;
 	for(int i = 0; i < TOTAL_PATTERNS_AT_ONE_TIME; i++) {
 		g_patternTracker[i].running = false;
 		g_patternTracker[i].distanceFromCenter = 0;
@@ -585,6 +585,7 @@ void doLagometer(int level) {
 		writeFont(p,"LOADING BGM", true);
 	}
 	if(g_gameState == PLAYING) {
+		sf2d_draw_rectangle(0,23,TOP_WIDTH, 4, RGBA8(0, 0xFF, 0, 0xFF));
 		sf2d_draw_rectangle(0,0,TOP_WIDTH, 22, RGBA8(0, 0, 0, 0xFF));
 		Point p;
 		p.color = RGBA8(0xFF,0xFF,0xFF,0xFF);
@@ -598,7 +599,29 @@ void doLagometer(int level) {
 		int decimalPart = (int)(((double)g_score/60.0 - (double)scoreInt) * 100.0);
 		snprintf(buffer, 6+1, "%03d:%02d", scoreInt, decimalPart); //Emergency stack overflow prevention
 		writeFont(p,buffer, false);
-		sf2d_draw_rectangle(0,23,TOP_WIDTH, 4, RGBA8(0, 0xFF, 0, 0xFF));
+	}
+	if(g_gameState == GAME_OVER) {
+		sf2d_draw_rectangle(0,0,TOP_WIDTH, 120, RGBA8(0, 0, 0, 0xFF));
+		Point p;
+		p.color = RGBA8(0xFF,0xFF,0xFF,0xFF);
+		p.x = 44;
+		p.y = 4;
+		writeFont(p,"GAME OVER", true);
+		p.x = 90;
+		p.y = 40;
+		char buffer[12+1];
+		int scoreInt = (int)((double)g_score/60.0);
+		int decimalPart = (int)(((double)g_score/60.0 - (double)scoreInt) * 100.0);
+		snprintf(buffer, 12+1, "TIME: %03d:%02d", scoreInt, decimalPart); //Emergency stack overflow prevention
+		writeFont(p,buffer, false);
+		if(!g_transition) {
+			p.x = 70;
+			p.y = 70;
+			writeFont(p,"PRESS A TO PLAY", false);
+			p.x = 70;
+			p.y = 86;
+			writeFont(p,"PRESS B TO QUIT", false);
+		}
 	}
 	sf2d_end_frame();
 }
@@ -640,17 +663,27 @@ int main() {
 		////PLAY GAME
 		if(g_gameState == PLAYING) {
 			g_gameState = doPlayGame(); 
-			if(g_gameState != PLAYING) { //Ran when playing exits (either to main or game over)
-				if(g_gameState == GAME_OVER) g_transition = true;
+			if(g_gameState == GAME_OVER) {
+				g_transition = true;
+				audioPlay(&g_over, false);
+			}
+			if(g_gameState == MAIN_MENU) {
+				audioStop(&g_bgm);
+				audioPlay(&g_hexagon, false);
 			}
 		} else
 		
 		////GAME OVER
 		if(g_gameState == GAME_OVER) {
 			g_gameState = doGameOver(); 
-			if(g_gameState != GAME_OVER) { //Ran when game over exits (either to main or playing)
+			if(g_gameState == PLAYING) {
 				resetLevelData();
 				init(PARTIAL_RESET);
+				audioPlay(&g_begin, false);
+			}
+			if(g_gameState == MAIN_MENU) {
+				audioStop(&g_bgm);
+				audioPlay(&g_hexagon, false);
 			}
 		}
 		

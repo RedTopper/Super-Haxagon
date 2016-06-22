@@ -2,7 +2,7 @@
 
 ![Super Haxagon](./resource/banner.png "Banner")
 
-This is a Super Hexagon clone for the Nintendo 3DS. This should run on both o3ds, n3ds, and Citra homebrew environments. The Makefile also creates a CFW compatible CIA too, for those who are into that kind of stuff. A banner is included.
+This is a Super Hexagon clone for the Nintendo 3DS. This should run on the o3ds, n3ds, and Citra homebrew environments. The Makefile also creates a CFW compatible CIA too, for those who are into that kind of stuff. A banner is included.
 
 ### Download
 
@@ -16,17 +16,12 @@ Contributing to the project will help create a better game for everyone! If you 
  * Open source AND readable code
  * Sound using ndsp
  * Level Editor written in Java
- * Walls actually move to the player
+ * Walls that move and collide with the player
+ * A semi functional game over screen
  * Level patterns dynamically loaded from a .LEVE file.
  * Fonts via [flarn2006/SF2DBmpFont](https://github.com/flarn2006/SF2DBmpFont)
  * Audio from [Open Hexagon](http://vittorioromeo.info/projects.html)
  * Render from [xerpi/sf2dlib](https://github.com/xerpi/sf2dlib)
-
-### To Improve
-
- * This game uses a software rendering function. This could probably be redone using the GPU but whatever.
- * Collision
- * Game over screen
 
 ### Screenshots
 

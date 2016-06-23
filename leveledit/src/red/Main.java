@@ -38,9 +38,6 @@ public class Main {
 			
 			byte[] len = new byte[4];
 			if(file.read(len, 0, 4) == -1) return patterns;
-			for(byte b : len) {
-				System.out.print((int)b + ",");
-			}
 			ByteBuffer bb = ByteBuffer.wrap(len);
 			bb.order(ByteOrder.LITTLE_ENDIAN);
 			int length = bb.getInt();
@@ -92,6 +89,7 @@ public class Main {
 	}
 
 	private static void mainmenu(ArrayList<Pattern> contents, Scanner reader, String path) {
+		System.out.println("a: append another file");
 		System.out.println("c: create pattern");
 		System.out.println("d: destroy pattern");
 		System.out.println("e: edit pattern");
@@ -105,6 +103,19 @@ public class Main {
 			System.out.print("> ");
 			String in = reader.next().trim().toLowerCase();
 			switch(in) {
+			case "a":
+				FileInputStream file = null;
+				do {
+					System.out.println("Please type a file you would like to open or create:");
+					System.out.print("> ");
+				} while ((file = openFile((path = reader.next()))) == null);
+				ArrayList<Pattern> newPatterns = readContents(file);
+				if(contents.addAll(newPatterns)) {
+					System.out.println(newPatterns.size() + " pattern(s) added to the file.");
+				} else {
+					System.out.println("That file had no patterns!");
+				}
+				break;
 			case "c":
 				System.out.println("Type anything else but a number to exit.");
 				Pattern p = new Pattern();
@@ -112,16 +123,21 @@ public class Main {
 				while(run) {
 					try {
 						System.out.println(p);
-						System.out.print("Side    >");
+						System.out.print("Side    > ");
 						short side = reader.nextShort();
-						System.out.print("Distance>");
+						System.out.print("Distance> ");
 						short distanceFromCenter = reader.nextShort();
-						System.out.print("Length  >");
+						System.out.print("Length  > ");
 						short length = reader.nextShort();
-						p.addWall(new Wall(side, distanceFromCenter, length));
+						p.getWalls().add(new Wall(side, distanceFromCenter, length));
 					} catch (InputMismatchException e) {
 						reader.next(); //consume
-						if(p.size() > 0) {
+						if(p.getWalls().size() > 0) {
+							System.out.println("Enter a y for the levels you would like to use the pattern in: ");
+							for(int i = 0; i < 6; i++) {
+								System.out.print("For level " + i + "> ");
+								if(reader.next().toLowerCase().trim().equals("y")) p.setLevelFlag(i);
+							}
 							System.out.println("Pattern saved.");
 							contents.add(p);
 						} else {
@@ -134,13 +150,43 @@ public class Main {
 			case "d":
 			case "v":
 				System.out.println("Witch one?:");
-				System.out.print(">");
+				System.out.print("> ");
 				try {
 					int index = reader.nextInt();
 					if(in.equals("d")) {
 						System.out.println(contents.remove(index));
 					} else {
 						System.out.println(contents.get(index));
+					}
+				} catch (InputMismatchException e) {
+					reader.next(); //consume
+					System.out.println("Psych, that's the wrong number!");
+				} catch (IndexOutOfBoundsException e) {
+					System.out.println("Psych, that's the wrong number! (Patterns are 0 indexed)");
+				}
+				break;
+			case "e":
+				System.out.println("Witch one?:");
+				System.out.print("> ");
+				try {
+					int index = reader.nextInt();
+					System.out.println(contents.get(index));
+					System.out.println("What would you like to edit?:");
+					System.out.println("l: levels the pattern will appear on");
+					System.out.println("p: pattern data");
+					in = reader.next().trim().toLowerCase();
+					switch(in) {
+					case "l":
+						contents.get(index).clearLevelFlags();
+						System.out.println("Enter a y for the levels you would like to use the pattern in: ");
+						for(int i = 0; i < 6; i++) {
+							System.out.print("For level " + i + "> ");
+							if(reader.next().toLowerCase().trim().equals("y")) contents.get(index).setLevelFlag(i);
+						}
+						break;
+					case "p":
+						
+						break;
 					}
 				} catch (InputMismatchException e) {
 					reader.next(); //consume

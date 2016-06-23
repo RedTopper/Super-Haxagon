@@ -25,6 +25,7 @@ typedef struct {
 
 typedef struct {
 	int numberOfWalls;
+	u8 levelFlags;
 	Wall** walls;
 } Pattern;
 
@@ -35,7 +36,8 @@ typedef struct {
 } Patterns;
 
 LevelData g_levelData[TOTAL_LEVELS];
-Patterns g_patterns;
+Patterns g_allPatterns;
+Patterns g_patterns[TOTAL_LEVELS];
 
 bool initPatterns();
 void freePatterns();

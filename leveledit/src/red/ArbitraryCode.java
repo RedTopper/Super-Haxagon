@@ -15,7 +15,7 @@ public class ArbitraryCode {
 		//Creates a spiral for the user to swing around.
 		p = new Pattern();
 		for(int i = 0; i < 12; i++) {
-			p.addWall(new Wall(i%6,40 + (i > 4 ? i*14 : 0),20  + (i <= 4 ? i*14 : 0)));
+			p.getWalls().add(new Wall(i%6, 40 + (i > 4 ? i*14 : 0), 20  + (i <= 4 ? i*14 : 0)));
 		}
 		patterns.add(p);
 		
@@ -23,7 +23,7 @@ public class ArbitraryCode {
 		p = new Pattern();
 		for(int i = 0; i < 12; i++) {
 			if(i != 0 && i != 9) {
-				p.addWall(new Wall(i%6, (i <= 5 ? 40 : 140), 16));
+				p.getWalls().add(new Wall(i%6, (i <= 5 ? 40 : 140), 16));
 			}
 		}
 		patterns.add(p);

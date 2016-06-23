@@ -232,15 +232,35 @@ RenderState drawWall(Point center, Point fg, int distanceFromCenter, int length,
 }
 
 MovementState drawWalls(Point center, Point fg, double radians, int manualOffset) {
+	//There are no patterns for that level!
+	if(!g_allPatterns.loaded) {
+		sf2d_draw_rectangle(0,0,TOP_WIDTH, 22, RGBA8(0, 0, 0, 0xFF));
+		Point p;
+		p.x = 22;
+		p.y = 4;
+		p.color = RGBA8(0xFF, 0, 0, 0xFF);
+		writeFont(p,"FAILED TO LOAD PATTERN FILE!", false);
+		return DEAD;
+	}
+	//There are no patterns for that level!
+	if(!g_patterns[g_level].numberOfPatterns) {
+		sf2d_draw_rectangle(0,0,TOP_WIDTH, 22, RGBA8(0, 0, 0, 0xFF));
+		Point p;
+		p.x = 28;
+		p.y = 4;
+		p.color = RGBA8(0xFF, 0, 0, 0xFF);
+		writeFont(p,"THIS LEVEL HAS NO PATTERNS!", false);
+		return DEAD;
+	}
 	bool shouldShift = false;
 	MovementState collision = CAN_MOVE;
 	for(int pattern = 0; pattern < TOTAL_PATTERNS_AT_ONE_TIME; pattern++) {
 		RenderState lastRender = RENDERED;
 		if(!g_patternTracker[pattern].running) {
-			g_patternTracker[pattern].patternNumber = rand() % g_patterns.numberOfPatterns; //Who cares about uniformity anyway?
+			g_patternTracker[pattern].patternNumber = rand() % g_patterns[g_level].numberOfPatterns; //Who cares about uniformity anyway?
 			//This line of code gets the last wall of the pattern we are looking at.
-			Wall* wall = g_patterns.patterns[g_patternTracker[pattern].patternNumber]->
-						 walls[g_patterns.patterns[g_patternTracker[pattern].patternNumber]->numberOfWalls - 1]; 
+			Wall* wall = g_patterns[g_level].patterns[g_patternTracker[pattern].patternNumber]->
+						 walls[g_patterns[g_level].patterns[g_patternTracker[pattern].patternNumber]->numberOfWalls - 1]; 
 			g_patternTracker[pattern].sideOffset = rand() % 6;
 			g_patternTracker[pattern].distanceFromCenter = (pattern == 0 ? TOP_SCREEN_DIAG_CENTER : g_patternTracker[pattern - 1].distanceFromCenterLastWall);
 			g_patternTracker[pattern].distanceFromCenterLastWall = g_patternTracker[pattern].distanceFromCenter + wall->distanceFromCenter + wall->length + MIN_DISTANCE_FROM_LAST_PATTERN;
@@ -248,8 +268,8 @@ MovementState drawWalls(Point center, Point fg, double radians, int manualOffset
 			g_patternTracker[pattern].inverted = rand() % 2;
 		}
 		
-		for(int i_wall = 0; i_wall < g_patterns.patterns[g_patternTracker[pattern].patternNumber]->numberOfWalls; i_wall++) {
-			Wall* wall = g_patterns.patterns[g_patternTracker[pattern].patternNumber]->walls[i_wall];
+		for(int i_wall = 0; i_wall < g_patterns[g_level].patterns[g_patternTracker[pattern].patternNumber]->numberOfWalls; i_wall++) {
+			Wall* wall = g_patterns[g_level].patterns[g_patternTracker[pattern].patternNumber]->walls[i_wall];
 			int preSide = (wall->side + g_patternTracker[pattern].sideOffset) % 6;
 			int side = (g_patternTracker[pattern].inverted ? 5 - preSide : preSide);
 			
@@ -581,7 +601,7 @@ void doLagometer(int level) {
 	sf2d_start_frame(GFX_BOTTOM, GFX_LEFT);
 	sf2d_draw_line(0, SCREEN_HEIGHT - 1, (int)((double)BOT_WIDTH * ((double)g_fps/60.0)), SCREEN_HEIGHT - 1, 1, RGBA8(0xFF,0,0,0xFF));
 	if(level >= 0) {
-		sf2d_draw_rectangle(0,0,TOP_WIDTH, 32 + 4, RGBA8(0, 0, 0, 0xFF));
+		sf2d_draw_rectangle(0,0,BOT_WIDTH, 32 + 4, RGBA8(0, 0, 0, 0xFF));
 		Point p;
 		p.x = 14;
 		p.y = 4;
@@ -589,8 +609,8 @@ void doLagometer(int level) {
 		writeFont(p,"LOADING BGM", true);
 	}
 	if(g_gameState == PLAYING) {
-		sf2d_draw_rectangle(0,23,TOP_WIDTH, 4, RGBA8(0, 0xFF, 0, 0xFF));
-		sf2d_draw_rectangle(0,0,TOP_WIDTH, 22, RGBA8(0, 0, 0, 0xFF));
+		sf2d_draw_rectangle(0,23,BOT_WIDTH, 4, RGBA8(0, 0xFF, 0, 0xFF));
+		sf2d_draw_rectangle(0,0,BOT_WIDTH, 22, RGBA8(0, 0, 0, 0xFF));
 		Point p;
 		p.color = RGBA8(0xFF,0xFF,0xFF,0xFF);
 		p.x = 4;
@@ -605,7 +625,7 @@ void doLagometer(int level) {
 		writeFont(p,buffer, false);
 	}
 	if(g_gameState == GAME_OVER) {
-		sf2d_draw_rectangle(0,0,TOP_WIDTH, 112, RGBA8(0, 0, 0, 0xFF));
+		sf2d_draw_rectangle(0,0,BOT_WIDTH, 112, RGBA8(0, 0, 0, 0xFF));
 		Point p;
 		p.color = RGBA8(0xFF,0xFF,0xFF,0xFF);
 		p.x = 44;

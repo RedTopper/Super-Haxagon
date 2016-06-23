@@ -1,7 +1,33 @@
 #include "levels.h"
 
+void distributePatterns() {
+	//calc how many patterns each level has
+	for(int level = 0; level < TOTAL_LEVELS; level++) {
+		g_patterns[level].numberOfPatterns = 0;
+		g_patterns[level].loaded = false;
+		for(int pattern = 0; pattern < g_allPatterns.numberOfPatterns; pattern++) {
+			if(g_allPatterns.patterns[pattern]->levelFlags >> level & 1) {
+				g_patterns[level].loaded = true;
+				g_patterns[level].numberOfPatterns++;
+			}
+		}
+		//Alloc pointers to patterns
+		g_patterns[level].patterns = malloc(sizeof(Pattern *) * g_patterns[level].numberOfPatterns);
+	}
+	
+	//allocate and set pointers.
+	for(int level = 0; level < TOTAL_LEVELS; level++) {
+		int i = 0;
+		for(int pattern = 0; pattern < g_allPatterns.numberOfPatterns; pattern++) {
+			if(g_allPatterns.patterns[pattern]->levelFlags >> level & 1) {
+				g_patterns[level].patterns[i++] = g_allPatterns.patterns[pattern];
+			}
+		}	
+	}
+}
+
 bool initPatterns() {
-	g_patterns.loaded = false;
+	g_allPatterns.loaded = false;
 	FILE *file = fopen("romfs:/patterns.leve", "rb");
 	if(file == NULL){
 		return false;
@@ -9,95 +35,81 @@ bool initPatterns() {
 	
 	char sig[4];
 	fread(sig, 1, 4, file);
-	
-	if(sig[0] != 'L' && sig[1] != 'E' && sig[2] != 'V' && sig[3] != 'E'){
+	if(!(sig[0] == 'L' && sig[1] == 'E' && sig[2] == 'V' && sig[3] == 'E') ||
+	   !(fread(&(g_allPatterns.numberOfPatterns), 4, 1, file))){
 		fclose(file);
 		return false;
 	}
 	
-	if(!(fread(&(g_patterns.numberOfPatterns), 4, 1, file))) {
+	//Alloc pointers to patterns
+	g_allPatterns.patterns = malloc(sizeof(Pattern *) * g_allPatterns.numberOfPatterns);
+	if(!g_allPatterns.patterns) {
 		fclose(file);
 		return false;
 	}
 	
-	
-	g_patterns.patterns = malloc(sizeof(Pattern *) * g_patterns.numberOfPatterns); //Alloc pointers to patterns
-	if(!g_patterns.patterns) {
-		fclose(file);
-		return false;
-	}
-	
-	for(int pattern = 0; pattern < g_patterns.numberOfPatterns; pattern++) {
-		g_patterns.patterns[pattern] = malloc(sizeof(Pattern)); //Alloc actual pattern.
-		if(!g_patterns.patterns[pattern]) {
+	for(int pattern = 0; pattern < g_allPatterns.numberOfPatterns; pattern++) {
+		//Alloc actual pattern.
+		g_allPatterns.patterns[pattern] = malloc(sizeof(Pattern)); 
+		if(!(g_allPatterns.patterns[pattern]) ||
+		   !(fread(&(g_allPatterns.patterns[pattern]->numberOfWalls), 4, 1, file)) ||
+		   !(fread(&(g_allPatterns.patterns[pattern]->levelFlags), 1, 1, file))) {
 			fclose(file);
 			freePatterns();
 			return false;
 		}
 		
-		if(!(fread(&(g_patterns.patterns[pattern]->numberOfWalls), 4, 1, file))) {
-			fclose(file);
-			freePatterns();
-			return false;
-		}
-		
-		g_patterns.patterns[pattern]->walls = malloc(sizeof(Wall *) * g_patterns.patterns[pattern]->numberOfWalls); //Alloc pointers to wall
-		if(!g_patterns.patterns[pattern]->walls) {
+		//Alloc pointers to wall
+		g_allPatterns.patterns[pattern]->walls = malloc(sizeof(Wall *) * g_allPatterns.patterns[pattern]->numberOfWalls); 
+		if(!(g_allPatterns.patterns[pattern]->walls)) {
 			fclose(file);
 			freePatterns();
 			return false;
 		}
 	
-		for(int wall = 0; wall < g_patterns.patterns[pattern]->numberOfWalls; wall++) {
-			g_patterns.patterns[pattern]->walls[wall] = malloc(sizeof(Wall)); //Alloc actual wall
-			if(!g_patterns.patterns[pattern]->walls[wall]) {
-				fclose(file);
-				freePatterns();
-				return false;
-			}
-			
-			if(!(fread(&(g_patterns.patterns[pattern]->walls[wall]->side), 2, 1, file))) {
-				fclose(file);
-				freePatterns();
-				return false;
-			}
-			if(!(fread(&(g_patterns.patterns[pattern]->walls[wall]->distanceFromCenter), 2, 1, file))) {
-				fclose(file);
-				freePatterns();
-				return false;
-			}
-			if(!(fread(&(g_patterns.patterns[pattern]->walls[wall]->length), 2, 1, file))) {
+		for(int wall = 0; wall < g_allPatterns.patterns[pattern]->numberOfWalls; wall++) {
+			//Alloc actual wall
+			g_allPatterns.patterns[pattern]->walls[wall] = malloc(sizeof(Wall));
+			if(!(g_allPatterns.patterns[pattern]->walls[wall]) ||
+			   !(fread(&(g_allPatterns.patterns[pattern]->walls[wall]->side), 2, 1, file)) ||
+			   !(fread(&(g_allPatterns.patterns[pattern]->walls[wall]->distanceFromCenter), 2, 1, file)) ||
+			   !(fread(&(g_allPatterns.patterns[pattern]->walls[wall]->length), 2, 1, file))) {
 				fclose(file);
 				freePatterns();
 				return false;
 			}
 		}
 	}
-	g_patterns.loaded = true;
+	distributePatterns();
+	g_allPatterns.loaded = true;
 	return true; //I hate C arrays.
 }
 
 void freePatterns() {
-	if(!g_patterns.patterns) {
+	if(!g_allPatterns.patterns) {
 		return; //Check to see if pattern pointers are alloced
 	}
-	for(int pattern = 0; pattern < g_patterns.numberOfPatterns; pattern++) {
-		if(!g_patterns.patterns[pattern]) {
+	for(int pattern = 0; pattern < g_allPatterns.numberOfPatterns; pattern++) {
+		if(!g_allPatterns.patterns[pattern]) {
 			continue; //Check to see if an individual pattern is alloced
 		}
-		if(!g_patterns.patterns[pattern]->walls) {
+		if(!g_allPatterns.patterns[pattern]->walls) {
 			continue; //Check to see if wall pointers of the pattern are alloced
 		}
-		for(int wall = 0; wall < g_patterns.patterns[pattern]->numberOfWalls; wall++) {
-			if(!g_patterns.patterns[pattern]->walls[wall]) {
+		for(int wall = 0; wall < g_allPatterns.patterns[pattern]->numberOfWalls; wall++) {
+			if(!g_allPatterns.patterns[pattern]->walls[wall]) {
 				continue; //Check to see if an individual wall of the individual pattern is alloced
 			}
-			free(g_patterns.patterns[pattern]->walls[wall]); //Free wall of pattern
+			free(g_allPatterns.patterns[pattern]->walls[wall]); //Free wall of pattern
 		}
-		free(g_patterns.patterns[pattern]->walls); //Free wall pointers of pattern
-		free(g_patterns.patterns[pattern]); //Free pattern
+		free(g_allPatterns.patterns[pattern]->walls); //Free wall pointers of pattern
+		free(g_allPatterns.patterns[pattern]); //Free pattern
 	}
-	free(g_patterns.patterns); //Free pattern pointers
+	free(g_allPatterns.patterns); //Free pattern pointers
+	
+	for(int level = 0; level < TOTAL_LEVELS; level++) {
+		free(g_patterns[level].patterns);
+	}
 }
 	
 void initLevelData() { 

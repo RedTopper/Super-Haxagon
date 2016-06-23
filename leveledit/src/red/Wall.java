@@ -26,7 +26,7 @@ public class Wall {
 		this.length = (short)length;
 	}
 	
-	public Wall(FileInputStream file) throws UnsupportedOperationException {
+	public Wall(FileInputStream file) {
 		try {
 			byte[] data = new byte[3 * 2];
 			file.read(data, 0, 3 * 2);

@@ -15,13 +15,26 @@ Contributing to the project will help create a better game for everyone! If you 
  * 6 selectable levels
  * Open source AND readable code
  * Sound using ndsp
+  * Supports uncompressed WAV files
  * Level Editor written in Java
+  * Can run user code to generate patterns
+  * Can append other pattern files
+  * Can edit patterns and create patterns directly
  * Walls that move and collide with the player
- * A semi functional game over screen
+  * Can collide with the player
+  * You will stop moving when you hit the side of walls
+ * A functional game over screen
+  * Really cool death animation
+  * Sound effects
  * Level patterns dynamically loaded from a .LEVE file.
- * Fonts via [flarn2006/SF2DBmpFont](https://github.com/flarn2006/SF2DBmpFont)
- * Audio from [Open Hexagon](http://vittorioromeo.info/projects.html)
- * Render from [xerpi/sf2dlib](https://github.com/xerpi/sf2dlib)
+  * 8 distinct patterns (so far!)
+ * Main menu
+  * Plays sound effects and animations
+ * Support by the community!
+  * Audio from [Open Hexagon](http://vittorioromeo.info/projects.html)
+  * Fonts via [flarn2006/SF2DBmpFont](https://github.com/flarn2006/SF2DBmpFont)
+  * Render from [xerpi/sf2dlib](https://github.com/xerpi/sf2dlib)
+  * And many more!
 
 ### Screenshots
 

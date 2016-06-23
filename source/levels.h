@@ -14,7 +14,7 @@ typedef struct {
 	double rotStep;
 	double rotStepHuman;
 	double pulseSpeed;
-	int wallSpeed;
+	double wallSpeed;
 } LevelData;
 
 typedef struct {

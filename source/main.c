@@ -43,8 +43,8 @@ typedef enum {
 typedef struct {
 	bool running;
 	bool inverted;
-	int distanceFromCenter;
-	int distanceFromCenterLastWall; //This should also include the leingth of said wall.
+	double distanceFromCenter;
+	double distanceFromCenterLastWall; //This should also include the leingth of said wall.
 	int patternNumber;
 	int sideOffset;
 } PatternTracker;
@@ -77,6 +77,10 @@ const double GAME_OVER_ACCEL_RATE = 1.1;
 const double GAME_OVER_ROT_SPEED = TAU/240.0;
 const int FRAMES_PER_GAME_OVER = 60;
 
+//Pulse color option
+const double MAX_RANGE_COLOR = 10;
+const double PULSES_PER_SPIN = 3; //may look weird if not int!
+
 ////DYNAMIC VARS. g_ means global btw.
 int g_renderedWalls;
 int g_score;
@@ -103,7 +107,7 @@ void init(ResetType reset) {
 	g_gameOverDistance = 0.0;
 	for(int i = 0; i < TOTAL_PATTERNS_AT_ONE_TIME; i++) {
 		g_patternTracker[i].running = false;
-		g_patternTracker[i].distanceFromCenter = 0;
+		g_patternTracker[i].distanceFromCenter = 0.0;
 		g_patternTracker[i].sideOffset = 0;
 	}
 }
@@ -147,7 +151,24 @@ u32 tweenColor(u32 original, u32 new, int frame) {
 	return RGBA8(red, green, blue, 0xFF);
 }
 
-MovementState checkCollision(int distanceFromCenter, int length, int side) {
+Point pulseColor(Point original, double radians) {
+	int red = (int)RGBA8_GET_R(original.color);
+	int green = (int)RGBA8_GET_G(original.color);
+	int blue = (int)RGBA8_GET_B(original.color);
+	if(red == 0 && green == 0 && blue == 0) {
+		return original;
+	}
+	red += (int)((double)MAX_RANGE_COLOR * (cos(radians * PULSES_PER_SPIN) - 1.0) / 2.0);
+	green += (int)((double)MAX_RANGE_COLOR * (cos(radians * PULSES_PER_SPIN) - 1.0) / 2.0);
+	blue += (int)((double)MAX_RANGE_COLOR * (cos(radians * PULSES_PER_SPIN) - 1.0) / 2.0);
+	if(red < 0) red = 0;
+	if(green < 0) green = 0;
+	if(blue < 0) blue = 0;
+	original.color = RGBA8(red, green, blue, 0xFF);
+	return original;
+}
+
+MovementState checkCollision(double distanceFromCenter, int length, int side) {
 	//Check if we are between the wall vertically
 	if(distanceFromCenter <= FULL_LEN + HUMAN_PADDING + HUMAN_HEIGHT && distanceFromCenter + length >= FULL_LEN + HUMAN_PADDING + HUMAN_HEIGHT) {
 		double leftRotStep = g_levelData[g_level].cursor + g_levelData[g_level].rotStepHuman;
@@ -199,9 +220,9 @@ MovementState checkCollision(int distanceFromCenter, int length, int side) {
 	return CAN_MOVE;
 }
 
-RenderState drawWall(Point center, Point fg, int distanceFromCenter, int length, int side, double radians) {
-	if(distanceFromCenter + length < FULL_LEN) return TOO_CLOSE;
-	if(sqrt(pow((double)distanceFromCenter * cos(TAU/12.0),2) + pow((double)distanceFromCenter * sin(TAU/12.0),2)) > TOP_SCREEN_DIAG_CENTER) return TOO_FAR; //Might be expensive to calc?
+RenderState drawWall(Point center, Point fg, double distanceFromCenter, int length, int side, double radians) {
+	if(distanceFromCenter + (double)length < FULL_LEN) return TOO_CLOSE;
+	if(sqrt(pow(distanceFromCenter * cos(TAU/12.0),2) + pow(distanceFromCenter * sin(TAU/12.0),2)) > TOP_SCREEN_DIAG_CENTER) return TOO_FAR; //Might be expensive to calc?
 	
 	if(distanceFromCenter < FULL_LEN - 2/*To make sure it draws correctly*/) {
 		length -= FULL_LEN - 2 - distanceFromCenter;
@@ -214,8 +235,8 @@ RenderState drawWall(Point center, Point fg, int distanceFromCenter, int length,
 		int addLength = (i == 1 || i == 2 ? length : 0);
 		double leftOrRightSide = (i == 0 || i == 1 ? side/*left*/ : side + 1/*right*/);
 		double offset = (i == 0 || i == 1 ? -OVERFLOW_OFFSET/*left*/ : OVERFLOW_OFFSET/*right*/);
-		edges[i].x = (int)(((double)(distanceFromCenter + addLength) * cos(radians + leftOrRightSide * TAU/6.0 + offset) + (double)(center.x)));
-		edges[i].y = (int)(((double)(distanceFromCenter + addLength) * sin(radians + leftOrRightSide * TAU/6.0 + offset) + (double)(center.y)));
+		edges[i].x = (int)(((distanceFromCenter + (double)addLength) * cos(radians + leftOrRightSide * TAU/6.0 + offset) + (double)(center.x)));
+		edges[i].y = (int)(((distanceFromCenter + (double)addLength) * sin(radians + leftOrRightSide * TAU/6.0 + offset) + (double)(center.y)));
 	}
 	
 	g_renderedWalls++;
@@ -262,8 +283,8 @@ MovementState drawWalls(Point center, Point fg, double radians, int manualOffset
 			Wall* wall = g_patterns[g_level].patterns[g_patternTracker[pattern].patternNumber]->
 						 walls[g_patterns[g_level].patterns[g_patternTracker[pattern].patternNumber]->numberOfWalls - 1]; 
 			g_patternTracker[pattern].sideOffset = rand() % 6;
-			g_patternTracker[pattern].distanceFromCenter = (pattern == 0 ? TOP_SCREEN_DIAG_CENTER : g_patternTracker[pattern - 1].distanceFromCenterLastWall);
-			g_patternTracker[pattern].distanceFromCenterLastWall = g_patternTracker[pattern].distanceFromCenter + wall->distanceFromCenter + wall->length + MIN_DISTANCE_FROM_LAST_PATTERN;
+			g_patternTracker[pattern].distanceFromCenter = (pattern == 0 ? (double)TOP_SCREEN_DIAG_CENTER : g_patternTracker[pattern - 1].distanceFromCenterLastWall);
+			g_patternTracker[pattern].distanceFromCenterLastWall = g_patternTracker[pattern].distanceFromCenter + (double)wall->distanceFromCenter + (double)wall->length + (double)MIN_DISTANCE_FROM_LAST_PATTERN;
 			g_patternTracker[pattern].running = true;
 			g_patternTracker[pattern].inverted = rand() % 2;
 		}
@@ -274,14 +295,14 @@ MovementState drawWalls(Point center, Point fg, double radians, int manualOffset
 			int side = (g_patternTracker[pattern].inverted ? 5 - preSide : preSide);
 			
 			lastRender = drawWall(center, fg,
-				g_patternTracker[pattern].distanceFromCenter + wall->distanceFromCenter,
+				g_patternTracker[pattern].distanceFromCenter + (double)wall->distanceFromCenter,
 				wall->length,
 				side,
 				radians); //draw the actual wall finally.
 			if(lastRender == TOO_FAR) break;
 				
 			MovementState collisionCheck = checkCollision(
-				g_patternTracker[pattern].distanceFromCenter + wall->distanceFromCenter, 
+				g_patternTracker[pattern].distanceFromCenter + (double)wall->distanceFromCenter, 
 				wall->length,
 				side);
 			if(collision == CAN_MOVE) collision = collisionCheck; //If we can move, try and replace it with something else
@@ -449,13 +470,13 @@ int doMainMenu() {
 			writeFont(p,"HEXAGON", true);
 			writeFont(sub,"DIFFICULTY: HARD", false);
 			writeFont(sub2,"MODE: NORMAL", false);
-			writeFont(time,"SCORE: 000000", false);
+			writeFont(time,"SCORE: 000:00", false);
 			break;
 		case 1:
 			writeFont(p,"HEXAGONER", true);
 			writeFont(sub,"DIFFICULTY: HARDER", false);
 			writeFont(sub2,"MODE: NORMAL", false);
-			writeFont(time,"SCORE: 000000", false);
+			writeFont(time,"SCORE: 000:00", false);
 			break;
 		case 2:
 			writeFont(p,"HEXAGONEST", true);
@@ -513,19 +534,33 @@ GameState doPlayGame() {
 	Point bg1 = g_levelColor[g_level][BG1];
 	Point bg2 = g_levelColor[g_level][BG2];
 		
-	sf2d_set_clear_color(bg1.color);
-	
 	////RENDER TOP SCREEN
 	sf2d_start_frame(GFX_TOP, GFX_LEFT);
+	sf2d_draw_rectangle(0, 0, TOP_WIDTH, SCREEN_HEIGHT, pulseColor(bg1, radians).color);
 	
 	Point center;
 	center.x = TOP_WIDTH/2;
 	center.y = SCREEN_HEIGHT/2;
 	
-	drawBackground(center, bg2, TOP_WIDTH / 1.5, radians);
-	MovementState collision = drawWalls(center, fg, radians, 0);
-	drawMainHexagon(center, fg, bg1, radians);
-	drawHumanCursor(center, fg, g_levelData[g_level].cursor, radians); //Draw cursor fixed quarter circle, no movement.
+	drawBackground(
+		pulseColor(center, radians),
+		pulseColor(bg2, radians),
+		TOP_WIDTH / 1.5,
+		radians);
+	MovementState collision = drawWalls(
+		pulseColor(center, radians),
+		pulseColor(fg, radians),
+		radians, 0);
+	drawMainHexagon(
+		pulseColor(center, radians),
+		pulseColor(fg, radians),
+		pulseColor(bg1, radians),
+		radians);
+	drawHumanCursor(
+		pulseColor(center, radians),
+		pulseColor(fg, radians),
+		g_levelData[g_level].cursor,
+		radians);
 	
 	if(collision == DEAD) return GAME_OVER;
 	

@@ -81,6 +81,9 @@ const int FRAMES_PER_GAME_OVER = 60;
 const double MAX_RANGE_COLOR = 10;
 const double PULSES_PER_SPIN = 3; //may look weird if not int!
 
+//Chance to flip the rotation in a new direction
+const int CHANCE_OF_FLIP_MODULO = 5;
+
 ////DYNAMIC VARS. g_ means global btw.
 int g_renderedWalls;
 int g_score;
@@ -287,6 +290,7 @@ MovementState drawWalls(Point center, Point fg, double radians, int manualOffset
 			g_patternTracker[pattern].distanceFromCenterLastWall = g_patternTracker[pattern].distanceFromCenter + (double)wall->distanceFromCenter + (double)wall->length + (double)MIN_DISTANCE_FROM_LAST_PATTERN;
 			g_patternTracker[pattern].running = true;
 			g_patternTracker[pattern].inverted = rand() % 2;
+			if(!(rand() % CHANCE_OF_FLIP_MODULO)) g_levelData[g_level].rotStep *= -1; //FLIP HERE
 		}
 		
 		for(int i_wall = 0; i_wall < g_patterns[g_level].patterns[g_patternTracker[pattern].patternNumber]->numberOfWalls; i_wall++) {

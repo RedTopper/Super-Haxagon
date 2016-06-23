@@ -537,10 +537,11 @@ GameState doPlayGame() {
 	Point fg = g_levelColor[g_level][FG];
 	Point bg1 = g_levelColor[g_level][BG1];
 	Point bg2 = g_levelColor[g_level][BG2];
-		
+	
+	sf2d_set_clear_color(pulseColor(bg1, radians).color);
+	
 	////RENDER TOP SCREEN
 	sf2d_start_frame(GFX_TOP, GFX_LEFT);
-	sf2d_draw_rectangle(0, 0, TOP_WIDTH, SCREEN_HEIGHT, pulseColor(bg1, radians).color);
 	
 	Point center;
 	center.x = TOP_WIDTH/2;

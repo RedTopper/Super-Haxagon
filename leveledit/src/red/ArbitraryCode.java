@@ -17,7 +17,15 @@ public class ArbitraryCode {
 		for(int i = 0; i < 16; i++) {
 			p.getWalls().add(new Wall(i%6, 40 + (i > 4 ? i*14 : 0), 20  + (i <= 4 ? i*14 : 0)));
 		}
-		p.setLevelFlags((byte)0b111111); //Every level (0-5) is enabled (set to 1)
+		p.setLevelFlags((byte)0b011111); //Every level but 5 is enabled (set to 1)
+		patterns.add(p);
+		
+		//Creates a spiral for the user to swing around, but this one is specifically crafted for level 5.
+		p = new Pattern();
+		for(int i = 0; i < 14; i++) { //key difference here.
+			p.getWalls().add(new Wall(i%6, 40 + (i > 4 ? i*14 : 0), 20  + (i <= 4 ? i*14 : 0)));
+		}
+		p.setLevelFlags((byte)0b100000);
 		patterns.add(p);
 		
 		//Creates a wall on one side with a single hole, then another on the other side
@@ -91,6 +99,27 @@ public class ArbitraryCode {
 				}
 			}
 		}
+		p.setLevelFlags((byte)0b010110);
+		patterns.add(p);
+		
+		//Creates You go right twice, then left thrice. Or left twice, right thrice. Depends on the game's mood though.
+		p = new Pattern();
+		for(int i = 0; i < 6; i++) {
+			for(int side = 0; side < 6; side++) {
+				if(side != 0 && side != 3) {
+					p.getWalls().add(new Wall(((side + (i < 3 ? i : 4 - i)) + 1) % 6, 40 + i * 3 * 16, 16));
+				}
+			}
+		}
+		p.setLevelFlags((byte)0b101000);
+		patterns.add(p);
+		
+		//You can even add walls manually, like this:
+		p = new Pattern();
+		p.getWalls().add(new Wall(2, 40, 16));
+		p.getWalls().add(new Wall(3, 40, 16));
+		p.getWalls().add(new Wall(4, 40, 16));
+		p.getWalls().add(new Wall(0, 40, 16 * 3)); //idklol
 		p.setLevelFlags((byte)0b110011);
 		patterns.add(p);
 		

@@ -513,14 +513,14 @@ int doMainMenu() {
 	u32 kDown = hidKeysDown();
 	u32 kHold = hidKeysHeld();
 	if(!g_transition) {
-		if(kDown & KEY_A) {
+		if(kDown & KEY_A ) {
 			return g_level;
 		} 
-		if(kHold & KEY_R) {
+		if(kHold & (KEY_R | KEY_ZR | KEY_CSTICK_RIGHT | KEY_CPAD_RIGHT | KEY_DRIGHT)) {
 			g_level++;
 			g_transition = 1;
 			audioPlay(&g_select, false);
-		} else if(kHold & KEY_L) {
+		} else if(kHold & (KEY_L | KEY_ZL | KEY_CSTICK_LEFT | KEY_CPAD_LEFT | KEY_DLEFT)) {
 			g_level--;
 			g_transition = -1;
 			audioPlay(&g_select, false);
@@ -571,9 +571,8 @@ GameState doPlayGame() {
 	
 	////ROTATE
 	radians = (radians + g_levelData[g_level].rotStep);
-	if(radians >= TAU) {
-		radians -= TAU;
-	}
+	if(radians >= TAU) radians -= TAU;
+	if(radians < TAU) radians += TAU;
 	g_levelData[g_level].radians = radians;
 	sf2d_end_frame();
 	g_score++;
@@ -584,8 +583,11 @@ GameState doPlayGame() {
 	if(kDown & KEY_B) {
 		return GAME_OVER; //Theoretically can be switched to MAIN_MENU.
 	}
-	if(kHold & KEY_L && collision != CANNOT_MOVE_LEFT) g_levelData[g_level].cursor = (g_levelData[g_level].cursor + g_levelData[g_level].rotStepHuman);
-	if(kHold & KEY_R && collision != CANNOT_MOVE_RIGHT) g_levelData[g_level].cursor = (g_levelData[g_level].cursor - g_levelData[g_level].rotStepHuman);
+	if((kHold & (KEY_R | KEY_ZR | KEY_CSTICK_RIGHT | KEY_CPAD_RIGHT | KEY_DRIGHT | KEY_A)) && collision != CANNOT_MOVE_RIGHT)
+		g_levelData[g_level].cursor = (g_levelData[g_level].cursor - g_levelData[g_level].rotStepHuman);
+	if((kHold & (KEY_L | KEY_ZL | KEY_CSTICK_LEFT  | KEY_CPAD_LEFT  | KEY_DLEFT  | KEY_Y)) && collision != CANNOT_MOVE_LEFT)
+		g_levelData[g_level].cursor = (g_levelData[g_level].cursor + g_levelData[g_level].rotStepHuman);
+	
 	if(g_levelData[g_level].cursor >= TAU) g_levelData[g_level].cursor-=TAU;
 	if(g_levelData[g_level].cursor < 0) g_levelData[g_level].cursor+=TAU;
 	return PLAYING;
@@ -622,9 +624,8 @@ GameState doGameOver() {
 	
 	////ROTATE
 	radians = (radians + GAME_OVER_ROT_SPEED);
-	if(radians >= TAU) {
-		radians -= TAU;
-	}
+	if(radians >= TAU) radians -= TAU;
+	if(radians < TAU) radians += TAU;
 	g_levelData[g_level].radians = radians;
 	sf2d_end_frame();
 	

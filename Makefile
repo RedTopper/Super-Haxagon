@@ -35,8 +35,8 @@ DATA			:=	data
 INCLUDES		:=	include
 ROMFS			:=  romfs
 
-APP_TITLE		:=	Super Haxagon
-APP_DESCRIPTION	:=	A Super Hexagon Clone
+APP_TITLE		:=	"Super Haxagon"
+APP_DESCRIPTION	:=	"A Super Hexagon Clone"
 APP_AUTHOR		:=	RedHat
 APP_ICON		:=	$(RESOURCE)/icon.png
 

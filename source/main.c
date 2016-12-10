@@ -38,7 +38,7 @@ typedef enum {
 typedef enum {
 	FULL_RESET,
 	PARTIAL_RESET,
-} ResetType;
+} ResetTypeGame;
 
 typedef struct {
 	bool running;
@@ -95,7 +95,7 @@ GameState g_gameState;
 double g_fps; //Used to calculate the lagometer.
 double g_gameOverDistance;
 
-void init(ResetType reset) {
+void init(ResetTypeGame reset) {
 	////DYNAMIC VARS
 	g_renderedWalls = 0;
 	g_score = 0;

@@ -106,6 +106,12 @@ public final class Util {
 		return string.toString();
 	}
 	
+	public static void putString(ByteBuffer buffer, String string) {
+		if(string.length() >= 256) string = string.substring(0, 256);
+		buffer.put((byte) string.length()); 		
+		buffer.put(string.getBytes());
+	}
+
 	/**
 	 * Gets a color from the file.
 	 * @param data Raw data.
@@ -113,21 +119,27 @@ public final class Util {
 	 * @throws IOException
 	 * @throws BufferUnderflowException
 	 */
-	public static Color readColor(ByteBuffer data) throws IOException, BufferUnderflowException {
-		return new Color(data.get() & 0xFF, data.get() & 0xFF, data.get() & 0xFF);
-	}
-	
-	public static byte[] writeColors(Color[] c) {
-		byte[] colors = new byte[c.length * 3];
-		for(int i = 0; i < c.length; i++) {
-			colors[i * 3] = (byte) c[i].getRed();
-			colors[i * 3 + 1] = (byte) c[i].getBlue();
-			colors[i * 3 + 2] = (byte) c[i].getGreen();
+	public static Color[] readColors(ByteBuffer data) throws IOException, BufferUnderflowException {
+		int length = data.get() & 0xFF;
+		Color[] colors = new Color[length];
+		for(int i = 0; i < length; i++) {
+			colors[i] = new Color(data.get() & 0xFF, data.get() & 0xFF, data.get() & 0xFF);
 		}
 		return colors;
 	}
 	
-	public static ByteBuffer loadBinaryFile(File file) throws IOException {
+	public static byte[] putColors(Color[] c) {
+		byte[] colors = new byte[c.length * 3 + 1];
+		colors[0] = (byte)(c.length);
+		for(int i = 0; i < c.length; i++) {
+			colors[i * 3 + 1] = (byte) c[i].getRed();
+			colors[i * 3 + 2] = (byte) c[i].getBlue();
+			colors[i * 3 + 3] = (byte) c[i].getGreen();
+		}
+		return colors;
+	}
+	
+	public static ByteBuffer readBinaryFile(File file) throws IOException {
 		FileInputStream inputStream = new FileInputStream(file);
 		FileChannel channel = inputStream.getChannel();
 		ByteBuffer rawData = ByteBuffer.allocate((int)channel.size());
@@ -139,6 +151,7 @@ public final class Util {
 	}
 	
 	public static void writeBinaryFile(File file, ByteBuffer buffer) throws IOException {
+		
 		//Delete really old file and move old file into it's place
 		File oldDir = Util.getFolder(new File(file.getParent() + OLD));
 		File backupFile = new File(oldDir, file.getName());
@@ -153,5 +166,18 @@ public final class Util {
 		channel.close();
 		outputStream.close();
 		System.out.println("Backed up and wrote file: '" + file.getAbsolutePath() + "'");
+	}
+	
+	public static String getColorAsString(Color[] colors) {
+		StringBuilder s = new StringBuilder();
+		s.append("[");
+		String delemeter = "";
+		for(Color c : colors) {
+			s.append(delemeter);
+			s.append(c.toString().substring(14));
+			delemeter = ", ";
+		}
+		s.append("]");
+		return s.toString();
 	}
 }

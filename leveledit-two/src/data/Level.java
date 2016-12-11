@@ -8,7 +8,10 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
 
+import javax.swing.JColorChooser;
+
 import parts.Pattern;
+import red.LevelEditTwo;
 import red.Util;
 
 public class Level {
@@ -31,21 +34,59 @@ public class Level {
 	private int numberOfPatterns;
 	private ArrayList<Pattern> patterns = new ArrayList<>();
 	
+	public Level(File projectPath) {
+		try {
+			name = LevelEditTwo.prompt("[String] Level Name").toUpperCase();
+			difficulty = LevelEditTwo.prompt("[String] Difficulty").toUpperCase();
+			mode = LevelEditTwo.prompt("[String] Apparent Mode").toUpperCase();
+			creator = LevelEditTwo.prompt("[String] Your Name/Username").toUpperCase();
+			bg1 = new Color[Integer.parseInt(LevelEditTwo.prompt("[int] Amount of background one colors"))];
+			bg2 = new Color[Integer.parseInt(LevelEditTwo.prompt("[int] Amount of background two ccolors"))];
+			fg = new Color[Integer.parseInt(LevelEditTwo.prompt("[int] Amount of foreground colors"))];
+			System.out.println("OK! Creating color chooser dialogue box. ");
+			System.out.println("If you do not see it, try moving some windows on your desktop!");
+			pickColors();
+			wallSpeed = Float.parseFloat(LevelEditTwo.prompt("[float] Wall advancement speed"));
+			rotationSpeed = Float.parseFloat(LevelEditTwo.prompt("[float] Level rotation speed\nWill be TAU/this! Enter 0.0 for no rotation"));
+			if(rotationSpeed != 0.0) rotationSpeed = (float) ((Math.PI * 2.0) / (double)rotationSpeed);
+			humanSpeed = Float.parseFloat(LevelEditTwo.prompt("[float] Human rotation speed\nWill be TAU/this! Enter 0.0 for TAU/240.0"));
+			if(humanSpeed != 0.0) humanSpeed = (float) (Math.PI * 2.0 / (double)humanSpeed); else humanSpeed = (float) (Math.PI * 2.0 / 240.0);
+			pulseSpeed = Float.parseFloat(LevelEditTwo.prompt("[float] Pulse rate"));
+			numberOfPatterns = 0;
+			file = new File(projectPath, name.toLowerCase() + EXTENSION);
+			System.out.println(this);
+			if(LevelEditTwo.prompt("[Y/N] Write this configuration?").toUpperCase().equals("Y")) {
+				writeFile();
+			}
+		} catch (Exception e) {
+			
+		}
+	}
+
+	private void pickColors() {
+		for(int i = 0; i < bg1.length; i++) {
+			bg1[i] = JColorChooser.showDialog(null, "BACKGROUND COLOR ONE: COLOR " + (i + 1), Color.BLACK);
+		}
+		for(int i = 0; i < bg2.length; i++) {
+			bg2[i] = JColorChooser.showDialog(null, "BACKGROUND COLOR TWO: COLOR " + (i + 1), Color.GRAY);
+		}
+		for(int i = 0; i < fg.length; i++) {
+			fg[i] = JColorChooser.showDialog(null, "FOREGROUND COLOR: COLOR " + (i + 1), Color.WHITE);
+		}
+	}
+
 	public Level(File levelFile, ArrayList<Pattern> patterns) throws IOException {
 		file = levelFile;
-		ByteBuffer levelRawData = Util.loadBinaryFile(levelFile);
+		ByteBuffer levelRawData = Util.readBinaryFile(levelFile);
 		try {
 			Util.checkString(levelRawData, HEADER);
 			name = Util.readString(levelRawData);
 			difficulty = Util.readString(levelRawData);
 			mode = Util.readString(levelRawData);
 			creator = Util.readString(levelRawData);
-			bg1[0] = Util.readColor(levelRawData);
-			bg1[1] = Util.readColor(levelRawData);
-			bg2[0] = Util.readColor(levelRawData);
-			bg2[1] = Util.readColor(levelRawData);
-			fg[0] = Util.readColor(levelRawData);
-			fg[1] = Util.readColor(levelRawData);
+			bg1 = Util.readColors(levelRawData);
+			bg2 = Util.readColors(levelRawData);
+			fg = Util.readColors(levelRawData);
 			wallSpeed = levelRawData.getFloat();
 			rotationSpeed = levelRawData.getFloat();
 			humanSpeed = levelRawData.getFloat();
@@ -63,20 +104,20 @@ public class Level {
 		ByteBuffer b = ByteBuffer.allocate(getByteLength());
 		b.order(ByteOrder.LITTLE_ENDIAN);
 		b.put(HEADER.getBytes());
-		b.put((byte) name.length()); 		b.put(name.getBytes());
-		b.put((byte) difficulty.length()); 	b.put(difficulty.getBytes());
-		b.put((byte) mode.length()); 		b.put(mode.getBytes());
-		b.put((byte) creator.length()); 	b.put(creator.getBytes());
-		b.put(Util.writeColors(bg1));
-		b.put(Util.writeColors(bg2));
-		b.put(Util.writeColors(fg));
+		Util.putString(b, name);
+		Util.putString(b, difficulty);
+		Util.putString(b, mode);
+		Util.putString(b, creator);
+		b.put(Util.putColors(bg1));
+		b.put(Util.putColors(bg2));
+		b.put(Util.putColors(fg));
 		b.putFloat(wallSpeed);
 		b.putFloat(rotationSpeed);
 		b.putFloat(humanSpeed);
 		b.putFloat(pulseSpeed);
 		b.putInt(numberOfPatterns);
 		for(Pattern p : patterns) {
-			b.put((byte) p.getName().length()); b.put(p.getName().getBytes());
+			Util.putString(b, p.getName());
 		}
 		b.put(FOOTER.getBytes());
 		Util.writeBinaryFile(file, b);
@@ -89,9 +130,9 @@ public class Level {
 		r.append("\nDifficulty: " + difficulty);
 		r.append("\nMode:       " + mode);
 		r.append("\nCreator:    " + creator);
-		r.append("\nBackground colors one: " + bg1[0].toString().substring(14) + ", " + bg1[1].toString().substring(14));
-		r.append("\nBackground colors two: " + bg2[0].toString().substring(14) + ", " + bg2[1].toString().substring(14));
-		r.append("\nForeground colors:     " + fg[0].toString().substring(14) + ", " + fg[1].toString().substring(14));
+		r.append("\nBackground colors one: " + Util.getColorAsString(bg1));
+		r.append("\nBackground colors two: " + Util.getColorAsString(bg2));
+		r.append("\nForeground colors:     " + Util.getColorAsString(fg));
 		r.append("\nWall speed:     " + wallSpeed);
 		r.append("\nRotation speed: " + rotationSpeed);
 		r.append("\nHuman speed:    " + humanSpeed);
@@ -119,7 +160,9 @@ public class Level {
 		difficulty.length()  + 1 + 		//Difficulty size, plus the null terminator
 		mode.length() + 1 + 			//Mode size, plus the null terminator
 		creator.length() + 1 + 			//Creator size, plus the null terminator
-		Util.COLOR_BYTE_LENGTH * 6 + 	//Size of the 6 colors 
+		bg1.length * Util.COLOR_BYTE_LENGTH + 1 +
+		bg2.length * Util.COLOR_BYTE_LENGTH + 1 +
+		fg.length * Util.COLOR_BYTE_LENGTH + 1 +
 		4 * 4 + 						//wallSpeed, rotationSpeed, humanSpeed, and pulseSpeed
 		4 +								//Integer to store the amount of pattern names
 		patternsLength +				//Computed size of all strings

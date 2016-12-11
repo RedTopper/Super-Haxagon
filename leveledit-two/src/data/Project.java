@@ -37,5 +37,6 @@ public class Project {
 				e.printStackTrace();
 			}
 		}
+		new Level(projectFolder);
 	}
 }

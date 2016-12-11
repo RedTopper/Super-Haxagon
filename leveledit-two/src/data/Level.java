@@ -40,7 +40,6 @@ public class Level {
 			difficulty = Util.readString(levelRawData);
 			mode = Util.readString(levelRawData);
 			creator = Util.readString(levelRawData);
-			creator = "REDHAT";
 			bg1[0] = Util.readColor(levelRawData);
 			bg1[1] = Util.readColor(levelRawData);
 			bg2[0] = Util.readColor(levelRawData);
@@ -127,7 +126,7 @@ public class Level {
 		FOOTER.length();				//The footer
 	}
 
-	private void loadPatterns(ByteBuffer levelRawData, ArrayList<Pattern> patterns) throws BufferUnderflowException, IOException {
+	private void loadPatterns(ByteBuffer levelRawData, ArrayList<Pattern> patterns) throws IOException {
 		//load patterns from shared container
 		String[] patternNames = new String[numberOfPatterns];
 		for(int i = 0; i < numberOfPatterns; i++) {

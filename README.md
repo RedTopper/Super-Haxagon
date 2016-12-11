@@ -1,6 +1,6 @@
-# ![Icon](./resource/icon.png "Icon") Super-Haxagon
+<p align="center"><img style="text-align:center" src="./media/rendersmall.png" alt="Banner Render" title="Banner Render"/></p>
 
-<div style="text-align:center"><img src="./media/rendersmall.png" alt="Banner Render" title="Banner Render"/></div>
+# ![Icon](./resource/icon.png "Icon") Super-Haxagon
 
 This is a Super Hexagon clone for the Nintendo 3DS. This should run on the o3ds, n3ds, and Citra homebrew environments. The Makefile also creates a CFW compatible CIA too, for those who are into that kind of stuff. A banner is included.
 

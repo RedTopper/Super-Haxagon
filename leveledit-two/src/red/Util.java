@@ -97,10 +97,10 @@ public final class Util {
 	 * @throws BufferUnderflowException
 	 */
 	public static String readString(ByteBuffer data) throws IOException, BufferUnderflowException {
+		byte length = data.get();
 		StringBuilder string = new StringBuilder();
-		byte part;
-		while((part = data.get()) != '\0') {
-			string.append((char)part);
+		for(int i = 0; i < length; i++) {
+			string.append((char)data.get());
 		}
 		return string.toString();
 	}

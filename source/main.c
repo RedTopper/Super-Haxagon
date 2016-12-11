@@ -14,7 +14,7 @@
 #define FG 0
 #define BG1 1
 #define BG2 2
-#define TOTAL_PATTERNS_AT_ONE_TIME 2
+#define TOTAL_PATTERNS_AT_ONE_TIME 3
 
 typedef enum {
 	CAN_MOVE,

@@ -1,7 +1,5 @@
 # ![Icon](./resource/icon.png "Icon") Super-Haxagon
 
-<div style="text-align:center">![Super Haxagon](./media/render.png "Banner")</div>
-
 This is a Super Hexagon clone for the Nintendo 3DS. This should run on the o3ds, n3ds, and Citra homebrew environments. The Makefile also creates a CFW compatible CIA too, for those who are into that kind of stuff. A banner is included.
 
 ### Download
@@ -9,6 +7,10 @@ This is a Super Hexagon clone for the Nintendo 3DS. This should run on the o3ds,
 Downloads are available from the [releases page](https://github.com/RedInquisitive/Super-Haxagon/releases).
 
 Contributing to the project will help create a better game for everyone! If you would like to help, feel free to create a pull request. I know for a fact I messed up somewhere in the code here. If you are implementing a new feature, I'd be happy to acccept it! 
+
+### Notes
+
+In order for audio to work you must dump your DSP firmware. Normally, this is covered when installing A9LH through [3ds.guide](https://3ds.guide/installing-arm9loaderhax#section-vi---finalizing-setup)'s "Section VI - Finalizing setup". If it is not, Launch the Homebrew Launcher from the home menu and select “DSP Dump”.
 
 ### Features
 
@@ -37,7 +39,9 @@ Contributing to the project will help create a better game for everyone! If you 
   * Render from [xerpi/sf2dlib](https://github.com/xerpi/sf2dlib)
   * And many more!
 
-### Screenshots
+<div style="text-align:center"><img src="./media/render.png" alt="Banner Render" title="Banner Render"/></div>
+
+# Screenshots
 
 ![Game Over](./media/scr_7_MERGED.png "NOT AGAIN!")
 ![Walls](./media/scr_6_MERGED.png "The walls move twoards you!")

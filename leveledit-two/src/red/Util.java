@@ -22,6 +22,7 @@ public final class Util {
 	}
 	
 	public static final int COLOR_BYTE_LENGTH = 3; // Each color takes up 1 byte;
+	public static final String OLD = File.separator + "backup";
 	
 	/**
 	 * Gets a folder based on a file object.
@@ -138,11 +139,19 @@ public final class Util {
 	}
 	
 	public static void writeBinaryFile(File file, ByteBuffer buffer) throws IOException {
+		//Delete really old file and move old file into it's place
+		File oldDir = Util.getFolder(new File(file.getParent() + OLD));
+		File backupFile = new File(oldDir, file.getName());
+		backupFile.delete();
+		file.renameTo(backupFile);
+		
+		//write new file
 		FileOutputStream outputStream = new FileOutputStream(file, false);
 		FileChannel channel = outputStream.getChannel();
 		buffer.rewind();
 		channel.write(buffer);
 		channel.close();
 		outputStream.close();
+		System.out.println("Backed up and wrote file: '" + file.getAbsolutePath() + "'");
 	}
 }

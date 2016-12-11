@@ -1,5 +1,7 @@
 # ![Icon](./resource/icon.png "Icon") Super-Haxagon
 
+<div style="text-align:center"><img src="./media/rendersmall.png" alt="Banner Render" title="Banner Render"/></div>
+
 This is a Super Hexagon clone for the Nintendo 3DS. This should run on the o3ds, n3ds, and Citra homebrew environments. The Makefile also creates a CFW compatible CIA too, for those who are into that kind of stuff. A banner is included.
 
 ### Download
@@ -38,8 +40,6 @@ In order for audio to work you must dump your DSP firmware. Normally, this is co
   * Fonts via [flarn2006/SF2DBmpFont](https://github.com/flarn2006/SF2DBmpFont)
   * Render from [xerpi/sf2dlib](https://github.com/xerpi/sf2dlib)
   * And many more!
-
-<div style="text-align:center"><img src="./media/render.png" alt="Banner Render" title="Banner Render"/></div>
 
 # Screenshots
 

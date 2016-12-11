@@ -15,7 +15,6 @@ public class Level {
 	public static final String HEADER = "LEVEL2.0";
 	public static final String FOOTER = "ENDLEVEL";
 	public static final String EXTENSION = ".head";
-	public static final String OLD = File.separator + "backup";
 	
 	private File file;
 	private String name;
@@ -34,32 +33,7 @@ public class Level {
 	
 	public Level(File levelFile, ArrayList<Pattern> patterns) throws IOException {
 		file = levelFile;
-		createLevel(Util.loadBinaryFile(levelFile), patterns);
-		System.out.println(this);
-	}
-
-	private void loadPatterns(ByteBuffer levelRawData, ArrayList<Pattern> patterns) throws BufferUnderflowException, IOException {
-		//load patterns from shared container
-		String[] patternNames = new String[numberOfPatterns];
-		for(int i = 0; i < numberOfPatterns; i++) {
-			patternNames[i] = Util.readString(levelRawData);
-			
-			//find matching pattern in patterns directory
-			boolean patternFound = false;
-			for(int j = 0; j < patterns.size(); j++) {
-				if(patternNames[i].equals(patterns.get(j).getName())) {
-					patternFound = true;
-					this.patterns.add(patterns.get(j));
-					break;
-				}
-			}
-			
-			//if pattern is not found, level cannot be created
-			if(!patternFound) throw new IOException("Pattern " + patternNames[i] + " not found in the patterns folder!");
-		}
-	}
-
-	private void createLevel(ByteBuffer levelRawData, ArrayList<Pattern> patterns) throws IOException {
+		ByteBuffer levelRawData = Util.loadBinaryFile(levelFile);
 		try {
 			Util.checkString(levelRawData, HEADER);
 			name = Util.readString(levelRawData);
@@ -83,20 +57,17 @@ public class Level {
 		}  catch(BufferUnderflowException e) {
 			System.out.println("The file does not have all of the properties needed to create a level!");
 		}
+		System.out.println(this);
 	}
-	
+
 	public void writeFile() throws IOException {
 		ByteBuffer b = ByteBuffer.allocate(getByteLength());
 		b.order(ByteOrder.LITTLE_ENDIAN);
 		b.put(HEADER.getBytes());
-		b.put((byte) name.length());
-		b.put(name.getBytes());
-		b.put((byte) difficulty.length());
-		b.put(difficulty.getBytes());
-		b.put((byte) mode.length());
-		b.put(mode.getBytes());
-		b.put((byte) creator.length());
-		b.put(creator.getBytes());
+		b.put((byte) name.length()); 		b.put(name.getBytes());
+		b.put((byte) difficulty.length()); 	b.put(difficulty.getBytes());
+		b.put((byte) mode.length()); 		b.put(mode.getBytes());
+		b.put((byte) creator.length()); 	b.put(creator.getBytes());
 		b.put(Util.writeColors(bg1));
 		b.put(Util.writeColors(bg2));
 		b.put(Util.writeColors(fg));
@@ -106,37 +77,10 @@ public class Level {
 		b.putFloat(pulseSpeed);
 		b.putInt(numberOfPatterns);
 		for(Pattern p : patterns) {
-			b.put((byte) p.getName().length());
-			b.put(p.getName().getBytes());
+			b.put((byte) p.getName().length()); b.put(p.getName().getBytes());
 		}
 		b.put(FOOTER.getBytes());
-		
-		//Delete really old file and move old file into it's place
-		File oldDir = Util.getFolder(new File(file.getParent() + OLD));
-		File backupFile = new File(oldDir, file.getName());
-		backupFile.delete();
-		file.renameTo(backupFile);
-		
-		//write new file
 		Util.writeBinaryFile(file, b);
-	}
-
-	public int getByteLength() {
-		int patternsLength = 0;
-		for(Pattern p : patterns) {
-			patternsLength += p.getName().length() + 1;
-		}
-		return
-		HEADER.length() + 				//Size of the header
-		name.length() + 1 + 			//Name size, plus the null terminator
-		difficulty.length()  + 1 + 		//Difficulty size, plus the null terminator
-		mode.length() + 1 + 			//Mode size, plus the null terminator
-		creator.length() + 1 + 			//Creator size, plus the null terminator
-		Util.COLOR_BYTE_LENGTH * 6 + 	//Size of the 6 colors 
-		4 * 4 + 						//wallSpeed, rotationSpeed, humanSpeed, and pulseSpeed
-		4 +								//Integer to store the amount of pattern names
-		patternsLength +				//Computed size of all strings
-		FOOTER.length();				//The footer
 	}
 
 	public String toString() {
@@ -163,5 +107,44 @@ public class Level {
 		}
 		r.append("]");
 		return r.toString();
+	}
+
+	private int getByteLength() {
+		int patternsLength = 0;
+		for(Pattern p : patterns) {
+			patternsLength += p.getName().length() + 1;
+		}
+		return
+		HEADER.length() + 				//Size of the header
+		name.length() + 1 + 			//Name size, plus the null terminator
+		difficulty.length()  + 1 + 		//Difficulty size, plus the null terminator
+		mode.length() + 1 + 			//Mode size, plus the null terminator
+		creator.length() + 1 + 			//Creator size, plus the null terminator
+		Util.COLOR_BYTE_LENGTH * 6 + 	//Size of the 6 colors 
+		4 * 4 + 						//wallSpeed, rotationSpeed, humanSpeed, and pulseSpeed
+		4 +								//Integer to store the amount of pattern names
+		patternsLength +				//Computed size of all strings
+		FOOTER.length();				//The footer
+	}
+
+	private void loadPatterns(ByteBuffer levelRawData, ArrayList<Pattern> patterns) throws BufferUnderflowException, IOException {
+		//load patterns from shared container
+		String[] patternNames = new String[numberOfPatterns];
+		for(int i = 0; i < numberOfPatterns; i++) {
+			patternNames[i] = Util.readString(levelRawData);
+			
+			//find matching pattern in patterns directory
+			boolean patternFound = false;
+			for(int j = 0; j < patterns.size(); j++) {
+				if(patternNames[i].equals(patterns.get(j).getName())) {
+					patternFound = true;
+					this.patterns.add(patterns.get(j));
+					break;
+				}
+			}
+			
+			//if pattern is not found, level cannot be created
+			if(!patternFound) throw new IOException("Pattern " + patternNames[i] + " not found in the patterns folder!");
+		}
 	}
 }

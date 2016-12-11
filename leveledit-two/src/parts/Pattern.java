@@ -2,7 +2,6 @@ package parts;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
@@ -18,10 +17,7 @@ public class Pattern {
 	
 	public Pattern(File patternFile) throws IOException {
 		file = patternFile;
-		createPattern(Util.loadBinaryFile(patternFile));
-	}
-	
-	private void createPattern(ByteBuffer patternRawData) throws BufferUnderflowException, IOException {
+		ByteBuffer patternRawData = Util.loadBinaryFile(patternFile);
 		Util.checkString(patternRawData, HEADER);
 		int numberOfWalls = patternRawData.getInt();
 		for(int i = 0; i < numberOfWalls; i++) {
@@ -38,7 +34,7 @@ public class Pattern {
 		
 	}
 	
-	public int getByteLength() {
+	private int getByteLength() {
 		return
 		HEADER.length() + 	//Size of the header
 		4 + 				//Integer to represent how many walls there are

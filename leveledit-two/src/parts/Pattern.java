@@ -17,7 +17,7 @@ public class Pattern {
 	
 	public Pattern(File patternFile) throws IOException {
 		file = patternFile;
-		ByteBuffer patternRawData = Util.loadBinaryFile(patternFile);
+		ByteBuffer patternRawData = Util.readBinaryFile(patternFile);
 		Util.checkString(patternRawData, HEADER);
 		int numberOfWalls = patternRawData.getInt();
 		for(int i = 0; i < numberOfWalls; i++) {

@@ -23,7 +23,7 @@ public class LevelEditTwo {
 		Util.getFolderContents(Util.FileType.FOLDER, projectDir, "PROJECTS", "NO PROJECTS FOUND");
 		
 		//Open project folder
-		String project = prompt("Type the name of the project you would like to open\nor create one by typing in a new name:");
+		String project = prompt("Type the name of the project you would like to open\nor create one by typing in a new name");
 		try {
 			Project conf = new Project(new File(projectDir, project));
 			conf.toString();
@@ -37,7 +37,7 @@ public class LevelEditTwo {
 	}
 	
 	public static String prompt(String prompt) {
-		System.out.println("\n" + prompt);
+		System.out.println("\n" + prompt + ":");
 		System.out.print("> ");
 		return reader.nextLine();
 	}

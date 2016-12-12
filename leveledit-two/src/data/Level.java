@@ -35,6 +35,7 @@ public class Level {
 	private String difficulty;
 	private String mode;
 	private String creator;
+	private String music;
 	private ArrayList<Color> bg1 = new ArrayList<>();
 	private ArrayList<Color> bg2 = new ArrayList<>();
 	private ArrayList<Color> fg = new ArrayList<>();
@@ -57,6 +58,7 @@ public class Level {
 		this.difficulty = "UNKNOWN";
 		this.mode = "NORMAL";
 		this.creator = "ANONYMOUS";
+		this.music = "NONE";
 		this.bg1.add(Color.BLACK);
 		this.bg2.add(Color.GRAY);
 		this.fg.add(Color.WHITE);
@@ -82,6 +84,7 @@ public class Level {
 			this.difficulty = Util.readString(levelRawData);
 			this.mode = Util.readString(levelRawData);
 			this.creator = Util.readString(levelRawData);
+			this.music = Util.readString(levelRawData);
 			this.bg1 = Util.readColors(levelRawData);
 			this.bg2 = Util.readColors(levelRawData);
 			this.fg = Util.readColors(levelRawData);
@@ -109,6 +112,7 @@ public class Level {
 		Util.putString(b, difficulty);
 		Util.putString(b, mode);
 		Util.putString(b, creator);
+		Util.putString(b, music);
 		b.put(Util.putColors(bg1));
 		b.put(Util.putColors(bg2));
 		b.put(Util.putColors(fg));
@@ -133,6 +137,7 @@ public class Level {
 		difficulty.length()  + 1 + 					//Difficulty size, plus the null terminator
 		mode.length() + 1 + 						//Mode size, plus the null terminator
 		creator.length() + 1 + 						//Creator size, plus the null terminator
+		music.length() + 1 +					//Name of the music file to load
 		bg1.size() * Util.COLOR_BYTE_LENGTH + 1 + 	//Colors plus the extra length byte
 		bg2.size() * Util.COLOR_BYTE_LENGTH + 1 +	//For the second background color
 		fg.size() * Util.COLOR_BYTE_LENGTH + 1 +	//And the foreground colors
@@ -149,7 +154,7 @@ public class Level {
 		//JColorChooser.showDialog(null, "FOREGROUND COLOR: COLOR " + (i + 1), Color.WHITE);
 		try { UIManager.setLookAndFeel(new NimbusLookAndFeel());} catch (UnsupportedLookAndFeelException e) {}
 		JFrame level = new JFrame("Level Editor for level '" + name + "'");
-		level.setMinimumSize(new Dimension(530,562));
+		level.setMinimumSize(new Dimension(530,620));
 		level.setLayout(new GridLayout(1,0));
 		
 		//Left Side Textual Configuration
@@ -160,6 +165,7 @@ public class Level {
 		JTextField jdiff = Util.addTitledFieldToPanel(textConfiguration, null, "[String] Difficulty", difficulty);
 		JTextField jmode = Util.addTitledFieldToPanel(textConfiguration, null, "[String] Mode", mode);
 		JTextField jcrea = Util.addTitledFieldToPanel(textConfiguration, null, "[String] Creator", creator);
+		JTextField jmuse = Util.addTitledFieldToPanel(textConfiguration, null, "[String] Music File + extension", music);
 		JTextField jwall = Util.addTitledFieldToPanel(textConfiguration, null, "[float] Wall Speed", wallSpeed + "");
 		JTextField jrota = Util.addTitledFieldToPanel(textConfiguration, null, "[TAU/float] Rotation Step", rotationSpeed + "");
 		JTextField jhuma = Util.addTitledFieldToPanel(textConfiguration, null, "[TAU/float] Human Step", humanSpeed + "");
@@ -171,6 +177,7 @@ public class Level {
 					difficulty = Util.updateText(jdiff);
 					mode = Util.updateText(jmode);
 					creator = Util.updateText(jcrea);
+					music = jmuse.getText();
 					wallSpeed = Float.parseFloat(jwall.getText());
 					rotationSpeed = Float.parseFloat(jrota.getText());
 					humanSpeed= Float.parseFloat(jhuma.getText());
@@ -260,7 +267,7 @@ public class Level {
 		level.add(patternConfiguration);
 		level.getContentPane().setBackground(Color.BLACK);
 		level.pack();
-		level.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		level.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		level.setVisible(true);
 		level.toFront();
 		level.requestFocus();

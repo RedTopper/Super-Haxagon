@@ -4,6 +4,8 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.nio.BufferUnderflowException;
@@ -12,12 +14,15 @@ import java.nio.ByteOrder;
 import java.util.ArrayList;
 
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 
 import parts.Pattern;
+import red.JListData;
 import red.Util;
 
 public class Level {
@@ -25,12 +30,6 @@ public class Level {
 	public static final String FOOTER = "ENDLEVEL";
 	public static final String EXTENSION = ".head";
 	
-	//If you want to add a variable here, you'll need to add it in these places too:
-	//Level(File projectPath) (to ask it from the user)
-	//Level(File levelFile, ArrayList<Pattern> patterns) (to parse  it from a file)
-	//writeFile() (to write it to a file)
-	//toString() (to convert this object to a string)
-	//and getByteLength()! (to write this file)
 	private File file;
 	private String name;
 	private String difficulty;
@@ -46,6 +45,12 @@ public class Level {
 	private ArrayList<Pattern> patterns = new ArrayList<>();
 	private ArrayList<Pattern> availablePatterns;
 	
+	/**
+	 * Default level parameters.
+	 * @param projectPath The folder of the project
+	 * @param name Project name (also file name)
+	 * @param availablePatterns A list of all of the loaded patterns
+	 */
 	public Level(File projectPath, String name, ArrayList<Pattern> availablePatterns) {
 		this.file = new File(projectPath, name.replaceAll("\\s", "").toLowerCase() + EXTENSION);
 		this.name = name.toUpperCase();
@@ -62,59 +67,12 @@ public class Level {
 		this.availablePatterns = availablePatterns;
 	}
 	
-	public void edit() {
-		JFrame level = new JFrame("Level Editor for level '" + name + "'");
-		try { UIManager.setLookAndFeel(new NimbusLookAndFeel());} catch (UnsupportedLookAndFeelException e) {}
-		level.setMinimumSize(new Dimension(530,562));
-		level.setLayout(new GridLayout(1,0));
-		
-		//Left Side Textual Configuration
-		JPanel textConfiguration = new JPanel();
-		textConfiguration.setLayout(new GridLayout(0,1));
-		textConfiguration.setBackground(Util.BACKGROUND);
-		Util.addTitledFieldToPanel(textConfiguration, null, "[String] Name", name);
-		Util.addTitledFieldToPanel(textConfiguration, null, "[String] Difficulty", difficulty);
-		Util.addTitledFieldToPanel(textConfiguration, null, "[String] Mode", mode);
-		Util.addTitledFieldToPanel(textConfiguration, null, "[String] Creator", creator);
-		Util.addTitledFieldToPanel(textConfiguration, null, "[float] Wall Speed", wallSpeed + "");
-		Util.addTitledFieldToPanel(textConfiguration, null, "[TAU/float] Rotation Speed", rotationSpeed + "");
-		Util.addTitledFieldToPanel(textConfiguration, null, "[TAU/float] Human Speed", humanSpeed + "");
-		Util.addTitledFieldToPanel(textConfiguration, null, "[float] Pulse Speed", pulseSpeed + "");
-		Util.addButtonToPanel(textConfiguration, null, "Save Configuration");
-		
-		//Right Side pattern chooser.
-		JPanel patternConfiguration = new JPanel();
-		patternConfiguration.setLayout(new GridLayout(0,1));
-		
-		//The top
-		JPanel top = new JPanel();
-		top.setLayout(new BorderLayout());
-		top.setBackground(Util.BACKGROUND);
-		Util.addButtonToPanel(top, BorderLayout.NORTH, "<html><center>Create New Pattern<br/>(Opens Pattern Editor)</center></html>");
-		Util.addTitledListToPanel(top, BorderLayout.CENTER, "Available Patterns", availablePatterns);
-		Util.addButtonToPanel(top, BorderLayout.SOUTH, "Edit selected pattern");
-
-		//The bottom
-		JPanel bot = new JPanel();
-		bot.setLayout(new BorderLayout());
-		bot.setBackground(Util.BACKGROUND);
-		Util.addButtonToPanel(bot, BorderLayout.NORTH, "Add selected pattern to this level");
-		Util.addTitledListToPanel(bot, BorderLayout.CENTER, "Level Patterns", patterns);
-		Util.addButtonToPanel(bot, BorderLayout.SOUTH,"Remove selected pattern from this level");;
-		
-		//Assemble everything into the level editor
-		patternConfiguration.add(top);
-		patternConfiguration.add(bot);
-		level.add(textConfiguration);
-		level.add(patternConfiguration);
-		level.getContentPane().setBackground(Color.BLACK);
-		level.pack();
-		level.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		level.setVisible(true);
-		level.toFront();
-		level.requestFocus();
-	}
-
+	/**
+	 * Loads a level from a file.
+	 * @param levelFile The file to load.
+	 * @param availablePatterns A list of all loaded patterns
+	 * @throws IOException
+	 */
 	public Level(File levelFile, ArrayList<Pattern> availablePatterns) throws IOException {
 		file = levelFile;
 		ByteBuffer levelRawData = Util.readBinaryFile(levelFile);
@@ -137,9 +95,12 @@ public class Level {
 		}  catch(BufferUnderflowException e) {
 			System.out.println("The file does not have all of the properties needed to create a level!");
 		}
-		System.out.println(this);
 	}
 
+	/**
+	 * Writes this object to a file.
+	 * @throws IOException
+	 */
 	public void writeFile() throws IOException {
 		ByteBuffer b = ByteBuffer.allocate(getByteLength());
 		b.order(ByteOrder.LITTLE_ENDIAN);
@@ -161,45 +122,6 @@ public class Level {
 		Util.writeBinaryFile(file, b);
 	}
 
-	public String toString() {
-		StringBuilder r = new StringBuilder();
-		r.append("\nLEVEL DATA:");
-		r.append("\nLevel Name: " + name);
-		r.append("\nDifficulty: " + difficulty);
-		r.append("\nMode:       " + mode);
-		r.append("\nCreator:    " + creator);
-		r.append("\nBackground colors one: " + Util.getColorAsString(bg1));
-		r.append("\nBackground colors two: " + Util.getColorAsString(bg2));
-		r.append("\nForeground colors:     " + Util.getColorAsString(fg));
-		r.append("\nWall speed:     " + wallSpeed);
-		r.append("\nRotation speed: " + rotationSpeed);
-		r.append("\nHuman speed:    " + humanSpeed);
-		r.append("\nPulse speed:    " + pulseSpeed);
-		r.append("\nAttached Patterns:");
-		r.append("\n[");
-		String delemeter = "";
-		for(int i = 0; i < patterns.size(); i++) {
-			r.append(delemeter);
-			r.append(patterns.get(i).toString());
-			delemeter = ", ";
-		}
-		r.append("]");
-		return r.toString();
-	}
-
-	/**
-	private void pickColors(int bg1size, int bg2size, int fgsize) {
-		for(int i = 0; i < bg1size; i++) {
-			bg1.add(JColorChooser.showDialog(null, "BACKGROUND COLOR ONE: COLOR " + (i + 1), Color.BLACK));
-		}
-		for(int i = 0; i < bg2size; i++) {
-			bg2.add(JColorChooser.showDialog(null, "BACKGROUND COLOR TWO: COLOR " + (i + 1), Color.GRAY));
-		}
-		for(int i = 0; i < fgsize; i++) {
-			fg.add(JColorChooser.showDialog(null, "FOREGROUND COLOR: COLOR " + (i + 1), Color.WHITE));
-		}
-	}**/
-
 	private int getByteLength() {
 		int patternsLength = 0;
 		for(Pattern p : patterns) {
@@ -220,6 +142,137 @@ public class Level {
 		FOOTER.length();							//The footer
 	}
 
+	/**
+	 * Launches the editor.
+	 */
+	public void edit() {
+		//JColorChooser.showDialog(null, "FOREGROUND COLOR: COLOR " + (i + 1), Color.WHITE);
+		try { UIManager.setLookAndFeel(new NimbusLookAndFeel());} catch (UnsupportedLookAndFeelException e) {}
+		JFrame level = new JFrame("Level Editor for level '" + name + "'");
+		level.setMinimumSize(new Dimension(530,562));
+		level.setLayout(new GridLayout(1,0));
+		
+		//Left Side Textual Configuration
+		JPanel textConfiguration = new JPanel();
+		textConfiguration.setLayout(new GridLayout(0,1));
+		textConfiguration.setBackground(Util.BACKGROUND);
+		JTextField jname = Util.addTitledFieldToPanel(textConfiguration, null, "[String] Name", name);
+		JTextField jdiff = Util.addTitledFieldToPanel(textConfiguration, null, "[String] Difficulty", difficulty);
+		JTextField jmode = Util.addTitledFieldToPanel(textConfiguration, null, "[String] Mode", mode);
+		JTextField jcrea = Util.addTitledFieldToPanel(textConfiguration, null, "[String] Creator", creator);
+		JTextField jwall = Util.addTitledFieldToPanel(textConfiguration, null, "[float] Wall Speed", wallSpeed + "");
+		JTextField jrota = Util.addTitledFieldToPanel(textConfiguration, null, "[TAU/float] Rotation Step", rotationSpeed + "");
+		JTextField jhuma = Util.addTitledFieldToPanel(textConfiguration, null, "[TAU/float] Human Step", humanSpeed + "");
+		JTextField jpuls = Util.addTitledFieldToPanel(textConfiguration, null, "[float] Pulse Speed", pulseSpeed + "");
+		Util.addButtonToPanel(textConfiguration, null, "Save Configuration", new  ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					name = Util.updateText(jname);
+					difficulty = Util.updateText(jdiff);
+					mode = Util.updateText(jmode);
+					creator = Util.updateText(jcrea);
+					wallSpeed = Float.parseFloat(jwall.getText());
+					rotationSpeed = Float.parseFloat(jrota.getText());
+					humanSpeed= Float.parseFloat(jhuma.getText());
+					pulseSpeed = Float.parseFloat(jpuls.getText());
+					int result = JOptionPane.showOptionDialog(level, "Do you really want to save this information?\nThe current file will be backed up.", 
+								 "Really save?", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, JOptionPane.YES_OPTION);
+					if(result == JOptionPane.YES_OPTION) {
+						writeFile();
+					}
+				} catch (Exception ex) {
+					JOptionPane.showMessageDialog(level, "Error updating the level!\nCheck console for details.", "Error!", JOptionPane.ERROR_MESSAGE);
+					ex.printStackTrace();
+				}
+			}
+		});
+		
+		//Right Side pattern chooser.
+		JPanel patternConfiguration = new JPanel();
+		patternConfiguration.setLayout(new GridLayout(0,1));
+		
+		//The top
+		JPanel top = new JPanel();
+		top.setLayout(new BorderLayout());
+		top.setBackground(Util.BACKGROUND);
+		Util.addButtonToPanel(top, BorderLayout.NORTH, "<html><center>Create new pattern<br/>(Opens Pattern Editor)</center></html>", new  ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+			}
+		});
+		JListData javai = Util.addTitledListToPanel(top, BorderLayout.CENTER, "Available Patterns", availablePatterns);
+		Util.addButtonToPanel(top, BorderLayout.SOUTH, "<html><center>Edit available pattern<br/>(Opens Pattern Editor)</center></html>", new  ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+			}
+		});
+	
+		//The bottom
+		JPanel bot = new JPanel();
+		bot.setLayout(new BorderLayout());
+		bot.setBackground(Util.BACKGROUND);
+		JListData jleve = Util.addTitledListToPanel(bot, BorderLayout.CENTER, "Level Patterns", patterns);
+		Util.addButtonToPanel(bot, BorderLayout.NORTH, "Add available pattern", new  ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				//check if the user actually selected something
+				String selection = javai.list.getSelectedValue();
+				if(selection == null) return;
+				
+				//check if the pattern is real
+				Pattern selectedPattern = null;
+				for(Pattern p : availablePatterns) {
+					if(p.toString().equals(selection)) 
+						selectedPattern = p;
+				}
+				if(selectedPattern == null) return;
+				
+				//add it
+				patterns.add(selectedPattern);
+				jleve.model.removeAllElements();
+				for(Pattern p : patterns) {
+					jleve.model.addElement(p.toString());
+				}
+			}
+		});
+		Util.addButtonToPanel(bot, BorderLayout.SOUTH,"Remove level pattern", new  ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				//check if the user actually selected something
+				int selection = jleve.list.getSelectedIndex();
+				if(selection < 0) return;
+				
+				//remove it
+				for(int i = 0; i < patterns.size(); i++) {
+					if(patterns.get(i).toString().equals(jleve.model.getElementAt(selection))) {
+						patterns.remove(i);
+						break;
+					}
+				}
+				jleve.model.remove(selection);
+			}
+		});
+		
+		//Assemble everything into the level editor
+		patternConfiguration.add(top);
+		patternConfiguration.add(bot);
+		level.add(textConfiguration);
+		level.add(patternConfiguration);
+		level.getContentPane().setBackground(Color.BLACK);
+		level.pack();
+		level.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		level.setVisible(true);
+		level.toFront();
+		level.requestFocus();
+	}
+
+	/**
+	 * Loads the patterns into this level (the ones needed)
+	 * @param levelRawData The raw data  of the file.
+	 * @param numberOfPatterns The number of patterns read.
+	 * @param availablePatterns All available patterns.
+	 * @throws IOException
+	 */
 	private void loadPatterns(ByteBuffer levelRawData, int numberOfPatterns, ArrayList<Pattern> availablePatterns) throws IOException {
 		
 		//load patterns from shared container

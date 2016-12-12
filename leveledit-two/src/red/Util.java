@@ -1,6 +1,7 @@
 package red;
 
 import java.awt.Color;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -12,6 +13,7 @@ import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
+import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -188,23 +190,36 @@ public final class Util {
 		System.out.println("Backed up and wrote file: '" + file.getAbsolutePath() + "'");
 	}
 	
-	public static void addTitledFieldToPanel(JPanel panel, Object constraints, String title, String defaultText) {
+	public static JTextField addTitledFieldToPanel(JPanel panel, Object constraints, String title, String defaultText) {
 		JTextField text = new JTextField(defaultText);
 		text.setBorder(BorderFactory.createTitledBorder(title));
 		text.setBackground(BACKGROUND);
 		panel.add(text, constraints);
+		return text;
 	}
 	
-	public static void addTitledListToPanel(JPanel panel, Object constraints, String title, ArrayList<?> list) {
-		JList<Object> internal = new JList<>(list.toArray());
+	public static JListData addTitledListToPanel(JPanel panel, Object constraints, String title, ArrayList<?> list) {
+		DefaultListModel<String> model = new DefaultListModel<>();
+		for(Object o : list) {
+			model.addElement(o.toString());
+		}
+		JList<String> internal = new JList<>(model);
 		internal.setBorder(BorderFactory.createTitledBorder(title));
 		internal.setBackground(BACKGROUND);
 		panel.add(internal, constraints);
+		return new JListData(model, internal);
 	}
 	
-	public static void addButtonToPanel(JPanel panel, Object constraints, String text) {
+	public static void addButtonToPanel(JPanel panel, Object constraints, String text, ActionListener action) {
 		JButton button = new JButton(text);
 		button.setBackground(BACKGROUND);
+		button.addActionListener(action);
 		panel.add(button, constraints);
+	}
+	
+	public static String updateText(JTextField text) {
+		String str = text.getText().toUpperCase();
+		text.setText(str);
+		return str;
 	}
 }

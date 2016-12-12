@@ -33,12 +33,4 @@ public class Pattern {
 	public void writeFile() {
 		
 	}
-	
-	private int getByteLength() {
-		return
-		HEADER.length() + 	//Size of the header
-		4 + 				//Integer to represent how many walls there are
-		Wall.BYTE_LENGTH +  //size of a wall
-		FOOTER.length(); 	//Size of the footer
-	}
 }

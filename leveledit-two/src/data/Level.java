@@ -10,7 +10,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.util.ArrayList;
 
 import javax.swing.JFrame;
@@ -22,6 +21,7 @@ import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 
 import parts.Pattern;
+import red.Dynamic;
 import red.JListData;
 import red.Util;
 
@@ -43,8 +43,8 @@ public class Level {
 	private float rotationSpeed;
 	private float humanSpeed;
 	private float pulseSpeed;
-	private ArrayList<Pattern> patterns = new ArrayList<>();
 	private ArrayList<Pattern> availablePatterns;
+	private ArrayList<Pattern> patterns = new ArrayList<>();
 	
 	/**
 	 * Default level parameters.
@@ -92,8 +92,8 @@ public class Level {
 			this.rotationSpeed = levelRawData.getFloat();
 			this.humanSpeed = levelRawData.getFloat();
 			this.pulseSpeed = levelRawData.getFloat();
-			loadPatterns(levelRawData, levelRawData.getInt(), availablePatterns);
 			this.availablePatterns = availablePatterns;
+			loadPatterns(levelRawData, levelRawData.getInt(), availablePatterns);
 			Util.checkString(levelRawData, FOOTER);
 		}  catch(BufferUnderflowException e) {
 			System.out.println("The file does not have all of the properties needed to create a level!");
@@ -105,46 +105,24 @@ public class Level {
 	 * @throws IOException
 	 */
 	public void writeFile() throws IOException {
-		ByteBuffer b = ByteBuffer.allocate(getByteLength());
-		b.order(ByteOrder.LITTLE_ENDIAN);
-		b.put(HEADER.getBytes());
-		Util.putString(b, name);
-		Util.putString(b, difficulty);
-		Util.putString(b, mode);
-		Util.putString(b, creator);
-		Util.putString(b, music);
-		b.put(Util.putColors(bg1));
-		b.put(Util.putColors(bg2));
-		b.put(Util.putColors(fg));
-		b.putFloat(wallSpeed);
-		b.putFloat(rotationSpeed);
-		b.putFloat(humanSpeed);
-		b.putFloat(pulseSpeed);
-		b.putInt(patterns.size());
-		for(Pattern p : patterns) Util.putString(b, p.toString());
-		b.put(FOOTER.getBytes());
-		Util.writeBinaryFile(file, b);
-	}
-
-	private int getByteLength() {
-		int patternsLength = 0;
-		for(Pattern p : patterns) {
-			patternsLength += p.toString().length() + 1;
-		}
-		return
-		HEADER.length() + 							//Size of the header
-		name.length() + 1 + 						//Name size, plus the null terminator
-		difficulty.length()  + 1 + 					//Difficulty size, plus the null terminator
-		mode.length() + 1 + 						//Mode size, plus the null terminator
-		creator.length() + 1 + 						//Creator size, plus the null terminator
-		music.length() + 1 +					//Name of the music file to load
-		bg1.size() * Util.COLOR_BYTE_LENGTH + 1 + 	//Colors plus the extra length byte
-		bg2.size() * Util.COLOR_BYTE_LENGTH + 1 +	//For the second background color
-		fg.size() * Util.COLOR_BYTE_LENGTH + 1 +	//And the foreground colors
-		4 * 4 + 									//wallSpeed, rotationSpeed, humanSpeed, and pulseSpeed
-		4 +											//Integer to store the amount of pattern names
-		patternsLength +							//Computed size of all strings
-		FOOTER.length();							//The footer
+		Dynamic d = new Dynamic();
+		d.putRawString(HEADER);
+		d.putString(name);
+		d.putString(difficulty);
+		d.putString(mode);
+		d.putString(creator);
+		d.putString(music);
+		d.putColors(bg1);
+		d.putColors(bg2);
+		d.putColors(fg);
+		d.putFloat(wallSpeed);
+		d.putFloat(rotationSpeed);
+		d.putFloat(humanSpeed);
+		d.putFloat(pulseSpeed);
+		d.putInt(patterns.size());
+		for(Pattern p : patterns) d.putString(p.toString());
+		d.putRawString(FOOTER);
+		d.write(file);
 	}
 
 	/**
@@ -173,10 +151,10 @@ public class Level {
 		Util.addButtonToPanel(textConfiguration, null, "Save Configuration", new  ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
-					name = Util.updateText(jname);
-					difficulty = Util.updateText(jdiff);
-					mode = Util.updateText(jmode);
-					creator = Util.updateText(jcrea);
+					name = Util.upperText(jname);
+					difficulty = Util.upperText(jdiff);
+					mode = Util.upperText(jmode);
+					creator = Util.upperText(jcrea);
 					music = jmuse.getText();
 					wallSpeed = Float.parseFloat(jwall.getText());
 					rotationSpeed = Float.parseFloat(jrota.getText());

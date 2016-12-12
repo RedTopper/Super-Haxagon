@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
@@ -114,12 +113,6 @@ public final class Util {
 		}
 		return string.toString();
 	}
-	
-	public static void putString(ByteBuffer buffer, String string) {
-		if(string.length() >= 256) string = string.substring(0, 256);
-		buffer.put((byte) string.length()); 		
-		buffer.put(string.getBytes());
-	}
 
 	/**
 	 * Gets a color from the file.
@@ -136,30 +129,6 @@ public final class Util {
 		}
 		return colors;
 	}
-	
-	public static byte[] putColors(ArrayList<Color> c) {
-		byte[] colors = new byte[c.size() * 3 + 1];
-		colors[0] = (byte)(c.size());
-		for(int i = 0; i < c.size(); i++) {
-			colors[i * 3 + 1] = (byte) c.get(i).getRed();
-			colors[i * 3 + 2] = (byte) c.get(i).getBlue();
-			colors[i * 3 + 3] = (byte) c.get(i).getGreen();
-		}
-		return colors;
-	}
-	
-	public static String getColorAsString(ArrayList<Color> colors) {
-		StringBuilder s = new StringBuilder();
-		s.append("[");
-		String delemeter = "";
-		for(Color c : colors) {
-			s.append(delemeter);
-			s.append(c.toString().substring(14));
-			delemeter = ", ";
-		}
-		s.append("]");
-		return s.toString();
-	}
 
 	public static ByteBuffer readBinaryFile(File file) throws IOException {
 		FileInputStream inputStream = new FileInputStream(file);
@@ -170,24 +139,6 @@ public final class Util {
 		rawData.order(ByteOrder.LITTLE_ENDIAN);
 		inputStream.close();
 		return rawData;
-	}
-	
-	public static void writeBinaryFile(File file, ByteBuffer buffer) throws IOException {
-		
-		//Delete really old file and move old file into it's place
-		File oldDir = Util.getFolder(new File(file.getParent() + OLD));
-		File backupFile = new File(oldDir, file.getName());
-		backupFile.delete();
-		file.renameTo(backupFile);
-		
-		//write new file
-		FileOutputStream outputStream = new FileOutputStream(file, false);
-		FileChannel channel = outputStream.getChannel();
-		buffer.rewind();
-		channel.write(buffer);
-		channel.close();
-		outputStream.close();
-		System.out.println("Backed up and wrote file: '" + file.getAbsolutePath() + "'");
 	}
 	
 	public static JTextField addTitledFieldToPanel(JPanel panel, Object constraints, String title, String defaultText) {
@@ -217,7 +168,7 @@ public final class Util {
 		panel.add(button, constraints);
 	}
 	
-	public static String updateText(JTextField text) {
+	public static String upperText(JTextField text) {
 		String str = text.getText().toUpperCase();
 		text.setText(str);
 		return str;

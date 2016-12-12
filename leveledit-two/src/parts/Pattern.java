@@ -26,7 +26,7 @@ public class Pattern {
 		Util.checkString(patternRawData, FOOTER);
 	}
 
-	public String getName() {
+	public String toString() {
 		return file.getName();
 	}
 	

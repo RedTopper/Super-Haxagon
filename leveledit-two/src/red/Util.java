@@ -11,6 +11,12 @@ import java.nio.ByteOrder;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+
 public final class Util {
 	private Util() throws InstantiationException {
 		throw new InstantiationException();
@@ -23,6 +29,7 @@ public final class Util {
 	
 	public static final int COLOR_BYTE_LENGTH = 3; // Each color takes up 1 byte;
 	public static final String OLD = File.separator + "backup";
+	public static final Color BACKGROUND = new Color(245, 245, 245);
 	
 	/**
 	 * Gets a folder based on a file object.
@@ -119,26 +126,39 @@ public final class Util {
 	 * @throws IOException
 	 * @throws BufferUnderflowException
 	 */
-	public static Color[] readColors(ByteBuffer data) throws IOException, BufferUnderflowException {
+	public static ArrayList<Color> readColors(ByteBuffer data) throws IOException, BufferUnderflowException {
 		int length = data.get() & 0xFF;
-		Color[] colors = new Color[length];
+		ArrayList<Color> colors = new ArrayList<>();
 		for(int i = 0; i < length; i++) {
-			colors[i] = new Color(data.get() & 0xFF, data.get() & 0xFF, data.get() & 0xFF);
+			colors.add(new Color(data.get() & 0xFF, data.get() & 0xFF, data.get() & 0xFF));
 		}
 		return colors;
 	}
 	
-	public static byte[] putColors(Color[] c) {
-		byte[] colors = new byte[c.length * 3 + 1];
-		colors[0] = (byte)(c.length);
-		for(int i = 0; i < c.length; i++) {
-			colors[i * 3 + 1] = (byte) c[i].getRed();
-			colors[i * 3 + 2] = (byte) c[i].getBlue();
-			colors[i * 3 + 3] = (byte) c[i].getGreen();
+	public static byte[] putColors(ArrayList<Color> c) {
+		byte[] colors = new byte[c.size() * 3 + 1];
+		colors[0] = (byte)(c.size());
+		for(int i = 0; i < c.size(); i++) {
+			colors[i * 3 + 1] = (byte) c.get(i).getRed();
+			colors[i * 3 + 2] = (byte) c.get(i).getBlue();
+			colors[i * 3 + 3] = (byte) c.get(i).getGreen();
 		}
 		return colors;
 	}
 	
+	public static String getColorAsString(ArrayList<Color> colors) {
+		StringBuilder s = new StringBuilder();
+		s.append("[");
+		String delemeter = "";
+		for(Color c : colors) {
+			s.append(delemeter);
+			s.append(c.toString().substring(14));
+			delemeter = ", ";
+		}
+		s.append("]");
+		return s.toString();
+	}
+
 	public static ByteBuffer readBinaryFile(File file) throws IOException {
 		FileInputStream inputStream = new FileInputStream(file);
 		FileChannel channel = inputStream.getChannel();
@@ -168,16 +188,23 @@ public final class Util {
 		System.out.println("Backed up and wrote file: '" + file.getAbsolutePath() + "'");
 	}
 	
-	public static String getColorAsString(Color[] colors) {
-		StringBuilder s = new StringBuilder();
-		s.append("[");
-		String delemeter = "";
-		for(Color c : colors) {
-			s.append(delemeter);
-			s.append(c.toString().substring(14));
-			delemeter = ", ";
-		}
-		s.append("]");
-		return s.toString();
+	public static void addTitledFieldToPanel(JPanel panel, Object constraints, String title, String defaultText) {
+		JTextField text = new JTextField(defaultText);
+		text.setBorder(BorderFactory.createTitledBorder(title));
+		text.setBackground(BACKGROUND);
+		panel.add(text, constraints);
+	}
+	
+	public static void addTitledListToPanel(JPanel panel, Object constraints, String title, ArrayList<?> list) {
+		JList<Object> internal = new JList<>(list.toArray());
+		internal.setBorder(BorderFactory.createTitledBorder(title));
+		internal.setBackground(BACKGROUND);
+		panel.add(internal, constraints);
+	}
+	
+	public static void addButtonToPanel(JPanel panel, Object constraints, String text) {
+		JButton button = new JButton(text);
+		button.setBackground(BACKGROUND);
+		panel.add(button, constraints);
 	}
 }

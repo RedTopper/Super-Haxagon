@@ -1,6 +1,9 @@
 package data;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.GridLayout;
 import java.io.File;
 import java.io.IOException;
 import java.nio.BufferUnderflowException;
@@ -8,10 +11,13 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
 
-import javax.swing.JColorChooser;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 
 import parts.Pattern;
-import red.LevelEditTwo;
 import red.Util;
 
 public class Level {
@@ -19,80 +25,114 @@ public class Level {
 	public static final String FOOTER = "ENDLEVEL";
 	public static final String EXTENSION = ".head";
 	
+	//If you want to add a variable here, you'll need to add it in these places too:
+	//Level(File projectPath) (to ask it from the user)
+	//Level(File levelFile, ArrayList<Pattern> patterns) (to parse  it from a file)
+	//writeFile() (to write it to a file)
+	//toString() (to convert this object to a string)
+	//and getByteLength()! (to write this file)
 	private File file;
 	private String name;
 	private String difficulty;
 	private String mode;
 	private String creator;
-	private Color[] bg1 = new Color[2];
-	private Color[] bg2 = new Color[2];
-	private Color[] fg = new Color[2];
+	private ArrayList<Color> bg1 = new ArrayList<>();
+	private ArrayList<Color> bg2 = new ArrayList<>();
+	private ArrayList<Color> fg = new ArrayList<>();
 	private float wallSpeed;
 	private float rotationSpeed;
 	private float humanSpeed;
 	private float pulseSpeed;
-	private int numberOfPatterns;
 	private ArrayList<Pattern> patterns = new ArrayList<>();
+	private ArrayList<Pattern> availablePatterns;
 	
-	public Level(File projectPath) {
-		try {
-			name = LevelEditTwo.prompt("[String] Level Name").toUpperCase();
-			difficulty = LevelEditTwo.prompt("[String] Difficulty").toUpperCase();
-			mode = LevelEditTwo.prompt("[String] Apparent Mode").toUpperCase();
-			creator = LevelEditTwo.prompt("[String] Your Name/Username").toUpperCase();
-			bg1 = new Color[Integer.parseInt(LevelEditTwo.prompt("[int] Amount of background one colors"))];
-			bg2 = new Color[Integer.parseInt(LevelEditTwo.prompt("[int] Amount of background two ccolors"))];
-			fg = new Color[Integer.parseInt(LevelEditTwo.prompt("[int] Amount of foreground colors"))];
-			System.out.println("OK! Creating color chooser dialogue box. ");
-			System.out.println("If you do not see it, try moving some windows on your desktop!");
-			pickColors();
-			wallSpeed = Float.parseFloat(LevelEditTwo.prompt("[float] Wall advancement speed"));
-			rotationSpeed = Float.parseFloat(LevelEditTwo.prompt("[float] Level rotation speed\nWill be TAU/this! Enter 0.0 for no rotation"));
-			if(rotationSpeed != 0.0) rotationSpeed = (float) ((Math.PI * 2.0) / (double)rotationSpeed);
-			humanSpeed = Float.parseFloat(LevelEditTwo.prompt("[float] Human rotation speed\nWill be TAU/this! Enter 0.0 for TAU/240.0"));
-			if(humanSpeed != 0.0) humanSpeed = (float) (Math.PI * 2.0 / (double)humanSpeed); else humanSpeed = (float) (Math.PI * 2.0 / 240.0);
-			pulseSpeed = Float.parseFloat(LevelEditTwo.prompt("[float] Pulse rate"));
-			numberOfPatterns = 0;
-			file = new File(projectPath, name.toLowerCase() + EXTENSION);
-			System.out.println(this);
-			if(LevelEditTwo.prompt("[Y/N] Write this configuration?").toUpperCase().equals("Y")) {
-				writeFile();
-			}
-		} catch (Exception e) {
-			
-		}
+	public Level(File projectPath, String name, ArrayList<Pattern> availablePatterns) {
+		this.file = new File(projectPath, name.replaceAll("\\s", "").toLowerCase() + EXTENSION);
+		this.name = name.toUpperCase();
+		this.difficulty = "UNKNOWN";
+		this.mode = "NORMAL";
+		this.creator = "ANONYMOUS";
+		this.bg1.add(Color.BLACK);
+		this.bg2.add(Color.GRAY);
+		this.fg.add(Color.WHITE);
+		this.wallSpeed = 2.0f;
+		this.rotationSpeed = (float)(Math.PI  * 2.0) / 120.0f;
+		this.humanSpeed = (float)(Math.PI  * 2.0) / 60.0f;
+		this.pulseSpeed = 10.0f;
+		this.availablePatterns = availablePatterns;
+	}
+	
+	public void edit() {
+		JFrame level = new JFrame("Level Editor for level '" + name + "'");
+		try { UIManager.setLookAndFeel(new NimbusLookAndFeel());} catch (UnsupportedLookAndFeelException e) {}
+		level.setMinimumSize(new Dimension(530,562));
+		level.setLayout(new GridLayout(1,0));
+		
+		//Left Side Textual Configuration
+		JPanel textConfiguration = new JPanel();
+		textConfiguration.setLayout(new GridLayout(0,1));
+		textConfiguration.setBackground(Util.BACKGROUND);
+		Util.addTitledFieldToPanel(textConfiguration, null, "[String] Name", name);
+		Util.addTitledFieldToPanel(textConfiguration, null, "[String] Difficulty", difficulty);
+		Util.addTitledFieldToPanel(textConfiguration, null, "[String] Mode", mode);
+		Util.addTitledFieldToPanel(textConfiguration, null, "[String] Creator", creator);
+		Util.addTitledFieldToPanel(textConfiguration, null, "[float] Wall Speed", wallSpeed + "");
+		Util.addTitledFieldToPanel(textConfiguration, null, "[TAU/float] Rotation Speed", rotationSpeed + "");
+		Util.addTitledFieldToPanel(textConfiguration, null, "[TAU/float] Human Speed", humanSpeed + "");
+		Util.addTitledFieldToPanel(textConfiguration, null, "[float] Pulse Speed", pulseSpeed + "");
+		Util.addButtonToPanel(textConfiguration, null, "Save Configuration");
+		
+		//Right Side pattern chooser.
+		JPanel patternConfiguration = new JPanel();
+		patternConfiguration.setLayout(new GridLayout(0,1));
+		
+		//The top
+		JPanel top = new JPanel();
+		top.setLayout(new BorderLayout());
+		top.setBackground(Util.BACKGROUND);
+		Util.addButtonToPanel(top, BorderLayout.NORTH, "<html><center>Create New Pattern<br/>(Opens Pattern Editor)</center></html>");
+		Util.addTitledListToPanel(top, BorderLayout.CENTER, "Available Patterns", availablePatterns);
+		Util.addButtonToPanel(top, BorderLayout.SOUTH, "Edit selected pattern");
+
+		//The bottom
+		JPanel bot = new JPanel();
+		bot.setLayout(new BorderLayout());
+		bot.setBackground(Util.BACKGROUND);
+		Util.addButtonToPanel(bot, BorderLayout.NORTH, "Add selected pattern to this level");
+		Util.addTitledListToPanel(bot, BorderLayout.CENTER, "Level Patterns", patterns);
+		Util.addButtonToPanel(bot, BorderLayout.SOUTH,"Remove selected pattern from this level");;
+		
+		//Assemble everything into the level editor
+		patternConfiguration.add(top);
+		patternConfiguration.add(bot);
+		level.add(textConfiguration);
+		level.add(patternConfiguration);
+		level.getContentPane().setBackground(Color.BLACK);
+		level.pack();
+		level.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		level.setVisible(true);
+		level.toFront();
+		level.requestFocus();
 	}
 
-	private void pickColors() {
-		for(int i = 0; i < bg1.length; i++) {
-			bg1[i] = JColorChooser.showDialog(null, "BACKGROUND COLOR ONE: COLOR " + (i + 1), Color.BLACK);
-		}
-		for(int i = 0; i < bg2.length; i++) {
-			bg2[i] = JColorChooser.showDialog(null, "BACKGROUND COLOR TWO: COLOR " + (i + 1), Color.GRAY);
-		}
-		for(int i = 0; i < fg.length; i++) {
-			fg[i] = JColorChooser.showDialog(null, "FOREGROUND COLOR: COLOR " + (i + 1), Color.WHITE);
-		}
-	}
-
-	public Level(File levelFile, ArrayList<Pattern> patterns) throws IOException {
+	public Level(File levelFile, ArrayList<Pattern> availablePatterns) throws IOException {
 		file = levelFile;
 		ByteBuffer levelRawData = Util.readBinaryFile(levelFile);
 		try {
 			Util.checkString(levelRawData, HEADER);
-			name = Util.readString(levelRawData);
-			difficulty = Util.readString(levelRawData);
-			mode = Util.readString(levelRawData);
-			creator = Util.readString(levelRawData);
-			bg1 = Util.readColors(levelRawData);
-			bg2 = Util.readColors(levelRawData);
-			fg = Util.readColors(levelRawData);
-			wallSpeed = levelRawData.getFloat();
-			rotationSpeed = levelRawData.getFloat();
-			humanSpeed = levelRawData.getFloat();
-			pulseSpeed = levelRawData.getFloat();
-			numberOfPatterns = levelRawData.getInt();
-			loadPatterns(levelRawData, patterns);
+			this.name = Util.readString(levelRawData);
+			this.difficulty = Util.readString(levelRawData);
+			this.mode = Util.readString(levelRawData);
+			this.creator = Util.readString(levelRawData);
+			this.bg1 = Util.readColors(levelRawData);
+			this.bg2 = Util.readColors(levelRawData);
+			this.fg = Util.readColors(levelRawData);
+			this.wallSpeed = levelRawData.getFloat();
+			this.rotationSpeed = levelRawData.getFloat();
+			this.humanSpeed = levelRawData.getFloat();
+			this.pulseSpeed = levelRawData.getFloat();
+			loadPatterns(levelRawData, levelRawData.getInt(), availablePatterns);
+			this.availablePatterns = availablePatterns;
 			Util.checkString(levelRawData, FOOTER);
 		}  catch(BufferUnderflowException e) {
 			System.out.println("The file does not have all of the properties needed to create a level!");
@@ -115,10 +155,8 @@ public class Level {
 		b.putFloat(rotationSpeed);
 		b.putFloat(humanSpeed);
 		b.putFloat(pulseSpeed);
-		b.putInt(numberOfPatterns);
-		for(Pattern p : patterns) {
-			Util.putString(b, p.getName());
-		}
+		b.putInt(patterns.size());
+		for(Pattern p : patterns) Util.putString(b, p.toString());
 		b.put(FOOTER.getBytes());
 		Util.writeBinaryFile(file, b);
 	}
@@ -140,36 +178,50 @@ public class Level {
 		r.append("\nAttached Patterns:");
 		r.append("\n[");
 		String delemeter = "";
-		for(int i = 0; i < numberOfPatterns; i++) {
+		for(int i = 0; i < patterns.size(); i++) {
 			r.append(delemeter);
-			r.append(patterns.get(i).getName());
+			r.append(patterns.get(i).toString());
 			delemeter = ", ";
 		}
 		r.append("]");
 		return r.toString();
 	}
 
+	/**
+	private void pickColors(int bg1size, int bg2size, int fgsize) {
+		for(int i = 0; i < bg1size; i++) {
+			bg1.add(JColorChooser.showDialog(null, "BACKGROUND COLOR ONE: COLOR " + (i + 1), Color.BLACK));
+		}
+		for(int i = 0; i < bg2size; i++) {
+			bg2.add(JColorChooser.showDialog(null, "BACKGROUND COLOR TWO: COLOR " + (i + 1), Color.GRAY));
+		}
+		for(int i = 0; i < fgsize; i++) {
+			fg.add(JColorChooser.showDialog(null, "FOREGROUND COLOR: COLOR " + (i + 1), Color.WHITE));
+		}
+	}**/
+
 	private int getByteLength() {
 		int patternsLength = 0;
 		for(Pattern p : patterns) {
-			patternsLength += p.getName().length() + 1;
+			patternsLength += p.toString().length() + 1;
 		}
 		return
-		HEADER.length() + 				//Size of the header
-		name.length() + 1 + 			//Name size, plus the null terminator
-		difficulty.length()  + 1 + 		//Difficulty size, plus the null terminator
-		mode.length() + 1 + 			//Mode size, plus the null terminator
-		creator.length() + 1 + 			//Creator size, plus the null terminator
-		bg1.length * Util.COLOR_BYTE_LENGTH + 1 +
-		bg2.length * Util.COLOR_BYTE_LENGTH + 1 +
-		fg.length * Util.COLOR_BYTE_LENGTH + 1 +
-		4 * 4 + 						//wallSpeed, rotationSpeed, humanSpeed, and pulseSpeed
-		4 +								//Integer to store the amount of pattern names
-		patternsLength +				//Computed size of all strings
-		FOOTER.length();				//The footer
+		HEADER.length() + 							//Size of the header
+		name.length() + 1 + 						//Name size, plus the null terminator
+		difficulty.length()  + 1 + 					//Difficulty size, plus the null terminator
+		mode.length() + 1 + 						//Mode size, plus the null terminator
+		creator.length() + 1 + 						//Creator size, plus the null terminator
+		bg1.size() * Util.COLOR_BYTE_LENGTH + 1 + 	//Colors plus the extra length byte
+		bg2.size() * Util.COLOR_BYTE_LENGTH + 1 +	//For the second background color
+		fg.size() * Util.COLOR_BYTE_LENGTH + 1 +	//And the foreground colors
+		4 * 4 + 									//wallSpeed, rotationSpeed, humanSpeed, and pulseSpeed
+		4 +											//Integer to store the amount of pattern names
+		patternsLength +							//Computed size of all strings
+		FOOTER.length();							//The footer
 	}
 
-	private void loadPatterns(ByteBuffer levelRawData, ArrayList<Pattern> patterns) throws IOException {
+	private void loadPatterns(ByteBuffer levelRawData, int numberOfPatterns, ArrayList<Pattern> availablePatterns) throws IOException {
+		
 		//load patterns from shared container
 		String[] patternNames = new String[numberOfPatterns];
 		for(int i = 0; i < numberOfPatterns; i++) {
@@ -177,10 +229,10 @@ public class Level {
 			
 			//find matching pattern in patterns directory
 			boolean patternFound = false;
-			for(int j = 0; j < patterns.size(); j++) {
-				if(patternNames[i].equals(patterns.get(j).getName())) {
+			for(int j = 0; j < availablePatterns.size(); j++) {
+				if(patternNames[i].equals(availablePatterns.get(j).toString())) {
 					patternFound = true;
-					this.patterns.add(patterns.get(j));
+					this.patterns.add(availablePatterns.get(j));
 					break;
 				}
 			}

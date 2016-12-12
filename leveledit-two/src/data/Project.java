@@ -31,12 +31,11 @@ public class Project {
 			try {
 				Level level = new Level(levelFile, patterns);
 				this.levels.add(level);
-				level.writeFile();
+				level.edit();
 			} catch (Exception e) {
 				System.out.println("Something went wrong when loading a level!");
 				e.printStackTrace();
 			}
 		}
-		new Level(projectFolder);
 	}
 }

@@ -127,13 +127,10 @@ public class Level {
 
 	/**
 	 * Launches the editor.
-	 * @param project2 
 	 */
 	public void edit(JFrame frame, Project project) {
-		
-		//JColorChooser.showDialog(null, "FOREGROUND COLOR: COLOR " + (i + 1), Color.WHITE);
 		JFrame level = new JFrame("Level Editor for level '" + name + "'");
-		level.setMinimumSize(new Dimension(530,620));
+		level.setMinimumSize(new Dimension(685,620));
 		level.setLayout(new GridLayout(1,0));
 		level.addWindowListener(new WindowListener() {
 			public void windowOpened(WindowEvent e) {}
@@ -148,7 +145,7 @@ public class Level {
 			}
 		});
 		
-		//Left Side Textual Configuration
+		//BEGIN Left Side Textual Configuration
 		JPanel textConfiguration = new JPanel();
 		textConfiguration.setLayout(new GridLayout(0,1));
 		textConfiguration.setBackground(Util.BACKGROUND);
@@ -179,6 +176,9 @@ public class Level {
 						null, JOptionPane.YES_OPTION);
 					if(result != JOptionPane.YES_OPTION) return;
 					writeFile();
+					JOptionPane.showMessageDialog(level, 
+						"Wrote the file to your hard drive successfully", 
+						"Success!", JOptionPane.INFORMATION_MESSAGE);
 				} catch (Exception ex) {
 					JOptionPane.showMessageDialog(level, 
 						"Error updating the level!\nCheck console for details.", 
@@ -187,48 +187,77 @@ public class Level {
 				}
 			}
 		});
+		level.add(textConfiguration);
+		//END
 		
-		//Right Side pattern chooser.
+		//BEGIN Color Panel
+		JPanel colors = new JPanel();
+		colors.setLayout(new GridLayout(0,1));
+		colors.setBackground(Util.BACKGROUND);
+		Util.createColorPicker(colors, bg1, "Background Primary");
+		Util.createColorPicker(colors, bg2, "Background Secondary");
+		Util.createColorPicker(colors, fg, "Foreground");
+		level.add(colors);
+		//END
+		
+		//BEGIN Right Side pattern chooser
 		JPanel patternConfiguration = new JPanel();
 		patternConfiguration.setLayout(new GridLayout(0,1));
 		
-		//The top
+		//BEGIN Top Pattern Selector
 		JPanel top = new JPanel();
 		top.setLayout(new BorderLayout());
 		top.setBackground(Util.BACKGROUND);
-		Util.addButtonToPanel(top, BorderLayout.NORTH, "<html><center>Create new pattern<br/>(Opens Pattern Editor)</center></html>", new  ActionListener() {
+		
+		//BEGIN Buttons at the top of the available patterns
+		JPanel topButtons = new JPanel();
+		topButtons.setLayout(new BorderLayout());
+		topButtons.setBackground(Util.BACKGROUND);
+		Util.addButtonToPanel(topButtons, BorderLayout.NORTH, "Create new pattern", new  ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
 			}
 		});
+		Util.addButtonToPanel(topButtons, BorderLayout.SOUTH, "Edit selected available pattern", new  ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+			}
+		});
+		top.add(topButtons, BorderLayout.NORTH);
+		//END
+		
 		JListData javai = Util.addTitledListToPanel(top, BorderLayout.CENTER, "Available Patterns", availablePatterns);
-		Util.addButtonToPanel(top, BorderLayout.SOUTH, "<html><center>Edit available pattern<br/>(Opens Pattern Editor)</center></html>", new  ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				
-			}
-		});
+		patternConfiguration.add(top);
+		//END
 	
-		//The bottom
+		//BEGIN Bottom Level Patterns
 		JPanel bot = new JPanel();
 		bot.setLayout(new BorderLayout());
 		bot.setBackground(Util.BACKGROUND);
-		JListData jleve = Util.addTitledListToPanel(bot, BorderLayout.CENTER, "Level Patterns", patterns);
-		Util.addButtonToPanel(bot, BorderLayout.NORTH, "Add available pattern", new  ActionListener() {
+		JListData jleve = Util.addTitledListToPanel(bot, BorderLayout.CENTER, "Linked Patterns", patterns);
+		Util.addButtonToPanel(bot, BorderLayout.NORTH, "Link available pattern to this level", new  ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				addSelectedPatternToLevel(javai, jleve);
+				int selection = javai.list.getSelectedIndex();
+				if(selection < 0) return;
+				patterns.add(availablePatterns.get(selection));
+				Util.updateList(jleve, patterns);
 			}
 		});
-		Util.addButtonToPanel(bot, BorderLayout.SOUTH,"Remove level pattern", new  ActionListener() {
+		Util.addButtonToPanel(bot, BorderLayout.SOUTH,"Unlink pattern from this level", new  ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				removeSelectedPatternFromLevel(jleve);
+				int selection = jleve.list.getSelectedIndex();
+				if(selection < 0) return;
+				patterns.remove(selection);
+				Util.updateList(jleve, patterns);
 			}
 		});
-		
-		//Assemble everything into the level editor
-		patternConfiguration.add(top);
 		patternConfiguration.add(bot);
-		level.add(textConfiguration);
+		//END
+		
 		level.add(patternConfiguration);
+		//END
+
+		//bring window to life!
 		level.pack();
 		level.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		level.setLocationRelativeTo(null);
@@ -269,43 +298,5 @@ public class Level {
 			//if pattern is not found, level cannot be created
 			if(!patternFound) throw new IOException("Pattern " + patternNames[i] + " not found in the patterns folder!");
 		}
-	}
-	
-	private void addSelectedPatternToLevel(JListData available, JListData level) {
-		
-		//check if the user actually selected something
-		String selection = available.list.getSelectedValue();
-		if(selection == null) return;
-		
-		//check if the pattern is real
-		Pattern selectedPattern = null;
-		for(Pattern p : availablePatterns) {
-			if(p.toString().equals(selection)) selectedPattern = p;
-		}
-		if(selectedPattern == null) return;
-		
-		//add it
-		patterns.add(selectedPattern);
-		level.model.clear();
-		for(Pattern p : patterns) {
-			level.model.addElement(p.toString());
-		}
-	}
-	
-	private void removeSelectedPatternFromLevel(JListData level) {
-		
-		//check if the user actually selected something
-		String selection = level.list.getSelectedValue();
-		int index = level.list.getSelectedIndex();
-		if(selection == null) return;
-		
-		//remove it
-		for(int i = 0; i < patterns.size(); i++) {
-			if(patterns.get(i).toString().equals(selection)) {
-				patterns.remove(i);
-				break;
-			}
-		}
-		level.model.remove(index);
 	}
 }

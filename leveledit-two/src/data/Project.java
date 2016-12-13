@@ -41,7 +41,7 @@ public class Project {
 		contents.setLayout(new BorderLayout());
 		contents.setBackground(Util.BACKGROUND);
 		list = Util.addTitledListToPanel(contents, BorderLayout.CENTER, "Available Levels", levels);
-		Util.addButtonToPanel(contents, BorderLayout.NORTH, "Create New Level", new ActionListener() {
+		Util.addButtonToPanel(contents, BorderLayout.NORTH, "Create new level", new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String name = JOptionPane.showInputDialog(project, 
 					"What do you want to call this level?", 
@@ -53,15 +53,9 @@ public class Project {
 		});
 		Util.addButtonToPanel(contents, BorderLayout.SOUTH, "Edit selected level", new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				String selection = list.list.getSelectedValue();
-				if(selection == null) return;
-				for(Level level : levels) {
-					if(level.toString().equals(selection)) {
-						project.setVisible(false);
-						level.edit(project, Project.this);
-						break;
-					}
-				}
+				int index = list.list.getSelectedIndex();
+				if(index < 0) return;
+				levels.get(index).edit(project, Project.this);
 			}
 		});
 		

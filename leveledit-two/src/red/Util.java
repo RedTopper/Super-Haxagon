@@ -1,6 +1,9 @@
 package red;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileInputStream;
@@ -14,6 +17,7 @@ import java.util.ArrayList;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
+import javax.swing.JColorChooser;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -172,5 +176,58 @@ public final class Util {
 		String str = text.getText().toUpperCase();
 		text.setText(str);
 		return str;
+	}
+
+	public static void createColorPicker(JPanel colors, ArrayList<Color> colorList, String name) {
+		JPanel sub = new JPanel();
+		sub.setLayout(new BorderLayout());
+		sub.setBackground(Util.BACKGROUND);
+		JListData data = addTitledListToPanel(sub, BorderLayout.CENTER, name, colorList);
+		updateColorList(data, colorList);
+		
+		JPanel buttons = new JPanel();
+		buttons.setLayout(new GridLayout(1, 0));
+		buttons.setBackground(Util.BACKGROUND);
+		addButtonToPanel(buttons, null, "Add", new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				Color newColor = JColorChooser.showDialog(null, "Add new color for " + name, Color.WHITE);
+				if(newColor == null) return;
+				newColor = new Color(newColor.getRed(), newColor.getGreen(), newColor.getBlue(), 255);
+				colorList.add(newColor);
+				updateColorList(data, colorList);
+			}
+		});
+		addButtonToPanel(buttons, null, "Remove", new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				int oldColor = data.list.getSelectedIndex();
+				if(oldColor < 0) return;
+				colorList.remove(oldColor);
+				updateColorList(data, colorList);
+			}
+		});
+		addButtonToPanel(buttons, null, "Edit", new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				int oldColor = data.list.getSelectedIndex();
+				if(oldColor < 0) return;
+				Color newColor = JColorChooser.showDialog(null, "Add new color for " + name, colorList.get(oldColor));
+				if(newColor == null) return;
+				newColor = new Color(newColor.getRed(), newColor.getGreen(), newColor.getBlue(), 255);
+				colorList.set(oldColor, newColor);
+				updateColorList(data, colorList);
+			}
+		});
+		sub.add(buttons, BorderLayout.SOUTH);
+		
+		colors.add(sub);
+	}
+	
+	public static void updateColorList(JListData data, ArrayList<Color> colorList) {
+		data.model.clear();
+		for(Color c : colorList) data.model.addElement(c.toString().substring(14));
+	}
+	
+	public static void updateList(JListData data, ArrayList<?> list) {
+		data.model.clear();
+		for(Object o : list) data.model.addElement(o.toString());
 	}
 }

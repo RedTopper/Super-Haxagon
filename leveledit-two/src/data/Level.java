@@ -2,7 +2,6 @@ package data;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -21,7 +20,7 @@ import javax.swing.JTextField;
 
 import parts.Pattern;
 import red.Dynamic;
-import red.JListData;
+import red.ListData;
 import red.Util;
 
 public class Level {
@@ -130,7 +129,6 @@ public class Level {
 	 */
 	public void edit(JFrame frame, Project project) {
 		JFrame level = new JFrame("Level Editor for level '" + name + "'");
-		level.setMinimumSize(new Dimension(685,620));
 		level.setLayout(new GridLayout(1,0));
 		level.addWindowListener(new WindowListener() {
 			public void windowOpened(WindowEvent e) {}
@@ -146,9 +144,7 @@ public class Level {
 		});
 		
 		//BEGIN Left Side Textual Configuration
-		JPanel textConfiguration = new JPanel();
-		textConfiguration.setLayout(new GridLayout(0,1));
-		textConfiguration.setBackground(Util.BACKGROUND);
+		JPanel textConfiguration = Util.startFrame(new GridLayout(0,1));
 		JTextField jname = Util.addTitledFieldToPanel(textConfiguration, null, "[String] Name", name);
 		JTextField jdiff = Util.addTitledFieldToPanel(textConfiguration, null, "[String] Difficulty", difficulty);
 		JTextField jmode = Util.addTitledFieldToPanel(textConfiguration, null, "[String] Mode", mode);
@@ -191,9 +187,7 @@ public class Level {
 		//END
 		
 		//BEGIN Color Panel
-		JPanel colors = new JPanel();
-		colors.setLayout(new GridLayout(0,1));
-		colors.setBackground(Util.BACKGROUND);
+		JPanel colors = Util.startFrame(new GridLayout(0,1));
 		Util.createColorPicker(colors, bg1, "Background Primary");
 		Util.createColorPicker(colors, bg2, "Background Secondary");
 		Util.createColorPicker(colors, fg, "Foreground");
@@ -201,21 +195,21 @@ public class Level {
 		//END
 		
 		//BEGIN Right Side pattern chooser
-		JPanel patternConfiguration = new JPanel();
-		patternConfiguration.setLayout(new GridLayout(0,1));
+		JPanel patternConfiguration = Util.startFrame(new GridLayout(0,1));
 		
 		//BEGIN Top Pattern Selector
-		JPanel top = new JPanel();
-		top.setLayout(new BorderLayout());
-		top.setBackground(Util.BACKGROUND);
+		JPanel top = Util.startFrame(new BorderLayout());
 		
 		//BEGIN Buttons at the top of the available patterns
-		JPanel topButtons = new JPanel();
-		topButtons.setLayout(new BorderLayout());
-		topButtons.setBackground(Util.BACKGROUND);
+		JPanel topButtons = Util.startFrame(new BorderLayout());
 		Util.addButtonToPanel(topButtons, BorderLayout.NORTH, "Create new pattern", new  ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				
+				String patternName = JOptionPane.showInputDialog(level, 
+						"What do you want to call this pattern?", 
+						"Pattern File Name", JOptionPane.QUESTION_MESSAGE);
+					if(patternName == null || patternName.length() == 0) return;
+					level.setVisible(false);
+				new Pattern(new File(levelFile, Project.PATTERN_FOLDER_NAME + File.separator + patternName), 0).edit(level, Level.this);
 			}
 		});
 		Util.addButtonToPanel(topButtons, BorderLayout.SOUTH, "Edit selected available pattern", new  ActionListener() {
@@ -226,15 +220,13 @@ public class Level {
 		top.add(topButtons, BorderLayout.NORTH);
 		//END
 		
-		JListData javai = Util.addTitledListToPanel(top, BorderLayout.CENTER, "Available Patterns", availablePatterns);
+		ListData javai = Util.addTitledListToPanel(top, BorderLayout.CENTER, "Available Patterns", availablePatterns);
 		patternConfiguration.add(top);
 		//END
 	
 		//BEGIN Bottom Level Patterns
-		JPanel bot = new JPanel();
-		bot.setLayout(new BorderLayout());
-		bot.setBackground(Util.BACKGROUND);
-		JListData jleve = Util.addTitledListToPanel(bot, BorderLayout.CENTER, "Linked Patterns", patterns);
+		JPanel bot = Util.startFrame(new BorderLayout());
+		ListData jleve = Util.addTitledListToPanel(bot, BorderLayout.CENTER, "Linked Patterns", patterns);
 		Util.addButtonToPanel(bot, BorderLayout.NORTH, "Link available pattern to this level", new  ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				int selection = javai.list.getSelectedIndex();
@@ -261,11 +253,24 @@ public class Level {
 		level.pack();
 		level.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		level.setLocationRelativeTo(null);
+		level.setMinimumSize(level.getPreferredSize());
 		level.setVisible(true);
 	}
 	
 	public String toString() {
 		return levelFile.getName();
+	}
+	
+	public ArrayList<Color> getBG1() {
+		return bg1;
+	}
+	
+	public ArrayList<Color> getBG2() {
+		return bg2;
+	}
+	
+	public ArrayList<Color> getFG() {
+		return fg;
 	}
 
 	/**

@@ -13,18 +13,18 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import parts.Pattern;
-import red.JListData;
+import red.ListData;
 import red.Util;
 
 public class Project {
-	public static String FOLDER_NAME = "patterns";
+	public static String PATTERN_FOLDER_NAME = "patterns";
 	public static final String HEADER = "HAXAGON1.0";
 	public static final String EXTENSION = ".haxagon";
 	
 	private File projectDir;
 	private ArrayList<Level> levels = null;
 	private ArrayList<Pattern> patterns = null;
-	private JListData list = null;
+	private ListData list = null;
 	
 	public Project(File projectDir) {
 		this.projectDir = projectDir;
@@ -55,6 +55,7 @@ public class Project {
 			public void actionPerformed(ActionEvent e) {
 				int index = list.list.getSelectedIndex();
 				if(index < 0) return;
+				project.setVisible(false);
 				levels.get(index).edit(project, Project.this);
 			}
 		});
@@ -86,7 +87,7 @@ public class Project {
 	private void loadPatterns() {
 		System.out.println("Loading patterns...");
 		patterns = new ArrayList<>();
-		File patternFolder = Util.getFolder(new File(projectDir, FOLDER_NAME));
+		File patternFolder = Util.getFolder(new File(projectDir, PATTERN_FOLDER_NAME));
 		ArrayList<File> patternFiles = Util.getFolderContents(Util.FileType.FILE, patternFolder, "FOUND PATTERNS", "NO PATTERNS FOUND");
 		for(File patternFile : patternFiles) {
 			try {

@@ -3,6 +3,7 @@ package red;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.GridLayout;
+import java.awt.LayoutManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -153,7 +154,7 @@ public final class Util {
 		return text;
 	}
 	
-	public static JListData addTitledListToPanel(JPanel panel, Object constraints, String title, ArrayList<?> list) {
+	public static ListData addTitledListToPanel(JPanel panel, Object constraints, String title, ArrayList<?> list) {
 		DefaultListModel<String> model = new DefaultListModel<>();
 		for(Object o : list) {
 			model.addElement(o.toString());
@@ -162,7 +163,7 @@ public final class Util {
 		internal.setBorder(BorderFactory.createTitledBorder(title));
 		internal.setBackground(BACKGROUND);
 		panel.add(internal, constraints);
-		return new JListData(model, internal);
+		return new ListData(model, internal);
 	}
 	
 	public static void addButtonToPanel(JPanel panel, Object constraints, String text, ActionListener action) {
@@ -182,7 +183,7 @@ public final class Util {
 		JPanel sub = new JPanel();
 		sub.setLayout(new BorderLayout());
 		sub.setBackground(Util.BACKGROUND);
-		JListData data = addTitledListToPanel(sub, BorderLayout.CENTER, name, colorList);
+		ListData data = addTitledListToPanel(sub, BorderLayout.CENTER, name, colorList);
 		updateColorList(data, colorList);
 		
 		JPanel buttons = new JPanel();
@@ -209,7 +210,7 @@ public final class Util {
 			public void actionPerformed(ActionEvent e) {
 				int oldColor = data.list.getSelectedIndex();
 				if(oldColor < 0) return;
-				Color newColor = JColorChooser.showDialog(null, "Add new color for " + name, colorList.get(oldColor));
+				Color newColor = JColorChooser.showDialog(null, "Edit color for " + name, colorList.get(oldColor));
 				if(newColor == null) return;
 				newColor = new Color(newColor.getRed(), newColor.getGreen(), newColor.getBlue(), 255);
 				colorList.set(oldColor, newColor);
@@ -221,13 +222,20 @@ public final class Util {
 		colors.add(sub);
 	}
 	
-	public static void updateColorList(JListData data, ArrayList<Color> colorList) {
+	public static void updateColorList(ListData data, ArrayList<Color> colorList) {
 		data.model.clear();
 		for(Color c : colorList) data.model.addElement(c.toString().substring(14));
 	}
 	
-	public static void updateList(JListData data, ArrayList<?> list) {
+	public static void updateList(ListData data, ArrayList<?> list) {
 		data.model.clear();
 		for(Object o : list) data.model.addElement(o.toString());
+	}
+	
+	public static JPanel startFrame(LayoutManager manager) {
+		JPanel frame = new JPanel();
+		frame.setBackground(BACKGROUND);
+		frame.setLayout(manager);
+		return frame;
 	}
 }

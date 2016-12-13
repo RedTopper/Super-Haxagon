@@ -34,8 +34,8 @@ public class Dynamic {
 		buf.put((byte) c.size());
 		for(int i = 0; i < c.size(); i++) {
 			buf.put((byte) c.get(i).getRed());
-			buf.put((byte) c.get(i).getBlue());
 			buf.put((byte) c.get(i).getGreen());
+			buf.put((byte) c.get(i).getBlue());
 		}
 		buffers.add(buf);
 	}

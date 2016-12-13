@@ -39,7 +39,6 @@ public final class Util {
 	 * @return
 	 */
 	public static File getFolder(File folder) {
-		System.out.println();
 		if(!folder.exists()) {
 			folder.mkdir();
 			System.out.println("Created directory: '" + folder.getAbsolutePath() + "'");
@@ -78,6 +77,7 @@ public final class Util {
 			}
 		}
 		if(!foundPath) System.out.println(notFoundMessage + "!");
+		System.out.println();
 		return paths;
 	}
 	

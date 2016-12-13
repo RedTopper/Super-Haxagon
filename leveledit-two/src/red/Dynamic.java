@@ -9,6 +9,8 @@ import java.nio.ByteOrder;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 
+import parts.Wall;
+
 public class Dynamic {
 	ArrayList<ByteBuffer> buffers = new ArrayList<>();
 	
@@ -47,6 +49,18 @@ public class Dynamic {
 		buffers.add(buf);
 	}
 	
+	public void putWalls(ArrayList<Wall> walls) {
+		ByteBuffer buf = ByteBuffer.allocate(walls.size() * Wall.BYTE_LENGTH + 1);
+		buf.order(ByteOrder.LITTLE_ENDIAN);
+		buf.put((byte) walls.size());
+		for(Wall wall : walls) {
+			buf.putChar(wall.getDistance());
+			buf.putChar(wall.getHeight());
+			buf.putChar(wall.getSide());
+		}
+		buffers.add(buf);
+	}
+
 	public void putRawString(String string) {
 		ByteBuffer buf = ByteBuffer.allocate(string.length());
 		buf.order(ByteOrder.LITTLE_ENDIAN);

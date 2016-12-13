@@ -6,6 +6,8 @@ import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.io.File;
 import java.io.IOException;
 import java.nio.BufferUnderflowException;
@@ -16,9 +18,6 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
-import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 
 import parts.Pattern;
 import red.Dynamic;
@@ -30,7 +29,7 @@ public class Level {
 	public static final String FOOTER = "ENDLEVEL";
 	public static final String EXTENSION = ".head";
 	
-	private File file;
+	private File levelFile;
 	private String name;
 	private String difficulty;
 	private String mode;
@@ -52,8 +51,8 @@ public class Level {
 	 * @param name Project name (also file name)
 	 * @param availablePatterns A list of all of the loaded patterns
 	 */
-	public Level(File projectPath, String name, ArrayList<Pattern> availablePatterns) {
-		this.file = new File(projectPath, name.replaceAll("\\s", "").toLowerCase() + EXTENSION);
+	public Level(File projectPath, ArrayList<Pattern> availablePatterns, String name) {
+		this.levelFile = new File(projectPath, name.replaceAll("\\s", "") + EXTENSION);
 		this.name = name.toUpperCase();
 		this.difficulty = "UNKNOWN";
 		this.mode = "NORMAL";
@@ -76,8 +75,8 @@ public class Level {
 	 * @throws IOException
 	 */
 	public Level(File levelFile, ArrayList<Pattern> availablePatterns) throws IOException {
-		file = levelFile;
 		ByteBuffer levelRawData = Util.readBinaryFile(levelFile);
+		this.levelFile = levelFile;
 		try {
 			Util.checkString(levelRawData, HEADER);
 			this.name = Util.readString(levelRawData);
@@ -93,10 +92,11 @@ public class Level {
 			this.humanSpeed = levelRawData.getFloat();
 			this.pulseSpeed = levelRawData.getFloat();
 			this.availablePatterns = availablePatterns;
-			loadPatterns(levelRawData, levelRawData.getInt(), availablePatterns);
+			loadPatterns(levelRawData, availablePatterns);
 			Util.checkString(levelRawData, FOOTER);
 		}  catch(BufferUnderflowException e) {
 			System.out.println("The file does not have all of the properties needed to create a level!");
+			throw e;
 		}
 	}
 
@@ -122,18 +122,31 @@ public class Level {
 		d.putInt(patterns.size());
 		for(Pattern p : patterns) d.putString(p.toString());
 		d.putRawString(FOOTER);
-		d.write(file);
+		d.write(levelFile);
 	}
 
 	/**
 	 * Launches the editor.
+	 * @param project2 
 	 */
-	public void edit() {
+	public void edit(JFrame frame, Project project) {
+		
 		//JColorChooser.showDialog(null, "FOREGROUND COLOR: COLOR " + (i + 1), Color.WHITE);
-		try { UIManager.setLookAndFeel(new NimbusLookAndFeel());} catch (UnsupportedLookAndFeelException e) {}
 		JFrame level = new JFrame("Level Editor for level '" + name + "'");
 		level.setMinimumSize(new Dimension(530,620));
 		level.setLayout(new GridLayout(1,0));
+		level.addWindowListener(new WindowListener() {
+			public void windowOpened(WindowEvent e) {}
+			public void windowClosed(WindowEvent e) {}
+			public void windowIconified(WindowEvent e) {}
+			public void windowDeiconified(WindowEvent e) {}
+			public void windowActivated(WindowEvent e) {}
+			public void windowDeactivated(WindowEvent e) {};
+			public void windowClosing(WindowEvent e) {
+				frame.setVisible(true);
+				project.loadLevels();
+			}
+		});
 		
 		//Left Side Textual Configuration
 		JPanel textConfiguration = new JPanel();
@@ -158,15 +171,18 @@ public class Level {
 					music = jmuse.getText();
 					wallSpeed = Float.parseFloat(jwall.getText());
 					rotationSpeed = Float.parseFloat(jrota.getText());
-					humanSpeed= Float.parseFloat(jhuma.getText());
+					humanSpeed = Float.parseFloat(jhuma.getText());
 					pulseSpeed = Float.parseFloat(jpuls.getText());
-					int result = JOptionPane.showOptionDialog(level, "Do you really want to save this information?\nThe current file will be backed up.", 
-								 "Really save?", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, JOptionPane.YES_OPTION);
-					if(result == JOptionPane.YES_OPTION) {
-						writeFile();
-					}
+					int result = JOptionPane.showOptionDialog(level, 
+						"Do you really want to save this information?\nThe current file will be backed up.", 
+						"Really save?", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, 
+						null, JOptionPane.YES_OPTION);
+					if(result != JOptionPane.YES_OPTION) return;
+					writeFile();
 				} catch (Exception ex) {
-					JOptionPane.showMessageDialog(level, "Error updating the level!\nCheck console for details.", "Error!", JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(level, 
+						"Error updating the level!\nCheck console for details.", 
+						"Error!", JOptionPane.ERROR_MESSAGE);
 					ex.printStackTrace();
 				}
 			}
@@ -199,42 +215,12 @@ public class Level {
 		JListData jleve = Util.addTitledListToPanel(bot, BorderLayout.CENTER, "Level Patterns", patterns);
 		Util.addButtonToPanel(bot, BorderLayout.NORTH, "Add available pattern", new  ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				
-				//check if the user actually selected something
-				String selection = javai.list.getSelectedValue();
-				if(selection == null) return;
-				
-				//check if the pattern is real
-				Pattern selectedPattern = null;
-				for(Pattern p : availablePatterns) {
-					if(p.toString().equals(selection)) 
-						selectedPattern = p;
-				}
-				if(selectedPattern == null) return;
-				
-				//add it
-				patterns.add(selectedPattern);
-				jleve.model.removeAllElements();
-				for(Pattern p : patterns) {
-					jleve.model.addElement(p.toString());
-				}
+				addSelectedPatternToLevel(javai, jleve);
 			}
 		});
 		Util.addButtonToPanel(bot, BorderLayout.SOUTH,"Remove level pattern", new  ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				
-				//check if the user actually selected something
-				int selection = jleve.list.getSelectedIndex();
-				if(selection < 0) return;
-				
-				//remove it
-				for(int i = 0; i < patterns.size(); i++) {
-					if(patterns.get(i).toString().equals(jleve.model.getElementAt(selection))) {
-						patterns.remove(i);
-						break;
-					}
-				}
-				jleve.model.remove(selection);
+				removeSelectedPatternFromLevel(jleve);
 			}
 		});
 		
@@ -243,12 +229,14 @@ public class Level {
 		patternConfiguration.add(bot);
 		level.add(textConfiguration);
 		level.add(patternConfiguration);
-		level.getContentPane().setBackground(Color.BLACK);
 		level.pack();
 		level.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		level.setLocationRelativeTo(null);
 		level.setVisible(true);
-		level.toFront();
-		level.requestFocus();
+	}
+	
+	public String toString() {
+		return levelFile.getName();
 	}
 
 	/**
@@ -258,7 +246,10 @@ public class Level {
 	 * @param availablePatterns All available patterns.
 	 * @throws IOException
 	 */
-	private void loadPatterns(ByteBuffer levelRawData, int numberOfPatterns, ArrayList<Pattern> availablePatterns) throws IOException {
+	private void loadPatterns(ByteBuffer levelRawData, ArrayList<Pattern> availablePatterns) throws IOException {
+		
+		//get number of patterns
+		int numberOfPatterns = levelRawData.getInt();
 		
 		//load patterns from shared container
 		String[] patternNames = new String[numberOfPatterns];
@@ -278,5 +269,43 @@ public class Level {
 			//if pattern is not found, level cannot be created
 			if(!patternFound) throw new IOException("Pattern " + patternNames[i] + " not found in the patterns folder!");
 		}
+	}
+	
+	private void addSelectedPatternToLevel(JListData available, JListData level) {
+		
+		//check if the user actually selected something
+		String selection = available.list.getSelectedValue();
+		if(selection == null) return;
+		
+		//check if the pattern is real
+		Pattern selectedPattern = null;
+		for(Pattern p : availablePatterns) {
+			if(p.toString().equals(selection)) selectedPattern = p;
+		}
+		if(selectedPattern == null) return;
+		
+		//add it
+		patterns.add(selectedPattern);
+		level.model.clear();
+		for(Pattern p : patterns) {
+			level.model.addElement(p.toString());
+		}
+	}
+	
+	private void removeSelectedPatternFromLevel(JListData level) {
+		
+		//check if the user actually selected something
+		String selection = level.list.getSelectedValue();
+		int index = level.list.getSelectedIndex();
+		if(selection == null) return;
+		
+		//remove it
+		for(int i = 0; i < patterns.size(); i++) {
+			if(patterns.get(i).toString().equals(selection)) {
+				patterns.remove(i);
+				break;
+			}
+		}
+		level.model.remove(index);
 	}
 }

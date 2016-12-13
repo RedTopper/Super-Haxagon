@@ -1,8 +1,11 @@
 package red;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Scanner;
+
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 
 import data.Project;
 
@@ -15,22 +18,14 @@ public class LevelEditTwo {
 		
 		//Startup message
 		System.out.println("Now Starting Level Editor 2.0");
+		try { UIManager.setLookAndFeel(new NimbusLookAndFeel());} catch (UnsupportedLookAndFeelException e) {}
 		
 		//Open project folder
 		File projectDir = Util.getFolder(new File(new File("."), FOLDER_NAME));
 		
-		//List projects
-		Util.getFolderContents(Util.FileType.FOLDER, projectDir, "PROJECTS", "NO PROJECTS FOUND");
-		
-		//Open project folder
-		String project = prompt("Type the name of the project you would like to open\nor create one by typing in a new name");
-		try {
-			Project conf = new Project(new File(projectDir, project));
-			conf.toString();
-		} catch (IOException e) {
-			System.out.println("Something went wrong when opening the project!");
-			e.printStackTrace();
-		}
+		//Open the project
+		Project conf = new Project(projectDir);
+		conf.edit();
 		
 		//Close resources
 		reader.close();

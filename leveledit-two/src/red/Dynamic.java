@@ -71,7 +71,7 @@ public class Dynamic {
 	public void write(File file) throws IOException {
 		
 		//Delete really old file and move old file into it's place
-		File oldDir = Util.getFolder(new File(file.getParent() + Util.OLD));
+		File oldDir = Util.getDir(new File(file.getParent() + Util.OLD));
 		File backupFile = new File(oldDir, file.getName());
 		backupFile.delete();
 		file.renameTo(backupFile);
@@ -86,6 +86,13 @@ public class Dynamic {
 		channel.close();
 		outputStream.close();
 		System.out.println("Backed up and wrote file: '" + file.getAbsolutePath() + "'");
+	}
+
+	public void putByte(int i) {
+		ByteBuffer buf = ByteBuffer.allocate(1);
+		buf.order(ByteOrder.LITTLE_ENDIAN);
+		buf.put((byte)i);
+		buffers.add(buf);
 	}
 	
 }

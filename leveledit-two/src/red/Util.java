@@ -6,6 +6,8 @@ import java.awt.GridLayout;
 import java.awt.LayoutManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -21,6 +23,7 @@ import javax.swing.JButton;
 import javax.swing.JColorChooser;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 
 public final class Util {
@@ -30,7 +33,7 @@ public final class Util {
 	
 	public enum FileType {
 		FILE,
-		FOLDER
+		DIR
 	}
 	
 	public static final int COLOR_BYTE_LENGTH = 3; // Each color takes up 1 byte;
@@ -43,7 +46,7 @@ public final class Util {
 	 * @param folder The folder to create.
 	 * @return
 	 */
-	public static File getFolder(File folder) {
+	public static File getDir(File folder) {
 		if(!folder.exists()) {
 			folder.mkdir();
 			System.out.println("Created directory: '" + folder.getAbsolutePath() + "'");
@@ -67,12 +70,12 @@ public final class Util {
 	 * @param notFoundMessage The message to print if nothing is found.
 	 * @return
 	 */
-	public static ArrayList<File> getFolderContents(FileType type, File dir, String foundMessage, String notFoundMessage) {
+	public static ArrayList<File> getDirContents(FileType type, File dir, String foundMessage, String notFoundMessage) {
 		boolean foundPath = false;
 		ArrayList<File> paths = new ArrayList<>();
 		for(String pathName : dir.list()) {
 			File path = new File(dir, pathName);
-			if((type == FileType.FOLDER ? path.isDirectory() : path.isFile())) {
+			if((type == FileType.DIR ? path.isDirectory() : path.isFile())) {
 				if(!foundPath) {
 					foundPath = true;
 					System.out.println(foundMessage + ":");
@@ -151,6 +154,12 @@ public final class Util {
 		text.setBorder(BorderFactory.createTitledBorder(title));
 		text.setBackground(BACKGROUND);
 		panel.add(text, constraints);
+		text.addFocusListener(new FocusListener() {
+			public void focusGained(FocusEvent e) {
+				text.selectAll();
+			}
+			public void focusLost(FocusEvent e) {}
+		});
 		return text;
 	}
 	
@@ -162,7 +171,9 @@ public final class Util {
 		JList<String> internal = new JList<>(model);
 		internal.setBorder(BorderFactory.createTitledBorder(title));
 		internal.setBackground(BACKGROUND);
-		panel.add(internal, constraints);
+		JScrollPane scroller = new JScrollPane(internal);
+		scroller.setBorder(BorderFactory.createEmptyBorder());
+		panel.add(scroller, constraints);
 		return new ListData(model, internal);
 	}
 	
@@ -223,13 +234,25 @@ public final class Util {
 	}
 	
 	public static void updateColorList(ListData data, ArrayList<Color> colorList) {
+		int selected = data.list.getSelectedIndex();
+		int direction = colorList.size() - data.model.size();
 		data.model.clear();
 		for(Color c : colorList) data.model.addElement(c.toString().substring(14));
+		fixSelectedIndex(data, colorList, selected, direction);
 	}
-	
+
 	public static void updateList(ListData data, ArrayList<?> list) {
+		int selected = data.list.getSelectedIndex();
+		int direction = list.size() - data.model.size();
 		data.model.clear();
 		for(Object o : list) data.model.addElement(o.toString());
+		fixSelectedIndex(data, list, selected, direction);
+	}
+	
+	private static void fixSelectedIndex(ListData data, ArrayList<?> list, int selected, int difference) {
+		if(selected + difference < list.size()) {
+			data.list.setSelectedIndex((selected + difference >= 0 ? selected + difference : 0));
+		}
 	}
 	
 	public static JPanel startFrame(LayoutManager manager) {

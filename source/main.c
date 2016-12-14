@@ -693,7 +693,6 @@ void doLagometer(int level) {
 
 int main() {
 	//3ds init
-	gfxInitDefault();
 	sf2d_init();
 	sf2d_set_vblank_wait(1);
 	romfsInit();
@@ -767,12 +766,12 @@ int main() {
 		}
 		g_renderedWalls = 0;
 	}
+	sf2d_fini();
 	freePatterns();
 	audioUnload();
-	ndspExit();
-	sf2d_fini();
-
-	romfsExit();
-	gfxExit();
+	
+	gfxExit();	
+	romfsExit();	
+	ndspExit();	
 	return 0;
 }

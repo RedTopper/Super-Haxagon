@@ -10,6 +10,10 @@ Downloads are available from the [releases page](https://github.com/RedInquisiti
 
 Contributing to the project will help create a better game for everyone! If you would like to help, feel free to create a pull request. I know for a fact I messed up somewhere in the code here. If you are implementing a new feature, I'd be happy to acccept it! 
 
+### Level Editor
+
+Want to create your own levels to share with the community? You can use the new, completely overhuled level editor [Haxa-Editor](https://github.com/RedInquisitive/Haxa-Editor/tree/master)! Written in Java, it should work on all of your favorite platforms! (Coming Soon)
+
 ### Notes
 
 In order for audio to work you must dump your DSP firmware. Normally, this is covered when installing A9LH through [3ds.guide](https://3ds.guide/installing-arm9loaderhax#section-vi---finalizing-setup)'s "Section VI - Finalizing setup". If it is not, Launch the Homebrew Launcher from the home menu and select “DSP Dump”.
@@ -21,18 +25,12 @@ In order for audio to work you must dump your DSP firmware. Normally, this is co
  * Open source AND readable code
  * Sound using ndsp
   * Supports uncompressed WAV files
- * Level Editor written in Java
-  * Can run user code to generate patterns
-  * Can append other pattern files
-  * Can edit patterns and create patterns directly
  * Walls that move and collide with the player
   * Can collide with the player
   * You will stop moving when you hit the side of walls
  * A functional game over screen
   * Really cool death animation
   * Sound effects
- * Level patterns dynamically loaded from a .LEVE file.
-  * 8 distinct patterns (so far!)
  * Main menu
   * Plays sound effects and animations
  * Support by the community!
@@ -50,4 +48,3 @@ In order for audio to work you must dump your DSP firmware. Normally, this is co
 ![Title Screen](./media/scr_3_MERGED.png "One of the many modes")
 ![Humble Beginnings](./media/scr_2_MERGED.png "Human Arrow")
 ![Humble Beginnings](./media/scr_1_MERGED.png "Screenshot")
-

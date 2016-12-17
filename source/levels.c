@@ -26,6 +26,103 @@ void distributePatterns() {
 	}
 }
 
+int check(int result, char* message, int offset) {
+	if(!result) {
+		//stick in loop until home is pressed
+	}
+	return result;
+}
+
+int compare(FILE* file, char* string) {
+	int len = strlen(string);
+	char* buff = malloc(sizeof(char) * (len + 1)); //for '/0'
+	check(buff, "Cannot check file string!", ftell(file));
+	fread(buff, 1, len, file); //no '/0' in file, only len
+	buff[len] = '\0'; //add '/0'
+	int result = strcmp(buff, string);
+	free(buff);
+	return result;
+}
+
+FileString getString(FILE* file) {
+	FileString string;
+	fread(&string.len, 1, 1, file);
+	string.str = malloc(sizeof(char) * (length + 1));
+	check(string.str, "Cannot load string from file!", ftell(file));
+	fread(&string.str, string.len, 1, file);
+	string.str[string.length] = '\0';
+	return string;
+}
+
+Wall getWall(FILE* file) {
+	Wall wall;
+	
+	//wall data
+	fread(&wall.distance, 2, 1, file);
+	fread(&wall.height, 2, 1, file);
+	fread(&wall.side, 2, 1, file);
+	
+	return wall;
+} 
+
+Pattern getPattern(FILE* file) {
+	Pattern pattern;
+	
+	//pattern (file) name
+	pattern.name = getString(file);
+	
+	//header
+	check(compare(file, PATTERN_HEADER), "Pattern header incorrect!", ftell(file));
+	
+	//number of sides
+	fread(&pattern.sides, 4, 1, file);
+	
+	//walls
+	fread(&pattern.numWalls, 4, 1, file);
+	pattern.walls = malloc(sizeof(Wall) * pattern.numWalls);
+	check(pattern.walls, "Cannot alloc walls!", ftell(file));
+	for(int i = 0; i < pattern.numWalls; i++) pattern.walls[i] = getWall(file);
+	
+	//footer
+	check(compare(file, PATTERN_FOOTER), "Pattern header incorrect!", ftell(file));
+	return pattern
+}
+
+Level getLevel(FILE* file) {
+	Level level;
+	
+	return level;
+}
+
+
+//FILE* file = fopen(PROJECT_FILE_NAME, "rb");
+//if(!file) {
+//	showError("Cannot open levels.haxagon!", 0x0);
+//	return NULL;
+//}
+GlobalData getData(FILE* file) {
+	GlobalData data;
+	
+	//header
+	check(compare(file, PROJECT_HEADER), "Wrong file type/format/version!", ftell(file));
+	
+	//patterns
+	fread(&data.numPatterns, 4, 1, file);
+	data.patterns = malloc(sizeof(Pattern) * data.numPatterns);
+	check(data.patterns, "Cannot alloc patterns!", ftell(file));
+	for(int i = 0; i < data.numPatterns; i++) data.patterns[i] = getPattern(file);
+	
+	//levels
+	fread(&data.numLevels, 4, 1, file);
+	data.levels = malloc(sizeof(Level) * data.numLevels);
+	check(data.levels, "Cannot alloc levels!", ftell(file));
+	for(int i = 0; i < data.numLevels; i++) data.levels[i] = getLevel(file, data.patterns);
+	
+	//footer
+	check(compare(file, PROJECT_FOOTER), "Project footer incorrect!", ftell(file));
+	return data;
+}
+
 bool initPatterns() {
 	g_allPatterns.loaded = false;
 	FILE *file = fopen("romfs:/patterns.leve", "rb");

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "header.h"
+
 typedef enum {
 	CAN_MOVE,
 	CANNOT_MOVE_LEFT,

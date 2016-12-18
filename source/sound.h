@@ -1,9 +1,6 @@
 #pragma once
 
-//#include <3ds.h>
-//#include <string.h>
-//#include <stdio.h>
-//#include <stdlib.h>
+#include "header.h"
 
 typedef struct {
 	u8* data;

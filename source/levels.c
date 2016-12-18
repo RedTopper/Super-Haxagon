@@ -14,6 +14,7 @@ int compare(FILE* file, char* string) {
 void* getMalloc(FILE* file, size_t size, int* length, int extra, char* error) {
 	if(delta < 0) delta = 0;
 	fread(length, sizeof(int), 1, file);
+	if(length > 300) check(0, "Huge alloc found!", ftell(file));
 	void* address = malloc(size * (*length + extra));
 	check(address, error, ftell(file);
 	return address;
@@ -66,6 +67,7 @@ Pattern getPattern(FILE* file) {
 	
 	//walls
 	pattern.walls = getMalloc(file, sizeof(Wall), &pattern.numWalls, 0, "Cannot alloc walls!");
+	check(numWalls, "Pattern must have at least one wall!", ftell(file));
 	for(int i = 0; i < pattern.numWalls; i++) pattern.walls[i] = getWall(file, pattern.sides);
 	
 	//footer
@@ -84,7 +86,10 @@ Pattern locatePattern(File* file, Pattern* patterns, int numPatterns) {
 		}
 	}
 	
+	//could not find pattern
 	if(i == numPatterns) check(0, "Could not locate pattern!", ftell(file));
+	
+	//copy pattern if located.
 	Pattern located;
 	memcpy(&located, &patterns[i], sizeof(Pattern);
 	return located;
@@ -105,20 +110,26 @@ Level getLevel(FILE* file, Pattern* patterns, int numPatterns) {
 	
 	//colors
 	level.BG1 = getMalloc(file, sizeof(Color), &level.numBG1, 0, "Cannot alloc BG1 colors!");
+	check(level.numBG1, "Level must have at least one bg1 color!", ftell(file));
 	for(int i = 0; i < level.numBG1; i++) level.BG1[i] = getColor(file);
 	level.BG2 = getMalloc(file, sizeof(Color), &level.numBG2, 0, "Cannot alloc BG2 colors!");
+	check(level.numBG2, "Level must have at least one bg2 color!", ftell(file));
 	for(int i = 0; i < level.numBG2; i++) level.BG2[i] = getColor(file);
 	level.FG = getMalloc(file, sizeof(Color), &level.numFG, 0, "Cannot alloc FG colors!");
+	check(level.numFG, "Level must have at least one fg color!", ftell(file));
 	for(int i = 0; i < level.numFG; i++) level.FG[i] = getColor(file);
 	
 	//floats
 	fread(&level.speedWall, sizeof(float), 1, file);
 	fread(&level.speedRotation, sizeof(float), 1, file);
 	fread(&level.speedHuman, sizeof(float), 1, file);
-	fread(&level.speedPulse, sizeof(float), 1, file);
+	
+	//pulsieness
+	fread(&level.speedPulse, sizeof(int), 1, file);
 	
 	//linked patterns (a copy of loaded patterns)
 	level.patterns = getMalloc(file, sizeof(Pattern), &level.numPatterns, 0, "Cannot alloc patterns!");
+	check(level.numPatterns, "Level must have at least one pattern!", ftell(file));
 	for(int i = 0; i < level.numPatterns; i++) level.patterns[i] = locatePattern(file, patterns, numPatterns);
 	
 	//exit
@@ -140,10 +151,12 @@ GlobalData getData(FILE* file) {
 	
 	//patterns
 	data.patterns = getMalloc(file, sizeof(Pattern), &data.numPatterns, 0, "Cannot alloc patterns!");
+	check(data.numPatterns, "Must load at least one pattern!", ftell(file));
 	for(int i = 0; i < data.numPatterns; i++) data.patterns[i] = getPattern(file);
 	
 	//levels
 	data.levels = getMalloc(file, sizeof(Level), &data.numLevels, 0, "Cannot alloc levels!");
+	check(data.numLevels, "Must load at least one level!", ftell(file));
 	for(int i = 0; i < data.numLevels; i++) data.levels[i] = getLevel(file, data.patterns, data.numPatterns);
 	
 	//footer

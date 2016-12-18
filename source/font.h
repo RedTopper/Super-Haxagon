@@ -1,7 +1,6 @@
 #pragma once
 
-//#include <3ds.h>
-//#include <stdio.h>
+#include "header.h"
 
 #ifdef __cplusplus
 #include "font/source/BmpFont.h"

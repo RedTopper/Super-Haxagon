@@ -62,6 +62,7 @@ Pattern getPattern(FILE* file) {
 	
 	//number of sides
 	fread(&pattern.sides, sizeof(int), 1, file);
+	if(pattern.sides < MIN_PATTERN_SIDES) pattern.sides = MIN_PATTERN_SIDES;
 	
 	//walls
 	pattern.walls = getMalloc(file, sizeof(Wall), &pattern.numWalls, 0, "Cannot alloc walls!");

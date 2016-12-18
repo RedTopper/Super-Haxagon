@@ -18,6 +18,7 @@ const char[] PATTERN_FOOTER = "ENDPATTERN";
 const char[] PROJECT_FILE_NAME = "sdmc:/3ds/data/haxagon/levels.haxagon";
 
 const int MIN_WALL_HEIGHT = 8;
+const int MIN_PATTERN_SIDES = 3;
 
 typedef struct {
 	char* str;

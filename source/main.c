@@ -16,65 +16,6 @@
 #include "levels.h"
 #include "sound.h"
 
-typedef enum {
-	CAN_MOVE,
-	CANNOT_MOVE_LEFT,
-	CANNOT_MOVE_RIGHT,
-	DEAD,
-} MovementState;
-
-typedef enum {
-	TOO_CLOSE,
-	TOO_FAR,
-	RENDERED,
-} RenderState;
-
-typedef enum {
-	MAIN_MENU,
-	PLAYING,
-	GAME_OVER,
-} GameState;
-
-typedef enum {
-	FULL_RESET,
-	PARTIAL_RESET,
-} ResetTypeGame;
-
-////STATIC VARS
-//Inside hexagon style
-const double FULL_LEN = 24.0;
-const double BORDER_LEN = 4.0;
-
-//Human triangle style
-const double HUMAN_WIDTH = TAU/30;
-const double HUMAN_HEIGHT = 5.0;
-const double HUMAN_PADDING = 5.0;
-
-//Hexagon Constants
-const int FRAMES_PER_ONE_SIDE_ROTATION = 12;
-const int MIN_DISTANCE_FROM_LAST_PATTERN = 50;
-
-//Overflow so you don't get glitchy lines between hexagons.
-const double OVERFLOW_OFFSET = TAU/900.0; //This is really just some arbituary number so yeah...
-
-//Screen diagnal (calculated with a physical calculator)
-const int TOP_SCREEN_DIAG_CENTER = 257;
-
-//Game over screen
-const double GAME_OVER_ACCEL_RATE = 1.1;
-const double GAME_OVER_ROT_SPEED = TAU/240.0;
-const int FRAMES_PER_GAME_OVER = 60;
-
-//Pulse color option
-const double MAX_RANGE_COLOR = 10;
-const double PULSES_PER_SPIN = 3; //may look weird if not int!
-
-//Chance to flip the rotation in a new direction
-const int CHANCE_OF_FLIP_MODULO = 5;
-
-//The center of the screen
-const Point CENTER = {TOP_WIDTH/2, SCREEN_HEIGHT/2};
-
 /**
  * Draws a single moving wall based on live settings, the playing pattern, and a wall.
  */
@@ -207,20 +148,19 @@ MovementState collisionMovingPatterns(Level settings, LiveLevel live) {
 
 void drawMainHexagon(Color color1, Color color2, Point focus, double rotation, int sides) {
 	
-	//This draws the hexagon.
+	//This draws the center shape.
 	Point triangle[3];
 	triangle[0] = focus;
+	
 	for(int concentricHexes = 0; concentricHexes < 2; concentricHexes++) {
 		double height;
 		Color color;
 		if(concentricHexes == 0) {
-			
 			//outer color painted first
 			color = color1;
 			height = FULL_LEN;
 		}
 		if(concentricHexes == 1) {
-			
 			//inner color painted over it all.
 			color =  color2;
 			height = FULL_LEN - BORDER_LEN;
@@ -245,50 +185,71 @@ void drawMainHexagonLive(LiveLevel live) {
 		CENTER, live.rotation, live.patterns[0].sides)
 }
 
-void drawBackground(Color color1, Color color2, Point focus, double rotation, int sides) {
+void drawBackground(Color color1, Color color2, Point focus, double height, double rotation, int sides) {
+	
+	//solid background.
+	Point position = {0,0};
+	Point side = {TOP_WIDTH, SCREEN_HEIGHT};
+	drawRect(color1, position, size);
 	
 	//This draws the main background.
-	Point edges[6];
-	for(int i = 0; i < 6; i++) {
-		edges[i].x = (int)(len * cos(radians + (double)i * TAU/6.0) + center.x);
-		edges[i].y = (int)(len * sin(radians + (double)i * TAU/6.0) + center.y);
+	Point* edges = malloc(sizeof(point) * sides);
+	check(edges, "Error drawing background!", 0x0);
+	
+	for(int i = 0; i < sides; i++) {
+		edges[i].x = (int)(height * cos(rotation + (double)i * TAU/6.0) + focus.x);
+		edges[i].y = (int)(height * sin(rotation + (double)i * TAU/6.0) + focus.y);
 	}
 	
 	Point triangle[3];
-	triangle[0] = center;
-	triangle[0].color = bg.color;
-	for(int i = 0; i < 6; i = i + 2) {
+	triangle[0] = focus;
+	for(int i = 0; i < sides - 1; i = i + 2) {
 		triangle[1] = edges[i];
 		triangle[2] = edges[i + 1];
-		drawTriangle(triangle);
+		drawTriangle(color2, triangle);
 	}
+	
+	//if the sides is odd we need to "make up a color" to put in the gap.
+	if(sides % 2) {
+		triangle[1] = edges[sides - 2];
+		triangle[2] = edges[sides - 1];
+		drawTriangle(tweenColor(color1, color2, 0.5f), triangle);
+	}
+	
+	free(edges);
 }
 
-void drawHumanCursor(Point center, Point fg, double cursor, double radians) {
-	//This draws the human cursor.
+//basically an overload for drawBackground
+void drawBackgroundLive(LiveLevel live) {
+	drawBackground(
+		tweenColor(live.currentBG2, live.nextBG2, live.tweenPercent), 
+		tweenColor(live.currentBG1, live.nextBG1, live.tweenPercent),
+		CENTER, TOP_SCREEN_DIAG_CENTER, live.rotation, live.patterns[0].sides)
+}
+
+void drawHumanCursor(Color color, Point focus, double cursor, double rotation) {
 	Point humanTriangle[3];
-	humanTriangle[0].color = fg.color;
 	for(int i = 0; i < 3; i++) {
-		double len = 0.0;
+		double height = 0.0;
 		double position = 0.0;
 		if(i == 0) {
-			len = FULL_LEN + HUMAN_PADDING + HUMAN_HEIGHT;
-			position = cursor + radians;
+			height = FULL_LEN + HUMAN_PADDING + HUMAN_HEIGHT;
+			position = cursor + rotation;
 		} else {
-			len = FULL_LEN + HUMAN_PADDING;
-			if(i==1) {
-				position = cursor + HUMAN_WIDTH/2 + radians;
+			height = FULL_LEN + HUMAN_PADDING;
+			if(i == 1) {
+				position = cursor + HUMAN_WIDTH/2 + rotation;
 			} else {
-				position = cursor - HUMAN_WIDTH/2 + radians;
+				position = cursor - HUMAN_WIDTH/2 + rotation;
 			}
 		}
-		humanTriangle[i].x = (int)(len * cos(position) + center.x);
-		humanTriangle[i].y = (int)(len * sin(position) + center.y);
+		humanTriangle[i].x = (int)(height * cos(position) + focus.x);
+		humanTriangle[i].y = (int)(height * sin(position) + focus.y);
 	}
 	drawTriangle(humanTriangle);
 }
 
-int doMainMenu() {
+int doMainMenu(MainMenu menu) {
 	double radians = (double)g_transitionFrame / (double)FRAMES_PER_ONE_SIDE_ROTATION * TAU/6.0;
 	if(g_transition == -1) { //if the user is going to the left, flip the radians so the animation plays backwards.
 		radians *= -1;

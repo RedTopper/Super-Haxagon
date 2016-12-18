@@ -1,3 +1,8 @@
+#define TAU 6.28318530718
+#define SCREEN_HEIGHT 240
+#define TOP_WIDTH  400
+#define BOT_WIDTH  320
+
 #include <string.h>
 #include <limits.h>
 #include <math.h>
@@ -5,16 +10,11 @@
 #include <sf2d.h>
 #include <time.h>
 
+#include "util.h"
 #include "triangle.h"
 #include "font.h"
 #include "levels.h"
 #include "sound.h"
-
-#define TAU 6.28318530718
-#define FG 0
-#define BG1 1
-#define BG2 2
-#define TOTAL_PATTERNS_AT_ONE_TIME 3
 
 typedef enum {
 	CAN_MOVE,
@@ -40,18 +40,6 @@ typedef enum {
 	PARTIAL_RESET,
 } ResetTypeGame;
 
-typedef struct {
-	bool running;
-	bool inverted;
-	double distanceFromCenter;
-	double distanceFromCenterLastWall; //This should also include the leingth of said wall.
-	int patternNumber;
-	int sideOffset;
-} PatternTracker;
-
-Point g_levelColor[TOTAL_LEVELS][3];
-PatternTracker g_patternTracker[TOTAL_PATTERNS_AT_ONE_TIME];
-
 ////STATIC VARS
 //Inside hexagon style
 const double FULL_LEN = 24.0;
@@ -64,12 +52,12 @@ const double HUMAN_PADDING = 5.0;
 
 //Hexagon Constants
 const int FRAMES_PER_ONE_SIDE_ROTATION = 12;
-const int MIN_DISTANCE_FROM_LAST_PATTERN = 40;
+const int MIN_DISTANCE_FROM_LAST_PATTERN = 50;
 
 //Overflow so you don't get glitchy lines between hexagons.
 const double OVERFLOW_OFFSET = TAU/900.0; //This is really just some arbituary number so yeah...
 
-//Screen (calculated with a physical calculator)
+//Screen diagnal (calculated with a physical calculator)
 const int TOP_SCREEN_DIAG_CENTER = 257;
 
 //Game over screen
@@ -84,287 +72,181 @@ const double PULSES_PER_SPIN = 3; //may look weird if not int!
 //Chance to flip the rotation in a new direction
 const int CHANCE_OF_FLIP_MODULO = 5;
 
-////DYNAMIC VARS. g_ means global btw.
-int g_renderedWalls;
-int g_score;
-int g_transition; //0 = no transition // 1 = forwards // -1 = backwards
-int g_transitionFrame;
-int g_level;
-int g_levelLast;
-GameState g_gameState;
-double g_fps; //Used to calculate the lagometer.
-double g_gameOverDistance;
+//The center of the screen
+const Point CENTER = {TOP_WIDTH/2, SCREEN_HEIGHT/2};
 
-void init(ResetTypeGame reset) {
-	////DYNAMIC VARS
-	g_renderedWalls = 0;
-	g_score = 0;
-	g_transition = 0;
-	g_transitionFrame = 0;
-	if(reset == FULL_RESET) {
-		g_level = 0;
-		g_levelLast = 0;
-		g_fps = 0.0;
-		g_gameState = MAIN_MENU;
+/**
+ * Draws a single moving wall based on live settings, the playing pattern, and a wall.
+ */
+RenderState drawMovingWall(LiveLevel live, LivePattern pattern, LiveWall wall) {
+	double distance = wall.distance;
+	double height = wall.height;
+	
+	if(distance + height < FULL_LEN) return TOO_CLOSE;
+	if(distance > TOP_SCREEN_DIAG_CENTER) return TOO_FAR; //Might be expensive to calc?
+	
+	if(distance < FULL_LEN - 2 ) {//so the distance is never negative as it enters.
+		height -= FULL_LEN - 2 - distance;
+		distance = FULL_LEN - 2; //Should never be 0!!!
 	}
-	g_gameOverDistance = 0.0;
-	for(int i = 0; i < TOTAL_PATTERNS_AT_ONE_TIME; i++) {
-		g_patternTracker[i].running = false;
-		g_patternTracker[i].distanceFromCenter = 0.0;
-		g_patternTracker[i].sideOffset = 0;
+	
+	Point edges[4] = {0};
+	edges[0] = calcPoint(live, OVERFLOW_OFFSET, distance, wall.side + 1, pattern.sides);
+	edges[1] = calcPoint(live, OVERFLOW_OFFSET, distance + height, wall.side + 1, pattern.sides);
+	edges[2] = calcPoint(live, -OVERFLOW_OFFSET, distance + height, wall.side, pattern.sides);
+	edges[3] = calcPoint(live, -OVERFLOW_OFFSET, distance, wall.side, pattern.sides);
+	drawTrap(interpolateColor(live.currentFG, live.nextFG, live.tweenPercent), edges);
+	return RENDERED;
+}
+
+/**
+ * Completely draws all walls in a live level. Returns the render value
+ * of the furthest wall of the closest pattern (as to trigger a shift).
+ */
+RenderState drawMovingPatterns(LiveLevel live, int manualOffset) {
+	
+	//furthest distance of closest pattern
+	double nearFurthestDistance = 0;
+	RenderState nearFurthestRender = RENDERED;
+	
+	//for all patterns
+	for(int iPattern = 0; iPattern < TOTAL_PATTERNS_AT_ONE_TIME; iPattern++) {
+		LivePattern pattern = live.patterns[pattern];
+		
+		//draw all walls
+		for(int iWall = 0; iWall < pattern.numWalls; iWall++) {
+			MovingWall wall = pattern.walls[iWall];
+			RenderState render = drawMovingWall(live, pattern, wall);
+			
+			//update information about the closest pattern
+			if(wall = 0 && wall.distance + wall.height > nearFurthestDistance) {
+				nearFurthestDistance = wall.distance + wall.height;
+				nearFurthestRender = render;
+			}
+		}
 	}
+	return nearFurthestRender;
 }
 
-void initLevels() {
-	//level 0
-	g_levelColor[0][FG].color = RGBA8(0xF6, 0x48, 0x13, 0xFF);
-	g_levelColor[0][BG1].color = RGBA8(0x50, 0x0C, 0x01, 0xFF);
-	g_levelColor[0][BG2].color = RGBA8(0x61, 0x12, 0x01, 0xFF);
+MovementState collisionMovingWall(Level settings, LiveLevel live, LivePattern pattern, LiveWall wall) {
 	
-	//level 1
-	g_levelColor[1][FG].color = RGBA8(0x33, 0xE5, 0x66, 0xFF);
-	g_levelColor[1][BG1].color = RGBA8(0x08, 0x24, 0x10, 0xFF);
-	g_levelColor[1][BG2].color = RGBA8(0x00, 0x00, 0x00, 0xFF);
-	
-	//level 2
-	g_levelColor[2][FG].color = RGBA8(0x6D, 0x10, 0xF9, 0xFF);
-	g_levelColor[2][BG1].color = RGBA8(0x22, 0x00, 0x63, 0xFF);
-	g_levelColor[2][BG2].color = RGBA8(0x18, 0x00, 0x52, 0xFF);
-	
-	//level 3
-	g_levelColor[3][FG].color = RGBA8(0xF1, 0xF9, 0x10, 0xFF);
-	g_levelColor[3][BG1].color = RGBA8(0x63, 0x60, 0x01, 0xFF);
-	g_levelColor[3][BG2].color = RGBA8(0x52, 0x4C, 0x00, 0xFF);
-	
-	//level 4
-	g_levelColor[4][FG].color = RGBA8(0xF4, 0x05, 0x86, 0xFF);
-	g_levelColor[4][BG1].color = RGBA8(0xFF, 0xFF, 0xFF, 0xFF);
-	g_levelColor[4][BG2].color = RGBA8(0xFD, 0xD7, 0xEC, 0xFF);
-	
-	//level 5
-	g_levelColor[5][FG].color = RGBA8(0xFF, 0xFF, 0xFF, 0xFF);
-	g_levelColor[5][BG1].color = RGBA8(0x00, 0x00, 0x00, 0xFF);
-	g_levelColor[5][BG2].color = RGBA8(0x00, 0x00, 0x00, 0xFF);
-}
-
-u32 tweenColor(u32 original, u32 new, int frame) {
-	int red = (double)((int)RGBA8_GET_R(new) - (int)RGBA8_GET_R(original)) * ((double)frame / (double)FRAMES_PER_ONE_SIDE_ROTATION) + (double)RGBA8_GET_R(original);
-	int green = (double)((int)RGBA8_GET_G(new) - (int)RGBA8_GET_G(original)) * ((double)frame / (double)FRAMES_PER_ONE_SIDE_ROTATION) + (double)RGBA8_GET_G(original);
-	int blue = (double)((int)RGBA8_GET_B(new) - (int)RGBA8_GET_B(original)) * ((double)frame / (double)FRAMES_PER_ONE_SIDE_ROTATION) + (double)RGBA8_GET_B(original);
-	return RGBA8(red, green, blue, 0xFF);
-}
-
-Point pulseColor(Point original, double radians) {
-	int red = (int)RGBA8_GET_R(original.color);
-	int green = (int)RGBA8_GET_G(original.color);
-	int blue = (int)RGBA8_GET_B(original.color);
-	if(red == 0 && green == 0 && blue == 0) {
-		return original;
-	}
-	red += (int)((double)MAX_RANGE_COLOR * (cos(radians * PULSES_PER_SPIN) - 1.0) / 2.0);
-	green += (int)((double)MAX_RANGE_COLOR * (cos(radians * PULSES_PER_SPIN) - 1.0) / 2.0);
-	blue += (int)((double)MAX_RANGE_COLOR * (cos(radians * PULSES_PER_SPIN) - 1.0) / 2.0);
-	if(red < 0) red = 0;
-	if(green < 0) green = 0;
-	if(blue < 0) blue = 0;
-	original.color = RGBA8(red, green, blue, 0xFF);
-	return original;
-}
-
-MovementState checkCollision(double distanceFromCenter, int length, int side) {
 	//Check if we are between the wall vertically
-	if(distanceFromCenter <= FULL_LEN + HUMAN_PADDING + HUMAN_HEIGHT && distanceFromCenter + length >= FULL_LEN + HUMAN_PADDING + HUMAN_HEIGHT) {
-		double leftRotStep = g_levelData[g_level].cursor + g_levelData[g_level].rotStepHuman;
-		double rightRotStep = g_levelData[g_level].cursor - g_levelData[g_level].rotStepHuman;
-		
-		//If the cursor rotates around to 0 TAU (or from 0 TAU to TAU) we need to calculate BOTH ranges on the circle to compensate
-		double leftSideRads = (side + 1) * TAU/6.0; 
-		double leftSideRadsAlt = leftSideRads; 
-		double rightSideRads = side * TAU/6.0; 
-		double rightSideRadsAlt = rightSideRads;
-		
-		if(leftRotStep >= TAU) leftRotStep -= TAU;
-		if(leftRotStep < 0) leftRotStep += TAU;
-		if(rightRotStep >= TAU) rightRotStep -= TAU;
-		if(rightRotStep < 0) rightRotStep += TAU;
-		
-		//If the cursor wrapped and the range we need to calculate overflows beyond TAU we also need to check the other equivilent region
-		//exactly one TAU ago. The same idea applies to all of the other cases that "wrap around" when they shoyld not.
-		if(leftSideRads >= TAU) {
-			leftSideRadsAlt -= TAU;
-			rightSideRadsAlt -= TAU;
-		}
-		if(leftSideRads < 0) {
-			leftSideRadsAlt += TAU;
-			rightSideRadsAlt += TAU;
-		}
-		if(rightSideRads >= TAU) {
-			rightSideRadsAlt -= TAU;
-			leftSideRadsAlt -= TAU;
-		}
-		if(rightSideRads < 0) {
-			rightSideRadsAlt += TAU;
-			leftSideRadsAlt += TAU;
-		}
-		
-		
-		//Check if we are between the wall horizontally. 
-		if((g_levelData[g_level].cursor >= rightSideRads && g_levelData[g_level].cursor <= leftSideRads) ||
-		   (g_levelData[g_level].cursor >= rightSideRadsAlt && g_levelData[g_level].cursor <= leftSideRadsAlt)) {
-			return DEAD;
-		} else if((leftRotStep > rightSideRads && leftRotStep < leftSideRads) ||
-				  (leftRotStep > rightSideRadsAlt && leftRotStep < leftSideRadsAlt))  {
-			return CANNOT_MOVE_LEFT;
-		} else if((rightRotStep < leftSideRads && rightRotStep > rightSideRads) ||
-				  (rightRotStep < leftSideRadsAlt && rightRotStep > rightSideRadsAlt)) {
-			return CANNOT_MOVE_RIGHT;
-		}
+	if(FULL_LEN + HUMAN_PADDING + HUMAN_HEIGHT < wall.distance || 
+	   FULL_LEN + HUMAN_PADDING + HUMAN_HEIGHT > wall.distance + wall.height) {
+		return CAN_MOVE;
+	}
+	
+	double leftRotStep = live.cursorPos + settings.cursorStep;
+	double rightRotStep = live.cursorPos - settings.cursorStep;
+	
+	//If the cursor rotates around to 0 TAU (or from 0 TAU to TAU) we need to calculate BOTH ranges on the circle to compensate
+	double leftSideRads = (wall.side + 1.0) * TAU/(double)(pattern.sides); 
+	double leftSideRadsAlt = leftSideRads; 
+	double rightSideRads = wall.side * TAU/(double)(pattern.sides); 
+	double rightSideRadsAlt = rightSideRads;
+	
+	if(leftRotStep >= TAU) leftRotStep -= TAU;
+	if(leftRotStep < 0) leftRotStep += TAU;
+	if(rightRotStep >= TAU) rightRotStep -= TAU;
+	if(rightRotStep < 0) rightRotStep += TAU;
+	
+	//If the cursor wrapped and the range we need to calculate overflows beyond TAU we also need to check the other equivilent region
+	//exactly one TAU ago. The same idea applies to all of the other cases that "wrap around" when they shoyld not.
+	if(leftSideRads >= TAU) {
+		leftSideRadsAlt -= TAU;
+		rightSideRadsAlt -= TAU;
+	}
+	if(leftSideRads < 0) {
+		leftSideRadsAlt += TAU;
+		rightSideRadsAlt += TAU;
+	}
+	if(rightSideRads >= TAU) {
+		rightSideRadsAlt -= TAU;
+		leftSideRadsAlt -= TAU;
+	}
+	if(rightSideRads < 0) {
+		rightSideRadsAlt += TAU;
+		leftSideRadsAlt += TAU;
+	}
+	
+	//Check if we are between the wall horizontally. 
+	if((live.cursorPos >= rightSideRads && live.cursorPos <= leftSideRads) ||
+	   (live.cursorPos >= rightSideRadsAlt && live.cursorPos <= leftSideRadsAlt)) {
+		return DEAD;
+	} else if((leftRotStep > rightSideRads && leftRotStep < leftSideRads) ||
+			  (leftRotStep > rightSideRadsAlt && leftRotStep < leftSideRadsAlt))  {
+		return CANNOT_MOVE_LEFT;
+	} else if((rightRotStep < leftSideRads && rightRotStep > rightSideRads) ||
+			  (rightRotStep < leftSideRadsAlt && rightRotStep > rightSideRadsAlt)) {
+		return CANNOT_MOVE_RIGHT;
 	}
 	return CAN_MOVE;
 }
 
-RenderState drawWall(Point center, Point fg, double distanceFromCenter, int length, int side, double radians) {
-	if(distanceFromCenter + (double)length < FULL_LEN) return TOO_CLOSE;
-	if(sqrt(pow(distanceFromCenter * cos(TAU/12.0),2) + pow(distanceFromCenter * sin(TAU/12.0),2)) > TOP_SCREEN_DIAG_CENTER) return TOO_FAR; //Might be expensive to calc?
-	
-	if(distanceFromCenter < FULL_LEN - 2/*To make sure it draws correctly*/) {
-		length -= FULL_LEN - 2 - distanceFromCenter;
-		distanceFromCenter = FULL_LEN - 2; //Should never be 0!!!
-	}
-	
-	Point edges[4];
-	edges[0].color = fg.color;
-	for(int i = 0; i < 4; i++) {
-		int addLength = (i == 1 || i == 2 ? length : 0);
-		double leftOrRightSide = (i == 0 || i == 1 ? side/*left*/ : side + 1/*right*/);
-		double offset = (i == 0 || i == 1 ? -OVERFLOW_OFFSET/*left*/ : OVERFLOW_OFFSET/*right*/);
-		edges[i].x = (int)(((distanceFromCenter + (double)addLength) * cos(radians + leftOrRightSide * TAU/6.0 + offset) + (double)(center.x)));
-		edges[i].y = (int)(((distanceFromCenter + (double)addLength) * sin(radians + leftOrRightSide * TAU/6.0 + offset) + (double)(center.y)));
-	}
-	
-	g_renderedWalls++;
-	Point triangle[3];
-	triangle[0] = edges[0];
-	triangle[1] = edges[1];
-	triangle[2] = edges[2];
-	drawTriangle(triangle);
-	triangle[0] = edges[0];
-	triangle[1] = edges[2];
-	triangle[2] = edges[3];
-	drawTriangle(triangle);
-	return RENDERED;
-}
-
-MovementState drawWalls(Point center, Point fg, double radians, int manualOffset) {
-	//There are no patterns for that level!
-	if(!g_allPatterns.loaded) {
-		sf2d_draw_rectangle(0,0,TOP_WIDTH, 22, RGBA8(0, 0, 0, 0xFF));
-		Point p;
-		p.x = 22;
-		p.y = 4;
-		p.color = RGBA8(0xFF, 0, 0, 0xFF);
-		writeFont(p,"FAILED TO LOAD PATTERN FILE!", false);
-		return DEAD;
-	}
-	//There are no patterns for that level!
-	if(!g_patterns[g_level].numberOfPatterns) {
-		sf2d_draw_rectangle(0,0,TOP_WIDTH, 22, RGBA8(0, 0, 0, 0xFF));
-		Point p;
-		p.x = 28;
-		p.y = 4;
-		p.color = RGBA8(0xFF, 0, 0, 0xFF);
-		writeFont(p,"THIS LEVEL HAS NO PATTERNS!", false);
-		return DEAD;
-	}
-	bool shouldShift = false;
+MovementState collisionMovingPatterns(Level settings, LiveLevel live) {
 	MovementState collision = CAN_MOVE;
-	for(int pattern = 0; pattern < TOTAL_PATTERNS_AT_ONE_TIME; pattern++) {
-		RenderState lastRender = RENDERED;
-		if(!g_patternTracker[pattern].running) {
-			g_patternTracker[pattern].patternNumber = rand() % g_patterns[g_level].numberOfPatterns; //Who cares about uniformity anyway?
-			//This line of code gets the last wall of the pattern we are looking at.
-			Wall* wall = g_patterns[g_level].patterns[g_patternTracker[pattern].patternNumber]->
-						 walls[g_patterns[g_level].patterns[g_patternTracker[pattern].patternNumber]->numberOfWalls - 1]; 
-			g_patternTracker[pattern].sideOffset = rand() % 6;
-			g_patternTracker[pattern].distanceFromCenter = (pattern == 0 ? (double)TOP_SCREEN_DIAG_CENTER : g_patternTracker[pattern - 1].distanceFromCenterLastWall);
-			g_patternTracker[pattern].distanceFromCenterLastWall = g_patternTracker[pattern].distanceFromCenter + (double)wall->distanceFromCenter + (double)wall->length + (double)MIN_DISTANCE_FROM_LAST_PATTERN;
-			g_patternTracker[pattern].running = true;
-			g_patternTracker[pattern].inverted = rand() % 2;
-			if(!(rand() % CHANCE_OF_FLIP_MODULO)) g_levelData[g_level].rotStep *= -1; //FLIP HERE
-		}
+	
+	//for all patterns
+	for(int iPattern = 0; iPattern < TOTAL_PATTERNS_AT_ONE_TIME; iPattern++) {
+		LivePattern pattern = live.patterns[pattern];
 		
-		for(int i_wall = 0; i_wall < g_patterns[g_level].patterns[g_patternTracker[pattern].patternNumber]->numberOfWalls; i_wall++) {
-			Wall* wall = g_patterns[g_level].patterns[g_patternTracker[pattern].patternNumber]->walls[i_wall];
-			int preSide = (wall->side + g_patternTracker[pattern].sideOffset) % 6;
-			int side = (g_patternTracker[pattern].inverted ? 5 - preSide : preSide);
+		//for all walls
+		for(int iWall = 0; iWall < pattern.numWalls; iWall++) {
+			MovingWall wall = pattern.walls[iWall];
+			MovementState check = checkCollision(settings, live, pattern, wall);
 			
-			lastRender = drawWall(center, fg,
-				g_patternTracker[pattern].distanceFromCenter + (double)wall->distanceFromCenter,
-				wall->length,
-				side,
-				radians); //draw the actual wall finally.
-			if(lastRender == TOO_FAR) break;
-				
-			MovementState collisionCheck = checkCollision(
-				g_patternTracker[pattern].distanceFromCenter + (double)wall->distanceFromCenter, 
-				wall->length,
-				side);
-			if(collision == CAN_MOVE) collision = collisionCheck; //If we can move, try and replace it with something else
-			if((collision == CANNOT_MOVE_LEFT || collision == CANNOT_MOVE_RIGHT) && collisionCheck == DEAD) collision = collisionCheck;
+			//update colision
+			if(collision == CAN_MOVE) collision = check; //If we can move, try and replace it with something else
+			if(check == DEAD)  { //If we are ever dead, return it.
+				return DEAD;
+			}
 		}
-		if(lastRender == TOO_CLOSE && pattern == 0) {
-			shouldShift = true;
-		}
-		if(!manualOffset) {
-			g_patternTracker[pattern].distanceFromCenter -= g_levelData[g_level].wallSpeed;
-			g_patternTracker[pattern].distanceFromCenterLastWall -= g_levelData[g_level].wallSpeed;
-		} else {
-			g_patternTracker[pattern].distanceFromCenter -= manualOffset;
-			g_patternTracker[pattern].distanceFromCenterLastWall -= manualOffset;
-		}
-	}
-	if(shouldShift) { //We are going to shift the other patterns forward.
-		for(int shift = 1; shift < TOTAL_PATTERNS_AT_ONE_TIME; shift++) {
-			g_patternTracker[shift - 1].patternNumber = g_patternTracker[shift].patternNumber;
-			g_patternTracker[shift - 1].sideOffset = g_patternTracker[shift].sideOffset;
-			g_patternTracker[shift - 1].distanceFromCenter = g_patternTracker[shift].distanceFromCenter;
-			g_patternTracker[shift - 1].distanceFromCenterLastWall = g_patternTracker[shift].distanceFromCenterLastWall;
-			g_patternTracker[shift - 1].running = g_patternTracker[shift].running;
-			g_patternTracker[shift - 1].inverted = g_patternTracker[shift].inverted;
-		}
-		g_patternTracker[TOTAL_PATTERNS_AT_ONE_TIME - 1].running = false;
 	}
 	return collision;
 }
 
-void drawMainHexagon(Point center, Point fg, Point bg, double radians) {
+void drawMainHexagon(Color color1, Color color2, Point focus, double rotation, int sides) {
+	
 	//This draws the hexagon.
 	Point triangle[3];
-	triangle[0].x = center.x;
-	triangle[0].y = center.y;
+	triangle[0] = focus;
 	for(int concentricHexes = 0; concentricHexes < 2; concentricHexes++) {
-		double len = 0.0;
+		double height;
+		Color color;
 		if(concentricHexes == 0) {
-			//outer color painted after
-			triangle[0].color = fg.color;
-			len = FULL_LEN;
+			
+			//outer color painted first
+			color = color1;
+			height = FULL_LEN;
 		}
 		if(concentricHexes == 1) {
+			
 			//inner color painted over it all.
-			triangle[0].color = bg.color;
-			len = FULL_LEN - BORDER_LEN;
+			color =  color2;
+			height = FULL_LEN - BORDER_LEN;
 		}
-		for(int i = 0; i < 7; i++) {
-			triangle[(i % 2) + 1].x = (int)(len * cos(radians + (double)i * TAU/6.0) + center.x);
-			triangle[(i % 2) + 1].y = (int)(len * sin(radians + (double)i * TAU/6.0) + center.y);
+		
+		//draw hexagon (might not actually be hexagon!) in accordance to the closest pattern
+		for(int i = 0; i < sides + 1; i++) {
+			triangle[(i % 2) + 1].x = (int)(height * cos(rotation + (double)i * TAU/(double)sides) + (double)(focus.x));
+			triangle[(i % 2) + 1].y = (int)(height * sin(rotation + (double)i * TAU/(double)sides) + (double)(focus.y));
 			if(i != 0) {
-				drawTriangle(triangle);
+				drawTriangle(color, triangle);
 			}
 		}
 	}
 }
 
-void drawBackground(Point center, Point bg, double len, double radians) {
+//basically an overload for drawMainHexagon
+void drawMainHexagonLive(LiveLevel live) {
+	drawMainHexagon(
+		tweenColor(live.currentFG, live.nextFG, live.tweenPercent), 
+		tweenColor(live.currentBG1, live.nextBG1, live.tweenPercent),
+		CENTER, live.rotation, live.patterns[0].sides)
+}
+
+void drawBackground(Color color1, Color color2, Point focus, double rotation, int sides) {
+	
 	//This draws the main background.
 	Point edges[6];
 	for(int i = 0; i < 6; i++) {

@@ -1,9 +1,12 @@
 #include "util.h"
 
 int check(int result, char* message, int offset) {
+	//real version will stick in loop until home is pressed
 	if(!result) {
+		FILE* panic = fopen("sdmc:/haxapanic.txt", "a");
+		if(!panic) exit(1);
+		fprintf(f, "Sorry! There was a problem during runtime.\nMessage: %s At (file) offset: %d", message, offset);
 		exit(1);
-		//real version will stick in loop until home is pressed
 	}
 	return result;
 }

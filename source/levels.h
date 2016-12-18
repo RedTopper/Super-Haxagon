@@ -1,10 +1,6 @@
 #pragma once
 
-//#include <3ds.h>
-//#include <string.h>
-//#include <stdio.h>
-//#include <stdlib.h>
-//#include <limits.h>
+#include "header.h"
 
 #define TOTAL_PATTERNS_AT_ONE_TIME 3
 
@@ -71,7 +67,7 @@ typedef struct {
 	float speedWall;
 	float speedRotation;
 	float speedHuman;
-	float speedPulse;
+	int speedPulse;
 	Pattern* patterns;
 	int numPatterns; 
 } Level;

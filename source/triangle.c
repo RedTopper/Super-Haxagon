@@ -22,3 +22,8 @@ void drawTrap(Color color, Point points[4]) {
 	triangle[2] = points[3];
 	drawTriangle(color, triangle);
 }
+
+void drawRect(Color color, Point position, Point size) {
+	long paint = RGBA8(color.r,color.b,color.g,0xFF);
+	sf2d_draw_rectangle(position.x, positiont.y, size.x, size.y, paint);
+}

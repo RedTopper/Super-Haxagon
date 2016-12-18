@@ -1,16 +1,14 @@
 #pragma once
 
-#include <3ds.h>
-#include <stdio.h>
-
-#include "triangle.h"
+//#include <3ds.h>
+//#include <stdio.h>
 
 #ifdef __cplusplus
 #include "font/source/BmpFont.h"
 extern "C" {
 #endif
 
-void writeFont(Point p, const char* s, bool large);
+void writeFont(Color color, Point point, char* string, int large);
 
 #ifdef __cplusplus
 }

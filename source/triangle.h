@@ -1,17 +1,12 @@
 #pragma once
 
-#include <3ds.h>
-#include <sf2d.h>
-#include <limits.h>
+//#include <3ds.h>
+//#include <sf2d.h>
+//#include <limits.h>
 
-#define SCREEN_HEIGHT 240
-#define TOP_WIDTH  400
-#define BOT_WIDTH  320
-
-typedef struct
-{
-  long x, y;
-  u32 color;
+typedef struct {
+  int x, y;
 } Point;
 
-void drawTriangle(const Point points[3]);
+void drawTriangle(Color color, Point points[3]);
+void drawTrap(Color color, Point points[4]);

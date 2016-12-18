@@ -3,7 +3,9 @@
 BmpFont font16;
 BmpFont font32;
 
-void writeFont(Point p, const char* s, bool large) {
+void writeFont(Color color, Point point, char* string, int large) {
+	long paint = RGBA8(color.r,color.b,color.g,0xFF);
+	
 	if(!font16) {
 		font16.load("romfs:/font16.bff"); //Load font file
 	}
@@ -11,8 +13,8 @@ void writeFont(Point p, const char* s, bool large) {
 		font32.load("romfs:/font32.bff"); //Load font file
 	}
 	if(large) {
-		font32.drawStr(s, p.x, p.y, p.color);
+		font32.drawStr(string, point.x, point.y, paint);
 	} else {
-		font16.drawStr(s, p.x, p.y, p.color);
+		font16.drawStr(string, point.x, point.y, paint);
 	}
 }

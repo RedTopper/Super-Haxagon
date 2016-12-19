@@ -707,7 +707,7 @@ void doLagometer(int level) {
 					saveScore(g_level, scoreInt, decimalPart, false);
 					saved = true;
 				}				
-				p.x = 10;
+				p.x = 13;
 				p.y = 40;
 				writeFont(p,"YOU GOT A NEW HIGH SCORE", false);
 				p.x = 70;

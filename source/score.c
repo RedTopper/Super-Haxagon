@@ -92,23 +92,8 @@ void createSaveData(){
 			mkdir("/3DS/SuperHaxagon/savedata", 0700);
 		}else if(stat("/3DS/SuperHaxagon/savedata", &st) == -1){
 			mkdir("/3DS/SuperHaxagon/savedata", 0700);
-		}		
-		
-		readScore_File[0] = fopen("/3DS/SuperHaxagon/savedata/level1.txt", "w");
-		readScore_File[1] = fopen("/3DS/SuperHaxagon/savedata/level2.txt", "w");
-		readScore_File[2] = fopen("/3DS/SuperHaxagon/savedata/level3.txt", "w");
-		readScore_File[3] = fopen("/3DS/SuperHaxagon/savedata/level4.txt", "w");
-		readScore_File[4] = fopen("/3DS/SuperHaxagon/savedata/level5.txt", "w");
-		readScore_File[5] = fopen("/3DS/SuperHaxagon/savedata/level6.txt", "w");
-		
-
-		
-		
-		for(int i = 0; i < 6; i++){
-		    fclose(readScore_File[i]); 
 		}
-
-	saveScore(0, 0, 0, true);
+	defaultscores();
 }
 
 char* showSaveData(int onlevel, bool isMainMenu){   
@@ -197,110 +182,37 @@ else if(isMainMenu == true){
    return "";// A blank string is returned if it got past the statements since it had to return something
 }
 bool isCurrentScoreHigher(int level, int score, int decimalpart){
-	
-	
-	char secondsInSaveData[3];
-	char milliSecondsInSaveData[2];
-
-	int currentHighScoreSeconds = 0;
-	int currentHighScoreMilliSeconds = 0;
-	int tensplace = 1;	
-	int tempscore = 0;
-	char thisone[6];
-	char thatone[6];
-	
-	strcpy(thatone, scores1);
+	char currentscore[6];
+	char highscore[6];
 	
 	if (level == 0){
-		strncat(milliSecondsInSaveData, scores1+4, 2);
-		strncat(secondsInSaveData, scores1, 3);
+		strcpy(highscore, scores1);
 	}
 	else if (level == 1){
-		strncat(milliSecondsInSaveData, scores2+4, 2);
-		strncat(secondsInSaveData, scores2, 3);
+		strcpy(highscore, scores2);
 	}
 	else if (level == 2){
-		strncat(milliSecondsInSaveData, scores3+4, 2);
-		strncat(secondsInSaveData, scores3, 3);
+		strcpy(highscore, scores3);
 	}
 	else if (level == 3){
-		strncat(milliSecondsInSaveData, scores4+4, 2);
-		strncat(secondsInSaveData, scores4, 3);
+		strcpy(highscore, scores4);
 	}
 	else if (level == 4){
-		strncat(milliSecondsInSaveData, scores5+4, 2);
-		strncat(secondsInSaveData, scores5, 3);
+		strcpy(highscore, scores5);
 	}
 	else if (level == 5){
-		strncat(milliSecondsInSaveData, scores6+4, 2);
-		strncat(secondsInSaveData, scores6, 3);
+		strcpy(highscore, scores6);
 	}
+	snprintf(currentscore, 6, "%03d:%02d", score, decimalpart);
 	
-	for(int i = 2; i >= 0; i--){
-		tempscore += secondsInSaveData[i];
-		tempscore = tempscore * tensplace;
-		currentHighScoreSeconds += tempscore;
-		tensplace = tensplace * 10;
-	}
-	tensplace = 1;
-	for(int i = 1; i >= 0; i--){
-		tempscore += milliSecondsInSaveData[i];
-		tempscore = tempscore * tensplace;
-		currentHighScoreMilliSeconds += tempscore;
-		tensplace = tensplace * 10;
-	}
-	snprintf(thisone, 6, "%03d:%02d", score, decimalpart);
-	
-	
-	if(strcmp(thatone, thisone) < 0){
+	if(strcmp(highscore, currentscore) < 0){
 		return true;
 	}
-	else if(strcmp(thatone, thisone) > 0){
+	else if(strcmp(highscore, currentscore) > 0){
 		return false;
 	}
-	
 }
-void saveScore(int level, int score, int decimalpart, bool firstCreation){
-	char scoreToOverwrite[6];
-	char currentsave[6];
-			
-	
-	if(level == 0){
-		strcat(currentsave,sentencescore1);		
-	}
-	else if(level == 1){
-		strcat(currentsave,sentencescore2);		
-	}
-	else if(level == 2){
-		strcat(currentsave,sentencescore3);		
-	}
-	else if(level == 3){
-		strcat(currentsave,sentencescore4);		
-	}
-	else if(level == 4){
-		strcat(currentsave,sentencescore5);		
-	}
-	else if(level == 5){
-		strcat(currentsave,sentencescore6);		
-	}
-	
-	
-	snprintf(scoreToOverwrite, 6, "%03d:%02d", score, decimalpart);
-	//strcat(scoreToOverwrite, currentsave);
-	
-	if(firstCreation == true){
-		writeScore_File[0] = fopen("/3DS/SuperHaxagon/savedata/level1.txt", "w+");
-		writeScore_File[1] = fopen("/3DS/SuperHaxagon/savedata/level2.txt", "w+");	
-		writeScore_File[2] = fopen("/3DS/SuperHaxagon/savedata/level3.txt", "w+");
-		writeScore_File[3] = fopen("/3DS/SuperHaxagon/savedata/level4.txt", "w+");	
-		writeScore_File[4] = fopen("/3DS/SuperHaxagon/savedata/level5.txt", "w+");
-		writeScore_File[5] = fopen("/3DS/SuperHaxagon/savedata/level6.txt", "w+");	
-		
-		for(int i = 0; i < 6; i++){
-			fputs("000:00", writeScore_File[i]);
-			fclose(writeScore_File[i]);
-		}
-	}	
+void saveScore(int level, int score, int decimalpart, bool firstCreation){	
 		
 	if(level == 0){
 		writeScore_File[0] = fopen("/3DS/SuperHaxagon/savedata/level1.txt", "w+");	
@@ -362,10 +274,21 @@ void saveScore(int level, int score, int decimalpart, bool firstCreation){
 				fclose(writeScore_File[level]);
 			}
 		}
-		fclose(writeScore_File[0]);
 	}
 }
-
+void defaultscores(){
+		writeScore_File[0] = fopen("/3DS/SuperHaxagon/savedata/level1.txt", "w");
+		writeScore_File[1] = fopen("/3DS/SuperHaxagon/savedata/level2.txt", "w");	
+		writeScore_File[2] = fopen("/3DS/SuperHaxagon/savedata/level3.txt", "w");
+		writeScore_File[3] = fopen("/3DS/SuperHaxagon/savedata/level4.txt", "w");	
+		writeScore_File[4] = fopen("/3DS/SuperHaxagon/savedata/level5.txt", "w");
+		writeScore_File[5] = fopen("/3DS/SuperHaxagon/savedata/level6.txt", "w");	
+		
+		for(int i = 0; i < 6; i++){
+			fputs("000:00", writeScore_File[i]);
+			fclose(writeScore_File[i]);
+		}
+}
 //Level up related content is below
 void calculateLevelUp(Point p, double score){	
 	

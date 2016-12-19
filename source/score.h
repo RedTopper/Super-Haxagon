@@ -17,3 +17,4 @@ char* showSaveData(int level, bool isMainMenu);
 bool isCurrentScoreHigher();
 void checkForSaveData();
 void calculateLevelUp();
+void defaultscores();

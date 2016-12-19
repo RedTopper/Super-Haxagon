@@ -13,8 +13,15 @@
 
 void saveScore(int level, int score, int decimalPart, bool firstCreation);
 void createSaveData();
+<<<<<<< HEAD
 char* showSaveData(int level);
 bool isCurrentScoreHigher();
 void checkForSaveData();
 void calculateLevelUp();
 void defaultscores();
+=======
+char* showSaveData(int level, bool isMainMenu);
+bool isCurrentScoreHigher();
+void checkForSaveData();
+void calculateLevelUp();
+>>>>>>> origin/master

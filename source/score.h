@@ -13,7 +13,7 @@
 
 void saveScore(int level, int score, int decimalPart, bool firstCreation);
 void createSaveData();
-char* showSaveData(int level, bool isMainMenu);
+char* showSaveData(int level);
 bool isCurrentScoreHigher();
 void checkForSaveData();
 void calculateLevelUp();

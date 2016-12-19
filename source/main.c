@@ -481,7 +481,7 @@ int doMainMenu() {
 			writeFont(sub2,"MODE: NORMAL", false);	
 			writeFont(time, "SCORE: ", false);
 			time.x = 84;			
-			writeFont(time, showSaveData(0, true), false);			
+			writeFont(time, showSaveData(0), false);			
 			break;
 		case 1:
 			writeFont(p,"HEXAGONER", true);
@@ -489,7 +489,7 @@ int doMainMenu() {
 			writeFont(sub2,"MODE: NORMAL", false);
 			writeFont(time, "SCORE: ", false);	
 			time.x = 84;
-			writeFont(time, showSaveData(1, true), false);
+			writeFont(time, showSaveData(1), false);
 			break;
 		case 2:
 			writeFont(p,"HEXAGONEST", true);
@@ -497,7 +497,7 @@ int doMainMenu() {
 			writeFont(sub2,"MODE: NORMAL", false);
 			writeFont(time, "SCORE: ", false);	
 			time.x = 84;			
-			writeFont(time, showSaveData(2, true), false);
+			writeFont(time, showSaveData(2), false);
 			break;
 		case 3:
 			writeFont(p,"HEXAGON", true);
@@ -505,7 +505,7 @@ int doMainMenu() {
 			writeFont(sub2,"MODE: HYPER", false);	
 			writeFont(time, "SCORE: ", false);
 			time.x = 84;
-			writeFont(time, showSaveData(3, true), false);
+			writeFont(time, showSaveData(3), false);
 			break;
 		case 4:
 			writeFont(p,"HEXAGONER", true);
@@ -513,7 +513,7 @@ int doMainMenu() {
 			writeFont(sub2,"MODE: HYPER", false);
 			writeFont(time, "SCORE: ", false);	
 			time.x = 84;
-			writeFont(time, showSaveData(4, true), false);
+			writeFont(time, showSaveData(4), false);
 			break;
 		case 5:
 			writeFont(p,"HEXAGONEST", true);
@@ -521,7 +521,7 @@ int doMainMenu() {
 			writeFont(sub2,"MODE: HYPER", false);	
 			writeFont(time, "SCORE: ", false);
 			time.x = 84;
-			writeFont(time, showSaveData(5, true), false);
+			writeFont(time, showSaveData(5), false);
 			break;			
 		}		
 	sf2d_end_frame();
@@ -718,27 +718,19 @@ void doLagometer(int level) {
 				writeFont(p,"PRESS B TO QUIT", false);
 			}				
 			else if(isCurrentScoreHigher(g_level, scoreInt, decimalPart) == false) {
-				p.x = 60;
-				p.y = 40;				
-				writeFont(p,showSaveData(g_level, false), false);
+				p.x = 52;
+				p.y = 40;	
+				writeFont(p,"HIGH SCORE: ", false);	
+				p.x = 194;
+				p.y = 40;					
+				writeFont(p,showSaveData(g_level), false);
 				p.x = 70;
 				p.y = 78;
 				writeFont(p,"PRESS A TO PLAY", false);
 				p.x = 70;
 				p.y = 94;
 				writeFont(p,"PRESS B TO QUIT", false);
-				}
-			else{
-				p.x = 60;
-				p.y = 40;
-				writeFont(p,showSaveData(g_level, false), false);
-				p.x = 70;
-				p.y = 78;
-				writeFont(p,"PRESS A TO PLAY", false);
-				p.x = 70;
-				p.y = 94;
-				writeFont(p,"PRESS B TO QUIT", false);
-				}				
+				}			
 			}
 		
 	}

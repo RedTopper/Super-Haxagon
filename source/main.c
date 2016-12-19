@@ -9,6 +9,7 @@
 #include "font.h"
 #include "levels.h"
 #include "sound.h"
+#include "score.h"
 
 #define TAU 6.28318530718
 #define FG 0
@@ -53,6 +54,9 @@ Point g_levelColor[TOTAL_LEVELS][3];
 PatternTracker g_patternTracker[TOTAL_PATTERNS_AT_ONE_TIME];
 
 ////STATIC VARS
+bool saved = false;
+
+
 //Inside hexagon style
 const double FULL_LEN = 24.0;
 const double BORDER_LEN = 4.0;
@@ -101,6 +105,7 @@ void init(ResetTypeGame reset) {
 	g_score = 0;
 	g_transition = 0;
 	g_transitionFrame = 0;
+	saved = false;
 	if(reset == FULL_RESET) {
 		g_level = 0;
 		g_levelLast = 0;
@@ -469,45 +474,58 @@ int doMainMenu() {
 	
 	sf2d_draw_rectangle(0,0,TOP_WIDTH, sub2.y + 16 + 2, RGBA8(0, 0, 0, 0xFF));
 	sf2d_draw_rectangle(0,time.y - 4,11/*chars*/ * 16, 16 + 8, RGBA8(0, 0, 0, 0xFF));
-	switch(g_level) {
+	switch(g_level) {		
 		case 0:
 			writeFont(p,"HEXAGON", true);
 			writeFont(sub,"DIFFICULTY: HARD", false);
-			writeFont(sub2,"MODE: NORMAL", false);
-			writeFont(time,"SCORE: 000:00", false);
+			writeFont(sub2,"MODE: NORMAL", false);	
+			writeFont(time, "SCORE: ", false);
+			time.x = 84;			
+			writeFont(time, showSaveData(0, true), false);			
 			break;
 		case 1:
 			writeFont(p,"HEXAGONER", true);
 			writeFont(sub,"DIFFICULTY: HARDER", false);
 			writeFont(sub2,"MODE: NORMAL", false);
-			writeFont(time,"SCORE: 000:00", false);
+			writeFont(time, "SCORE: ", false);	
+			time.x = 84;
+			writeFont(time, showSaveData(1, true), false);
 			break;
 		case 2:
 			writeFont(p,"HEXAGONEST", true);
 			writeFont(sub,"DIFFICULTY: HARDEST", false);
 			writeFont(sub2,"MODE: NORMAL", false);
-			writeFont(time,"SCORE: 000000", false);
+			writeFont(time, "SCORE: ", false);	
+			time.x = 84;			
+			writeFont(time, showSaveData(2, true), false);
 			break;
 		case 3:
 			writeFont(p,"HEXAGON", true);
 			writeFont(sub,"DIFFICULTY: HARDESTER", false);
-			writeFont(sub2,"MODE: HYPER", false);
-			writeFont(time,"SCORE: 000000", false);
+			writeFont(sub2,"MODE: HYPER", false);	
+			writeFont(time, "SCORE: ", false);
+			time.x = 84;
+			writeFont(time, showSaveData(3, true), false);
 			break;
 		case 4:
 			writeFont(p,"HEXAGONER", true);
 			writeFont(sub,"DIFFICULTY: HARDESTEST", false);
 			writeFont(sub2,"MODE: HYPER", false);
-			writeFont(time,"SCORE: 000000", false);
+			writeFont(time, "SCORE: ", false);	
+			time.x = 84;
+			writeFont(time, showSaveData(4, true), false);
 			break;
 		case 5:
 			writeFont(p,"HEXAGONEST", true);
 			writeFont(sub,"DIFFICULTY: HARDESTESTEST", false);
-			writeFont(sub2,"MODE: HYPER", false);
-			writeFont(time,"SCORE: 000000", false);
-			break;
-	}
+			writeFont(sub2,"MODE: HYPER", false);	
+			writeFont(time, "SCORE: ", false);
+			time.x = 84;
+			writeFont(time, showSaveData(5, true), false);
+			break;			
+		}		
 	sf2d_end_frame();
+	
 	
 	//KEYS
 	u32 kDown = hidKeysDown();
@@ -652,11 +670,14 @@ void doLagometer(int level) {
 	if(g_gameState == PLAYING) {
 		sf2d_draw_rectangle(0,23,BOT_WIDTH, 4, RGBA8(0, 0xFF, 0, 0xFF));
 		sf2d_draw_rectangle(0,0,BOT_WIDTH, 22, RGBA8(0, 0, 0, 0xFF));
+		
 		Point p;
 		p.color = RGBA8(0xFF,0xFF,0xFF,0xFF);
 		p.x = 4;
 		p.y = 4;
-		writeFont(p,"POINT", false);
+		
+		calculateLevelUp(p,(double)g_score/60.0);
+		
 		p.x = 230;
 		p.y = 4;
 		char buffer[6+1];
@@ -673,20 +694,53 @@ void doLagometer(int level) {
 		p.y = 4;
 		writeFont(p,"GAME OVER", true);
 		p.x = 90;
-		p.y = 40;
+		p.y = 58;
 		char buffer[12+1];
 		int scoreInt = (int)((double)g_score/60.0);
 		int decimalPart = (int)(((double)g_score/60.0 - (double)scoreInt) * 100.0);
 		snprintf(buffer, 12+1, "TIME: %03d:%02d", scoreInt, decimalPart); //Emergency stack overflow prevention
-		writeFont(p,buffer, false);
+		writeFont(p,buffer, false);		
 		if(!g_transition) {
-			p.x = 70;
-			p.y = 70;
-			writeFont(p,"PRESS A TO PLAY", false);
-			p.x = 70;
-			p.y = 86;
-			writeFont(p,"PRESS B TO QUIT", false);
-		}
+			
+			if(isCurrentScoreHigher(g_level, scoreInt, decimalPart) == true) {
+				if(saved == false){
+					saveScore(g_level, scoreInt, decimalPart, false);
+					saved = true;
+				}				
+				p.x = 10;
+				p.y = 40;
+				writeFont(p,"YOU GOT A NEW HIGH SCORE", false);
+				p.x = 70;
+				p.y = 78;
+				writeFont(p,"PRESS A TO PLAY", false);
+				p.x = 70;
+				p.y = 94;
+				writeFont(p,"PRESS B TO QUIT", false);
+			}				
+			else if(isCurrentScoreHigher(g_level, scoreInt, decimalPart) == false) {
+				p.x = 60;
+				p.y = 40;				
+				writeFont(p,showSaveData(g_level, false), false);
+				p.x = 70;
+				p.y = 78;
+				writeFont(p,"PRESS A TO PLAY", false);
+				p.x = 70;
+				p.y = 94;
+				writeFont(p,"PRESS B TO QUIT", false);
+				}
+			else{
+				p.x = 60;
+				p.y = 40;
+				writeFont(p,showSaveData(g_level, false), false);
+				p.x = 70;
+				p.y = 78;
+				writeFont(p,"PRESS A TO PLAY", false);
+				p.x = 70;
+				p.y = 94;
+				writeFont(p,"PRESS B TO QUIT", false);
+				}				
+			}
+		
 	}
 	sf2d_end_frame();
 }
@@ -698,6 +752,9 @@ int main() {
 	romfsInit();
 	ndspInit();
 	ndspSetOutputMode(NDSP_OUTPUT_STEREO);
+	
+	//Checks whether or not to generate save data
+	checkForSaveData();
 	
 	//program init
 	init(FULL_RESET);
@@ -729,10 +786,12 @@ int main() {
 		if(g_gameState == PLAYING) {
 			g_gameState = doPlayGame(); 
 			if(g_gameState == GAME_OVER) {
+				checkForSaveData();
 				g_transition = true;
 				audioPlay(&g_over, false);
 			}
 			if(g_gameState == MAIN_MENU) {
+				checkForSaveData();
 				audioStop(&g_bgm);
 				audioPlay(&g_hexagon, false);
 			}
@@ -747,6 +806,7 @@ int main() {
 				audioPlay(&g_begin, false);
 			}
 			if(g_gameState == MAIN_MENU) {
+				checkForSaveData();
 				audioStop(&g_bgm);
 				audioPlay(&g_hexagon, false);
 			}

@@ -29,7 +29,6 @@ void checkForSaveData(){
 		createSaveData();	
 	}			
 		fclose(isSaveThere);
-		
 		//Clear all strings so that when the high score is updated,
 		//it can reload the record for each level.
 		scores1[0] = '\0';
@@ -45,17 +44,12 @@ void checkForSaveData(){
 		sentencescore5[0] = '\0';
 		sentencescore6[0] = '\0';
 		
-		
 		readScore_File[0] = fopen("/3DS/SuperHaxagon/savedata/level1.txt", "r");
 		readScore_File[1] = fopen("/3DS/SuperHaxagon/savedata/level2.txt", "r");
 		readScore_File[2] = fopen("/3DS/SuperHaxagon/savedata/level3.txt", "r");
 		readScore_File[3] = fopen("/3DS/SuperHaxagon/savedata/level4.txt", "r");
 		readScore_File[4] = fopen("/3DS/SuperHaxagon/savedata/level5.txt", "r");
 		readScore_File[5] = fopen("/3DS/SuperHaxagon/savedata/level6.txt", "r");
-		
-
-		
-		
 
 		fgets(scores1, 9, readScore_File[0]);			
 		fclose(readScore_File[0]);	
@@ -70,7 +64,6 @@ void checkForSaveData(){
 		fgets(scores6, 9, readScore_File[5]);			
 		fclose(readScore_File[5]);
 }
-
 void createSaveData(){
 	//Actually creates the save data.
 		if(stat("/3DS", &st) == -1){
@@ -86,7 +79,6 @@ void createSaveData(){
 	
 	defaultscores();
 }
-
 char* showSaveData(int onlevel){   
 	if(onlevel == 0) {
 		if(strlen(sentencescore1) != 6){

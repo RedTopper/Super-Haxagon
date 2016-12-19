@@ -18,13 +18,6 @@ char sentencescore4[6];
 char sentencescore5[6];
 char sentencescore6[6];
 
-char sentencehighscore1[6];
-char sentencehighscore2[6];
-char sentencehighscore3[6];
-char sentencehighscore4[6];
-char sentencehighscore5[6];
-char sentencehighscore6[6];
-
 struct stat st = {0};
 
 void checkForSaveData(){   
@@ -51,12 +44,6 @@ void checkForSaveData(){
 		sentencescore4[0] = '\0';
 		sentencescore5[0] = '\0';
 		sentencescore6[0] = '\0';
-		sentencehighscore1[0] = '\0';
-		sentencehighscore2[0] = '\0';
-		sentencehighscore3[0] = '\0';
-		sentencehighscore4[0] = '\0';
-		sentencehighscore5[0] = '\0';
-		sentencehighscore6[0] = '\0';
 		
 		
 		readScore_File[0] = fopen("/3DS/SuperHaxagon/savedata/level1.txt", "r");

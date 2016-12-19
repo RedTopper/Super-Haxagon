@@ -31,7 +31,7 @@ void checkForSaveData(){
 		fclose(isSaveThere);
 		
 		//Clear all strings so that when the high score is updated,
-		//it can reload the record for that level.
+		//it can reload the record for each level.
 		scores1[0] = '\0';
 		scores2[0] = '\0';
 		scores3[0] = '\0';

@@ -59,9 +59,7 @@ int main() {
 	ndspSetOutputMode(NDSP_OUTPUT_STEREO);
 	
 	//program init
-	audioLoad();
 	srand(svcGetSystemTick());
-	audioPlay(&g_hexagon, false);
 	
 	//Controller
 	while (1) {
@@ -70,7 +68,6 @@ int main() {
 	
 	//close GFX
 	sf2d_fini();
-	audioUnload();
 	
 	gfxExit();	
 	romfsExit();	

@@ -6,6 +6,18 @@
 #include "util.h"
 #include "levels.h"
 
+const char* UNLOADED = "ERROR";
+const char* PROJECT_HEADER = "HAXAGON1.0";
+const char* PROJECT_FOOTER = "ENDHAXAGON";
+const char* LEVEL_HEADER = "LEVEL2.0";
+const char* LEVEL_FOOTER = "ENDLEVEL";
+const char* PATTERN_HEADER = "PATTERN1.0";
+const char* PATTERN_FOOTER = "ENDPATTERN";
+const char* PROJECT_FILE_NAME = "sdmc:/3ds/data/haxagon/levels.haxagon";
+
+const int MIN_WALL_HEIGHT = 8;
+const int MIN_PATTERN_SIDES = 3;
+
 int compare(FILE* file, const char* string) {
 	int len = strlen(string);
 	char* buff = malloc(sizeof(char) * (len + 1)); //for '/0'

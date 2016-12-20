@@ -1,3 +1,10 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <3ds.h>
+#include <sf2d.h>
+#include <time.h>
+
 #include "types.h"
 #include "util.h"
 #include "levels.h"
@@ -5,6 +12,41 @@
 #include "logic.h"
 #include "font.h"
 #include "sound.h"
+
+//Inside hexagon style
+const double FULL_LEN = 24.0;
+const double BORDER_LEN = 4.0;
+
+//Human triangle style
+const double HUMAN_WIDTH = TAU/30;
+const double HUMAN_HEIGHT = 5.0;
+const double HUMAN_PADDING = 5.0;
+
+//Hexagon Constants
+const int FRAMES_PER_ONE_SIDE_ROTATION = 12;
+const int MIN_DISTANCE_FROM_LAST_PATTERN = 50;
+
+//Overflow so you don't get glitchy lines between hexagons.
+//This is really just some arbituary number so yeah...
+const double OVERFLOW_OFFSET = TAU/900.0; 
+
+//Screen diagnal (calculated with a physical calculator)
+const int TOP_SCREEN_DIAG_CENTER = 257;
+
+//Game over screen
+const double GAME_OVER_ACCEL_RATE = 1.1;
+const double GAME_OVER_ROT_SPEED = TAU/240.0;
+const int FRAMES_PER_GAME_OVER = 60;
+
+//Pulse color option
+const double MAX_RANGE_COLOR = 10;
+const double PULSES_PER_SPIN = 3; //may look weird if not int!
+
+//Chance to flip the rotation in a new direction
+const int CHANCE_OF_FLIP_MODULO = 5;
+
+//The center of the screen
+const Point CENTER = {TOP_WIDTH/2, SCREEN_HEIGHT/2};
 
 int main() {
 	//3ds init
@@ -15,10 +57,6 @@ int main() {
 	ndspSetOutputMode(NDSP_OUTPUT_STEREO);
 	
 	//program init
-	init(FULL_RESET);
-	initPatterns();
-	initLevels();
-	initLevelData();
 	initSounds();
 	srand(svcGetSystemTick());
 	
@@ -26,64 +64,9 @@ int main() {
 	
 	//Controller
 	while (1) {
-		int level = -1;
-		hidScanInput();
-		u32 kDown = hidKeysDown();
-		if(kDown & KEY_START) break;
-		
-		////DRAW MENU
-		if(g_gameState == MAIN_MENU) {
-			level = doMainMenu();
-			if(level != -1) { //Ran when main menu exits.
-				resetLevelData();
-				init(PARTIAL_RESET);
-				audioPlay(&g_begin, false);
-			}
-		} else
-		
-		////PLAY GAME
-		if(g_gameState == PLAYING) {
-			g_gameState = doPlayGame(); 
-			if(g_gameState == GAME_OVER) {
-				g_transition = true;
-				audioPlay(&g_over, false);
-			}
-			if(g_gameState == MAIN_MENU) {
-				audioStop(&g_bgm);
-				audioPlay(&g_hexagon, false);
-			}
-		} else
-		
-		////GAME OVER
-		if(g_gameState == GAME_OVER) {
-			g_gameState = doGameOver(); 
-			if(g_gameState == PLAYING) {
-				resetLevelData();
-				init(PARTIAL_RESET);
-				audioPlay(&g_begin, false);
-			}
-			if(g_gameState == MAIN_MENU) {
-				audioStop(&g_bgm);
-				audioPlay(&g_hexagon, false);
-			}
-		}
-		
-		////DRAW LAGOMETER
-		doLagometer(level);
-		
-		////FLUSH AND CALC LAGOMETER
-		sf2d_swapbuffers();
-		g_fps = sf2d_get_fps();
-		
-		////START GAME IF NEEDED
-		if(level >= 0) {
-			playLevelBGM(level);
-			g_gameState = PLAYING;
-		}
-		g_renderedWalls = 0;
+		break;
 	}
 	sf2d_fini();
-	freePatterns();
 	audioUnload();
 	
 	gfxExit();	

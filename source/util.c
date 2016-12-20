@@ -1,10 +1,12 @@
 #include <math.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 #include "types.h"
 #include "util.h"
 
-int panic(const char* message, int offset) {
-	//real version will stick in loop until home is pressed
+//real version will stick in loop until home is pressed
+void panic(const char* message, int offset) {
 	FILE* panic = fopen("sdmc:/haxapanic.txt", "a");
 	if(!panic) exit(1);
 	fprintf(panic, "Sorry! There was a problem during runtime.\nMessage: %s At (file) offset: %d", message, offset);
@@ -13,16 +15,12 @@ int panic(const char* message, int offset) {
 }
 
 void* checkv(void* result, const char* message, int offset) {
-	if(!result) {
-		panic(message, offset)
-	}
+	if(!result) panic(message, offset);
 	return result;
 }
 
 int check(int result, const char* message, int offset) {
-	if(!result) {
-		panic(message, offset)
-	}
+	if(!result) panic(message, offset);
 	return result;
 }
 

@@ -148,7 +148,7 @@ Level getLevel(FILE* file, Pattern* patterns, int numPatterns) {
 	//linked patterns (a copy of loaded patterns)
 	level.patterns = getMalloc(file, sizeof(Pattern), &level.numPatterns, 0, "Cannot alloc patterns!");
 	check(!level.numPatterns, "Level must have at least one pattern!", ftell(file));
-	for(int i = 0; i < level.numPatterns; i++) level.patterns[i] = locatePattern(file, patterns, numPatterns);
+	for(int i = 0; i < level.numPatterns; i++) level.patterns[i] = getLoadedPattern(file, patterns, numPatterns);
 	
 	//exit
 	return level;

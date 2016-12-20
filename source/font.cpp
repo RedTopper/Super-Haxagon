@@ -1,3 +1,7 @@
+#include <3ds.h>
+#include <sf2d.h>
+
+#include "types.h"
 #include "font.h"
 
 BmpFont font16;

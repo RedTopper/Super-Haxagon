@@ -1,12 +1,27 @@
+#include <math.h>
+
+#include "types.h"
 #include "util.h"
 
-int check(int result, char* message, int offset) {
+int panic(const char* message, int offset) {
 	//real version will stick in loop until home is pressed
+	FILE* panic = fopen("sdmc:/haxapanic.txt", "a");
+	if(!panic) exit(1);
+	fprintf(panic, "Sorry! There was a problem during runtime.\nMessage: %s At (file) offset: %d", message, offset);
+	fclose(panic);
+	exit(1);
+}
+
+void* checkv(void* result, const char* message, int offset) {
 	if(!result) {
-		FILE* panic = fopen("sdmc:/haxapanic.txt", "a");
-		if(!panic) exit(1);
-		fprintf(f, "Sorry! There was a problem during runtime.\nMessage: %s At (file) offset: %d", message, offset);
-		exit(1);
+		panic(message, offset)
+	}
+	return result;
+}
+
+int check(int result, const char* message, int offset) {
+	if(!result) {
+		panic(message, offset)
 	}
 	return result;
 }

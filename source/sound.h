@@ -1,7 +1,5 @@
 #pragma once
 
-#include "header.h"
-
 typedef struct {
 	u8* data;
 	u32 sampleRate;

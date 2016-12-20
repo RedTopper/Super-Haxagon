@@ -1,3 +1,5 @@
+#include <3ds.h>
+
 #include "sound.h"
 
 void audioLoad(const char *path, Track *sound, int channel) {

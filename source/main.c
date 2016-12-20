@@ -49,28 +49,32 @@ const int CHANCE_OF_FLIP_MODULO = 5;
 const Point CENTER = {TOP_WIDTH/2, SCREEN_HEIGHT/2};
 
 int main() {
+	
 	//3ds init
 	sf2d_init();
 	sf2d_set_vblank_wait(1);
 	romfsInit();
+	sdmcInit();
 	ndspInit();
 	ndspSetOutputMode(NDSP_OUTPUT_STEREO);
 	
 	//program init
-	initSounds();
+	audioLoad();
 	srand(svcGetSystemTick());
-	
 	audioPlay(&g_hexagon, false);
 	
 	//Controller
 	while (1) {
 		break;
 	}
+	
+	//close GFX
 	sf2d_fini();
 	audioUnload();
 	
 	gfxExit();	
 	romfsExit();	
+	sdmcExit();
 	ndspExit();	
 	return 0;
 }

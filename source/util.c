@@ -1,26 +1,31 @@
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <3ds.h>
+#include <sf2d.h>
 
 #include "types.h"
 #include "util.h"
+#include "sound.h"
 
 //real version will stick in loop until home is pressed
 void panic(const char* message, int offset) {
 	FILE* panic = fopen("sdmc:/haxapanic.txt", "a");
-	if(!panic) exit(1);
-	fprintf(panic, "Sorry! There was a problem during runtime.\nMessage: %s At (file) offset: %d", message, offset);
-	fclose(panic);
+	if(panic) {
+		fprintf(panic, "Sorry! There was a problem during runtime.\nMessage: %s At (file) offset: %d", message, offset);
+		fclose(panic);
+	}
+	sf2d_fini();
+	audioUnload();
+	gfxExit();	
+	romfsExit();	
+	sdmcExit();
+	ndspExit();	
 	exit(1);
 }
 
-void* checkv(void* result, const char* message, int offset) {
-	if(!result) panic(message, offset);
-	return result;
-}
-
 int check(int result, const char* message, int offset) {
-	if(!result) panic(message, offset);
+	if(result) panic(message, offset);
 	return result;
 }
 

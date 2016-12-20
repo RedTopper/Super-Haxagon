@@ -1,11 +1,5 @@
 #pragma once
 
-#include "header.h"
-
-typedef struct {
-  int x, y;
-} Point;
-
 /**
  * Draws a triangle
  */
@@ -31,7 +25,7 @@ RenderState drawMovingWall(LiveLevel live, LivePattern pattern, LiveWall wall);
  * Completely draws all walls in a live level. Returns the render value
  * of the furthest wall of the closest pattern (as to trigger a shift).
  */
-RenderState drawMovingPatterns(LiveLevel live, int manualOffset);
+RenderState drawMovingPatterns(LiveLevel live, double manualOffset);
 
 /**
  * Draws the main hexagon in the game (Might not actually be a hexagon!)
@@ -56,9 +50,9 @@ void drawBackgroundLive(LiveLevel live);
 /**
  * Draws the little cursor in the center of the screen controlled by a human.
  */
-void drawHumanCursor(Color color, Point focus, double cursor, double rotation)
+void drawHumanCursor(Color color, Point focus, double cursor, double rotation);
 
 /**
  * Draws the main menu of the program.
  */
-void drawMainMenu(GlobalData data, MainMenu menu)
+void drawMainMenu(GlobalData data, MainMenu menu);

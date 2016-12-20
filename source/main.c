@@ -1,10 +1,9 @@
-#include "header.h"
-
+#include "types.h"
 #include "util.h"
+#include "levels.h"
 #include "draw.h"
 #include "logic.h"
 #include "font.h"
-#include "levels.h"
 #include "sound.h"
 
 int main() {

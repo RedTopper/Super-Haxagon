@@ -1,9 +1,15 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include "types.h"
+#include "util.h"
 #include "levels.h"
 
-int compare(FILE* file, char* string) {
+int compare(FILE* file, const char* string) {
 	int len = strlen(string);
 	char* buff = malloc(sizeof(char) * (len + 1)); //for '/0'
-	check(buff, "Cannot check file string!", ftell(file));
+	checkv(buff, "Cannot check file string!", ftell(file));
 	fread(buff, sizeof(char), len, file); //no '/0' in file, only len
 	buff[len] = '\0'; //add '/0'
 	int result = strcmp(buff, string);
@@ -12,11 +18,11 @@ int compare(FILE* file, char* string) {
 }
 
 void* getMalloc(FILE* file, size_t size, int* length, int extra, char* error) {
-	if(delta < 0) delta = 0;
+	if(extra < 0) extra = 0;
 	fread(length, sizeof(int), 1, file);
-	if(length > 300) check(0, "Huge alloc found!", ftell(file));
+	if(*length > 300) check(0, "Huge alloc found!", ftell(file));
 	void* address = malloc(size * (*length + extra));
-	check(address, error, ftell(file);
+	checkv(address, error, ftell(file));
 	return address;
 }
 
@@ -46,9 +52,9 @@ Wall getWall(FILE* file, int maxSide) {
 
 Color getColor(FILE* file) {
 	Color color;
-	fread(&wall.r, sizeof(short), 1, file);
-	fread(&wall.g, sizeof(short), 1, file);
-	fread(&wall.b, sizeof(short), 1, file);
+	fread(&color.r, sizeof(short), 1, file);
+	fread(&color.g, sizeof(short), 1, file);
+	fread(&color.b, sizeof(short), 1, file);
 	return color;
 }
 
@@ -67,21 +73,21 @@ Pattern getPattern(FILE* file) {
 	
 	//walls
 	pattern.walls = getMalloc(file, sizeof(Wall), &pattern.numWalls, 0, "Cannot alloc walls!");
-	check(numWalls, "Pattern must have at least one wall!", ftell(file));
+	check(pattern.numWalls, "Pattern must have at least one wall!", ftell(file));
 	for(int i = 0; i < pattern.numWalls; i++) pattern.walls[i] = getWall(file, pattern.sides);
 	
 	//footer
 	check(compare(file, PATTERN_FOOTER), "Pattern header incorrect!", ftell(file));
 	
 	//exit
-	return pattern
+	return pattern;
 }
 
-Pattern locatePattern(File* file, Pattern* patterns, int numPatterns) {
-	FileString search = getString(FILE* file);
+Pattern locatePattern(FILE* file, Pattern* patterns, int numPatterns) {
+	FileString search = getString(file);
 	int i = 0;
 	for(i = 0; i < numPatterns; i++) {
-		if(strcomp(patterns[i].name, search.str) == 0) {
+		if(strcmp(patterns[i].name.str, search.str) == 0) {
 			break;
 		}
 	}
@@ -91,7 +97,7 @@ Pattern locatePattern(File* file, Pattern* patterns, int numPatterns) {
 	
 	//copy pattern if located.
 	Pattern located;
-	memcpy(&located, &patterns[i], sizeof(Pattern);
+	memcpy(&located, &patterns[i], sizeof(Pattern));
 	return located;
 }
 
@@ -109,15 +115,15 @@ Level getLevel(FILE* file, Pattern* patterns, int numPatterns) {
 	level.music = getString(file);
 	
 	//colors
-	level.BG1 = getMalloc(file, sizeof(Color), &level.numBG1, 0, "Cannot alloc BG1 colors!");
+	level.colorsBG1 = getMalloc(file, sizeof(Color), &level.numBG1, 0, "Cannot alloc BG1 colors!");
 	check(level.numBG1, "Level must have at least one bg1 color!", ftell(file));
-	for(int i = 0; i < level.numBG1; i++) level.BG1[i] = getColor(file);
-	level.BG2 = getMalloc(file, sizeof(Color), &level.numBG2, 0, "Cannot alloc BG2 colors!");
+	for(int i = 0; i < level.numBG1; i++) level.colorsBG1[i] = getColor(file);
+	level.colorsBG2 = getMalloc(file, sizeof(Color), &level.numBG2, 0, "Cannot alloc BG2 colors!");
 	check(level.numBG2, "Level must have at least one bg2 color!", ftell(file));
-	for(int i = 0; i < level.numBG2; i++) level.BG2[i] = getColor(file);
-	level.FG = getMalloc(file, sizeof(Color), &level.numFG, 0, "Cannot alloc FG colors!");
+	for(int i = 0; i < level.numBG2; i++) level.colorsBG2[i] = getColor(file);
+	level.colorsFG = getMalloc(file, sizeof(Color), &level.numFG, 0, "Cannot alloc FG colors!");
 	check(level.numFG, "Level must have at least one fg color!", ftell(file));
-	for(int i = 0; i < level.numFG; i++) level.FG[i] = getColor(file);
+	for(int i = 0; i < level.numFG; i++) level.colorsFG[i] = getColor(file);
 	
 	//floats
 	fread(&level.speedWall, sizeof(float), 1, file);

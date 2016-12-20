@@ -1,5 +1,6 @@
 #include "logic.h"
 
+/*
 MovementState collisionMovingWall(Level settings, LiveLevel live, LivePattern pattern, LiveWall wall) {
 	
 	//Check if we are between the wall vertically
@@ -91,3 +92,4 @@ GameState doMainMenu(GlobalData data) {
 	}
 	
 }
+*/

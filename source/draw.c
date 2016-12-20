@@ -1,7 +1,16 @@
+#include <stdlib.h>
+#include <string.h>
+#include <math.h>
+#include <3ds.h>
+#include <sf2d.h>
+
+#include "types.h"
+#include "util.h"
 #include "draw.h"
+#include "font.h"
 
 void drawTriangle(Color color, Point points[3]) {
-	long paint = RGBA8(color.r,color.b,color.g,0xFF);
+	long paint = RGBA8(color.r,color.g,color.b,0xFF);
 	
 	//draws a triangle on the correct axis
 	sf2d_draw_triangle(
@@ -24,8 +33,8 @@ void drawTrap(Color color, Point points[4]) {
 }
 
 void drawRect(Color color, Point position, Point size) {
-	long paint = RGBA8(color.r,color.b,color.g,0xFF);
-	sf2d_draw_rectangle(position.x, positiont.y, size.x, size.y, paint);
+	long paint = RGBA8(color.r,color.g,color.b,0xFF);
+	sf2d_draw_rectangle(position.x, position.y, size.x, size.y, paint);
 }
 
 RenderState drawMovingWall(LiveLevel live, LivePattern pattern, LiveWall wall) {
@@ -49,7 +58,7 @@ RenderState drawMovingWall(LiveLevel live, LivePattern pattern, LiveWall wall) {
 	return RENDERED;
 }
 
-RenderState drawMovingPatterns(LiveLevel live, int manualOffset) {
+RenderState drawMovingPatterns(LiveLevel live, double manualOffset) {
 	
 	//furthest distance of closest pattern
 	double nearFurthestDistance = 0;
@@ -57,15 +66,16 @@ RenderState drawMovingPatterns(LiveLevel live, int manualOffset) {
 	
 	//for all patterns
 	for(int iPattern = 0; iPattern < TOTAL_PATTERNS_AT_ONE_TIME; iPattern++) {
-		LivePattern pattern = live.patterns[pattern];
+		LivePattern pattern = live.patterns[iPattern];
 		
 		//draw all walls
 		for(int iWall = 0; iWall < pattern.numWalls; iWall++) {
-			MovingWall wall = pattern.walls[iWall];
+			LiveWall wall = pattern.walls[iWall];
+			wall.distance += manualOffset;
 			RenderState render = drawMovingWall(live, pattern, wall);
 			
 			//update information about the closest pattern
-			if(wall = 0 && wall.distance + wall.height > nearFurthestDistance) {
+			if(iWall == 0 && wall.distance + wall.height > nearFurthestDistance) {
 				nearFurthestDistance = wall.distance + wall.height;
 				nearFurthestRender = render;
 			}
@@ -107,8 +117,8 @@ void drawMainHexagon(Color color1, Color color2, Point focus, double rotation, i
 
 void drawMainHexagonLive(LiveLevel live) {
 	drawMainHexagon(
-		tweenColor(live.currentFG, live.nextFG, live.tweenPercent), 
-		tweenColor(live.currentBG2, live.nextBG2, live.tweenPercent),
+		interpolateColor(live.currentFG, live.nextFG, live.tweenPercent), 
+		interpolateColor(live.currentBG2, live.nextBG2, live.tweenPercent),
 		CENTER, live.rotation, live.patterns[0].sides);
 }
 
@@ -116,12 +126,12 @@ void drawBackground(Color color1, Color color2, Point focus, double height, doub
 	
 	//solid background.
 	Point position = {0,0};
-	Point side = {TOP_WIDTH, SCREEN_HEIGHT};
+	Point size = {TOP_WIDTH, SCREEN_HEIGHT};
 	drawRect(color1, position, size);
 	
 	//This draws the main background.
-	Point* edges = malloc(sizeof(point) * sides);
-	check(edges, "Error drawing background!", 0x0);
+	Point* edges = malloc(sizeof(Point) * sides);
+	checkv(edges, "Error drawing background!", 0x0);
 	
 	for(int i = 0; i < sides; i++) {
 		edges[i].x = (int)(height * cos(rotation + (double)i * TAU/6.0) + focus.x);
@@ -140,7 +150,7 @@ void drawBackground(Color color1, Color color2, Point focus, double height, doub
 	if(sides % 2) {
 		triangle[1] = edges[sides - 2];
 		triangle[2] = edges[sides - 1];
-		drawTriangle(tweenColor(color1, color2, 0.5f), triangle);
+		drawTriangle(interpolateColor(color1, color2, 0.5f), triangle);
 	}
 	
 	free(edges);
@@ -148,8 +158,8 @@ void drawBackground(Color color1, Color color2, Point focus, double height, doub
 
 void drawBackgroundLive(LiveLevel live) {
 	drawBackground(
-		tweenColor(live.currentBG1, live.nextBG1, live.tweenPercent), 
-		tweenColor(live.currentBG2, live.nextBG2, live.tweenPercent),
+		interpolateColor(live.currentBG1, live.nextBG1, live.tweenPercent), 
+		interpolateColor(live.currentBG2, live.nextBG2, live.tweenPercent),
 		CENTER, TOP_SCREEN_DIAG_CENTER, live.rotation, live.patterns[0].sides);
 }
 
@@ -172,11 +182,11 @@ void drawHumanCursor(Color color, Point focus, double cursor, double rotation) {
 		humanTriangle[i].x = (int)(height * cos(position) + focus.x);
 		humanTriangle[i].y = (int)(height * sin(position) + focus.y);
 	}
-	drawTriangle(humanTriangle);
+	drawTriangle(color, humanTriangle);
 }
 
 void drawMainMenu(GlobalData data, MainMenu menu) {
-	double percentRotated = (double)(menu.rotationFrame) / (double)FRAMES_PER_ONE_SIDE_ROTATION);
+	double percentRotated = (double)(menu.rotationFrame) / (double)FRAMES_PER_ONE_SIDE_ROTATION;
 	double rotation = percentRotated * TAU/6.0;
 	if(menu.rotationDirection == -1) { //if the user is going to the left, flip the radians so the animation plays backwards.
 		rotation *= -1.0;
@@ -232,6 +242,7 @@ void drawMainMenu(GlobalData data, MainMenu menu) {
 	writeFont(white, time, "SCORE: ??????", false);
 }
 
+/*
 GameState drawPlayGame() {
 	double radians = g_levelData[g_level].radians;
 		
@@ -390,4 +401,4 @@ void drawLagometer(int level) {
 		}
 	}
 	sf2d_end_frame();
-}
+}*/

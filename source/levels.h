@@ -42,7 +42,7 @@ Pattern getPattern(FILE* file);
 /**
  * Locates a pattern in a predefined and preallocated list of patterns based on name.
  */
-Pattern locatePattern(FILE* file, Pattern* patterns, int numPatterns);
+Pattern getLoadedPattern(FILE* file, Pattern* patterns, int numPatterns);
 
 /**
  * Loads a level from a file based on the loaded patterns.

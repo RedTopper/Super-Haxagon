@@ -131,7 +131,7 @@ void drawBackground(Color color1, Color color2, Point focus, double height, doub
 	
 	//This draws the main background.
 	Point* edges = malloc(sizeof(Point) * sides);
-	checkv(edges, "Error drawing background!", 0x0);
+	check(!edges, "Error drawing background!", 0x0);
 	
 	for(int i = 0; i < sides; i++) {
 		edges[i].x = (int)(height * cos(rotation + (double)i * TAU/6.0) + focus.x);

@@ -4,7 +4,6 @@
  * Checks a result and, if it's bad, will hang the program in a loop and
  * display an error to the user with a file offset.
  */
-void* checkv(void* result, const char* message, int offset);
 int check(int result, const char* message, int offset);
 
 /**

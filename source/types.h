@@ -18,8 +18,8 @@ typedef struct {
 } Color;
 
 typedef struct {
-  int x;
-  int y;
+	int x;
+	int y;
 } Point;
 
 typedef struct {
@@ -119,6 +119,17 @@ typedef enum {
 	PARTIAL_RESET,
 } ResetTypeGame;
 
+typedef struct {
+	u8* data;
+	u32 sampleRate;
+	u32 dataSize;
+	u16 channels;
+	u16 bitsPerSample;
+	u16 ndspFormat;
+	int ndspChannel;
+	int level;
+	bool loaded;
+} Track;
 
 extern const double FULL_LEN;
 extern const double BORDER_LEN;

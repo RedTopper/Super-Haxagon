@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
@@ -8,6 +9,11 @@
 #include "util.h"
 #include "draw.h"
 #include "font.h"
+
+const int SHADOW_ENABLE = 1;
+const char SHADOW = 15;
+const int SHADOW_X = 10;
+const int SHADOW_Y = 10;
 
 void drawTriangle(Color color, Point points[3]) {
 	long paint = RGBA8(color.r,color.g,color.b,0xFF);
@@ -20,16 +26,50 @@ void drawTriangle(Color color, Point points[3]) {
 		paint);
 }
 
+//warning, takes twice the computational power!
+void drawTriangleWithShadow(Color color, Point points[3]) {
+	
+	//skip if color is already black.
+	if(!(color.r == 0 && color.g == 0 && color.b == 0)) {
+		Color shadow;
+		shadow.r -= SHADOW;
+		shadow.g -= SHADOW;
+		shadow.b -= SHADOW;
+		if(shadow.r < 0) shadow.r = 0;
+		if(shadow.g < 0) shadow.g = 0;
+		if(shadow.b < 0) shadow.b = 0;
+		
+		Point offset[3];
+		for(int i = 0; i < 3; i++) {
+			offset[i].x = points[i].x + SHADOW_X;
+			offset[i].y = points[i].y + SHADOW_Y;
+		} 
+		
+		drawTriangle(shadow, offset);
+	}
+	drawTriangle(color, points);
+}
+
 void drawTrap(Color color, Point points[4]) {
 	Point triangle[3];
 	triangle[0] = points[0];
 	triangle[1] = points[1];
 	triangle[2] = points[2];
 	drawTriangle(color, triangle);
-	triangle[0] = points[0];
 	triangle[1] = points[2];
 	triangle[2] = points[3];
 	drawTriangle(color, triangle);
+}
+
+void drawTrapWithShadow(Color color, Point points[4]) {
+	Point triangle[3];
+	triangle[0] = points[0];
+	triangle[1] = points[1];
+	triangle[2] = points[2];
+	drawTriangleWithShadow(color, triangle);
+	triangle[1] = points[2];
+	triangle[2] = points[3];
+	drawTriangleWithShadow(color, triangle);
 }
 
 void drawRect(Color color, Point position, Point size) {
@@ -54,7 +94,10 @@ RenderState drawMovingWall(LiveLevel live, LivePattern pattern, LiveWall wall) {
 	edges[1] = calcPoint(live, OVERFLOW_OFFSET, distance + height, wall.side + 1, pattern.sides);
 	edges[2] = calcPoint(live, -OVERFLOW_OFFSET, distance + height, wall.side, pattern.sides);
 	edges[3] = calcPoint(live, -OVERFLOW_OFFSET, distance, wall.side, pattern.sides);
-	drawTrap(interpolateColor(live.currentFG, live.nextFG, live.tweenPercent), edges);
+	if(SHADOW_ENABLE)
+		drawTrapWithShadow(interpolateColor(live.currentFG, live.nextFG, live.tweenPercent), edges);
+	else 
+		drawTrap(interpolateColor(live.currentFG, live.nextFG, live.tweenPercent), edges);
 	return RENDERED;
 }
 
@@ -109,12 +152,16 @@ void drawMainHexagon(Color color1, Color color2, Point focus, double rotation, i
 			triangle[(i % 2) + 1].x = (int)(height * cos(rotation + (double)i * TAU/(double)sides) + (double)(focus.x));
 			triangle[(i % 2) + 1].y = (int)(height * sin(rotation + (double)i * TAU/(double)sides) + (double)(focus.y));
 			if(i != 0) {
-				drawTriangle(color, triangle);
+				if(SHADOW_ENABLE)
+					drawTriangleWithShadow(color, triangle);
+				else 
+					drawTriangle(color, triangle);
 			}
 		}
 	}
 }
 
+//internal overload to drawMainHexagon
 void drawMainHexagonLive(LiveLevel live) {
 	drawMainHexagon(
 		interpolateColor(live.currentFG, live.nextFG, live.tweenPercent), 
@@ -156,6 +203,7 @@ void drawBackground(Color color1, Color color2, Point focus, double height, doub
 	free(edges);
 }
 
+//internal overload to drawBackground
 void drawBackgroundLive(LiveLevel live) {
 	drawBackground(
 		interpolateColor(live.currentBG1, live.nextBG1, live.tweenPercent), 
@@ -182,7 +230,17 @@ void drawHumanCursor(Color color, Point focus, double cursor, double rotation) {
 		humanTriangle[i].x = (int)(height * cos(position) + focus.x);
 		humanTriangle[i].y = (int)(height * sin(position) + focus.y);
 	}
-	drawTriangle(color, humanTriangle);
+	if(SHADOW_ENABLE)
+		drawTriangleWithShadow(color, humanTriangle);
+	else 
+		drawTriangle(color, humanTriangle);
+}
+
+//internal overload to drawHumanCursor
+void drawHumanCursorLive(LiveLevel live) {
+	drawHumanCursor(
+		interpolateColor(live.currentFG, live.nextFG, live.tweenPercent), 
+		CENTER, live.cursorPos, live.rotation);
 }
 
 void drawMainMenu(GlobalData data, MainMenu menu) {
@@ -242,163 +300,74 @@ void drawMainMenu(GlobalData data, MainMenu menu) {
 	writeFont(white, time, "SCORE: ??????", false);
 }
 
-/*
-GameState drawPlayGame() {
-	double radians = g_levelData[g_level].radians;
-		
-	Point fg = g_levelColor[g_level][FG];
-	Point bg1 = g_levelColor[g_level][BG1];
-	Point bg2 = g_levelColor[g_level][BG2];
-	
-	sf2d_set_clear_color(pulseColor(bg1, radians).color);
-	
-	////RENDER TOP SCREEN
-	sf2d_start_frame(GFX_TOP, GFX_LEFT);
-	
-	Point center;
-	center.x = TOP_WIDTH/2;
-	center.y = SCREEN_HEIGHT/2;
-	
-	drawBackground(
-		pulseColor(center, radians),
-		pulseColor(bg2, radians),
-		TOP_WIDTH / 1.5,
-		radians);
-	MovementState collision = drawWalls(
-		pulseColor(center, radians),
-		pulseColor(fg, radians),
-		radians, 0);
-	drawMainHexagon(
-		pulseColor(center, radians),
-		pulseColor(fg, radians),
-		pulseColor(bg1, radians),
-		radians);
-	drawHumanCursor(
-		pulseColor(center, radians),
-		pulseColor(fg, radians),
-		g_levelData[g_level].cursor,
-		radians);
-	
-	if(collision == DEAD) return GAME_OVER;
-	
-	////ROTATE
-	radians = (radians + g_levelData[g_level].rotStep);
-	if(radians >= TAU) radians -= TAU;
-	if(radians < 0) radians += TAU;
-	g_levelData[g_level].radians = radians;
-	sf2d_end_frame();
-	g_score++;
-	
-	//KEYS
-	u32 kDown = hidKeysDown();
-	u32 kHold = hidKeysHeld();
-	if(kDown & KEY_B) {
-		return GAME_OVER; //Theoretically can be switched to MAIN_MENU.
-	}
-	if((kHold & (KEY_R | KEY_ZR | KEY_CSTICK_RIGHT | KEY_CPAD_RIGHT | KEY_DRIGHT | KEY_X)) && collision != CANNOT_MOVE_RIGHT)
-		g_levelData[g_level].cursor = (g_levelData[g_level].cursor - g_levelData[g_level].rotStepHuman);
-	if((kHold & (KEY_L | KEY_ZL | KEY_CSTICK_LEFT  | KEY_CPAD_LEFT  | KEY_DLEFT  | KEY_Y)) && collision != CANNOT_MOVE_LEFT)
-		g_levelData[g_level].cursor = (g_levelData[g_level].cursor + g_levelData[g_level].rotStepHuman);
-	
-	if(g_levelData[g_level].cursor >= TAU) g_levelData[g_level].cursor-=TAU;
-	if(g_levelData[g_level].cursor < 0) g_levelData[g_level].cursor+=TAU;
-	return PLAYING;
+
+void drawPlayGame(LiveLevel level, double offset) {
+	drawBackgroundLive(level);
+	drawMovingPatterns(level, offset);
+	drawMainHexagonLive(level);
+	drawHumanCursorLive(level);
 }
 
-GameState drawGameOver() {
-	double radians = g_levelData[g_level].radians;
-	
-	if(g_transition && g_transitionFrame < FRAMES_PER_GAME_OVER) {
-		g_gameOverDistance = -pow(GAME_OVER_ACCEL_RATE, g_transitionFrame);
-		g_transitionFrame++;
-	} else {
-		g_transitionFrame = 0;
-		g_transition = false;
-	}
-		
-	Point fg = g_levelColor[g_level][FG];
-	Point bg1 = g_levelColor[g_level][BG1];
-	Point bg2 = g_levelColor[g_level][BG2];
-		
-	sf2d_set_clear_color(bg1.color);
-	
-	////RENDER TOP SCREEN
-	sf2d_start_frame(GFX_TOP, GFX_LEFT);
-	
-	Point center;
-	center.x = TOP_WIDTH/2;
-	center.y = SCREEN_HEIGHT/2;
-	
-	drawBackground(center, bg2, TOP_WIDTH / 1.5, radians);
-	drawWalls(center, fg, radians, g_gameOverDistance);
-	drawMainHexagon(center, fg, bg1, radians);
-	drawHumanCursor(center, fg, g_levelData[g_level].cursor, radians); //Draw cursor fixed quarter circle, no movement.
-	
-	////ROTATE
-	radians = (radians + GAME_OVER_ROT_SPEED);
-	if(radians >= TAU) radians -= TAU;
-	if(radians < 0) radians += TAU;
-	g_levelData[g_level].radians = radians;
-	sf2d_end_frame();
-	
-	//KEYS
-	u32 kDown = hidKeysDown();
-	if(!g_transition) {
-		if(kDown & KEY_B) return MAIN_MENU;
-		if(kDown & KEY_A) return PLAYING;
-	} 
-	return GAME_OVER;
+//internal
+void drawFramerate(double fps) {
+	Color color = {0xFF,0xFF,0xFF};
+	Point position = {4,SCREEN_HEIGHT - 20};
+	char framerate[12 + 1];
+	snprintf(framerate, 12 + 1, "%.2f FPS", fps);
+	writeFont(color, position, framerate, false);
 }
 
-void drawLagometer(int level) {
-	sf2d_start_frame(GFX_BOTTOM, GFX_LEFT);
-	sf2d_draw_line(0, SCREEN_HEIGHT - 1, (int)((double)BOT_WIDTH * ((double)g_fps/60.0)), SCREEN_HEIGHT - 1, 1, RGBA8(0xFF,0,0,0xFF));
-	if(level >= 0) {
-		sf2d_draw_rectangle(0,0,BOT_WIDTH, 32 + 4, RGBA8(0, 0, 0, 0xFF));
-		Point p;
-		p.x = 14;
-		p.y = 4;
-		p.color = RGBA8(0xFF,0xFF,0xFF,0xFF);
-		writeFont(p,"LOADING BGM", true);
+void drawPlayGameBot(LiveLevel level, FileString name, int score, double fps) {
+	Color background = interpolateColor(level.currentBG1, level.nextBG1, level.tweenPercent);
+	Point topLeft = {0,0};
+	Point screenSize = {BOT_WIDTH, SCREEN_HEIGHT};
+	drawRect(background, topLeft, screenSize);
+	
+	Color black = {0,0,0};
+	Point scoreSize = {BOT_WIDTH, 22};
+	drawRect(black, topLeft, scoreSize);
+	
+	Color white = {0xFF,0xFF,0xFF};
+	Point levelUpPosition = {4,4};
+	writeFont(white, levelUpPosition, "POINT", false);
+	
+	Point scorePosition = {230,4};
+	char buffer[6 + 1]; //null term
+	int scoreInt = (int)((double)score/60.0);
+	int decimalPart = (int)(((double)score/60.0 - (double)scoreInt) * 100.0);
+	snprintf(buffer, 6 + 1, "%03d:%02d", scoreInt, decimalPart); //Emergency stack overflow prevention
+	writeFont(white, scorePosition, buffer, false);
+	
+	drawFramerate(fps);
+}
+
+void drawGameOverBot(LiveLevel level, int score, double fps, int frame) {
+	Color background = interpolateColor(level.currentBG1, level.nextBG1, level.tweenPercent);
+	Point topLeft = {0,0};
+	Point screenSize = {BOT_WIDTH, SCREEN_HEIGHT};
+	drawRect(background, topLeft, screenSize);
+	
+	Color black = {0,0,0};
+	Point overSize = {BOT_WIDTH, 112};
+	drawRect(black, topLeft, overSize);
+
+	Color white = {0xFF,0xFF,0xFF};
+	Point gameOverPosition = {44, 4};
+	writeFont(white, gameOverPosition, "GAME OVER", true);
+	
+	Point timePosition = {90, 40};
+	char buffer[12+1];
+	int scoreInt = (int)((double)score/60.0);
+	int decimalPart = (int)(((double)score/60.0 - (double)scoreInt) * 100.0);
+	snprintf(buffer, 12+1, "TIME: %03d:%02d", scoreInt, decimalPart);
+	writeFont(white, timePosition, buffer, false);
+	
+	if(frame > FRAMES_PER_GAME_OVER) {
+		Point aPosition = {70, 70};
+		writeFont(white, aPosition, "PRESS A TO PLAY", false);
+		Point bPosition = {70, 86};
+		writeFont(white, bPosition, "PRESS B TO QUIT", false);
 	}
-	if(g_gameState == PLAYING) {
-		sf2d_draw_rectangle(0,23,BOT_WIDTH, 4, RGBA8(0, 0xFF, 0, 0xFF));
-		sf2d_draw_rectangle(0,0,BOT_WIDTH, 22, RGBA8(0, 0, 0, 0xFF));
-		Point p;
-		p.color = RGBA8(0xFF,0xFF,0xFF,0xFF);
-		p.x = 4;
-		p.y = 4;
-		writeFont(p,"POINT", false);
-		p.x = 230;
-		p.y = 4;
-		char buffer[6+1];
-		int scoreInt = (int)((double)g_score/60.0);
-		int decimalPart = (int)(((double)g_score/60.0 - (double)scoreInt) * 100.0);
-		snprintf(buffer, 6+1, "%03d:%02d", scoreInt, decimalPart); //Emergency stack overflow prevention
-		writeFont(p,buffer, false);
-	}
-	if(g_gameState == GAME_OVER) {
-		sf2d_draw_rectangle(0,0,BOT_WIDTH, 112, RGBA8(0, 0, 0, 0xFF));
-		Point p;
-		p.color = RGBA8(0xFF,0xFF,0xFF,0xFF);
-		p.x = 44;
-		p.y = 4;
-		writeFont(p,"GAME OVER", true);
-		p.x = 90;
-		p.y = 40;
-		char buffer[12+1];
-		int scoreInt = (int)((double)g_score/60.0);
-		int decimalPart = (int)(((double)g_score/60.0 - (double)scoreInt) * 100.0);
-		snprintf(buffer, 12+1, "TIME: %03d:%02d", scoreInt, decimalPart); //Emergency stack overflow prevention
-		writeFont(p,buffer, false);
-		if(!g_transition) {
-			p.x = 70;
-			p.y = 70;
-			writeFont(p,"PRESS A TO PLAY", false);
-			p.x = 70;
-			p.y = 86;
-			writeFont(p,"PRESS B TO QUIT", false);
-		}
-	}
-	sf2d_end_frame();
-}*/
+	
+	drawFramerate(fps);
+}

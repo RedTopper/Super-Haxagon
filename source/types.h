@@ -118,20 +118,3 @@ typedef enum {
 	FULL_RESET,
 	PARTIAL_RESET,
 } ResetTypeGame;
-
-extern const double FULL_LEN;
-extern const double BORDER_LEN;
-extern const double HUMAN_WIDTH;
-extern const double HUMAN_HEIGHT;
-extern const double HUMAN_PADDING;
-extern const int FRAMES_PER_ONE_SIDE_ROTATION;
-extern const int MIN_DISTANCE_FROM_LAST_PATTERN;
-extern const double OVERFLOW_OFFSET; 
-extern const int TOP_SCREEN_DIAG_CENTER;
-extern const double GAME_OVER_ACCEL_RATE;
-extern const double GAME_OVER_ROT_SPEED;
-extern const int FRAMES_PER_GAME_OVER;
-extern const double MAX_RANGE_COLOR;
-extern const double PULSES_PER_SPIN;
-extern const int CHANCE_OF_FLIP_MODULO;
-extern const Point CENTER;

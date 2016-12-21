@@ -37,7 +37,7 @@ void drawMainHexagon(Color color1, Color color2, Point focus, double rotation, i
 /**
  * Draws the background of the game.
  */
-void drawBackground(Color color1, Color color2, Point focus, double height, double rotation, int sides)
+void drawBackground(Color color1, Color color2, Point focus, double height, double rotation, int sides);
 
 /**
  * Draws the little cursor in the center of the screen controlled by a human.

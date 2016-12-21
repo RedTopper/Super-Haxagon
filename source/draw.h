@@ -4,11 +4,13 @@
  * Draws a triangle
  */
 void drawTriangle(Color color, Point points[3]);
+void drawTriangleWithShadow(Color color, Point points[3]);
 
 /**
  * Draws a trapizoid
  */
 void drawTrap(Color color, Point points[4]);
+void drawTrapWithShadow(Color color, Point points[4]);
 
 /**
  * Draws a rectangle using the super fast 2d library and
@@ -33,19 +35,9 @@ RenderState drawMovingPatterns(LiveLevel live, double manualOffset);
 void drawMainHexagon(Color color1, Color color2, Point focus, double rotation, int sides);
 
 /**
- * Helper function to drawMainHexagon, but with the LiveLevel datatype.
- */
-void drawMainHexagonLive(LiveLevel live);
-
-/**
  * Draws the background of the game.
  */
-void drawBackground(Color color1, Color color2, Point focus, double height, double rotation, int sides);
-
-/**
- * Similar to drawMainHexagonLive, this helper function calls drawBackground based on a LiveLevel datatype.
- */
-void drawBackgroundLive(LiveLevel live);
+void drawBackground(Color color1, Color color2, Point focus, double height, double rotation, int sides)
 
 /**
  * Draws the little cursor in the center of the screen controlled by a human.
@@ -53,6 +45,22 @@ void drawBackgroundLive(LiveLevel live);
 void drawHumanCursor(Color color, Point focus, double cursor, double rotation);
 
 /**
- * Draws the main menu of the program.
+ * Draws the main menu of the program based on loaded data and main menu variables.
  */
 void drawMainMenu(GlobalData data, MainMenu menu);
+
+/**
+ * Base render for the game. Draws based on a single active level. 
+ */
+void drawPlayGame(LiveLevel level, double offset);
+
+/**
+ * Draws the bottom screen when playing the game.  This method should be called
+ * after SF2D has switched to the bottom screen.
+ */
+void drawPlayGameBot(LiveLevel level, FileString name, int score, double fps);
+
+/** 
+ * Renders game over text.
+ */
+void drawGameOverBot(LiveLevel level, int score, double fps, int frame);

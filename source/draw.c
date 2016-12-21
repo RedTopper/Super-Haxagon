@@ -10,10 +10,36 @@
 #include "draw.h"
 #include "font.h"
 
+//shadow style (css-like)
 const int SHADOW_ENABLE = 1;
 const char SHADOW = 15;
 const int SHADOW_X = 10;
 const int SHADOW_Y = 10;
+
+//Inside hexagon style
+const double HEX_FULL_LEN = 24.0;
+const double HEX_BORDER_LEN = 4.0;
+
+//Screen diagnal (calculated with a physical calculator)
+const int TOP_SCREEN_DIAG_CENTER = 257;
+
+//The center of the screen
+const Point SCREEN_CENTER = {TOP_WIDTH/2, SCREEN_HEIGHT/2};
+
+//Overflow so you don't get glitchy lines between hexagons.
+//This is really just some arbituary number so yeah...
+const double OVERFLOW_OFFSET = TAU/900.0; 
+
+//Human triangle style
+const double HUMAN_WIDTH = TAU/30;
+const double HUMAN_HEIGHT = 5.0;
+const double HUMAN_PADDING = 5.0;
+
+//Main menu rotation constraints
+const int FRAMES_PER_ONE_SIDE_ROTATION = 12;
+
+//Amount of frames to wait when game over is shown.
+const int FRAMES_PER_GAME_OVER = 60;
 
 void drawTriangle(Color color, Point points[3]) {
 	long paint = RGBA8(color.r,color.g,color.b,0xFF);
@@ -81,12 +107,12 @@ RenderState drawMovingWall(LiveLevel live, LivePattern pattern, LiveWall wall) {
 	double distance = wall.distance;
 	double height = wall.height;
 	
-	if(distance + height < FULL_LEN) return TOO_CLOSE;
+	if(distance + height < HEX_FULL_LEN) return TOO_CLOSE;
 	if(distance > TOP_SCREEN_DIAG_CENTER) return TOO_FAR; //Might be expensive to calc?
 	
-	if(distance < FULL_LEN - 2 ) {//so the distance is never negative as it enters.
-		height -= FULL_LEN - 2 - distance;
-		distance = FULL_LEN - 2; //Should never be 0!!!
+	if(distance < HEX_FULL_LEN - 2 ) {//so the distance is never negative as it enters.
+		height -= HEX_FULL_LEN - 2 - distance;
+		distance = HEX_FULL_LEN - 2; //Should never be 0!!!
 	}
 	
 	Point edges[4] = {0};
@@ -139,12 +165,12 @@ void drawMainHexagon(Color color1, Color color2, Point focus, double rotation, i
 		if(concentricHexes == 0) {
 			//outer color painted first
 			color = color1;
-			height = FULL_LEN;
+			height = HEX_FULL_LEN;
 		}
 		if(concentricHexes == 1) {
 			//inner color painted over it all.
 			color =  color2;
-			height = FULL_LEN - BORDER_LEN;
+			height = HEX_FULL_LEN - HEX_BORDER_LEN;
 		}
 		
 		//draw hexagon (might not actually be hexagon!) in accordance to the closest pattern
@@ -166,7 +192,7 @@ void drawMainHexagonLive(LiveLevel live) {
 	drawMainHexagon(
 		interpolateColor(live.currentFG, live.nextFG, live.tweenPercent), 
 		interpolateColor(live.currentBG2, live.nextBG2, live.tweenPercent),
-		CENTER, live.rotation, live.patterns[0].sides);
+		SCREEN_CENTER, live.rotation, live.patterns[0].sides);
 }
 
 void drawBackground(Color color1, Color color2, Point focus, double height, double rotation, int sides) {
@@ -208,7 +234,7 @@ void drawBackgroundLive(LiveLevel live) {
 	drawBackground(
 		interpolateColor(live.currentBG1, live.nextBG1, live.tweenPercent), 
 		interpolateColor(live.currentBG2, live.nextBG2, live.tweenPercent),
-		CENTER, TOP_SCREEN_DIAG_CENTER, live.rotation, live.patterns[0].sides);
+		SCREEN_CENTER, TOP_SCREEN_DIAG_CENTER, live.rotation, live.patterns[0].sides);
 }
 
 void drawHumanCursor(Color color, Point focus, double cursor, double rotation) {
@@ -217,10 +243,10 @@ void drawHumanCursor(Color color, Point focus, double cursor, double rotation) {
 		double height = 0.0;
 		double position = 0.0;
 		if(i == 0) {
-			height = FULL_LEN + HUMAN_PADDING + HUMAN_HEIGHT;
+			height = HEX_FULL_LEN + HUMAN_PADDING + HUMAN_HEIGHT;
 			position = cursor + rotation;
 		} else {
-			height = FULL_LEN + HUMAN_PADDING;
+			height = HEX_FULL_LEN + HUMAN_PADDING;
 			if(i == 1) {
 				position = cursor + HUMAN_WIDTH/2 + rotation;
 			} else {
@@ -240,7 +266,7 @@ void drawHumanCursor(Color color, Point focus, double cursor, double rotation) {
 void drawHumanCursorLive(LiveLevel live) {
 	drawHumanCursor(
 		interpolateColor(live.currentFG, live.nextFG, live.tweenPercent), 
-		CENTER, live.cursorPos, live.rotation);
+		SCREEN_CENTER, live.cursorPos, live.rotation);
 }
 
 void drawMainMenu(GlobalData data, MainMenu menu) {

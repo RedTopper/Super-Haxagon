@@ -8,6 +8,8 @@
 #include "util.h"
 #include "sound.h"
 
+const Point CENTER = {TOP_WIDTH/2, SCREEN_HEIGHT/2};
+
 //real version will stick in loop until home is pressed
 void panic(const char* message, int offset) {
 	FILE* panic = fopen("sdmc:/haxapanic.txt", "a");
@@ -16,7 +18,6 @@ void panic(const char* message, int offset) {
 		fclose(panic);
 	}
 	sf2d_fini();
-	audioUnload();
 	gfxExit();	
 	romfsExit();	
 	sdmcExit();

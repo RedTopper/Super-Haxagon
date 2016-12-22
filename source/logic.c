@@ -1,21 +1,26 @@
+#include <3ds.h>
+#include <sf2d.h>
+
+#include "types.h"
+#include "util.h"
+#include "draw.h"
 #include "logic.h"
 
-/*
-MovementState collisionMovingWall(Level settings, LiveLevel live, LivePattern pattern, LiveWall wall) {
+MovementState collisionLiveWall(LiveWall wall, double cursorPos, double cursorStep, int sides) {
 	
 	//Check if we are between the wall vertically
-	if(FULL_LEN + HUMAN_PADDING + HUMAN_HEIGHT < wall.distance || 
-	   FULL_LEN + HUMAN_PADDING + HUMAN_HEIGHT > wall.distance + wall.height) {
+	if(DEF_HEX_FULL_LEN + DEF_HUMAN_PADDING + DEF_HUMAN_HEIGHT < wall.distance || 
+	   DEF_HEX_FULL_LEN + DEF_HUMAN_PADDING + DEF_HUMAN_HEIGHT > wall.distance + wall.height) {
 		return CAN_MOVE;
 	}
 	
-	double leftRotStep = live.cursorPos + settings.cursorStep;
-	double rightRotStep = live.cursorPos - settings.cursorStep;
+	double leftRotStep = cursorPos + cursorStep;
+	double rightRotStep = cursorPos - cursorStep;
 	
 	//If the cursor rotates around to 0 TAU (or from 0 TAU to TAU) we need to calculate BOTH ranges on the circle to compensate
-	double leftSideRads = (wall.side + 1.0) * TAU/(double)(pattern.sides); 
+	double leftSideRads = (wall.side + 1.0) * TAU/(double)(sides); 
 	double leftSideRadsAlt = leftSideRads; 
-	double rightSideRads = wall.side * TAU/(double)(pattern.sides); 
+	double rightSideRads = wall.side * TAU/(double)(sides); 
 	double rightSideRadsAlt = rightSideRads;
 	
 	if(leftRotStep >= TAU) leftRotStep -= TAU;
@@ -43,8 +48,8 @@ MovementState collisionMovingWall(Level settings, LiveLevel live, LivePattern pa
 	}
 	
 	//Check if we are between the wall horizontally. 
-	if((live.cursorPos >= rightSideRads && live.cursorPos <= leftSideRads) ||
-	   (live.cursorPos >= rightSideRadsAlt && live.cursorPos <= leftSideRadsAlt)) {
+	if((cursorPos >= rightSideRads && cursorPos <= leftSideRads) ||
+	   (cursorPos >= rightSideRadsAlt && cursorPos <= leftSideRadsAlt)) {
 		return DEAD;
 	} else if((leftRotStep > rightSideRads && leftRotStep < leftSideRads) ||
 			  (leftRotStep > rightSideRadsAlt && leftRotStep < leftSideRadsAlt))  {
@@ -56,17 +61,17 @@ MovementState collisionMovingWall(Level settings, LiveLevel live, LivePattern pa
 	return CAN_MOVE;
 }
 
-MovementState collisionMovingPatterns(Level settings, LiveLevel live) {
+MovementState collisionLiveLevel(LiveLevel live, double cursorStep) {
 	MovementState collision = CAN_MOVE;
 	
 	//for all patterns
 	for(int iPattern = 0; iPattern < TOTAL_PATTERNS_AT_ONE_TIME; iPattern++) {
-		LivePattern pattern = live.patterns[pattern];
+		LivePattern pattern = live.patterns[iPattern];
 		
 		//for all walls
 		for(int iWall = 0; iWall < pattern.numWalls; iWall++) {
-			MovingWall wall = pattern.walls[iWall];
-			MovementState check = checkCollision(settings, live, pattern, wall);
+			LiveWall wall = pattern.walls[iWall];
+			MovementState check = collisionLiveWall(wall, live.cursorPos, cursorStep, pattern.sides);
 			
 			//update colision
 			if(collision == CAN_MOVE) collision = check; //If we can move, try and replace it with something else
@@ -79,17 +84,42 @@ MovementState collisionMovingPatterns(Level settings, LiveLevel live) {
 }
 
 GameState doMainMenu(GlobalData data) {
-	MainMenu menu;
-	
+	MainMenu menu = {0};
+	//set clear color to something obvious
+	sf2d_set_clear_color(RGBA8(0xFF,0x00,0xFF,0xFF));
 	while(aptMainLoop()) {
-		//set clear color to something obvious
-		sf2d_set_clear_color(RGBA8(0xFF,0x00,0xFF,0xFF));
+		//LOGIC
+		ButtonState press = getButton();
+		if(!(menu.transitioning)) {
+			if(press == DIR_RIGHT) {
+				menu.transitioning = true;
+				menu.transitionDirection = 1;
+				menu.lastLevel = menu.level;
+				menu.level++;
+			}
+			if(press == DIR_LEFT) {
+				menu.transitioning = true;
+				menu.transitionDirection = -1;
+				menu.lastLevel = menu.level;
+				menu.level--;
+			}
+		}
+		if(menu.level >=  data.numLevels) menu.level = 0;
+		if(menu.level < 0) menu.level = data.numLevels - 1;
+		if(menu.transitioning) menu.transitionFrame++;
+		if(menu.transitionFrame >= DEF_FRAMES_PER_TRANSITION) {
+			menu.transitioning = false;
+			menu.transitionFrame = 0;
+		}
+		
+		//DRAW
 		sf2d_start_frame(GFX_TOP, GFX_LEFT);
-		
 		drawMainMenu(data, menu);
-		
 		sf2d_end_frame();
+		sf2d_start_frame(GFX_BOTTOM, GFX_LEFT);
+		drawMainMenuBot(sf2d_get_fps());
+		sf2d_end_frame();
+		sf2d_swapbuffers();
 	}
-	
+	return PROGRAM_QUIT;
 }
-*/

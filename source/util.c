@@ -11,10 +11,17 @@
 const Point CENTER = {TOP_WIDTH/2, SCREEN_HEIGHT/2};
 
 //real version will stick in loop until home is pressed
-void panic(const char* message, int offset) {
+void panic(const char* message, const char* file, const char* function, int line, int error) {
 	FILE* panic = fopen("sdmc:/haxapanic.txt", "a");
 	if(panic) {
-		fprintf(panic, "Sorry! There was a problem during runtime.\nMessage: %s At (file) offset: %d", message, offset);
+		fprintf(panic, "Compilation date: %s %s\n", __DATE__, __TIME__);
+		fprintf(panic, "Sorry! There was a problem during runtime.\n");
+		fprintf(panic, "Message: %s\n", message);
+		fprintf(panic, "...in file: %s.\n", file);
+		fprintf(panic, "...in function: %s.\n", function);
+		fprintf(panic, "...on line: %d.\n", line);
+		fprintf(panic, "...with error code: 0x%08x.\n", error);
+		fprintf(panic, "The game has quit.\n\n");
 		fclose(panic);
 	}
 	sf2d_fini();
@@ -25,8 +32,8 @@ void panic(const char* message, int offset) {
 	exit(1);
 }
 
-int check(int result, const char* message, int offset) {
-	if(result) panic(message, offset);
+int check(int result, const char* message, const char* file, const char* function, int line, int error) {
+	if(result) panic(message, file, function, line, error);
 	return result;
 }
 
@@ -42,9 +49,24 @@ Color interpolateColor(Color one, Color two, double percent) {
 	return new;
 }
 
-Point calcPoint(LiveLevel live, double offset, double distance, int side, int numSides)  {
+Point calcPoint(double rotation, double offset, double distance, int side, int numSides)  {
 	Point point = {0,0};
-	point.x = (int)((distance * cos(live.rotation + (double)side * TAU/(double)numSides + offset) + (double)(CENTER.x)));
-	point.y = (int)((distance * sin(live.rotation + (double)side * TAU/(double)numSides + offset) + (double)(CENTER.y)));
+	point.x = (int)((distance * cos(rotation + (double)side * TAU/(double)numSides + offset) + (double)(CENTER.x)));
+	point.y = (int)((distance * sin(rotation + (double)side * TAU/(double)numSides + offset) + (double)(CENTER.y)));
 	return point;
+}
+
+ButtonState getButton() {
+	hidScanInput();
+	u32 kDown = hidKeysDown();
+	u32 kHold = hidKeysHeld();
+	if(kDown & KEY_A ) {
+		return SELECT;
+	} 
+	if(kHold & (KEY_R | KEY_ZR | KEY_CSTICK_RIGHT | KEY_CPAD_RIGHT | KEY_DRIGHT | KEY_X)) {
+		return DIR_RIGHT;
+	} else if(kHold & (KEY_L | KEY_ZL | KEY_CSTICK_LEFT | KEY_CPAD_LEFT | KEY_DLEFT | KEY_Y)) {
+		return DIR_LEFT;
+	} 
+	return NOTHING;
 }

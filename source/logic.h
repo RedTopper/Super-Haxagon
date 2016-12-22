@@ -1,1 +1,16 @@
 #pragma once
+
+/**
+ * Checks if the cursor has collided with a wall.
+ */
+MovementState collisionLiveWall(LiveWall wall, double cursorPos, double cursorStep, int sides);
+
+/**
+ * Checks if the cursor has collided with the running level level.
+ */
+MovementState collisionLiveLevel(LiveLevel live, double cursorStep);
+
+/**
+ * Logic for working the main menu
+ */
+GameState doMainMenu(GlobalData data);

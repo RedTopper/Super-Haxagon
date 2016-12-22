@@ -170,8 +170,8 @@ void drawBackground(Color color1, Color color2, Point focus, double height, doub
 	check(!edges, "Error drawing background!", DEF_DEBUG, 0x0);
 	
 	for(int i = 0; i < sides; i++) {
-		edges[i].x = (int)(height * cos(rotation + (double)i * TAU/6.0) + focus.x);
-		edges[i].y = (int)(height * sin(rotation + (double)i * TAU/6.0) + focus.y);
+		edges[i].x = (int)(height * cos(rotation + (double)i * TAU/6.0) + (double)(focus.x));
+		edges[i].y = (int)(height * sin(rotation + (double)i * TAU/6.0) + (double)(focus.y) + 0.5);
 	}
 	
 	Point triangle[3];
@@ -264,7 +264,7 @@ void drawMainMenu(GlobalData data, MainMenu menu) {
 		BG3 = level.colorsBG2[0]; //same as BG2
 	} 
 	
-	Point focus = {TOP_WIDTH/2, SCREEN_HEIGHT/2 - 40};
+	Point focus = {TOP_WIDTH/2, SCREEN_HEIGHT/2 - 60};
 	
 	//Use 1.4 so the background height reaches the edge of the screen but does not go too far.
 	//home screen always has 6 sides.
@@ -273,6 +273,7 @@ void drawMainMenu(GlobalData data, MainMenu menu) {
 	drawHumanCursor(FG, focus, TAU/4.0, 0); //Draw cursor fixed quarter circle, no movement.
 
 	Color white = {0xFF, 0xFF, 0xFF};
+	Color grey = {0xC0, 0xC0, 0xC0};
 	Point title = {4, 4};
 	Point difficulty = {4, 40};
 	Point mode = {4, 56};
@@ -289,9 +290,9 @@ void drawMainMenu(GlobalData data, MainMenu menu) {
 	drawRect(black, timePos, timeSize);
 	
 	writeFont(white, title, level.name.str, true);
-	writeFont(white, difficulty, level.difficulty.str, false);
-	writeFont(white, mode, level.mode.str, false);
-	writeFont(white, creator, level.creator.str, false);
+	writeFont(grey, difficulty, level.difficulty.str, false);
+	writeFont(grey, mode, level.mode.str, false);
+	writeFont(grey, creator, level.creator.str, false);
 	writeFont(white, time, "SCORE: ??????", false);
 }
 

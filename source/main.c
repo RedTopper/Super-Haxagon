@@ -8,12 +8,9 @@
 #include "types.h"
 #include "util.h"
 #include "levels.h"
-#include "draw.h"
 #include "logic.h"
-#include "font.h"
-#include "sound.h"
 
-
+//Minimum allowed distance from the last shown pattern
 const int MIN_DISTANCE_FROM_LAST_PATTERN = 50;
 
 //Game over screen
@@ -27,6 +24,8 @@ const double PULSES_PER_SPIN = 3; //may look weird if not int!
 //Chance to flip the rotation in a new direction
 const int CHANCE_OF_FLIP_MODULO = 5;
 
+const char* PROJECT_FILE_NAME = "romfs:/internal.haxagon";
+
 int main() {
 	
 	//3ds init
@@ -36,14 +35,15 @@ int main() {
 	sdmcInit();
 	ndspInit();
 	ndspSetOutputMode(NDSP_OUTPUT_STEREO);
+	FILE *file = fopen(PROJECT_FILE_NAME, "rb");
+	check(!file, "Could not read internal pattern file!", DEF_DEBUG, 0);
+	GlobalData data = getData(file);
 	
 	//program init
 	srand(svcGetSystemTick());
 	
 	//Controller
-	while (1) {
-		break;
-	}
+	doMainMenu(data);
 	
 	//close GFX
 	sf2d_fini();

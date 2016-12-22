@@ -4,13 +4,11 @@
  * Draws a triangle
  */
 void drawTriangle(Color color, Point points[3]);
-void drawTriangleWithShadow(Color color, Point points[3]);
 
 /**
  * Draws a trapizoid
  */
 void drawTrap(Color color, Point points[4]);
-void drawTrapWithShadow(Color color, Point points[4]);
 
 /**
  * Draws a rectangle using the super fast 2d library and
@@ -48,16 +46,12 @@ void drawHumanCursor(Color color, Point focus, double cursor, double rotation);
  * Draws the main menu of the program based on loaded data and main menu variables.
  */
 void drawMainMenu(GlobalData data, MainMenu menu);
+void drawMainMenuBot(double fps);
 
 /**
  * Base render for the game. Draws based on a single active level. 
  */
 void drawPlayGame(LiveLevel level, double offset);
-
-/**
- * Draws the bottom screen when playing the game.  This method should be called
- * after SF2D has switched to the bottom screen.
- */
 void drawPlayGameBot(LiveLevel level, FileString name, int score, double fps);
 
 /** 

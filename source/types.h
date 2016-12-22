@@ -1,10 +1,26 @@
 #pragma once
 
 #define TAU 6.28318530718
+#define SCREEN_TOP_DIAG_FROM_CENTER 280
 #define SCREEN_HEIGHT 240
 #define TOP_WIDTH  400
 #define BOT_WIDTH  320
 #define TOTAL_PATTERNS_AT_ONE_TIME 3
+
+//Inside hexagon style
+#define DEF_HEX_FULL_LEN 24.0
+#define DEF_HEX_BORDER_LEN 4.0
+
+//Human triangle style
+#define DEF_HUMAN_WIDTH TAU/30
+#define DEF_HUMAN_HEIGHT 5.0
+#define DEF_HUMAN_PADDING 5.0
+
+//Main menu rotation constraints
+#define DEF_FRAMES_PER_TRANSITION 60
+
+//debug utils
+#define DEF_DEBUG __FILE__, __func__, __LINE__
 
 typedef struct {
 	char* str;
@@ -88,11 +104,11 @@ typedef struct {
 } GlobalData;
 
 typedef struct {
-	int rotationFrame;
-	int rotationDirection;
+	int transitionFrame;
+	int transitionDirection;
+	int transitioning;
 	int lastLevel;
 	int level;
-	int transitioning;
 } MainMenu;
 
 typedef enum {
@@ -112,9 +128,13 @@ typedef enum {
 	MAIN_MENU,
 	PLAYING,
 	GAME_OVER,
+	PROGRAM_QUIT,
 } GameState;
 
 typedef enum {
-	FULL_RESET,
-	PARTIAL_RESET,
-} ResetTypeGame;
+	SELECT,
+	DIR_LEFT,
+	DIR_RIGHT,
+	BACK,
+	NOTHING
+} ButtonState;

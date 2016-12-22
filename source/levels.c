@@ -13,6 +13,7 @@ const char* LEVEL_HEADER = "LEVEL2.0";
 const char* LEVEL_FOOTER = "ENDLEVEL";
 const char* PATTERN_HEADER = "PATTERN1.0";
 const char* PATTERN_FOOTER = "ENDPATTERN";
+const char* BGM_PATH = "sdmc:/3ds/data/haxagon/";
 
 const int MIN_WALL_HEIGHT = 8;
 const int MIN_PATTERN_SIDES = 3;
@@ -42,6 +43,16 @@ FileString getString(FILE* file) {
 	string.str = getMalloc(file, sizeof(char), &string.len, 1, "Cannot load string from file!");
 	fread(string.str, sizeof(char), string.len, file);
 	string.str[string.len] = '\0';
+	return string;
+}
+
+FileString getStringPrefix(const char* prefix, FILE* file) {
+	FileString string;
+	int prefixlen = strlen(prefix);
+	string.str = getMalloc(file, sizeof(char), &string.len, prefixlen + 1, "Cannot load string from file!");
+	memcpy(string.str, prefix, prefixlen);
+	fread(&(string.str[prefixlen]), sizeof(char), string.len, file); //potentially dangerous?
+	string.len += prefixlen;
 	return string;
 }
 
@@ -121,10 +132,10 @@ Level getLevel(FILE* file, Pattern* patterns, int numPatterns) {
 	
 	//strings
 	level.name = getString(file);
-	level.difficulty = getString(file);
-	level.mode = getString(file);
-	level.creator = getString(file);
-	level.music = getString(file);
+	level.difficulty = getStringPrefix("DIFFICULTY: ", file);
+	level.mode = getStringPrefix("MODE: ", file);
+	level.creator = getStringPrefix("CREATOR: ", file);
+	level.music = getStringPrefix(BGM_PATH, file);
 	
 	//colors
 	level.colorsBG1 = getMalloc(file, sizeof(Color), &level.numBG1, 0, "Cannot alloc BG1 colors!");

@@ -17,7 +17,7 @@
 #define DEF_HUMAN_PADDING 5.0
 
 //Main menu rotation constraints
-#define DEF_FRAMES_PER_TRANSITION 60
+#define DEF_FRAMES_PER_TRANSITION 12
 
 //debug utils
 #define DEF_DEBUG __FILE__, __func__, __LINE__

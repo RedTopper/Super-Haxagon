@@ -141,8 +141,8 @@ void drawMainHexagon(Color color1, Color color2, Point focus, double rotation, i
 		
 		//draw hexagon (might not actually be hexagon!) in accordance to the closest pattern
 		for(int i = 0; i < sides + 1; i++) {
-			triangle[(i % 2) + 1].x = (int)(height * cos(rotation + (double)i * TAU/(double)sides) + (double)(focus.x));
-			triangle[(i % 2) + 1].y = (int)(height * sin(rotation + (double)i * TAU/(double)sides) + (double)(focus.y));
+			triangle[(i % 2) + 1].x = (int)(height * cos(rotation + (double)i * TAU/(double)sides) + (double)(focus.x) + 0.5);
+			triangle[(i % 2) + 1].y = (int)(height * sin(rotation + (double)i * TAU/(double)sides) + (double)(focus.y) + 0.5);
 			if(i != 0) {
 				drawTriangle(color, triangle);
 			}
@@ -170,7 +170,7 @@ void drawBackground(Color color1, Color color2, Point focus, double height, doub
 	check(!edges, "Error drawing background!", DEF_DEBUG, 0x0);
 	
 	for(int i = 0; i < sides; i++) {
-		edges[i].x = (int)(height * cos(rotation + (double)i * TAU/6.0) + (double)(focus.x));
+		edges[i].x = (int)(height * cos(rotation + (double)i * TAU/6.0) + (double)(focus.x) + 0.5);
 		edges[i].y = (int)(height * sin(rotation + (double)i * TAU/6.0) + (double)(focus.y) + 0.5);
 	}
 	

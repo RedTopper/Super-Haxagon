@@ -2,6 +2,7 @@
 #include <sf2d.h>
 
 #include "types.h"
+#include "sound.h"
 #include "util.h"
 #include "draw.h"
 #include "logic.h"
@@ -83,25 +84,26 @@ MovementState collisionLiveLevel(LiveLevel live, double cursorStep) {
 	return collision;
 }
 
-GameState doMainMenu(GlobalData data) {
+GameState doMainMenu(GlobalData data, Track select) {
 	MainMenu menu = {0};
-	//set clear color to something obvious
-	sf2d_set_clear_color(RGBA8(0xFF,0x00,0xFF,0xFF));
 	while(aptMainLoop()) {
 		//LOGIC
 		ButtonState press = getButton();
+		if(press == QUIT) return PROGRAM_QUIT;
 		if(!(menu.transitioning)) {
 			if(press == DIR_RIGHT) {
 				menu.transitioning = true;
 				menu.transitionDirection = 1;
 				menu.lastLevel = menu.level;
 				menu.level++;
+				audioPlay(&select, ONCE);
 			}
 			if(press == DIR_LEFT) {
 				menu.transitioning = true;
 				menu.transitionDirection = -1;
 				menu.lastLevel = menu.level;
 				menu.level--;
+				audioPlay(&select, ONCE);
 			}
 		}
 		if(menu.level >=  data.numLevels) menu.level = 0;

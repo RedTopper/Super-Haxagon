@@ -11,6 +11,6 @@ MovementState collisionLiveWall(LiveWall wall, double cursorPos, double cursorSt
 MovementState collisionLiveLevel(LiveLevel live, double cursorStep);
 
 /**
- * Logic for working the main menu
+ * Logic for working the main menu, along  with a selection sound
  */
-GameState doMainMenu(GlobalData data);
+GameState doMainMenu(GlobalData data, Track select);

@@ -46,6 +46,7 @@ Color interpolateColor(Color one, Color two, double percent) {
 	new.r = (int)linear((double)one.r, (double)two.r, percent);
 	new.g = (int)linear((double)one.g, (double)two.g, percent);
 	new.b = (int)linear((double)one.b, (double)two.b, percent);
+	new.a = (int)linear((double)one.a, (double)two.a, percent);
 	return new;
 }
 
@@ -65,8 +66,12 @@ ButtonState getButton() {
 	} 
 	if(kHold & (KEY_R | KEY_ZR | KEY_CSTICK_RIGHT | KEY_CPAD_RIGHT | KEY_DRIGHT | KEY_X)) {
 		return DIR_RIGHT;
-	} else if(kHold & (KEY_L | KEY_ZL | KEY_CSTICK_LEFT | KEY_CPAD_LEFT | KEY_DLEFT | KEY_Y)) {
+	} 
+	if(kHold & (KEY_L | KEY_ZL | KEY_CSTICK_LEFT | KEY_CPAD_LEFT | KEY_DLEFT | KEY_Y)) {
 		return DIR_LEFT;
+	} 
+	if(kDown & KEY_START ) {
+		return QUIT;
 	} 
 	return NOTHING;
 }

@@ -14,7 +14,7 @@ void createDspBlock(ndspWaveBuf* waveBuf, u16 bps, u32 size, bool loop, u32* dat
 	DSP_FlushDataCache(data, size);
 }
 
-void audioLoad(const char* path, Track* sound, int channel) {
+void audioLoad(char* path, Track* sound, int channel) {
 	sound->loaded = false;
 	
 	//open file

@@ -8,8 +8,6 @@
 #include "util.h"
 #include "sound.h"
 
-const Point CENTER = {TOP_WIDTH/2, SCREEN_HEIGHT/2};
-
 //real version will stick in loop until home is pressed
 void panic(const char* message, const char* file, const char* function, int line, int error) {
 	FILE* panic = fopen("sdmc:/haxapanic.txt", "a");
@@ -50,10 +48,10 @@ Color interpolateColor(Color one, Color two, double percent) {
 	return new;
 }
 
-Point calcPoint(double rotation, double offset, double distance, int side, int numSides)  {
+Point calcPoint(Point focus, double rotation, double offset, double distance, int side, int numSides)  {
 	Point point = {0,0};
-	point.x = (int)((distance * cos(rotation + (double)side * TAU/(double)numSides + offset) + (double)(CENTER.x)));
-	point.y = (int)((distance * sin(rotation + (double)side * TAU/(double)numSides + offset) + (double)(CENTER.y)));
+	point.x = (int)((distance * cos(rotation + (double)side * TAU/(double)numSides + offset) + (double)(focus.x)) + 0.5);
+	point.y = (int)((distance * sin(rotation + (double)side * TAU/(double)numSides + offset) + (double)(focus.y)) + 0.5);
 	return point;
 }
 
@@ -72,6 +70,9 @@ ButtonState getButton() {
 	} 
 	if(kDown & KEY_START ) {
 		return QUIT;
+	} 
+	if(kDown & KEY_B ) {
+		return BACK;
 	} 
 	return NOTHING;
 }

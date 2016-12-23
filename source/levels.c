@@ -152,7 +152,7 @@ Level getLevel(FILE* file, Pattern* patterns, int numPatterns) {
 	//floats
 	fread(&level.speedWall, sizeof(float), 1, file);
 	fread(&level.speedRotation, sizeof(float), 1, file);
-	fread(&level.speedHuman, sizeof(float), 1, file);
+	fread(&level.speedCursor, sizeof(float), 1, file);
 	
 	//int
 	fread(&level.speedPulse, sizeof(int), 1, file);

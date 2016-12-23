@@ -11,6 +11,12 @@ MovementState collisionLiveWall(LiveWall wall, double cursorPos, double cursorSt
 MovementState collisionLiveLevel(LiveLevel live, double cursorStep);
 
 /**
- * Logic for working the main menu, along  with a selection sound
+ * Logic for working the main menu, along  with a selection sound.
+ * Modifys the address of level to the currently selected level upon return.
  */
-GameState doMainMenu(GlobalData data, Track select);
+GameState doMainMenu(GlobalData data, Track select, int* level);
+
+/**
+ * Plays a level.
+ */
+GameState doPlayGame(GlobalData data, int level);

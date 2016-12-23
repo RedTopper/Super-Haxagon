@@ -17,15 +17,15 @@ void drawTrap(Color color, Point points[4]);
 void drawRect(Color color, Point position, Point size);
 
 /**
- * Draws a single moving wall based on live settings, the playing pattern, and a wall.
+ * Draws a single moving wall based on a live wall, a color, some rotational value, and the total
+ * amount of sides that appears.
  */
-RenderState drawMovingWall(LiveLevel live, LivePattern pattern, LiveWall wall);
+void drawMovingWall(Color color, Point focus, LiveWall wall, double rotation, int sides);
 
 /**
- * Completely draws all walls in a live level. Returns the render value
- * of the furthest wall of the closest pattern (as to trigger a shift).
+ * Completely draws all walls in a live level. 
  */
-RenderState drawMovingPatterns(LiveLevel live, double manualOffset);
+void drawMovingPatterns(Color color, Point focus, LiveLevel live, double manualOffset);
 
 /**
  * Draws the main hexagon in the game (Might not actually be a hexagon!)
@@ -51,8 +51,8 @@ void drawMainMenuBot(double fps);
 /**
  * Base render for the game. Draws based on a single active level. 
  */
-void drawPlayGame(LiveLevel level, double offset);
-void drawPlayGameBot(LiveLevel level, FileString name, int score, double fps);
+void drawPlayGame(Level level, LiveLevel liveLevel, double offset);
+void drawPlayGameBot(FileString name, int score, double fps);
 
 /** 
  * Renders game over text.

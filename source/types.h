@@ -84,7 +84,7 @@ typedef struct {
 	int numFG;
 	float speedWall;
 	float speedRotation;
-	float speedHuman;
+	float speedCursor;
 	int speedPulse;
 	Pattern* patterns;
 	int numPatterns; 
@@ -125,16 +125,19 @@ typedef struct {
 typedef struct {
 	double cursorPos;
 	double rotation;
-	double tweenPercent;
-	Color currentBG1;
-	Color currentBG2;
-	Color currentFG;
-	Color nextBG1;
-	Color nextBG2;
-	Color nextFG;
+	int tweenFrame;
+	int indexBG1;
+	int indexBG2;
+	int indexFG;
+	int nextIndexBG1;
+	int nextIndexBG2;
+	int nextIndexFG;
 	LivePattern patterns[TOTAL_PATTERNS_AT_ONE_TIME];
 } LiveLevel;
 
+/**
+ * All of the data loaded, ever.
+ */
 typedef struct {
 	Level* levels;
 	Pattern* patterns;
@@ -142,18 +145,13 @@ typedef struct {
 	int numPatterns;
 } GlobalData;
 
+//States
 typedef enum {
 	CAN_MOVE,
 	CANNOT_MOVE_LEFT,
 	CANNOT_MOVE_RIGHT,
 	DEAD,
 } MovementState;
-
-typedef enum {
-	TOO_CLOSE,
-	TOO_FAR,
-	RENDERED,
-} RenderState;
 
 typedef enum {
 	MAIN_MENU,

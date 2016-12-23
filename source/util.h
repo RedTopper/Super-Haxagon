@@ -21,7 +21,7 @@ Color interpolateColor(Color one, Color two, double percent);
  * so it renders correctly, some distance the point should be from the center, the  side the point
  * should be rendered on, based on a total number of sides the shape has.
  */
-Point calcPoint(double rotation, double offset, double distance, int side, int numSides);
+Point calcPoint(Point focus, double rotation, double offset, double distance, int side, int numSides);
 
 /**
  * Gets a button state from user input.

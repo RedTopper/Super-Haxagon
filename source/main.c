@@ -37,10 +37,16 @@ int main() {
 	sdmcInit();
 	ndspInit();
 	ndspSetOutputMode(NDSP_OUTPUT_STEREO);
+	
+	//pattern loading
 	FILE *file = fopen(PROJECT_FILE_NAME, "rb");
 	check(!file, "Could not read internal pattern file!", DEF_DEBUG, 0);
 	GlobalData data = getData(file);
 	
+	//program init
+	srand(svcGetSystemTick());
+	
+	//audio loading
 	Track begin;
 	Track hexagon; 
 	Track over;
@@ -52,8 +58,8 @@ int main() {
 	audioLoad("romfs:/sound/select.wav", &select, 3);
 	audioLoad("romfs:/bgm/pamgaea.wav", &mainMenu, 4);
 	
-	//program init
-	srand(svcGetSystemTick());
+	//level selection
+	int nlevel = 0;
 	
 	//Controller
 	GameState state = MAIN_MENU;
@@ -62,12 +68,16 @@ int main() {
 		case MAIN_MENU:
 			audioPlay(&hexagon, ONCE);
 			audioPlay(&mainMenu, LOOP);
-			state = doMainMenu(data, select);
+			state = doMainMenu(data, select, &nlevel);
 			audioStop(&mainMenu);
 			break;
 		case PLAYING:
+			audioPlay(&begin, ONCE);
+			state = doPlayGame(data, nlevel);
 			break;
 		case GAME_OVER:
+			audioPlay(&over, ONCE);
+			state = MAIN_MENU;
 			break;
 		case PROGRAM_QUIT:
 			break;
@@ -75,6 +85,7 @@ int main() {
 		if(state == PROGRAM_QUIT) break;
 	}
 	
+	//audio free
 	audioFree(&begin);
 	audioFree(&hexagon);
 	audioFree(&over);

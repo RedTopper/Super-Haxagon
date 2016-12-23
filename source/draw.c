@@ -51,12 +51,12 @@ void drawRect(Color color, Point position, Point size) {
 	sf2d_draw_rectangle(position.x, position.y, size.x, size.y, paint);
 }
 
-RenderState drawMovingWall(LiveLevel live, LivePattern pattern, LiveWall wall) {
+void drawMovingWall(Color color, Point focus, LiveWall wall, double rotation, int sides) {
 	double distance = wall.distance;
 	double height = wall.height;
 	
-	if(distance + height < DEF_HEX_FULL_LEN) return TOO_CLOSE;
-	if(distance > SCREEN_TOP_DIAG_FROM_CENTER) return TOO_FAR; //Might be expensive to calc?
+	if(distance + height < DEF_HEX_FULL_LEN) return; //TOO_CLOSE;
+	if(distance > SCREEN_TOP_DIAG_FROM_CENTER) return; //TOO_FAR; 
 	
 	if(distance < DEF_HEX_FULL_LEN - 2.0) {//so the distance is never negative as it enters.
 		height -= DEF_HEX_FULL_LEN - 2.0 - distance;
@@ -64,19 +64,15 @@ RenderState drawMovingWall(LiveLevel live, LivePattern pattern, LiveWall wall) {
 	}
 	
 	Point edges[4] = {0};
-	edges[0] = calcPoint(live.rotation, OVERFLOW_OFFSET, distance, wall.side + 1, pattern.sides);
-	edges[1] = calcPoint(live.rotation, OVERFLOW_OFFSET, distance + height, wall.side + 1, pattern.sides);
-	edges[2] = calcPoint(live.rotation, -OVERFLOW_OFFSET, distance + height, wall.side, pattern.sides);
-	edges[3] = calcPoint(live.rotation, -OVERFLOW_OFFSET, distance, wall.side, pattern.sides);
-	drawTrap(interpolateColor(live.currentFG, live.nextFG, live.tweenPercent), edges);
-	return RENDERED;
+	edges[0] = calcPoint(focus, rotation, OVERFLOW_OFFSET, distance, wall.side + 1, sides);
+	edges[1] = calcPoint(focus, rotation, OVERFLOW_OFFSET, distance + height, wall.side + 1, sides);
+	edges[2] = calcPoint(focus, rotation, -OVERFLOW_OFFSET, distance + height, wall.side, sides);
+	edges[3] = calcPoint(focus, rotation, -OVERFLOW_OFFSET, distance, wall.side, sides);
+	drawTrap(color, edges);
+	return; //RENDERED;
 }
 
-RenderState drawMovingPatterns(LiveLevel live, double manualOffset) {
-	
-	//furthest distance of closest pattern
-	double nearFurthestDistance = 0;
-	RenderState nearFurthestRender = RENDERED;
+void drawMovingPatterns(Color color, Point focus, LiveLevel live, double manualOffset) {
 	
 	//for all patterns
 	for(int iPattern = 0; iPattern < TOTAL_PATTERNS_AT_ONE_TIME; iPattern++) {
@@ -86,16 +82,9 @@ RenderState drawMovingPatterns(LiveLevel live, double manualOffset) {
 		for(int iWall = 0; iWall < pattern.numWalls; iWall++) {
 			LiveWall wall = pattern.walls[iWall];
 			wall.distance += manualOffset;
-			RenderState render = drawMovingWall(live, pattern, wall);
-			
-			//update information about the closest pattern
-			if(iWall == 0 && wall.distance + wall.height > nearFurthestDistance) {
-				nearFurthestDistance = wall.distance + wall.height;
-				nearFurthestRender = render;
-			}
+			drawMovingWall(color, focus, wall, live.rotation, live.patterns[0].sides);
 		}
 	}
-	return nearFurthestRender;
 }
 
 void drawMainHexagon(Color color1, Color color2, Point focus, double rotation, int sides) {
@@ -127,14 +116,6 @@ void drawMainHexagon(Color color1, Color color2, Point focus, double rotation, i
 			}
 		}
 	}
-}
-
-//internal overload to drawMainHexagon
-void drawMainHexagonLive(LiveLevel live) {
-	drawMainHexagon(
-		interpolateColor(live.currentFG, live.nextFG, live.tweenPercent), 
-		interpolateColor(live.currentBG2, live.nextBG2, live.tweenPercent),
-		SCREEN_CENTER, live.rotation, live.patterns[0].sides);
 }
 
 void drawBackground(Color color1, Color color2, Point focus, double height, double rotation, int sides) {
@@ -171,14 +152,6 @@ void drawBackground(Color color1, Color color2, Point focus, double height, doub
 	free(edges);
 }
 
-//internal overload to drawBackground
-void drawBackgroundLive(LiveLevel live) {
-	drawBackground(
-		interpolateColor(live.currentBG1, live.nextBG1, live.tweenPercent), 
-		interpolateColor(live.currentBG2, live.nextBG2, live.tweenPercent),
-		SCREEN_CENTER, SCREEN_TOP_DIAG_FROM_CENTER, live.rotation, live.patterns[0].sides);
-}
-
 void drawHumanCursor(Color color, Point focus, double cursor, double rotation) {
 	Point humanTriangle[3];
 	for(int i = 0; i < 3; i++) {
@@ -195,17 +168,10 @@ void drawHumanCursor(Color color, Point focus, double cursor, double rotation) {
 				position = cursor - DEF_HUMAN_WIDTH/2 + rotation;
 			}
 		}
-		humanTriangle[i].x = (int)(height * cos(position) + focus.x);
-		humanTriangle[i].y = (int)(height * sin(position) + focus.y);
+		humanTriangle[i].x = (int)(height * cos(position) + focus.x + 0.5);
+		humanTriangle[i].y = (int)(height * sin(position) + focus.y + 0.5);
 	}
 	drawTriangle(color, humanTriangle);
-}
-
-//internal overload to drawHumanCursor
-void drawHumanCursorLive(LiveLevel live) {
-	drawHumanCursor(
-		interpolateColor(live.currentFG, live.nextFG, live.tweenPercent), 
-		SCREEN_CENTER, live.cursorPos, live.rotation);
 }
 
 //internal framerate drawing
@@ -286,20 +252,34 @@ void drawMainMenuBot(double fps) {
 }
 
 
-void drawPlayGame(LiveLevel level, double offset) {
-	drawBackgroundLive(level);
-	drawMovingPatterns(level, offset);
-	drawMainHexagonLive(level);
-	drawHumanCursorLive(level);
+void drawPlayGame(Level level, LiveLevel liveLevel, double offset) {
+	
+	//calculate colors
+	double percentTween = (double)(liveLevel.tweenFrame) / (double)(level.speedPulse);
+	Color FG = interpolateColor(level.colorsFG[liveLevel.indexFG], level.colorsFG[liveLevel.nextIndexFG], percentTween);
+	Color BG1 = interpolateColor(level.colorsBG1[liveLevel.indexBG1], level.colorsBG1[liveLevel.nextIndexBG1], percentTween);
+	Color BG2 = interpolateColor(level.colorsBG2[liveLevel.indexBG2], level.colorsBG2[liveLevel.nextIndexBG2], percentTween);
+	
+	drawBackground(BG1, BG2, SCREEN_CENTER, SCREEN_TOP_DIAG_FROM_CENTER, liveLevel.rotation, liveLevel.patterns[0].sides);
+	
+	//draw shadows
+	Point offsetFocus = {SCREEN_CENTER.x + SHADOW_X, SCREEN_CENTER.y + SHADOW_Y};
+	drawMovingPatterns(SHADOW, offsetFocus, liveLevel, 0);
+	drawMainHexagon(SHADOW, SHADOW, offsetFocus, liveLevel.rotation, liveLevel.patterns[0].sides);
+	drawHumanCursor(SHADOW, offsetFocus, liveLevel.cursorPos, liveLevel.rotation);
+	
+	//draw real thing
+	drawMovingPatterns(FG, SCREEN_CENTER, liveLevel, 0);
+	drawMainHexagon(FG, BG2, SCREEN_CENTER, liveLevel.rotation, liveLevel.patterns[0].sides);
+	drawHumanCursor(FG, SCREEN_CENTER, liveLevel.cursorPos, liveLevel.rotation);
 }
 
-void drawPlayGameBot(LiveLevel level, FileString name, int score, double fps) {
-	Color background = interpolateColor(level.currentBG1, level.nextBG1, level.tweenPercent);
+void drawPlayGameBot(FileString name, int score, double fps) {
+	Color black = {0,0,0, 0xFF};
 	Point topLeft = {0,0};
 	Point screenSize = {BOT_WIDTH, SCREEN_HEIGHT};
-	drawRect(background, topLeft, screenSize);
+	drawRect(black, topLeft, screenSize);
 	
-	Color black = {0,0,0, 0xFF};
 	Point scoreSize = {BOT_WIDTH, 22};
 	drawRect(black, topLeft, scoreSize);
 	
@@ -318,12 +298,11 @@ void drawPlayGameBot(LiveLevel level, FileString name, int score, double fps) {
 }
 
 void drawGameOverBot(LiveLevel level, int score, double fps, int frame) {
-	Color background = interpolateColor(level.currentBG1, level.nextBG1, level.tweenPercent);
+	Color black = {0, 0, 0, 0xFF};
 	Point topLeft = {0,0};
 	Point screenSize = {BOT_WIDTH, SCREEN_HEIGHT};
-	drawRect(background, topLeft, screenSize);
+	drawRect(black, topLeft, screenSize);
 	
-	Color black = {0, 0, 0, 0xFF};
 	Point overSize = {BOT_WIDTH, 112};
 	drawRect(black, topLeft, overSize);
 

@@ -12,6 +12,11 @@ typedef struct {
 	bool loaded;
 } Track;
 
+typedef enum {
+	LOOP,
+	ONCE
+} LoopState;
+
 ndspWaveBuf waveBuffs[23];
 
 /**
@@ -22,12 +27,12 @@ void audioLoad(const char* path, Track* sound, int channel);
 /**
  * Plays a Track. loop: True if you want the audio to loop.
  */
-void audioPlay(Track *sound, bool loop);
+void audioPlay(Track* sound, LoopState loops);
 
 /**
  * Safely stops a Track.
  */
-void audioStop(Track *sound);
+void audioStop(Track* sound);
 
 /**
  * Frees a track and all of it's resources from memory.

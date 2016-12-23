@@ -78,6 +78,7 @@ Color getColor(FILE* file) {
 	fread(&color.r, sizeof(char), 1, file);
 	fread(&color.g, sizeof(char), 1, file);
 	fread(&color.b, sizeof(char), 1, file);
+	color.a = 0xFF;
 	return color;
 }
 

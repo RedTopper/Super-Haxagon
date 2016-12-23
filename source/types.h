@@ -1,7 +1,7 @@
 #pragma once
 
 #define TAU 6.28318530718
-#define SCREEN_TOP_DIAG_FROM_CENTER 280
+#define SCREEN_TOP_DIAG_FROM_CENTER 320
 #define SCREEN_HEIGHT 240
 #define TOP_WIDTH  400
 #define BOT_WIDTH  320
@@ -22,34 +22,44 @@
 //debug utils
 #define DEF_DEBUG __FILE__, __func__, __LINE__
 
-typedef struct {
-	char* str;
-	int len;
-} FileString;
-
+/**
+ * A color but as a struct instead of a long.
+ */
 typedef struct {
 	char r;
 	char g;
 	char b;
+	char a;
 } Color;
 
+/**
+ * A simple integer representation of an X and Y point.
+ */
 typedef struct {
 	int x;
 	int y;
 } Point;
 
+/**
+ * A string as it appears in a project file.
+ */
+typedef struct {
+	char* str;
+	int len;
+} FileString;
+
+/**
+ * A wall as it appears in the project file.
+ */
 typedef struct {
 	short distance;
 	short height;
 	short side;
 } Wall;
 
-typedef struct {
-	double distance;
-	double height;
-	int side;
-} LiveWall;
-
+/**
+ * A pattern as it appears in a project file.
+ */
 typedef struct {
 	FileString name;
 	Wall* walls;
@@ -57,12 +67,9 @@ typedef struct {
 	int sides;
 } Pattern;
 
-typedef struct {
-	LiveWall* walls;
-	int numWalls;
-	int sides;
-} LivePattern;
-
+/**
+ * Level data as it appears in a file.
+ */
 typedef struct {
 	FileString name;
 	FileString difficulty;
@@ -83,6 +90,38 @@ typedef struct {
 	int numPatterns; 
 } Level;
 
+/**
+ * The current state of the main menu.
+ */
+typedef struct {
+	int transitionFrame;
+	int transitionDirection;
+	int transitioning;
+	int lastLevel;
+	int level;
+} MainMenu;
+
+/**
+ * A wall as it appears during runtime.
+ */
+typedef struct {
+	double distance;
+	double height;
+	int side;
+} LiveWall;
+
+/**
+ * A pattern as it appears during runtime.
+ */
+typedef struct {
+	LiveWall* walls;
+	int numWalls;
+	int sides;
+} LivePattern;
+
+/**
+ * A level as it appears during runtime.
+ */
 typedef struct {
 	double cursorPos;
 	double rotation;
@@ -102,14 +141,6 @@ typedef struct {
 	int numLevels;
 	int numPatterns;
 } GlobalData;
-
-typedef struct {
-	int transitionFrame;
-	int transitionDirection;
-	int transitioning;
-	int lastLevel;
-	int level;
-} MainMenu;
 
 typedef enum {
 	CAN_MOVE,
@@ -136,5 +167,6 @@ typedef enum {
 	DIR_LEFT,
 	DIR_RIGHT,
 	BACK,
+	QUIT,
 	NOTHING
 } ButtonState;

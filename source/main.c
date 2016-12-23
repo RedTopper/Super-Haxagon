@@ -8,6 +8,7 @@
 #include "types.h"
 #include "util.h"
 #include "levels.h"
+#include "sound.h"
 #include "logic.h"
 
 //Minimum allowed distance from the last shown pattern
@@ -31,6 +32,7 @@ int main() {
 	//3ds init
 	sf2d_init();
 	sf2d_set_vblank_wait(1);
+	sf2d_set_clear_color(RGBA8(0xFF,0x00,0xFF,0xFF)); //obvious
 	romfsInit();
 	sdmcInit();
 	ndspInit();
@@ -39,15 +41,48 @@ int main() {
 	check(!file, "Could not read internal pattern file!", DEF_DEBUG, 0);
 	GlobalData data = getData(file);
 	
+	Track begin;
+	Track hexagon; 
+	Track over;
+	Track select;
+	Track mainMenu;
+	audioLoad("romfs:/sound/begin.wav", &begin, 0);
+	audioLoad("romfs:/sound/hexagon.wav", &hexagon, 1);
+	audioLoad("romfs:/sound/over.wav", &over, 2);
+	audioLoad("romfs:/sound/select.wav", &select, 3);
+	audioLoad("romfs:/bgm/pamgaea.wav", &mainMenu, 4);
+	
 	//program init
 	srand(svcGetSystemTick());
 	
 	//Controller
-	doMainMenu(data);
+	GameState state = MAIN_MENU;
+	while(1) {
+		switch(state) {
+		case MAIN_MENU:
+			audioPlay(&hexagon, ONCE);
+			audioPlay(&mainMenu, LOOP);
+			state = doMainMenu(data, select);
+			audioStop(&mainMenu);
+			break;
+		case PLAYING:
+			break;
+		case GAME_OVER:
+			break;
+		case PROGRAM_QUIT:
+			break;
+		}
+		if(state == PROGRAM_QUIT) break;
+	}
+	
+	audioFree(&begin);
+	audioFree(&hexagon);
+	audioFree(&over);
+	audioFree(&select);
+	audioFree(&mainMenu);
 	
 	//close GFX
 	sf2d_fini();
-	
 	gfxExit();	
 	romfsExit();	
 	sdmcExit();

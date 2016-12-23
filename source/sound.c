@@ -72,13 +72,16 @@ void audioLoad(const char* path, Track* sound, int channel) {
 
 void audioFree(Track* sound) {
 	if(!(sound->loaded)) return;
+	audioStop(sound);
 	ndspChnWaveBufClear(sound->ndspChannel);
 	memset(sound->data, 0, sound->dataSize);
 	linearFree(sound->data);
 }
 
-void audioPlay(Track* sound, bool loop) {
+void audioPlay(Track* sound, LoopState loops) {
 	if (!(sound->loaded)) return;
+	audioStop(sound);
+	int loop = (loops == LOOP ? 1 : 0);
 	ndspChnReset(sound->ndspChannel);
 	ndspChnWaveBufClear(sound->ndspChannel);
 	ndspChnSetInterp(sound->ndspChannel, NDSP_INTERP_LINEAR);

@@ -7,6 +7,7 @@
 BmpFont font16;
 BmpFont font32;
 
+//EXTERNAL
 void writeFont(Color color, Point point, char* string, FontSize size) {
 	long paint = RGBA8(color.r,color.b,color.g,color.a);
 	

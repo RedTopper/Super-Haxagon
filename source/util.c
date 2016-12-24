@@ -8,7 +8,13 @@
 #include "util.h"
 #include "sound.h"
 
-//real version will stick in loop until home is pressed
+
+
+/** INTERNAL
+ * Panics the game. This version appends to a file and immediately quits the game.
+ * TODO: Change this to a graphical error message if possible. This method should
+ * hang the program until the user quits via  home or homebrew exit.
+ */
 void panic(const char* message, const char* file, const char* function, int line, int error) {
 	FILE* panic = fopen("sdmc:/haxapanic.txt", "a");
 	if(panic) {
@@ -30,15 +36,18 @@ void panic(const char* message, const char* file, const char* function, int line
 	exit(1);
 }
 
+//EXTERNAL
+double linear(double start, double end, double percent) {
+    return (end - start) * percent + start;
+}
+
+//EXTERNAL
 int check(int result, const char* message, const char* file, const char* function, int line, int error) {
 	if(result) panic(message, file, function, line, error);
 	return result;
 }
 
-double linear(double start, double end, double percent) {
-    return (end - start) * percent + start;
-}
-
+//EXTERNAL
 Color interpolateColor(Color one, Color two, double percent) {
 	Color new;
 	new.r = (int)linear((double)one.r, (double)two.r, percent);
@@ -48,13 +57,23 @@ Color interpolateColor(Color one, Color two, double percent) {
 	return new;
 }
 
-Point calcPoint(Point focus, double rotation, double offset, double distance, int side, int numSides)  {
+//EXTERNAL
+Point calcPointWall(Point focus, double rotation, double offset, double distance, int side, double sides)  {
 	Point point = {0,0};
-	point.x = (int)((distance * cos(rotation + (double)side * TAU/(double)numSides + offset) + (double)(focus.x)) + 0.5);
-	point.y = (int)((distance * sin(rotation + (double)side * TAU/(double)numSides + offset) + (double)(focus.y)) + 0.5);
+	point.x = (int)((distance * cos(rotation + (double)side * TAU/sides + offset) + (double)(focus.x)) + 0.5);
+	point.y = (int)((distance * sin(rotation + (double)side * TAU/sides + offset) + (double)(focus.y)) + 0.5);
 	return point;
 }
 
+//EXTERNAL
+Point calcPoint(Point focus, double rotation, double offset, double distance)  {
+	Point point = {0,0};
+	point.x = (int)(distance * cos(rotation + offset) + focus.x + 0.5);
+	point.y = (int)(distance * sin(rotation + offset) + focus.y + 0.5);
+	return point;
+}
+
+//EXTERNAL
 ButtonState getButton() {
 	hidScanInput();
 	u32 kDown = hidKeysDown();
@@ -62,17 +81,17 @@ ButtonState getButton() {
 	if(kDown & KEY_A ) {
 		return SELECT;
 	} 
-	if(kHold & (KEY_R | KEY_ZR | KEY_CSTICK_RIGHT | KEY_CPAD_RIGHT | KEY_DRIGHT | KEY_X)) {
-		return DIR_RIGHT;
-	} 
-	if(kHold & (KEY_L | KEY_ZL | KEY_CSTICK_LEFT | KEY_CPAD_LEFT | KEY_DLEFT | KEY_Y)) {
-		return DIR_LEFT;
-	} 
 	if(kDown & KEY_START ) {
 		return QUIT;
 	} 
 	if(kDown & KEY_B ) {
 		return BACK;
+	} 
+	if(kHold & (KEY_R | KEY_ZR | KEY_CSTICK_RIGHT | KEY_CPAD_RIGHT | KEY_DRIGHT | KEY_X)) {
+		return DIR_RIGHT;
+	} 
+	if(kHold & (KEY_L | KEY_ZL | KEY_CSTICK_LEFT | KEY_CPAD_LEFT | KEY_DLEFT | KEY_Y)) {
+		return DIR_LEFT;
 	} 
 	return NOTHING;
 }

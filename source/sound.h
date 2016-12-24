@@ -17,8 +17,6 @@ typedef enum {
 	ONCE
 } LoopState;
 
-ndspWaveBuf waveBuffs[23];
-
 /**
  * Loads a music file based on a path into memory
  */

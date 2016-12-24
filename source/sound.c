@@ -5,7 +5,12 @@
 
 #include "sound.h"
 
-// Thanks Rinnegatamante
+ndspWaveBuf waveBuffs[23];
+
+/** INTERNAL
+ * Creates a DSP block to  play audio through the DSP  sound system
+ * Found in LPP by Rinnegatamante (Thanks!)
+ */
 void createDspBlock(ndspWaveBuf* waveBuf, u16 bps, u32 size, bool loop, u32* data){
 	waveBuf->data_vaddr = (void*)data;
 	waveBuf->nsamples = size / bps;
@@ -14,6 +19,7 @@ void createDspBlock(ndspWaveBuf* waveBuf, u16 bps, u32 size, bool loop, u32* dat
 	DSP_FlushDataCache(data, size);
 }
 
+//EXTERNAL
 void audioLoad(char* path, Track* sound, int channel) {
 	sound->loaded = false;
 	
@@ -70,6 +76,7 @@ void audioLoad(char* path, Track* sound, int channel) {
 	sound->ndspChannel = channel;
 }
 
+//EXTERNAL
 void audioFree(Track* sound) {
 	if(!(sound->loaded)) return;
 	audioStop(sound);
@@ -78,6 +85,7 @@ void audioFree(Track* sound) {
 	linearFree(sound->data);
 }
 
+//EXTERNAL
 void audioPlay(Track* sound, LoopState loops) {
 	if (!(sound->loaded)) return;
 	audioStop(sound);
@@ -92,6 +100,7 @@ void audioPlay(Track* sound, LoopState loops) {
 	ndspChnWaveBufAdd(sound->ndspChannel, &waveBuffs[sound->ndspChannel]);
 }
 
+//EXTERNAL
 void audioStop(Track* sound) {
 	if (!(sound->loaded)) return;
 	ndspChnReset(sound->ndspChannel);

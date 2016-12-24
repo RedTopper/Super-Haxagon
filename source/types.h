@@ -125,13 +125,15 @@ typedef struct {
 typedef struct {
 	double cursorPos;
 	double rotation;
-	int tweenFrame;
+	int tweenFrame; //tweening colors
+	int delayFrame; //tweening between side switches
 	int indexBG1;
 	int indexBG2;
 	int indexFG;
 	int nextIndexBG1;
 	int nextIndexBG2;
 	int nextIndexFG;
+	int score;
 	LivePattern patterns[TOTAL_PATTERNS_AT_ONE_TIME];
 } LiveLevel;
 

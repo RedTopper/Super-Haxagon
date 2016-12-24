@@ -10,6 +10,17 @@
 #include "font.h"
 #include "logic.h"
 
+//Change sides delay
+const int FRAMES_PER_CHANGE_SIDE = 36;
+
+//Game over screen
+const int FRAMES_PER_GAME_OVER = 60;
+const double GAME_OVER_ACCEL_RATE = 1.1;
+const double GAME_OVER_ROT_SPEED = TAU/240.0;
+
+/** INTERNAL
+ * Checks if the cursor has collided with a wall.
+ */
 MovementState collisionLiveWall(LiveWall wall, double cursorPos, double cursorStep, int sides) {
 	
 	//Check if we are between the wall vertically
@@ -48,6 +59,9 @@ MovementState collisionLiveWall(LiveWall wall, double cursorPos, double cursorSt
 	return CAN_MOVE;
 }
 
+/** INTERNAL
+ * Checks if the cursor has collided with the running level level.
+ */
 MovementState collisionLiveLevel(LiveLevel live, double cursorStep) {
 	MovementState collision = CAN_MOVE;
 	
@@ -70,26 +84,43 @@ MovementState collisionLiveLevel(LiveLevel live, double cursorStep) {
 	return collision;
 }
 
+/** INTERNAL
+ * Gets a live pattern from a list of loaded patterns
+ * WARNING: This method mallocs the walls array, and needs to be freed
+ * upon descruction of the live pattern.
+ */
 LivePattern getLivePattern(Pattern* patterns, int numPatterns, double distance) {
 	int select = rand() % numPatterns;
 	Pattern pattern = patterns[select];
+	int offset = rand() % pattern.sides;
 	LivePattern live;
 	live.numWalls = pattern.numWalls;
 	live.sides = pattern.sides;
 	live.walls = malloc(sizeof(LiveWall) * pattern.numWalls);
 	check(!(live.walls), "Failed to allocate new live patterns!", DEF_DEBUG, 0);
 	for(int i = 0; i < pattern.numWalls; i++) {
+		
+		//clamp it to the amount of sides in the pattern.
+		live.walls[i].side = pattern.walls[i].side + offset;
+		if(live.walls[i].side >= pattern.sides) live.walls[i].side -= pattern.sides;
+		
 		live.walls[i].distance = (double)(pattern.walls[i].distance) + distance;
 		live.walls[i].height = (double)(pattern.walls[i].height);
-		live.walls[i].side = pattern.walls[i].side;
 	}
 	return live;
 }
 
+/** INTERNAL
+ * Frees a single live pattern.
+ */
 void freeLivePattern(LivePattern pattern) {
 	free(pattern.walls);
 }
 
+/** INTERNAL
+ * Gets the furthest fixed distance of a live level, including
+ * the furthest wall's height.
+ */
 double getFurthestWallDistance(LivePattern pattern) {
 	double maxDistance = 0;
 	for(int i = 0; i < pattern.numWalls; i++) {
@@ -99,6 +130,7 @@ double getFurthestWallDistance(LivePattern pattern) {
 	return maxDistance;
 }
 
+//EXTERNAL
 GameState doMainMenu(GlobalData data, Track select, int* level) {
 	MainMenu menu = {0};
 	menu.level = *level;
@@ -149,10 +181,8 @@ GameState doMainMenu(GlobalData data, Track select, int* level) {
 	return PROGRAM_QUIT;
 }
 
-GameState doPlayGame(GlobalData data, int nlevel) {
-	
-	//Load level settings
-	Level level = data.levels[nlevel];
+//EXTERNAL
+GameState doPlayGame(Level level, LiveLevel* gameOver) {
 	
 	//create live level
 	LiveLevel liveLevel;
@@ -165,9 +195,8 @@ GameState doPlayGame(GlobalData data, int nlevel) {
 	liveLevel.nextIndexBG1 = (1 < level.numBG1 ? 1 : 0);
 	liveLevel.nextIndexBG2 = (1 < level.numBG2 ? 1 : 0);
 	liveLevel.nextIndexFG = (1 < level.numFG ? 1 : 0);
-	
-	//score of run
-	int score = 0;
+	liveLevel.delayFrame =  0;
+	liveLevel.score = 0;
 	
 	//fetch some random starting patterns
 	double distance = (double)SCREEN_TOP_DIAG_FROM_CENTER;
@@ -175,10 +204,17 @@ GameState doPlayGame(GlobalData data, int nlevel) {
 		liveLevel.patterns[i] = getLivePattern(level.patterns, level.numPatterns, distance);
 		distance = getFurthestWallDistance(liveLevel.patterns[i]);
 	} 
+	
+	//set up the amount of sides the level should have.
+	int lastSides = liveLevel.patterns[0].sides;
+	int currentSides = liveLevel.patterns[0].sides;
+	
 	while(aptMainLoop()) {
 		
-		//LOGIC
+		//current value of sides.
+		double sides;
 		
+		//LOGIC
 		//update color frame and clamp
 		liveLevel.tweenFrame++;
 		if(liveLevel.tweenFrame >= level.speedPulse) {
@@ -192,11 +228,39 @@ GameState doPlayGame(GlobalData data, int nlevel) {
 		} 
 		
 		//bring walls forward
-		for(int i = 0;  i < TOTAL_PATTERNS_AT_ONE_TIME;  i++) {
-			LivePattern pattern =  liveLevel.patterns[i];
-			int numWalls = pattern.numWalls;
-			for(int iWall = 0; iWall < numWalls; iWall++) {
-				pattern.walls[iWall].distance -= level.speedWall;
+		if(liveLevel.delayFrame == 0) {
+			sides = (double)currentSides;
+			for(int i = 0;  i < TOTAL_PATTERNS_AT_ONE_TIME;  i++) {
+				LivePattern pattern =  liveLevel.patterns[i];
+				for(int iWall = 0; iWall < pattern.numWalls; iWall++) {
+					pattern.walls[iWall].distance -= level.speedWall;
+				}
+			}
+		} else {
+			double percent = (double)(liveLevel.delayFrame) / (double)(FRAMES_PER_CHANGE_SIDE * abs(currentSides - lastSides));
+			sides = linear((double)currentSides, (double)lastSides, percent);
+			liveLevel.delayFrame--;
+		}
+		
+		//shift patterns forward
+		if(getFurthestWallDistance(liveLevel.patterns[0]) < DEF_HEX_FULL_LEN) {
+			lastSides = liveLevel.patterns[0].sides;
+			
+			//free
+			freeLivePattern(liveLevel.patterns[0]);
+			liveLevel.patterns[0].numWalls = 0; //just in case?
+			
+			//shift
+			for(int i = 1; i < TOTAL_PATTERNS_AT_ONE_TIME; i++) liveLevel.patterns[i - 1] = liveLevel.patterns[i];
+			
+			//generate a new pattern after the last pattern
+			double distance = getFurthestWallDistance(liveLevel.patterns[TOTAL_PATTERNS_AT_ONE_TIME - 1]);
+			liveLevel.patterns[TOTAL_PATTERNS_AT_ONE_TIME - 1] = getLivePattern(level.patterns, level.numPatterns, distance);
+			currentSides = liveLevel.patterns[0].sides;
+			
+			//Delay the level if the shifted pattern does  not have the same sides as the last.
+			if(lastSides != currentSides) {
+				liveLevel.delayFrame = FRAMES_PER_CHANGE_SIDE * abs(currentSides - lastSides);
 			}
 		}
 		
@@ -205,10 +269,8 @@ GameState doPlayGame(GlobalData data, int nlevel) {
 		if(liveLevel.rotation >= TAU) liveLevel.rotation -= TAU;
 		if(liveLevel.rotation < 0) liveLevel.rotation  += TAU;
 		
-		
 		//button presses
 		ButtonState press = getButton();
-		if(press == QUIT) return PROGRAM_QUIT;
 		
 		//check collision
 		MovementState collision = collisionLiveLevel(liveLevel, level.speedCursor);
@@ -216,8 +278,10 @@ GameState doPlayGame(GlobalData data, int nlevel) {
 		
 		//handle player
 		switch(press) {
+		case QUIT:
+			return PROGRAM_QUIT;
 		case BACK:
-			//free stuff
+			memcpy(gameOver, &liveLevel, sizeof(LiveLevel)); //copy to game over screen
 			return GAME_OVER;
 		case DIR_RIGHT:
 			if(collision == CANNOT_MOVE_RIGHT) break;
@@ -235,21 +299,61 @@ GameState doPlayGame(GlobalData data, int nlevel) {
 		if(liveLevel.cursorPos < 0) liveLevel.cursorPos  += TAU;
 		
 		//update score
-		score++;
+		liveLevel.score++;
 		
 		//DRAW
 		sf2d_start_frame(GFX_TOP, GFX_LEFT);
-		drawPlayGame(level, liveLevel, 0);
-		
-		Color white = {0xFF, 0xFF, 0xFF, 0xFF};
-		Point pos = {0,0};
-		char framerate[16 + 1];
-		snprintf(framerate, 16 + 1, "%.6f FPS", liveLevel.cursorPos);
-		writeFont(white, pos, framerate, FONT16);
-		
+		drawPlayGame(level, liveLevel, 0, sides); //0 = no offset
 		sf2d_end_frame();
 		sf2d_start_frame(GFX_BOTTOM, GFX_LEFT);
-		drawPlayGameBot(level.name, score, sf2d_get_fps());
+		drawPlayGameBot(level.name, liveLevel.score, sf2d_get_fps());
+		sf2d_end_frame();
+		sf2d_swapbuffers();
+	}
+	return PROGRAM_QUIT;
+}
+
+//EXTERNAL
+GameState doGameOver(Level level, LiveLevel gameOver) {
+	int frames = FRAMES_PER_GAME_OVER;
+	double offsetDistance = 1.0;
+	while(aptMainLoop()) {
+		
+		//LOGIC
+		gameOver.rotation += GAME_OVER_ROT_SPEED;
+		if(gameOver.rotation >= TAU) gameOver.rotation -= TAU;
+		if(gameOver.rotation < 0) gameOver.rotation  += TAU;
+		
+		ButtonState press = getButton();
+		if(press == QUIT) return PROGRAM_QUIT;
+		
+		if(frames > 0) {
+			frames--;
+			offsetDistance *= GAME_OVER_ACCEL_RATE;
+		}	
+		if(frames == 1) {
+			for(int i = 0; i < TOTAL_PATTERNS_AT_ONE_TIME; i++){
+				freeLivePattern(gameOver.patterns[i]);
+				gameOver.patterns[i].numWalls = 0;
+			} 
+		}
+		if(frames == 0) {
+			switch(press) {
+			case SELECT:
+				return PLAYING;
+			case BACK:
+				return MAIN_MENU;
+			default:;
+			}
+		}
+		
+		
+		//DRAW
+		sf2d_start_frame(GFX_TOP, GFX_LEFT);
+		drawPlayGame(level, gameOver, offsetDistance, 6.0); //six sides in game over
+		sf2d_end_frame();
+		sf2d_start_frame(GFX_BOTTOM, GFX_LEFT);
+		drawGameOverBot(gameOver.score, sf2d_get_fps(), frames);
 		sf2d_end_frame();
 		sf2d_swapbuffers();
 	}

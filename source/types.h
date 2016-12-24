@@ -22,6 +22,10 @@
 //debug utils
 #define DEF_DEBUG __FILE__, __func__, __LINE__
 
+//Overflow so you don't get glitchy lines between hexagons.
+//This is really just some arbituary number so yeah...
+#define OVERFLOW_OFFSET TAU/900.0
+
 /**
  * A color but as a struct instead of a long.
  */

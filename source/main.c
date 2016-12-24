@@ -39,6 +39,7 @@ int main() {
 	Track over;
 	Track select;
 	Track mainMenu;
+	Track bgm;
 	audioLoad("romfs:/sound/begin.wav", &begin, 0);
 	audioLoad("romfs:/sound/hexagon.wav", &hexagon, 1);
 	audioLoad("romfs:/sound/over.wav", &over, 2);
@@ -46,21 +47,28 @@ int main() {
 	audioLoad("romfs:/bgm/pamgaea.wav", &mainMenu, 4);
 	
 	//level selection and game over
+	int nlevel = 0;
+	int nLastLevel = -1;
 	Level level;
 	LiveLevel gameOver;
-	
 	
 	//Controller
 	GameState state = MAIN_MENU;
 	while(1) {
 		switch(state) {
 		case MAIN_MENU:
+			audioStop(&bgm);
 			audioPlay(&hexagon, ONCE);
 			audioPlay(&mainMenu, LOOP);
-			int nlevel = 0;
 			state = doMainMenu(data, select, &nlevel);
 			level = data.levels[nlevel];
 			audioStop(&mainMenu);
+			if(nlevel != nLastLevel) {
+				audioFree(&bgm);
+				audioLoad(level.music.str, &bgm, 5);
+				nLastLevel = nlevel;
+			}
+			audioPlay(&bgm, LOOP);
 			break;
 		case PLAYING:
 			audioPlay(&begin, ONCE);
@@ -82,6 +90,7 @@ int main() {
 	audioFree(&over);
 	audioFree(&select);
 	audioFree(&mainMenu);
+	audioFree(&bgm);
 	
 	//close GFX
 	sf2d_fini();

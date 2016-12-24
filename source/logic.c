@@ -317,6 +317,7 @@ GameState doPlayGame(Level level, LiveLevel* gameOver) {
 GameState doGameOver(Level level, LiveLevel gameOver) {
 	int frames = FRAMES_PER_GAME_OVER;
 	double offsetDistance = 1.0;
+	int sides = gameOver.patterns[0].sides;
 	while(aptMainLoop()) {
 		
 		//LOGIC
@@ -350,7 +351,7 @@ GameState doGameOver(Level level, LiveLevel gameOver) {
 		
 		//DRAW
 		sf2d_start_frame(GFX_TOP, GFX_LEFT);
-		drawPlayGame(level, gameOver, offsetDistance, 6.0); //six sides in game over
+		drawPlayGame(level, gameOver, offsetDistance, (double)sides);
 		sf2d_end_frame();
 		sf2d_start_frame(GFX_BOTTOM, GFX_LEFT);
 		drawGameOverBot(gameOver.score, sf2d_get_fps(), frames);

@@ -253,10 +253,11 @@ void drawMainMenu(GlobalData data, MainMenu menu) {
 	Point time = {4, SCREEN_HEIGHT - 18};
 	
 	//top rectangle and triangle
-	int triangleWidth = 80;
+	int triangleWidth = 70;
+	int distanceFromRightSide = 30;
 	Color black = {0,0,0, 0xA0};
 	Point infoPos = {0, 0};
-	Point infoSize = {TOP_WIDTH - triangleWidth, creator.y + 16 + 2};
+	Point infoSize = {TOP_WIDTH - triangleWidth - distanceFromRightSide, creator.y + 16 + 2};
 	drawRect(black, infoPos, infoSize);
 	Point triangle1[3] = {
 		{infoSize.x, SCREEN_HEIGHT - 1 - infoSize.y},

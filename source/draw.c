@@ -18,10 +18,6 @@ const int SHADOW_Y = -4;
 //The center of the screen
 const Point SCREEN_CENTER = {TOP_WIDTH/2, SCREEN_HEIGHT/2};
 
-//Overflow so you don't get glitchy lines between hexagons.
-//This is really just some arbituary number so yeah...
-const double OVERFLOW_OFFSET = TAU/900.0; 
-
 /** INTERNAL
  * Draws a simple triangle using an array of points and a color.
  * The array must have 3 points.
@@ -71,6 +67,7 @@ void drawMovingWall(Color color, Point focus, LiveWall wall, double rotation, do
 	
 	if(distance + height < DEF_HEX_FULL_LEN) return; //TOO_CLOSE;
 	if(distance > SCREEN_TOP_DIAG_FROM_CENTER) return; //TOO_FAR; 
+	if(wall.side >= sides) return; //NOT_IN_RANGE
 	
 	if(distance < DEF_HEX_FULL_LEN - 2.0) {//so the distance is never negative as it enters.
 		height -= DEF_HEX_FULL_LEN - 2.0 - distance;

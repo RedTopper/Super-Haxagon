@@ -60,8 +60,10 @@ Color interpolateColor(Color one, Color two, double percent) {
 //EXTERNAL
 Point calcPointWall(Point focus, double rotation, double offset, double distance, int side, double sides)  {
 	Point point = {0,0};
-	point.x = (int)((distance * cos(rotation + (double)side * TAU/sides + offset) + (double)(focus.x)) + 0.5);
-	point.y = (int)((distance * sin(rotation + (double)side * TAU/sides + offset) + (double)(focus.y)) + 0.5);
+	double width = (double)side * TAU/sides + offset;
+	if(width > TAU + OVERFLOW_OFFSET) width = TAU + OVERFLOW_OFFSET;
+	point.x = (int)((distance * cos(rotation + width) + (double)(focus.x)) + 0.5);
+	point.y = (int)((distance * sin(rotation + width) + (double)(focus.y)) + 0.5);
 	return point;
 }
 

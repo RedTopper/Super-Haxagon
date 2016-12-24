@@ -18,6 +18,30 @@ const char* BGM_PATH = "sdmc:/3ds/data/haxagon/";
 const int MIN_WALL_HEIGHT = 8;
 const int MIN_PATTERN_SIDES = 3;
 
+
+/** INTERNAL
+ * Gets a memory address with specific parameters.
+ * FILE* file Pointer to a file stream
+ * size_t size The size of the struct/data type to allocate
+ * int* length A pointer to a variable to hold the length of the objects read.
+ * int extra A value to allocate extra memory
+ * char* error A string to show the user if there is a problem allocating memory.
+ *
+ * This memory must be freed!
+ */
+void* getMalloc(FILE* file, size_t size, int* length, int extra, char* error) {
+	if(extra < 0) extra = 0;
+	fread(length, sizeof(int), 1, file);
+	if(*length > 300) check(0, "Huge alloc found!", DEF_DEBUG, ftell(file));
+	void* address = malloc(size * (*length + extra));
+	check(!address, error, DEF_DEBUG, ftell(file));
+	return address;
+}
+
+/** INTERNAL
+ * Compares a fixed length string to an expected string in a file.
+ * (useful for checking both headers and footers)
+ */
 int compare(FILE* file, const char* string) {
 	int len = strlen(string);
 	char* buff = malloc(sizeof(char) * (len + 1)); //for '/0'
@@ -29,15 +53,11 @@ int compare(FILE* file, const char* string) {
 	return result;
 }
 
-void* getMalloc(FILE* file, size_t size, int* length, int extra, char* error) {
-	if(extra < 0) extra = 0;
-	fread(length, sizeof(int), 1, file);
-	if(*length > 300) check(0, "Huge alloc found!", DEF_DEBUG, ftell(file));
-	void* address = malloc(size * (*length + extra));
-	check(!address, error, DEF_DEBUG, ftell(file));
-	return address;
-}
-
+/** INTERNAL
+ * Gets a single string from the file. It reads an integer then reads
+ * to the length of that integer. Always loads string null terminated, as
+ * well as the length
+ */
 FileString getString(FILE* file) {
 	FileString string;
 	string.str = getMalloc(file, sizeof(char), &string.len, 1, "Cannot load string from file!");
@@ -46,6 +66,12 @@ FileString getString(FILE* file) {
 	return string;
 }
 
+/** INTERNAL
+ * Similar to getString(...), this method obtains a string from a file, but
+ * appends a constant string to the beginning of  the buffer. Usefull for
+ * adding prefixes to things, such as  "DIFFICULTY: " or "CREATOR: ", 
+ * or even a file path location.
+ */
 FileString getStringPrefix(const char* prefix, FILE* file) {
 	FileString string;
 	int prefixlen = strlen(prefix);
@@ -56,6 +82,10 @@ FileString getStringPrefix(const char* prefix, FILE* file) {
 	return string;
 }
 
+/** INTERNAL
+ * Gets a wall from a file. Also does simple checks to make sure the wall
+ * isn't too crazy.
+ */
 Wall getWall(FILE* file, int maxSide) {
 	Wall wall;
 	
@@ -73,6 +103,9 @@ Wall getWall(FILE* file, int maxSide) {
 	return wall;
 } 
 
+/**  INTERNAL
+ * Gets an RGB color from a file. The alpha is always solid (0xFF).
+ */ 
 Color getColor(FILE* file) {
 	Color color;
 	fread(&color.r, sizeof(char), 1, file);
@@ -82,6 +115,9 @@ Color getColor(FILE* file) {
 	return color;
 }
 
+/** INTERNAL
+ * Gets a pattern from a file.
+ */
 Pattern getPattern(FILE* file) {
 	Pattern pattern;
 	
@@ -107,6 +143,10 @@ Pattern getPattern(FILE* file) {
 	return pattern;
 }
 
+/**INTERNAL
+ * Locates a pattern in a predefined and preallocated list of patterns based on name.
+ * Returns a copy of the found pattern.
+ */
 Pattern getLoadedPattern(FILE* file, Pattern* patterns, int numPatterns) {
 	FileString search = getString(file);
 	int i = 0;
@@ -125,6 +165,9 @@ Pattern getLoadedPattern(FILE* file, Pattern* patterns, int numPatterns) {
 	return located;
 }
 
+/** INTERNAL
+ * Loads a level from a file based on the loaded patterns.
+ */
 Level getLevel(FILE* file, Pattern* patterns, int numPatterns) {
 	Level level;
 	
@@ -168,6 +211,7 @@ Level getLevel(FILE* file, Pattern* patterns, int numPatterns) {
 	return level;
 }
 
+//EXTERNAL
 GlobalData getData(FILE* file) {
 	GlobalData data;
 	

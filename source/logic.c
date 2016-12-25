@@ -24,6 +24,9 @@ const double GAME_OVER_ROT_SPEED = TAU/240.0;
 const int FLIP_FRAMES_MIN = 120;
 const int FLIP_FRAMES_MAX = 500;
 
+//The change in rotational speed every time the user "levels up".
+const double DIFFICULTY_MULTIPLYER = 1.1;
+
 /** INTERNAL
  * Checks if the cursor has collided with a wall.
  */
@@ -193,6 +196,9 @@ GameState doPlayGame(Level level, LiveLevel* gameOver) {
 	int delayFrame = 0; //tweening between side switches
 	int flipFrame = FLIP_FRAMES_MAX; //amount of frames left until flip
 	
+	Track levelUp;
+	audioLoad("romfs:/sound/level.wav", &levelUp, 4);
+	
 	//create live level
 	LiveLevel liveLevel;
 	liveLevel.cursorPos = TAU/4.0 + (level.speedCursor / 2.0);
@@ -297,9 +303,11 @@ GameState doPlayGame(Level level, LiveLevel* gameOver) {
 		//handle player
 		switch(press) {
 		case QUIT:
+			audioFree(&levelUp);
 			return PROGRAM_QUIT;
 		case BACK:
 			memcpy(gameOver, &liveLevel, sizeof(LiveLevel)); //copy to game over screen
+			audioFree(&levelUp);
 			return GAME_OVER;
 		case DIR_RIGHT:
 			if(collision == CANNOT_MOVE_RIGHT) break;
@@ -317,7 +325,12 @@ GameState doPlayGame(Level level, LiveLevel* gameOver) {
 		if(liveLevel.cursorPos < 0) liveLevel.cursorPos  += TAU;
 		
 		//update score
+		char* lastScoreText = getScoreText(liveLevel.score);
 		liveLevel.score++;
+		if(lastScoreText != getScoreText(liveLevel.score)) {
+			level.speedRotation *= DIFFICULTY_MULTIPLYER;
+			audioPlay(&levelUp, ONCE);
+		}
 		
 		//DRAW
 		sf2d_start_frame(GFX_TOP, GFX_LEFT);
@@ -328,6 +341,7 @@ GameState doPlayGame(Level level, LiveLevel* gameOver) {
 		sf2d_end_frame();
 		sf2d_swapbuffers();
 	}
+	audioFree(&levelUp);
 	return PROGRAM_QUIT;
 }
 

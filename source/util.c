@@ -97,3 +97,13 @@ ButtonState getButton() {
 	} 
 	return NOTHING;
 }
+
+ char* getScoreText(int score) {
+	if(score < 10 * 60) return "NULL";
+	if(score < 20 * 60) return "POINT";
+	if(score < 30 * 60) return "LINE";
+	if(score < 40 * 60) return "TRIANGLE";
+	if(score < 50 * 60) return "SQUARE";
+	if(score < 60 * 60) return "PENTAGON";
+	return "HEXAGON";
+ }

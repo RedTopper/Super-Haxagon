@@ -298,7 +298,10 @@ void drawPlayGame(Level level, LiveLevel liveLevel, double offset, double sides)
 	Color BG1 = interpolateColor(level.colorsBG1[liveLevel.indexBG1], level.colorsBG1[liveLevel.nextIndexBG1], percentTween);
 	Color BG2 = interpolateColor(level.colorsBG2[liveLevel.indexBG2], level.colorsBG2[liveLevel.nextIndexBG2], percentTween);
 	
-	drawBackground(BG1, BG2, SCREEN_CENTER, SCREEN_TOP_DIAG_FROM_CENTER, liveLevel.rotation, sides);
+	//fix for triangle levels 
+	int diagnal = (sides >= 3 && sides < 4 ? SCREEN_TOP_DIAG_FROM_CENTER * 2 : SCREEN_TOP_DIAG_FROM_CENTER);
+	
+	drawBackground(BG1, BG2, SCREEN_CENTER, diagnal * 2, liveLevel.rotation, sides);
 	
 	//draw shadows
 	Point offsetFocus = {SCREEN_CENTER.x + SHADOW_X, SCREEN_CENTER.y + SHADOW_Y};
@@ -325,7 +328,7 @@ void drawPlayGameBot(FileString name, int score, double fps) {
 	
 	Color white = {0xFF, 0xFF,  0xFF, 0xFF};
 	Point levelUpPosition = {4,4};
-	writeFont(white, levelUpPosition, "POINT", FONT16);
+	writeFont(white, levelUpPosition, getScoreText(score), FONT16);
 	
 	Point scorePosition = {230,4};
 	char buffer[6 + 1]; //null term

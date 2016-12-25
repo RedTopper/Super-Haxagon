@@ -28,3 +28,9 @@ Point calcPoint(Point focus, double rotation, double offset, double distance);
  * Gets a button state from user input.
  */
 ButtonState getButton();
+
+/**
+ * Gets the current level that the score represents (for example, point)
+ * if the user is less than 10 seconds into the game)
+ */
+ char* getScoreText(int score);

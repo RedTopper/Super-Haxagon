@@ -130,7 +130,6 @@ typedef struct {
 	double cursorPos;
 	double rotation;
 	int tweenFrame; //tweening colors
-	int delayFrame; //tweening between side switches
 	int indexBG1;
 	int indexBG2;
 	int indexFG;

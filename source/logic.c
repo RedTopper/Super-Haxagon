@@ -18,6 +18,12 @@ const int FRAMES_PER_GAME_OVER = 60;
 const double GAME_OVER_ACCEL_RATE = 1.1;
 const double GAME_OVER_ROT_SPEED = TAU/240.0;
 
+//mins and maxes for flipping of the rotation
+//(ex: min=60 and max=240 means level will reverse anywhere
+// from 1-3.99 seconds)
+const int FLIP_FRAMES_MIN = 120;
+const int FLIP_FRAMES_MAX = 500;
+
 /** INTERNAL
  * Checks if the cursor has collided with a wall.
  */
@@ -184,6 +190,9 @@ GameState doMainMenu(GlobalData data, Track select, int* level) {
 //EXTERNAL
 GameState doPlayGame(Level level, LiveLevel* gameOver) {
 	
+	int delayFrame = 0; //tweening between side switches
+	int flipFrame = FLIP_FRAMES_MAX; //amount of frames left until flip
+	
 	//create live level
 	LiveLevel liveLevel;
 	liveLevel.cursorPos = TAU/4.0 + (level.speedCursor / 2.0);
@@ -195,7 +204,6 @@ GameState doPlayGame(Level level, LiveLevel* gameOver) {
 	liveLevel.nextIndexBG1 = (1 < level.numBG1 ? 1 : 0);
 	liveLevel.nextIndexBG2 = (1 < level.numBG2 ? 1 : 0);
 	liveLevel.nextIndexFG = (1 < level.numFG ? 1 : 0);
-	liveLevel.delayFrame =  0;
 	liveLevel.score = 0;
 	
 	//fetch some random starting patterns
@@ -227,8 +235,9 @@ GameState doPlayGame(Level level, LiveLevel* gameOver) {
 			liveLevel.nextIndexFG = (liveLevel.indexFG + 1 < level.numFG ? liveLevel.indexFG + 1 : 0);
 		} 
 		
-		//bring walls forward
-		if(liveLevel.delayFrame == 0) {
+		//bring walls forward if we are not delaying
+		//otherwise tween from one shape to another.
+		if(delayFrame == 0) {
 			sides = (double)currentSides;
 			for(int i = 0;  i < TOTAL_PATTERNS_AT_ONE_TIME;  i++) {
 				LivePattern pattern =  liveLevel.patterns[i];
@@ -237,9 +246,9 @@ GameState doPlayGame(Level level, LiveLevel* gameOver) {
 				}
 			}
 		} else {
-			double percent = (double)(liveLevel.delayFrame) / (double)(FRAMES_PER_CHANGE_SIDE * abs(currentSides - lastSides));
+			double percent = (double)(delayFrame) / (double)(FRAMES_PER_CHANGE_SIDE * abs(currentSides - lastSides));
 			sides = linear((double)currentSides, (double)lastSides, percent);
-			liveLevel.delayFrame--;
+			delayFrame--;
 		}
 		
 		//shift patterns forward
@@ -260,7 +269,7 @@ GameState doPlayGame(Level level, LiveLevel* gameOver) {
 			
 			//Delay the level if the shifted pattern does  not have the same sides as the last.
 			if(lastSides != currentSides) {
-				liveLevel.delayFrame = FRAMES_PER_CHANGE_SIDE * abs(currentSides - lastSides);
+				delayFrame = FRAMES_PER_CHANGE_SIDE * abs(currentSides - lastSides);
 			}
 		}
 		
@@ -268,6 +277,15 @@ GameState doPlayGame(Level level, LiveLevel* gameOver) {
 		liveLevel.rotation += level.speedRotation;
 		if(liveLevel.rotation >= TAU) liveLevel.rotation -= TAU;
 		if(liveLevel.rotation < 0) liveLevel.rotation  += TAU;
+		
+		//flip level if needed
+		flipFrame--;
+		if(flipFrame == 0) {
+			level.speedRotation *= -1.0;
+			
+			//reset the timer to somewhere between [FLIP_FRAMES_MIN, FLIP_FRAMES_MAX)
+			flipFrame = FLIP_FRAMES_MIN + rand() % (FLIP_FRAMES_MAX - FLIP_FRAMES_MIN);
+		}
 		
 		//button presses
 		ButtonState press = getButton();

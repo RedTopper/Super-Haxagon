@@ -143,6 +143,13 @@ Pattern getPattern(FILE* file) {
 	return pattern;
 }
 
+/** INTERNAL
+ * Frees a pattern from memory
+ */
+void freePattern(Pattern pattern) {
+	free(pattern.walls);
+}
+
 /**INTERNAL
  * Locates a pattern in a predefined and preallocated list of patterns based on name.
  * Returns a copy of the found pattern.
@@ -211,9 +218,25 @@ Level getLevel(FILE* file, Pattern* patterns, int numPatterns) {
 	return level;
 }
 
+/** INTERNAL
+ * Frees a level from memory
+ */
+void freeLevel(Level level) {
+	free(level.name.str);
+	free(level.difficulty.str);
+	free(level.mode.str);
+	free(level.creator.str);
+	free(level.music.str);
+	free(level.colorsBG1);
+	free(level.colorsBG2);
+	free(level.colorsFG);
+	free(level.patterns);
+}
+
 //EXTERNAL
 GlobalData getData(FILE* file) {
 	GlobalData data;
+	data.loaded = 0;
 	
 	//header
 	check(compare(file, PROJECT_HEADER), "Wrong file type/format/version!", DEF_DEBUG, ftell(file));
@@ -230,5 +253,15 @@ GlobalData getData(FILE* file) {
 	
 	//footer
 	check(compare(file, PROJECT_FOOTER), "Project footer incorrect!", DEF_DEBUG, ftell(file));
+	data.loaded = 1;
 	return data;
+}
+
+//EXTERNAL
+void freeData(GlobalData data) {
+	if(!(data.loaded)) return;
+	for(int i = 0; i < data.numPatterns; i++) freePattern(data.patterns[i]);
+	free(data.patterns);
+	for(int i = 0; i < data.numLevels; i++) freeLevel(data.levels[i]);
+	free(data.levels);
 }

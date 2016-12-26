@@ -1,16 +1,26 @@
 #pragma once
 
-#include <3ds.h>
-#include <stdio.h>
+typedef enum {
+	FONT16,
+	FONT32
+} FontSize;
 
-#include "triangle.h"
+typedef enum { 
+	ALIGN_LEFT_C, 
+	ALIGN_CENTER_C, 
+	ALIGN_RIGHT_C 
+} TextAlignmentC;
 
 #ifdef __cplusplus
 #include "font/source/BmpFont.h"
 extern "C" {
 #endif
 
-void writeFont(Point p, const char* s, bool large);
+/**
+ * Draws a font using BmpFont based on a color, a position, 
+ * the string, and if it is large or not.
+ */
+void writeFont(Color color, Point point, char* string, FontSize size, TextAlignmentC align);
 
 #ifdef __cplusplus
 }

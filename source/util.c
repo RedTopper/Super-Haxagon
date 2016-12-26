@@ -6,6 +6,7 @@
 
 #include "types.h"
 #include "util.h"
+#include "draw.h"
 #include "sound.h"
 
 
@@ -27,6 +28,16 @@ void panic(const char* message, const char* file, const char* function, int line
 		fprintf(panic, "...with error code: 0x%08x.\n", error);
 		fprintf(panic, "The game has quit.\n\n");
 		fclose(panic);
+	}
+	while(aptMainLoop()) {
+		if(getButton() == QUIT) break;
+		sf2d_start_frame(GFX_TOP, GFX_LEFT);
+		drawPanic(message, file, function, line, error);
+		sf2d_end_frame();
+		sf2d_start_frame(GFX_BOTTOM, GFX_LEFT);
+		drawPanicBot();
+		sf2d_end_frame();
+		sf2d_swapbuffers();
 	}
 	sf2d_fini();
 	gfxExit();	

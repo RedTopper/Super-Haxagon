@@ -4,7 +4,7 @@
  * Logic for working the main menu, along  with a selection sound.
  * Modifys the address of level to the currently selected level upon return.
  */
-GameState doMainMenu(GlobalData data, Track select, int* level);
+GameState doMainMenu(GlobalData data, LoadedState loaded, Track select, int* level);
 
 /** 
  * Plays a level.

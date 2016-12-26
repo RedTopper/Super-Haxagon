@@ -13,6 +13,7 @@
 
 //file location for built in levels
 const char* PROJECT_FILE_NAME = "romfs:/levels.haxagon";
+const char* SDMC_PROJECT_NAME = "sdmc:/3ds/data/haxagon/levels.haxagon";
 
 int main() {
 	
@@ -26,9 +27,9 @@ int main() {
 	ndspSetOutputMode(NDSP_OUTPUT_STEREO);
 	
 	//pattern loading
-	FILE *file = fopen(PROJECT_FILE_NAME, "rb");
-	check(!file, "Could not read internal pattern file!", DEF_DEBUG, 0);
-	GlobalData data = getData(file);
+	LoadedState loaded = NOT_LOADED;
+	GlobalData data;
+	data.loaded = 0;
 	
 	//program init
 	srand(svcGetSystemTick());
@@ -53,14 +54,35 @@ int main() {
 	LiveLevel gameOver;
 	
 	//Controller
-	GameState state = MAIN_MENU;
+	GameState state = SWITCH_LOAD_LOCATION;
 	while(1) {
 		switch(state) {
+		case SWITCH_LOAD_LOCATION:
+			state = MAIN_MENU;
+			FILE* file;
+			switch(loaded) {
+			case NOT_LOADED:;
+			case SDMC:
+				file = fopen(PROJECT_FILE_NAME, "rb");
+				check(!file, "NO INTERNAL FILE!", DEF_DEBUG, 0);
+				freeData(data);
+				data = getData(file);
+				loaded = ROMFS;
+				break;
+			case ROMFS:
+				file = fopen(SDMC_PROJECT_NAME, "rb");
+				check(!file, "NO EXTERNAL FILE TO LOAD!", DEF_DEBUG, 0);
+				freeData(data);
+				data = getData(file);
+				loaded = SDMC;
+				break;
+			}
+			break;
 		case MAIN_MENU:
 			audioStop(&bgm);
 			audioPlay(&hexagon, ONCE);
 			audioPlay(&mainMenu, LOOP);
-			state = doMainMenu(data, select, &nlevel);
+			state = doMainMenu(data, loaded, select, &nlevel);
 			level = data.levels[nlevel];
 			audioStop(&mainMenu);
 			if(nlevel != nLastLevel) {

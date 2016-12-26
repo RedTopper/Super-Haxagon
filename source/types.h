@@ -144,6 +144,7 @@ typedef struct {
  * All of the data loaded, ever.
  */
 typedef struct {
+	int loaded;
 	Level* levels;
 	Pattern* patterns;
 	int numLevels;
@@ -163,6 +164,7 @@ typedef enum {
 	PLAYING,
 	GAME_OVER,
 	PROGRAM_QUIT,
+	SWITCH_LOAD_LOCATION
 } GameState;
 
 typedef enum {
@@ -173,3 +175,9 @@ typedef enum {
 	QUIT,
 	NOTHING
 } ButtonState;
+
+typedef enum {
+	SDMC,
+	ROMFS,
+	NOT_LOADED
+} LoadedState;

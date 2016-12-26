@@ -7,12 +7,12 @@
 #include "levels.h"
 
 const char* UNLOADED = "ERROR";
-const char* PROJECT_HEADER = "HAXAGON1.0";
-const char* PROJECT_FOOTER = "ENDHAXAGON";
-const char* LEVEL_HEADER = "LEVEL2.0";
-const char* LEVEL_FOOTER = "ENDLEVEL";
-const char* PATTERN_HEADER = "PATTERN1.0";
-const char* PATTERN_FOOTER = "ENDPATTERN";
+const char* PROJECT_HEADER = "HAX1.1";
+const char* PROJECT_FOOTER = "ENDHAX";
+const char* LEVEL_HEADER = "LEV2.1";
+const char* LEVEL_FOOTER = "ENDLEV";
+const char* PATTERN_HEADER = "PTN1.1";
+const char* PATTERN_FOOTER = "ENDPTN";
 const char* BGM_PATH = "sdmc:/3ds/data/haxagon/";
 
 const int MIN_WALL_HEIGHT = 8;

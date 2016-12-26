@@ -10,16 +10,16 @@ Super Haxagon is a [Super Hexagon](http://superhexagon.com/) clone for the 3DS. 
 A: Downloads are available on the [releases page](https://github.com/RedInquisitive/Super-Haxagon/releases).
 
 #### Q: How can I create my own levels?
-A: You can use [Haxa-Editor](https://github.com/RedInquisitive/Haxa-Editor/tree/master)! Follow the directions on the README over in that repository for more details.
+A: You can use [Haxa-Editor](https://github.com/RedInquisitive/Haxa-Editor/tree/master)! Follow the directions in the README.md of that repository for more details.
 
-#### Q: I made thi really cool level, can I show you?
-A: Of course you can! If it's really good I'll add it to the base game!
+#### Q: I made this really cool level, can I show you?
+A: Of course you can! If it's really good I'll add it to the game!
 
 #### Q: Can I use my own music/levels?
 A: Yes! See the readme in the [sdmc folder](https://github.com/RedInquisitive/Super-Haxagon/tree/master/sdmc) for more details.
 
-#### Q: It says "AWW SNAP!" whenever I launch it/press B!
-A: OK. Please look in your SD card's root for "haxapanic.txt" and read that. If it does not answer your question, file a bug here.
+#### Q: It says "AWW SNAP!" whenever I launch the game or press B on the main menu!
+A: OK, that's not a question, but please look in the root of your SD card for the file "haxapanic.txt" and read it. If it does not answer your question, file a bug report here.
 
 #### Q: Why do sound effects work, but in-game music does not?
 A: See the readme in the [sdmc folder](https://github.com/RedInquisitive/Super-Haxagon/tree/master/sdmc).
@@ -31,7 +31,10 @@ A: You need to dump your DSP firmware! Normally this is covered when installing 
 A: Because!
 
 #### Q: Can I play this on my PC?
-A: Have you ever heard of [citra-emu/citra](https://github.com/citra-emu/citra)? (Make sure to enable scaled resolution for the best experience)!
+A: You should buy [Super Hexagon](http://superhexagon.com/) and support the original creator!
+
+#### Q: But I want to play YOUR version on PC!
+A: Have you ever heard of [citra-emu/citra](https://github.com/citra-emu/citra)? (Make sure to enable "scaled resolution" for the best experience)!
 
 ![Big Citra Picture](./media/haxagon.png "Super Haxagon but in Citra")
 

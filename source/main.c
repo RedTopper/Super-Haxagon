@@ -106,6 +106,9 @@ int main() {
 		if(state == PROGRAM_QUIT) break;
 	}
 	
+	//level free
+	freeData(data);
+	
 	//audio free
 	audioFree(&begin);
 	audioFree(&hexagon);

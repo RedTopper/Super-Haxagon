@@ -87,12 +87,14 @@ int main() {
 			state = doMainMenu(data, loaded, select, &nlevel);
 			level = data.levels[nlevel];
 			audioStop(&mainMenu);
-			if(nlevel != nLastLevel) {
-				audioFree(&bgm);
-				audioLoad(level.music.str, &bgm, 6);
-				nLastLevel = nlevel;
+			if(state == PLAYING) {
+				if(nlevel != nLastLevel) {
+					audioFree(&bgm);
+					audioLoad(level.music.str, &bgm, 6);
+					nLastLevel = nlevel;
+				}
+				audioPlay(&bgm, LOOP);
 			}
-			audioPlay(&bgm, LOOP);
 			break;
 		case PLAYING:
 			audioPlay(&begin, ONCE);

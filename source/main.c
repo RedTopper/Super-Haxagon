@@ -59,6 +59,8 @@ int main() {
 		switch(state) {
 		case SWITCH_LOAD_LOCATION:
 			state = MAIN_MENU;
+			nlevel = 0;
+			nLastLevel = -1;
 			FILE* file;
 			switch(loaded) {
 			case NOT_LOADED:;

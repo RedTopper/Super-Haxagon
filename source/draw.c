@@ -295,6 +295,9 @@ void drawMainMenuBot(LoadedState loaded, double fps) {
 	if(loaded == ROMFS) writeFont(WHITE, state, "SDMC", FONT16, ALIGN_LEFT_C);
 	if(loaded == SDMC) writeFont(WHITE, state, "ROMFS", FONT16, ALIGN_LEFT_C);
 	
+	Point levels = {4, state.y + 16 + 2};
+	writeFont(WHITE, levels, "LEVELS", FONT16, ALIGN_LEFT_C);
+	
 	drawFramerate(fps);
 }
 

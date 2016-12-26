@@ -79,6 +79,7 @@ FileString getStringPrefix(const char* prefix, FILE* file) {
 	memcpy(string.str, prefix, prefixlen);
 	fread(&(string.str[prefixlen]), sizeof(char), string.len, file); //potentially dangerous?
 	string.len += prefixlen;
+	string.str[string.len] = '\0';
 	return string;
 }
 

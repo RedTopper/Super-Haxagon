@@ -87,9 +87,9 @@ void audioFree(Track* sound) {
 
 //EXTERNAL
 void audioPlay(Track* sound, LoopState loops) {
+	int loop = (loops == LOOP ? 1 : 0);
 	if (!(sound->loaded)) return;
 	audioStop(sound);
-	int loop = (loops == LOOP ? 1 : 0);
 	ndspChnReset(sound->ndspChannel);
 	ndspChnWaveBufClear(sound->ndspChannel);
 	ndspChnSetInterp(sound->ndspChannel, NDSP_INTERP_LINEAR);

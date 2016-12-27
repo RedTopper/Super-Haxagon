@@ -57,28 +57,27 @@ int main() {
 	GameState state = SWITCH_LOAD_LOCATION;
 	while(1) {
 		switch(state) {
-		case SWITCH_LOAD_LOCATION:
-			state = MAIN_MENU;
-			nlevel = 0;
-			nLastLevel = -1;
+		case SWITCH_LOAD_LOCATION:;
 			FILE* file;
 			switch(loaded) {
-			case NOT_LOADED:;
-			case SDMC:
+			default:
+			case NOT_LOADED:
+			case SDMC:;
 				file = fopen(PROJECT_FILE_NAME, "rb");
 				check(!file, "NO INTERNAL FILE!", DEF_DEBUG, 0);
-				freeData(data);
-				data = getData(file);
 				loaded = ROMFS;
 				break;
-			case ROMFS:
+			case ROMFS:;
 				file = fopen(SDMC_PROJECT_NAME, "rb");
 				check(!file, "NO EXTERNAL FILE TO LOAD!", DEF_DEBUG, 0);
-				freeData(data);
-				data = getData(file);
 				loaded = SDMC;
 				break;
 			}
+			freeData(data);
+			data = getData(file);
+			state = MAIN_MENU;
+			nlevel = 0;
+			nLastLevel = -1;
 			break;
 		case MAIN_MENU:
 			audioStop(&bgm);
@@ -105,7 +104,7 @@ int main() {
 			state = doGameOver(level, gameOver);
 			break;
 		case PROGRAM_QUIT:
-			break;
+		default:;
 		}
 		if(state == PROGRAM_QUIT) break;
 	}

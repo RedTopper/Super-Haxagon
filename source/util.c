@@ -26,6 +26,8 @@ void panic(const char* message, const char* file, const char* function, int line
 		fprintf(panic, "...in function: %s.\n", function);
 		fprintf(panic, "...on line: %d.\n", line);
 		fprintf(panic, "...with error code: 0x%08x.\n", error);
+		fprintf(panic, "For more information, see https://github.com/RedInquisitive/Super-Haxagon\n");
+		fprintf(panic, "If a file failed to load, see https://github.com/RedInquisitive/Super-Haxagon/tree/master/sdmc\n");
 		fprintf(panic, "The game has quit.\n\n");
 		fclose(panic);
 	}

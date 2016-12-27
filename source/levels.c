@@ -263,9 +263,6 @@ void freeData(GlobalData data) {
 	if(!(data.loaded)) return;
 	for(int i = 0; i < data.numPatterns; i++) freePattern(data.patterns[i]);
 	free(data.patterns);
-	data.numPatterns = 0;
 	for(int i = 0; i < data.numLevels; i++) freeLevel(data.levels[i]);
 	free(data.levels);
-	data.numLevels = 0;
-	data.loaded = 0;
 }

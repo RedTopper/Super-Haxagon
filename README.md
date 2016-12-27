@@ -67,7 +67,7 @@ A: Have you ever heard of [citra-emu/citra](https://github.com/citra-emu/citra)?
  * Support by the community!
  * And much more!
  
- ### Notes
+### Notes
 
 Contributing to the project will make a better game for everyone! Before you work on a feature, please make sure I know. If you are implementing a new feature, I'd be happy to acccept it! 
 

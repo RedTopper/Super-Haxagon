@@ -164,6 +164,8 @@ Pattern getLoadedPattern(FILE* file, Pattern* patterns, int numPatterns) {
 		}
 	}
 	
+	free(search.str);
+	
 	//could not find pattern
 	check(i == numPatterns, "Could not locate pattern!", DEF_DEBUG, ftell(file));
 	
@@ -213,7 +215,8 @@ Level getLevel(FILE* file, Pattern* patterns, int numPatterns) {
 	check(!level.numPatterns, "Level must have at least one pattern!", DEF_DEBUG, ftell(file));
 	for(int i = 0; i < level.numPatterns; i++) level.patterns[i] = getLoadedPattern(file, patterns, numPatterns);
 	
-	check(compare(file, LEVEL_FOOTER), "Level header incorrect!", DEF_DEBUG, ftell(file));
+	//footer
+	check(compare(file, LEVEL_FOOTER), "Level footer incorrect!", DEF_DEBUG, ftell(file));
 	
 	//exit
 	return level;

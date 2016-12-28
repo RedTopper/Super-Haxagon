@@ -8,4 +8,4 @@ GlobalData getData(FILE* file);
 /**
  * Completely frees all loaded information from memory.
  */
-void freeData(GlobalData data);
+void freeData(GlobalData data);  

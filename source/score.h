@@ -8,10 +8,13 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-#include "types.h"
+#include "triangle.h"
+#include "font.h"
 
-void checkForSaveData(FileString string);
+void saveScore(int level, int score, int decimalPart, bool firstCreation);
 void createSaveData();
-char* showSaveData();
+char* showSaveData(int level);
 bool isCurrentScoreHigher();
-void saveScore(int score, int decimalPart, bool firstCreation);
+void checkForSaveData();
+void calculateLevelUp();
+void defaultscores();

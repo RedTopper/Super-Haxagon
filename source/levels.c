@@ -1,158 +1,278 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include "types.h"
+#include "util.h"
 #include "levels.h"
+#include "score.h"
 
-void distributePatterns() {
-	//calc how many patterns each level has
-	for(int level = 0; level < TOTAL_LEVELS; level++) {
-		g_patterns[level].numberOfPatterns = 0;
-		g_patterns[level].loaded = false;
-		for(int pattern = 0; pattern < g_allPatterns.numberOfPatterns; pattern++) {
-			if(g_allPatterns.patterns[pattern]->levelFlags >> level & 1) {
-				g_patterns[level].loaded = true;
-				g_patterns[level].numberOfPatterns++;
-			}
-		}
-		//Alloc pointers to patterns
-		g_patterns[level].patterns = malloc(sizeof(Pattern *) * g_patterns[level].numberOfPatterns);
-	}
-	
-	//allocate and set pointers.
-	for(int level = 0; level < TOTAL_LEVELS; level++) {
-		int i = 0;
-		for(int pattern = 0; pattern < g_allPatterns.numberOfPatterns; pattern++) {
-			if(g_allPatterns.patterns[pattern]->levelFlags >> level & 1) {
-				g_patterns[level].patterns[i++] = g_allPatterns.patterns[pattern];
-			}
-		}	
-	}
+const char* UNLOADED = "ERROR";
+const char* PROJECT_HEADER = "HAX1.1";
+const char* PROJECT_FOOTER = "ENDHAX";
+const char* LEVEL_HEADER = "LEV2.1";
+const char* LEVEL_FOOTER = "ENDLEV";
+const char* PATTERN_HEADER = "PTN1.1";
+const char* PATTERN_FOOTER = "ENDPTN";
+const char* BGM_PATH = "sdmc:/3ds/data/haxagon/";
+
+const int MIN_WALL_HEIGHT = 8;
+const int MIN_PATTERN_SIDES = 3;
+
+bool doneonce = false;
+
+/** INTERNAL
+ * Gets a memory address with specific parameters.
+ * FILE* file Pointer to a file stream
+ * size_t size The size of the struct/data type to allocate
+ * int* length A pointer to a variable to hold the length of the objects read.
+ * int extra A value to allocate extra memory
+ * char* error A string to show the user if there is a problem allocating memory.
+ *
+ * This memory must be freed!
+ */
+void* getMalloc(FILE* file, size_t size, int* length, int extra, char* error) {
+	if(extra < 0) extra = 0;
+	fread(length, sizeof(int), 1, file);
+	if(*length > 300) check(0, "Huge alloc found!", DEF_DEBUG, ftell(file));
+	void* address = malloc(size * (*length + extra));
+	check(!address, error, DEF_DEBUG, ftell(file));
+	return address;
 }
 
-bool initPatterns() {
-	g_allPatterns.loaded = false;
-	FILE *file = fopen("romfs:/patterns.leve", "rb");
-	if(file == NULL){
-		return false;
-	}
-	
-	char sig[4];
-	fread(sig, 1, 4, file);
-	if(!(sig[0] == 'L' && sig[1] == 'E' && sig[2] == 'V' && sig[3] == 'E') ||
-	   !(fread(&(g_allPatterns.numberOfPatterns), 4, 1, file))){
-		fclose(file);
-		return false;
-	}
-	
-	//Alloc pointers to patterns
-	g_allPatterns.patterns = malloc(sizeof(Pattern *) * g_allPatterns.numberOfPatterns);
-	if(!g_allPatterns.patterns) {
-		fclose(file);
-		return false;
-	}
-	
-	for(int pattern = 0; pattern < g_allPatterns.numberOfPatterns; pattern++) {
-		//Alloc actual pattern.
-		g_allPatterns.patterns[pattern] = malloc(sizeof(Pattern)); 
-		if(!(g_allPatterns.patterns[pattern]) ||
-		   !(fread(&(g_allPatterns.patterns[pattern]->numberOfWalls), 4, 1, file)) ||
-		   !(fread(&(g_allPatterns.patterns[pattern]->levelFlags), 1, 1, file))) {
-			fclose(file);
-			freePatterns();
-			return false;
-		}
-		
-		//Alloc pointers to wall
-		g_allPatterns.patterns[pattern]->walls = malloc(sizeof(Wall *) * g_allPatterns.patterns[pattern]->numberOfWalls); 
-		if(!(g_allPatterns.patterns[pattern]->walls)) {
-			fclose(file);
-			freePatterns();
-			return false;
-		}
-	
-		for(int wall = 0; wall < g_allPatterns.patterns[pattern]->numberOfWalls; wall++) {
-			//Alloc actual wall
-			g_allPatterns.patterns[pattern]->walls[wall] = malloc(sizeof(Wall));
-			if(!(g_allPatterns.patterns[pattern]->walls[wall]) ||
-			   !(fread(&(g_allPatterns.patterns[pattern]->walls[wall]->side), 2, 1, file)) ||
-			   !(fread(&(g_allPatterns.patterns[pattern]->walls[wall]->distanceFromCenter), 2, 1, file)) ||
-			   !(fread(&(g_allPatterns.patterns[pattern]->walls[wall]->length), 2, 1, file))) {
-				fclose(file);
-				freePatterns();
-				return false;
-			}
-		}
-	}
-	distributePatterns();
-	g_allPatterns.loaded = true;
-	return true; //I hate C arrays.
+/** INTERNAL
+ * Compares a fixed length string to an expected string in a file.
+ * (useful for checking both headers and footers)
+ */
+int compare(FILE* file, const char* string) {
+	int len = strlen(string);
+	char* buff = malloc(sizeof(char) * (len + 1)); //for '/0'
+	check(!buff, "Cannot check file string!", DEF_DEBUG, ftell(file));
+	fread(buff, sizeof(char), len, file); //no '/0' in file, only len
+	buff[len] = '\0'; //add '/0'
+	int result = strcmp(buff, string);
+	free(buff);
+	return result;
 }
 
-void freePatterns() {
-	if(!g_allPatterns.patterns) {
-		return; //Check to see if pattern pointers are alloced
-	}
-	for(int pattern = 0; pattern < g_allPatterns.numberOfPatterns; pattern++) {
-		if(!g_allPatterns.patterns[pattern]) {
-			continue; //Check to see if an individual pattern is alloced
-		}
-		if(!g_allPatterns.patterns[pattern]->walls) {
-			continue; //Check to see if wall pointers of the pattern are alloced
-		}
-		for(int wall = 0; wall < g_allPatterns.patterns[pattern]->numberOfWalls; wall++) {
-			if(!g_allPatterns.patterns[pattern]->walls[wall]) {
-				continue; //Check to see if an individual wall of the individual pattern is alloced
-			}
-			free(g_allPatterns.patterns[pattern]->walls[wall]); //Free wall of pattern
-		}
-		free(g_allPatterns.patterns[pattern]->walls); //Free wall pointers of pattern
-		free(g_allPatterns.patterns[pattern]); //Free pattern
-	}
-	free(g_allPatterns.patterns); //Free pattern pointers
-	
-	for(int level = 0; level < TOTAL_LEVELS; level++) {
-		free(g_patterns[level].patterns);
-	}
-}
-	
-void initLevelData() { 
-	//level 0
-	g_levelData[0].rotStep = TAU/240.0;
-	g_levelData[0].rotStepHuman = TAU/60.0;
-	g_levelData[0].pulseSpeed = 10.0;
-	g_levelData[0].wallSpeed = 1.75;
-	
-	//level 1
-	g_levelData[1].rotStep = TAU/200.0;
-	g_levelData[1].rotStepHuman = TAU/38.0;
-	g_levelData[1].pulseSpeed = 10.0;
-	g_levelData[1].wallSpeed = 2.25;
-	
-	//level 2
-	g_levelData[2].rotStep = TAU/160.0;
-	g_levelData[2].rotStepHuman = TAU/32.0;
-	g_levelData[2].pulseSpeed = 10.0;
-	g_levelData[2].wallSpeed = 3.0;
-	
-	//level 3
-	g_levelData[3].rotStep = TAU/120.0;
-	g_levelData[3].rotStepHuman = TAU/36.0;
-	g_levelData[3].pulseSpeed = 10.0;
-	g_levelData[3].wallSpeed = 2.5;
-	
-	//level 4
-	g_levelData[4].rotStep = TAU/110.0;
-	g_levelData[4].rotStepHuman = TAU/30.0;
-	g_levelData[4].pulseSpeed = 10.0;
-	g_levelData[4].wallSpeed = 3.0;
-	
-	//level 5
-	g_levelData[5].rotStep = 0;
-	g_levelData[5].rotStepHuman = TAU/32.0;
-	g_levelData[5].pulseSpeed = 10.0;
-	g_levelData[5].wallSpeed = 3.5;
+/** INTERNAL
+ * Gets a single string from the file. It reads an integer then reads
+ * to the length of that integer. Always loads string null terminated, as
+ * well as the length
+ */
+FileString getString(FILE* file) {
+	FileString string;
+	string.str = getMalloc(file, sizeof(char), &string.len, 1, "Cannot load string from file!");
+	fread(string.str, sizeof(char), string.len, file);
+	string.str[string.len] = '\0';
+	return string;
 }
 
-void resetLevelData() {
-	for(int i = 0; i < TOTAL_LEVELS; i++) {
-		g_levelData[i].cursor = TAU/4.0 + g_levelData[i].rotStepHuman/2.0; //So the player never looks between to walls.
-		g_levelData[i].radians = 0;
+/** INTERNAL
+ * Similar to getString(...), this method obtains a string from a file, but
+ * appends a constant string to the beginning of  the buffer. Usefull for
+ * adding prefixes to things, such as  "DIFFICULTY: " or "CREATOR: ", 
+ * or even a file path location.
+ */
+FileString getStringPrefix(const char* prefix, FILE* file) {
+	FileString string;
+	int prefixlen = strlen(prefix);
+	string.str = getMalloc(file, sizeof(char), &string.len, prefixlen + 1, "Cannot load string from file!");
+	memcpy(string.str, prefix, prefixlen);
+	fread(&(string.str[prefixlen]), sizeof(char), string.len, file); //potentially dangerous?
+	string.len += prefixlen;
+	string.str[string.len] = '\0';
+	return string;
+}
+
+/** INTERNAL
+ * Gets a wall from a file. Also does simple checks to make sure the wall
+ * isn't too crazy.
+ */
+Wall getWall(FILE* file, int maxSide) {
+	Wall wall;
+	
+	//wall data
+	fread(&wall.distance, sizeof(short), 1, file);
+	fread(&wall.height, sizeof(short), 1, file);
+	fread(&wall.side, sizeof(short), 1, file);
+	
+	//check wall data
+	if(wall.height < MIN_WALL_HEIGHT) wall.height = MIN_WALL_HEIGHT;
+	if(wall.side < 0) wall.side = 0;
+	if(wall.side >= maxSide) wall.side = maxSide - 1;
+	
+	//exit
+	return wall;
+} 
+
+/**  INTERNAL
+ * Gets an RGB color from a file. The alpha is always solid (0xFF).
+ */ 
+Color getColor(FILE* file) {
+	Color color;
+	fread(&color.r, sizeof(char), 1, file);
+	fread(&color.g, sizeof(char), 1, file);
+	fread(&color.b, sizeof(char), 1, file);
+	color.a = 0xFF;
+	return color;
+}
+
+/** INTERNAL
+ * Gets a pattern from a file.
+ */
+Pattern getPattern(FILE* file) {
+	Pattern pattern;
+	
+	//pattern (file) name
+	pattern.name = getString(file);
+	
+	//header
+	check(compare(file, PATTERN_HEADER), "Pattern header incorrect!", DEF_DEBUG, ftell(file));
+	
+	//number of sides
+	fread(&pattern.sides, sizeof(int), 1, file);
+	if(pattern.sides < MIN_PATTERN_SIDES) pattern.sides = MIN_PATTERN_SIDES;
+	
+	//walls
+	pattern.walls = getMalloc(file, sizeof(Wall), &pattern.numWalls, 0, "Cannot alloc walls!");
+	check(!pattern.numWalls, "Pattern must have at least one wall!", DEF_DEBUG, ftell(file));
+	for(int i = 0; i < pattern.numWalls; i++) pattern.walls[i] = getWall(file, pattern.sides);
+	
+	//footer
+	check(compare(file, PATTERN_FOOTER), "Pattern header incorrect!", DEF_DEBUG, ftell(file));
+	
+	//exit
+	return pattern;
+}
+
+/** INTERNAL
+ * Frees a pattern from memory
+ */
+void freePattern(Pattern pattern) {
+	free(pattern.walls);
+}
+
+/**INTERNAL
+ * Locates a pattern in a predefined and preallocated list of patterns based on name.
+ * Returns a copy of the found pattern.
+ */
+Pattern getLoadedPattern(FILE* file, Pattern* patterns, int numPatterns) {
+	FileString search = getString(file);
+	int i = 0;
+	for(i = 0; i < numPatterns; i++) {
+		if(!strcmp(patterns[i].name.str, search.str)) {
+			break;
+		}
 	}
+	
+	free(search.str);
+	
+	//could not find pattern
+	check(i == numPatterns, "Could not locate pattern!", DEF_DEBUG, ftell(file));
+	
+	//copy pattern if located.
+	Pattern located;
+	memcpy(&located, &patterns[i], sizeof(Pattern));
+	return located;
+}
+
+/** INTERNAL
+ * Loads a level from a file based on the loaded patterns.
+ */
+Level getLevel(FILE* file, Pattern* patterns, int numPatterns) {
+	Level level;
+	
+	//header
+	check(compare(file, LEVEL_HEADER), "Level header incorrect!", DEF_DEBUG, ftell(file));
+	
+	//strings
+	level.name = getString(file);
+	level.difficulty = getStringPrefix("DIFFICULTY: ", file);
+	level.mode = getStringPrefix("MODE: ", file);
+	level.creator = getStringPrefix("CREATOR: ", file);
+	level.music = getStringPrefix(BGM_PATH, file);
+	checkForSaveData(level.name);
+	level.score.str = showSaveData();
+	doneonce = true;
+	
+	
+	//colors
+	level.colorsBG1 = getMalloc(file, sizeof(Color), &level.numBG1, 0, "Cannot alloc BG1 colors!");
+	check(!level.numBG1, "Level must have at least one bg1 color!", DEF_DEBUG, ftell(file));
+	for(int i = 0; i < level.numBG1; i++) level.colorsBG1[i] = getColor(file);
+	level.colorsBG2 = getMalloc(file, sizeof(Color), &level.numBG2, 0, "Cannot alloc BG2 colors!");
+	check(!level.numBG2, "Level must have at least one bg2 color!", DEF_DEBUG, ftell(file));
+	for(int i = 0; i < level.numBG2; i++) level.colorsBG2[i] = getColor(file);
+	level.colorsFG = getMalloc(file, sizeof(Color), &level.numFG, 0, "Cannot alloc FG colors!");
+	check(!level.numFG, "Level must have at least one fg color!", DEF_DEBUG, ftell(file));
+	for(int i = 0; i < level.numFG; i++) level.colorsFG[i] = getColor(file);
+	
+	//floats
+	fread(&level.speedWall, sizeof(float), 1, file);
+	fread(&level.speedRotation, sizeof(float), 1, file);
+	fread(&level.speedCursor, sizeof(float), 1, file);
+	
+	//int
+	fread(&level.speedPulse, sizeof(int), 1, file);
+	
+	//linked patterns (a copy of loaded patterns)
+	level.patterns = getMalloc(file, sizeof(Pattern), &level.numPatterns, 0, "Cannot alloc patterns!");
+	check(!level.numPatterns, "Level must have at least one pattern!", DEF_DEBUG, ftell(file));
+	for(int i = 0; i < level.numPatterns; i++) level.patterns[i] = getLoadedPattern(file, patterns, numPatterns);
+	
+	//footer
+	check(compare(file, LEVEL_FOOTER), "Level footer incorrect!", DEF_DEBUG, ftell(file));
+
+	//exit
+	return level;
+}
+
+/** INTERNAL
+ * Frees a level from memory
+ */
+void freeLevel(Level level) {
+	free(level.name.str);
+	free(level.difficulty.str);
+	free(level.mode.str);
+	free(level.creator.str);
+	free(level.score.str);
+	free(level.music.str);
+	free(level.colorsBG1);
+	free(level.colorsBG2);
+	free(level.colorsFG);
+	free(level.patterns);
+}
+
+//EXTERNAL
+GlobalData getData(FILE* file) {
+	GlobalData data;
+	data.loaded = 0;
+	
+	//header
+	check(compare(file, PROJECT_HEADER), "Wrong file type/format/version!", DEF_DEBUG, ftell(file));
+	
+	//patterns
+	data.patterns = getMalloc(file, sizeof(Pattern), &data.numPatterns, 0, "Cannot alloc patterns!");
+	check(!data.numPatterns, "Must load at least one pattern!", DEF_DEBUG, ftell(file));
+	for(int i = 0; i < data.numPatterns; i++) data.patterns[i] = getPattern(file);
+	
+	//levels
+	data.levels = getMalloc(file, sizeof(Level), &data.numLevels, 0, "Cannot alloc levels!");
+	check(!data.numLevels, "Must load at least one level!", DEF_DEBUG, ftell(file));
+	for(int i = 0; i < data.numLevels; i++) data.levels[i] = getLevel(file, data.patterns, data.numPatterns);
+	
+	//footer
+	check(compare(file, PROJECT_FOOTER), "Project footer incorrect!", DEF_DEBUG, ftell(file));
+	data.loaded = 1;
+	return data;
+}
+
+//EXTERNAL
+void freeData(GlobalData data) {
+	if(!(data.loaded)) return;
+	for(int i = 0; i < data.numPatterns; i++) freePattern(data.patterns[i]);
+	free(data.patterns);
+	for(int i = 0; i < data.numLevels; i++) freeLevel(data.levels[i]);
+	free(data.levels);
 }

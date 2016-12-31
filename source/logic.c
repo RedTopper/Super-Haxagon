@@ -9,6 +9,7 @@
 #include "draw.h"
 #include "font.h"
 #include "logic.h"
+#include "score.h"
 
 //Change sides delay
 const int FRAMES_PER_CHANGE_SIDE = 36;
@@ -143,6 +144,7 @@ double getFurthestWallDistance(LivePattern pattern) {
 GameState doMainMenu(GlobalData data, LoadedState loaded, Track select, int* level) {
 	MainMenu menu = {0};
 	menu.level = *level;
+	checkForSaveData(data.levels[menu.level].name, data.levels[menu.level].creator, data.levels[menu.level].difficulty, data.levels[menu.level].mode);			
 	while(aptMainLoop()) {
 		
 		//LOGIC
@@ -151,6 +153,7 @@ GameState doMainMenu(GlobalData data, LoadedState loaded, Track select, int* lev
 		if(!(menu.transitioning)) {
 			switch(press) {
 			case BACK:
+				checkForSaveData(data.levels[menu.level].name, data.levels[menu.level].creator, data.levels[menu.level].difficulty, data.levels[menu.level].mode);
 				return SWITCH_LOAD_LOCATION;
 			case SELECT:
 				*level = menu.level;
@@ -160,6 +163,14 @@ GameState doMainMenu(GlobalData data, LoadedState loaded, Track select, int* lev
 				menu.transitionDirection = 1;
 				menu.lastLevel = menu.level;
 				menu.level++;
+				if(menu.level >=  data.numLevels)
+				{
+					checkForSaveData(data.levels[0].name, data.levels[0].creator, data.levels[0].difficulty, data.levels[0].mode);
+				}
+				else
+				{
+				checkForSaveData(data.levels[menu.level].name, data.levels[menu.level].creator, data.levels[menu.level].difficulty, data.levels[menu.level].mode);	
+				}
 				audioPlay(&select, ONCE);
 				break;
 			case DIR_LEFT:
@@ -167,6 +178,14 @@ GameState doMainMenu(GlobalData data, LoadedState loaded, Track select, int* lev
 				menu.transitionDirection = -1;
 				menu.lastLevel = menu.level;
 				menu.level--;
+				if(menu.level < 0)
+				{
+					checkForSaveData(data.levels[data.numLevels - 1].name, data.levels[data.numLevels - 1].creator, data.levels[data.numLevels - 1].difficulty, data.levels[data.numLevels - 1].mode);
+				}
+				else
+				{
+					checkForSaveData(data.levels[menu.level].name, data.levels[menu.level].creator, data.levels[menu.level].difficulty, data.levels[menu.level].mode);
+				}
 				audioPlay(&select, ONCE);
 				break;
 			default:;

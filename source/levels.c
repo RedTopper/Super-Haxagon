@@ -5,6 +5,7 @@
 #include "types.h"
 #include "util.h"
 #include "levels.h"
+#include "score.h"
 
 const char* UNLOADED = "ERROR";
 const char* PROJECT_HEADER = "HAX1.1";
@@ -190,7 +191,6 @@ Level getLevel(FILE* file, Pattern* patterns, int numPatterns) {
 	level.mode = getStringPrefix("MODE: ", file);
 	level.creator = getStringPrefix("CREATOR: ", file);
 	level.music = getStringPrefix(BGM_PATH, file);
-	
 	//colors
 	level.colorsBG1 = getMalloc(file, sizeof(Color), &level.numBG1, 0, "Cannot alloc BG1 colors!");
 	check(!level.numBG1, "Level must have at least one bg1 color!", DEF_DEBUG, ftell(file));
@@ -255,6 +255,8 @@ GlobalData getData(FILE* file) {
 	check(!data.numLevels, "Must load at least one level!", DEF_DEBUG, ftell(file));
 	for(int i = 0; i < data.numLevels; i++) data.levels[i] = getLevel(file, data.patterns, data.numPatterns);
 	
+	//savedata
+	checkForSaveData(data.levels[0].name, data.levels[0].creator, data.levels[0].difficulty, data.levels[0].mode);
 	//footer
 	check(compare(file, PROJECT_FOOTER), "Project footer incorrect!", DEF_DEBUG, ftell(file));
 	data.loaded = 1;

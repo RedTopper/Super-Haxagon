@@ -93,7 +93,12 @@ typedef struct {
 	Pattern* patterns;
 	int numPatterns; 
 } Level;
-
+/**
+ * Save data storage
+ */
+typedef struct {
+	FileString string;
+} Score;
 /**
  * The current state of the main menu.
  */

@@ -285,7 +285,7 @@ void drawMainMenu(GlobalData data, MainMenu menu) {
 	drawTriangle(TRANSP, timeTriangle);
 
 	//actual text
-	char* scoreTime  = getScoreTime(level.highScore);
+	char* scoreTime  = getBestTime(level.highScore);
 	writeFont(WHITE, posTitle, level.name.str, FONT32, ALIGN_LEFT_C);
 	writeFont(GREY, posDifficulty, level.difficulty.str, FONT16, ALIGN_LEFT_C);
 	writeFont(GREY, posMode, level.mode.str, FONT16, ALIGN_LEFT_C);

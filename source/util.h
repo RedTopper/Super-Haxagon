@@ -48,5 +48,8 @@ char* getScoreText(int score);
   *
   * TTT:%% where  TTT is the current time in seconds, and %% is  the percent
   * through the current second.
+  *
+  * getBestTime(int score) is the same, but it says BEST: instead of TIME:
   */
 char* getScoreTime(int score);
+char* getBestTime(int score);

@@ -8,14 +8,15 @@
 #include "types.h"
 #include "util.h"
 #include "levels.h"
+#include "scores.h"
 #include "sound.h"
 #include "logic.h"
 
 //file location for built in levels
-const char* NAME_ROMFS_PROJECT = "romfs:/levels.haxagon";
-const char* NAME_ROMFS_SCORE = "sdmc:/3ds/data/haxagon/dataromfs.db";
-const char* NAME_SDMC_PROJECT = "sdmc:/3ds/data/haxagon/levels.haxagon";
-const char* NAME_SDMC_SCORE = "sdmc:/3ds/data/haxagon/datasdmc.db";
+const char* NAME_ROMFS_PROJECT = "romfs:" FILE_PROJECT;
+const char* NAME_SDMC_PROJECT = "sdmc:" DIR_3DS DIR_DATA DIR_HAXAGON FILE_PROJECT;
+const char* NAME_ROMFS_SCORE = "sdmc:" DIR_3DS DIR_DATA DIR_HAXAGON FILE_SCORE_ROMFS;
+const char* NAME_SDMC_SCORE = "sdmc:" DIR_3DS DIR_DATA DIR_HAXAGON FILE_SCORE_SDMC;
 
 int main() {
 	
@@ -30,9 +31,9 @@ int main() {
 	
 	//pattern loading
 	LoadedState loaded = NOT_LOADED;
-	FILE* dataFile;
-	FILE* scoreFile;
 	GlobalData data = EMPTY_GLOBAL_DATA;
+	FILE* fileData;
+	char* scorePath;
 	data.loaded = 0;
 	
 	//program init
@@ -62,27 +63,28 @@ int main() {
 	while(state != PROGRAM_QUIT) {
 		switch(state) {
 		case SWITCH_LOAD_LOCATION:
+			freeData(data);
 			switch(loaded) {
 			default:
 			case NOT_LOADED:
 			case SDMC:;
-				dataFile = fopen(NAME_ROMFS_PROJECT, "rb");
-				if(!dataFile) panic("NO INTERNAL FILE!", "There was no internal file to load. \
-				The game was likely compiled incorrectly.", DEF_DEBUG, (int)dataFile);
-				scoreFile = fopen(NAME_ROMFS_SCORE, "rb");
+				fileData = fopen(NAME_ROMFS_PROJECT, "rb");
+				if(!fileData) panic("NO INTERNAL FILE!", "There was no internal file to load. \
+				The game was likely compiled incorrectly.", DEF_DEBUG, (int)fileData);
+				scorePath = (char*)NAME_ROMFS_SCORE;
 				loaded = ROMFS;
 				break;
 			case ROMFS:;
-				dataFile = fopen(NAME_SDMC_PROJECT, "rb");
-				if(!dataFile) panic("NO EXTERNAL FILE TO LOAD!", "There was no external file to load. \
-				You need to put external levels in the location defined in the README", DEF_DEBUG, (int)dataFile);
-				scoreFile = fopen(NAME_SDMC_SCORE, "rb");
+				fileData = fopen(NAME_SDMC_PROJECT, "rb");
+				if(!fileData) panic("NO EXTERNAL FILE TO LOAD!", "There was no external file to load. \
+				You need to put external levels in the location defined in the README", DEF_DEBUG, (int)fileData);
+				scorePath = (char*)NAME_SDMC_SCORE;
 				loaded = SDMC;
 				break;
 			}
-			freeData(data);
-			data = getData(dataFile);
-			fclose(dataFile);
+			data = getData(fileData);
+			getScores(scorePath, data);
+			fclose(fileData);
 			state = MAIN_MENU;
 			nlevel = 0;
 			nLastLevel = -1;

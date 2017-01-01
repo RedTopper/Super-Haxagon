@@ -23,3 +23,15 @@ void drawGameOverBot(int score, double fps, int frame);
  */
 void drawPanic(const char* message, const char* file, const char* function, int line, int error);
 void drawPanicBot(void);
+
+/**
+ * Draws a non-destructive warning screen for the user to read.
+ * :/
+ */
+void drawWarning(const char* message, const char* file, const char* function, int line);
+
+/**
+ * Draws a completely black screen on the bottom of the 3DS.
+ */
+void drawBlackBot(void);
+

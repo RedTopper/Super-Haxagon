@@ -194,13 +194,22 @@ void drawHumanCursor(Color color, Point focus, double cursor, double rotation) {
 }
 
 /** INTERNAL
- * Draws  the framerate (passed as a double).
+ * Draws  the frame rate (passed as a double).
  */
 void drawFramerate(double fps) {
 	char framerate[12 + 1];
 	Point position = {4,SCREEN_HEIGHT - 20};
 	snprintf(framerate, 12 + 1, "%.2f FPS", fps);
 	writeFont(WHITE, position, framerate, FONT16, ALIGN_LEFT_C);
+}
+
+/** INTERNAL
+ * Draws a black bock for the background.
+ */
+void drawBlack(void) {
+	Point topLeft = {0,0};
+	Point screenSize = {TOP_WIDTH, SCREEN_HEIGHT};
+	drawRect(BLACK, topLeft, screenSize);
 }
 
 //EXTERNAL
@@ -276,29 +285,13 @@ void drawMainMenu(GlobalData data, MainMenu menu) {
 	drawTriangle(TRANSP, timeTriangle);
 
 	//actual text
-	char* scoreTime  = getScoreTime(level.score);
+	char* scoreTime  = getScoreTime(level.highScore);
 	writeFont(WHITE, posTitle, level.name.str, FONT32, ALIGN_LEFT_C);
 	writeFont(GREY, posDifficulty, level.difficulty.str, FONT16, ALIGN_LEFT_C);
 	writeFont(GREY, posMode, level.mode.str, FONT16, ALIGN_LEFT_C);
 	writeFont(GREY, posCreator, level.creator.str, FONT16, ALIGN_LEFT_C);
 	writeFont(WHITE, posTime, scoreTime, FONT16, ALIGN_LEFT_C);
-}
-
-//EXTERNAL
-void drawMainMenuBot(LoadedState loaded, double fps) {
-	Point topLeft = {0,0};
-	Point screenSize = {BOT_WIDTH, SCREEN_HEIGHT};
-	Point posButton = {4, 4};
-	Point posLocation = {194, 4};
-	Point posLevels = {4, posLocation.y + 16 + 2};
-
-	drawRect(BLACK, topLeft, screenSize);
-	writeFont(WHITE, posButton, "PRESS B TO LOAD", FONT16, ALIGN_LEFT_C);
-	if(loaded == ROMFS) writeFont(WHITE, posLocation, "SDMC", FONT16, ALIGN_LEFT_C);
-	if(loaded == SDMC) writeFont(WHITE, posLocation, "ROMFS", FONT16, ALIGN_LEFT_C);
-	writeFont(WHITE, posLevels, "LEVELS", FONT16, ALIGN_LEFT_C);
-	
-	drawFramerate(fps);
+	free(scoreTime);
 }
 
 //EXTERNAL
@@ -329,50 +322,7 @@ void drawPlayGame(Level level, LiveLevel liveLevel, double offset, double sides)
 }
 
 //EXTERNAL
-void drawPlayGameBot(FileString name, int score, double fps) {
-	Point topLeft = {0,0};
-	Point screenSize = {BOT_WIDTH, SCREEN_HEIGHT};
-	Point posLevelUp = {4,4};
-	Point posScore = {BOT_WIDTH - 4, 4};
-
-	drawRect(BLACK, topLeft, screenSize);
-
-	char* scoreTime  = getScoreTime(score);
-	writeFont(WHITE, posScore, scoreTime, FONT16, ALIGN_RIGHT_C);
-	writeFont(WHITE, posLevelUp, getScoreText(score), FONT16, ALIGN_LEFT_C);
-	free(scoreTime);
-	
-	drawFramerate(fps);
-}
-
-//EXTERNAL
-void drawGameOverBot(int score, double fps, int frame) {
-	Point topLeft = {0,0};
-	Point screenSize = {BOT_WIDTH, SCREEN_HEIGHT};
-	Point posGameOver = {BOT_WIDTH / 2, 4};
-	Point posTime = {BOT_WIDTH / 2, 40};
-	Point posA = {BOT_WIDTH / 2, 70};
-	Point posB = {BOT_WIDTH / 2, 86};
-
-	drawRect(BLACK, topLeft, screenSize);
-
-	char* scoreTime  = getScoreTime(score);
-	writeFont(WHITE, posGameOver, "GAME OVER", FONT32, ALIGN_CENTER_C);
-	writeFont(WHITE, posTime, scoreTime, FONT16, ALIGN_CENTER_C);
-	free(scoreTime);
-	
-	if(frame == 0) {
-		writeFont(WHITE, posA, "PRESS A TO PLAY", FONT16, ALIGN_CENTER_C);
-		writeFont(WHITE, posB, "PRESS B TO QUIT", FONT16, ALIGN_CENTER_C);
-	}
-	
-	drawFramerate(fps);
-}
-
-//EXTERNAL
 void drawPanic(const char* message, const char* file, const char* function, int line, int error) {
-	Point topLeft = {0,0};
-	Point screenSize = {TOP_WIDTH, SCREEN_HEIGHT};
 	Point posAwwSnap = {TOP_WIDTH / 2, 4};
 	Point posCrash = {TOP_WIDTH / 2, posAwwSnap.y + 32 + 4};
 	Point posInfo = {TOP_WIDTH / 2, posCrash.y + 16 + 2};
@@ -382,7 +332,7 @@ void drawPanic(const char* message, const char* file, const char* function, int 
 	Point posCheck = {TOP_WIDTH / 2, posFunct.y + 48 + 2};
 	Point posButtons = {TOP_WIDTH / 2, posCheck.y + 16 + 2};
 
-	drawRect(BLACK, topLeft, screenSize);
+	drawBlack();
 	
 	writeFont(WHITE, posAwwSnap, "AWW SNAP!", FONT32, ALIGN_CENTER_C);
 	writeFont(WHITE, posCrash, "LOOKS LIKE THE GAME CRASHED!", FONT16, ALIGN_CENTER_C);
@@ -398,11 +348,93 @@ void drawPanic(const char* message, const char* file, const char* function, int 
 }
 
 //EXTERNAL
-void drawPanicBot(void) {
+void drawWarning(const char* message, const char* file, const char* function, int line) {
+	Point posAwwSnap = {TOP_WIDTH / 2, 4};
+	Point posCrash = {TOP_WIDTH / 2, posAwwSnap.y + 32 + 4};
+	Point posInfo = {TOP_WIDTH / 2, posCrash.y + 16 + 2};
+	Point posMessage = {TOP_WIDTH / 2, posInfo.y + 32 + 2};
+	Point posFile = {TOP_WIDTH / 2, posMessage.y + 16 + 2};
+	Point posFunct = {TOP_WIDTH / 2, posFile.y + 16 + 2};
+	Point posCheck = {TOP_WIDTH / 2, posFunct.y + 48 + 2};
+	Point posButtons = {TOP_WIDTH / 2, posCheck.y + 16 + 2};
+
+	drawBlack();
+
+	writeFont(WHITE, posAwwSnap, "WARNING!", FONT32, ALIGN_CENTER_C);
+	writeFont(WHITE, posCrash, "THERE SEEMS TO BE A PROBLEM!", FONT16, ALIGN_CENTER_C);
+	writeFont(WHITE, posInfo, "HERE'S SOME INFORMATION:", FONT16, ALIGN_CENTER_C);
+
+	//WARNING: PROGRAM WILL BE MAD IF writeFont(...) EVER MESSES WITH THE STRING!
+	writeFont(WHITE, posMessage, (char*)message, FONT16, ALIGN_CENTER_C);
+	writeFont(WHITE, posFile, (char*)file, FONT16, ALIGN_CENTER_C);
+	writeFont(WHITE, posFunct, (char*)function, FONT16, ALIGN_CENTER_C);
+
+	writeFont(WHITE, posCheck, "CHECK HAXAPANIC.TXT FOR INFO", FONT16, ALIGN_CENTER_C);
+	writeFont(WHITE, posButtons, "PRESS A TO CONTINUE", FONT16, ALIGN_CENTER_C);
+}
+
+//EXTERNAL
+void drawBlackBot(void) {
 	Point topLeft = {0,0};
 	Point screenSize = {BOT_WIDTH, SCREEN_HEIGHT};
-	Point posCanada = {BOT_WIDTH / 2, SCREEN_HEIGHT / 2 - 16};
-
 	drawRect(BLACK, topLeft, screenSize);
+}
+
+//EXTERNAL
+void drawMainMenuBot(LoadedState loaded, double fps) {
+	Point posButton = {4, 4};
+	Point posLocation = {194, 4};
+	Point posLevels = {4, posLocation.y + 16 + 2};
+
+	drawBlackBot();
+	writeFont(WHITE, posButton, "PRESS B TO LOAD", FONT16, ALIGN_LEFT_C);
+	if(loaded == ROMFS) writeFont(WHITE, posLocation, "SDMC", FONT16, ALIGN_LEFT_C);
+	if(loaded == SDMC) writeFont(WHITE, posLocation, "ROMFS", FONT16, ALIGN_LEFT_C);
+	writeFont(WHITE, posLevels, "LEVELS", FONT16, ALIGN_LEFT_C);
+
+	drawFramerate(fps);
+}
+
+//EXTERNAL
+void drawPlayGameBot(FileString name, int score, double fps) {
+	Point posLevelUp = {4,4};
+	Point posScore = {BOT_WIDTH - 4, 4};
+
+	drawBlackBot();
+
+	char* scoreTime  = getScoreTime(score);
+	writeFont(WHITE, posScore, scoreTime, FONT16, ALIGN_RIGHT_C);
+	writeFont(WHITE, posLevelUp, getScoreText(score), FONT16, ALIGN_LEFT_C);
+	free(scoreTime);
+
+	drawFramerate(fps);
+}
+
+//EXTERNAL
+void drawGameOverBot(int score, double fps, int frame) {
+	Point posGameOver = {BOT_WIDTH / 2, 4};
+	Point posTime = {BOT_WIDTH / 2, 40};
+	Point posA = {BOT_WIDTH / 2, 70};
+	Point posB = {BOT_WIDTH / 2, 86};
+
+	drawBlackBot();
+
+	char* scoreTime  = getScoreTime(score);
+	writeFont(WHITE, posGameOver, "GAME OVER", FONT32, ALIGN_CENTER_C);
+	writeFont(WHITE, posTime, scoreTime, FONT16, ALIGN_CENTER_C);
+	free(scoreTime);
+
+	if(frame == 0) {
+		writeFont(WHITE, posA, "PRESS A TO PLAY", FONT16, ALIGN_CENTER_C);
+		writeFont(WHITE, posB, "PRESS B TO QUIT", FONT16, ALIGN_CENTER_C);
+	}
+
+	drawFramerate(fps);
+}
+
+//EXTERNAL
+void drawPanicBot(void) {
+	Point posCanada = {BOT_WIDTH / 2, SCREEN_HEIGHT / 2 - 16};
+	drawBlackBot();
 	writeFont(WHITE, posCanada, "SORRY", FONT32, ALIGN_CENTER_C);
 }

@@ -23,11 +23,19 @@
 #define DEF_DEBUG __FILE__, __func__, __LINE__
 
 //Overflow so you don't get glitchy lines between hexagons.
-//This is really just some arbituary number so yeah...
+//This is really just some arbitrary number so yeah...
 #define OVERFLOW_OFFSET TAU/900.0
 
+//all paths
+#define DIR_3DS "/3ds"
+#define DIR_DATA "/data"
+#define DIR_HAXAGON "/haxagon"
+#define FILE_SCORE_SDMC "/datasdmc.db"
+#define FILE_SCORE_ROMFS "/dataromfs.db"
+#define FILE_PROJECT "/levels.haxagon"
+
 /**
- * A color but as a struct instead of a long.
+ * A color but as a structure instead of a long.
  */
 typedef struct {
 	char r;
@@ -95,7 +103,7 @@ typedef struct {
 	float speedRotation;
 	float speedCursor;
 	int speedPulse;
-	int score;
+	int highScore;
 	Pattern* patterns;
 	int numPatterns; 
 } Level;

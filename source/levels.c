@@ -13,22 +13,13 @@ const char* LEVEL_HEADER = "LEV2.1";
 const char* LEVEL_FOOTER = "ENDLEV";
 const char* PATTERN_HEADER = "PTN1.1";
 const char* PATTERN_FOOTER = "ENDPTN";
-const char* BGM_PATH = "sdmc:/3ds/data/haxagon/";
+const char* DIR_BGM = "sdmc:" DIR_3DS DIR_DATA DIR_HAXAGON "/";
 
 const int MIN_WALL_HEIGHT = 8;
 const int MIN_PATTERN_SIDES = 3;
 
 
-/** INTERNAL
- * Gets a memory address with specific parameters.
- * FILE* file Pointer to a file stream
- * int size The size of the data type to allocate
- * int* length A pointer to a variable to hold the length of the objects read.
- * int extra A value to allocate extra memory
- * char* error A string to show the user if there is a problem allocating memory.
- *
- * This memory must be freed!
- */
+//EXTERNAL
 void* getMalloc(FILE* file, int size, int* length, int extra, char* message) {
 	if(extra < 0) extra = 0; //check for me
 
@@ -40,10 +31,7 @@ void* getMalloc(FILE* file, int size, int* length, int extra, char* message) {
 	return address;
 }
 
-/** INTERNAL
- * Compares a fixed length string to an expected string in a file.
- * (useful for checking both headers and footers)
- */
+//EXTERNAL
 int compare(FILE* file, const char* string) {
 	int len = strlen(string);
 	char* buff = malloc(sizeof(char) * (len + 1)); //for '/0'
@@ -59,11 +47,7 @@ int compare(FILE* file, const char* string) {
 	return result;
 }
 
-/** INTERNAL
- * Gets a single string from the file. It reads an integer then reads
- * to the length of that integer. Always loads string null terminated, as
- * well as the length
- */
+//EXTERNAL
 FileString getString(FILE* file) {
 	FileString string = EMPTY_STRING;
 	
@@ -77,7 +61,7 @@ FileString getString(FILE* file) {
 
 /** INTERNAL
  * Similar to getString(...), this method obtains a string from a file, but
- * appends a constant string to the beginning of  the buffer. Usefull for
+ * appends a constant string to the beginning of  the buffer. Useful for
  * adding prefixes to things, such as  "DIFFICULTY: " or "CREATOR: ", 
  * or even a file path location.
  */
@@ -214,7 +198,7 @@ Level getLevel(FILE* file, Pattern* patterns, int numPatterns) {
 	level.difficulty = getStringPrefix("DIFFICULTY: ", file);
 	level.mode = getStringPrefix("MODE: ", file);
 	level.creator = getStringPrefix("CREATOR: ", file);
-	level.music = getStringPrefix(BGM_PATH, file);
+	level.music = getStringPrefix(DIR_BGM, file);
 	
 	//colors
 	level.colorsBG1 = getMalloc(file, sizeof(Color), &level.numBG1, 0, 

@@ -96,7 +96,7 @@ MovementState collisionLiveLevel(LiveLevel live, double cursorStep) {
 /** INTERNAL
  * Gets a live pattern from a list of loaded patterns
  * WARNING: This method mallocs the walls array, and needs to be freed
- * upon descruction of the live pattern.
+ * upon destruction of the live pattern.
  */
 LivePattern getLivePattern(Pattern* patterns, int numPatterns, double distance) {
 	int select = rand() % numPatterns;

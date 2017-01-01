@@ -31,7 +31,7 @@ void panic(const char* title, const char* message, const char* file, const char*
 	while(aptMainLoop()) {
 		if(getButton() == QUIT) break;
 		sf2d_start_frame(GFX_TOP, GFX_LEFT);
-		drawPanic(message, file, function, line, error);
+		drawPanic(title, file, function, line, error);
 		sf2d_end_frame();
 		sf2d_start_frame(GFX_BOTTOM, GFX_LEFT);
 		drawPanicBot();
@@ -44,6 +44,34 @@ void panic(const char* title, const char* message, const char* file, const char*
 	sdmcExit();
 	ndspExit();	
 	exit(1);
+}
+
+//EXTERNAL
+void warning(const char* title, const char* message, const char* file, const char* function, int line) {
+	FILE* panic = fopen("sdmc:/haxapanic.txt", "a");
+	if(panic) {
+		fprintf(panic, "Compilation date: %s %s\n", __DATE__, __TIME__);
+		fprintf(panic, "The game output a warning for you.\n");
+		fprintf(panic, "Title: %s\n", title);
+		fprintf(panic, "...with message: %s\n", message);
+		fprintf(panic, "...in file: %s.\n", file);
+		fprintf(panic, "...in function: %s.\n", function);
+		fprintf(panic, "...on line: %d.\n", line);
+		fprintf(panic, "For more information, see https://github.com/RedInquisitive/Super-Haxagon\n");
+		fprintf(panic, "If a file failed to load, see https://github.com/RedInquisitive/Super-Haxagon/tree/master/sdmc\n");
+		fprintf(panic, "This warning did not crash the game. It was logged here for your record.\n\n");
+		fclose(panic);
+	}
+	while(aptMainLoop()) {
+		if(getButton() == SELECT) break;
+		sf2d_start_frame(GFX_TOP, GFX_LEFT);
+		drawWarning(title, file, function, line);
+		sf2d_end_frame();
+		sf2d_start_frame(GFX_BOTTOM, GFX_LEFT);
+		drawBlackBot();
+		sf2d_end_frame();
+		sf2d_swapbuffers();
+	}
 }
 
 //EXTERNAL

@@ -5,6 +5,7 @@
 #include "types.h"
 #include "util.h"
 #include "levels.h"
+#include "score.h"
 
 const char* UNLOADED = "ERROR";
 const char* PROJECT_HEADER = "HAX1.1";
@@ -215,7 +216,6 @@ Level getLevel(FILE* file, Pattern* patterns, int numPatterns) {
 	level.mode = getStringPrefix("MODE: ", file);
 	level.creator = getStringPrefix("CREATOR: ", file);
 	level.music = getStringPrefix(BGM_PATH, file);
-	
 	//colors
 	level.colorsBG1 = getMalloc(file, sizeof(Color), &level.numBG1, 0, 
 	"Cannot alloc BG1 colors! Check to see if all levels have at least 1 background 1 color.");
@@ -288,6 +288,8 @@ GlobalData getData(FILE* file) {
 	"Cannot alloc levels! You must load at least one level!");
 	for(int i = 0; i < data.numLevels; i++) data.levels[i] = getLevel(file, data.patterns, data.numPatterns);
 	
+	//savedata
+	checkForSaveData(data.levels[0].name, data.levels[0].creator, data.levels[0].difficulty, data.levels[0].mode);
 	//footer
 	check(compare(file, PROJECT_FOOTER), "WRONG PROJ FOOTER!",
 	"The project being loaded had the wrong file footer. Your project file \

@@ -9,6 +9,7 @@
 #include "util.h"
 #include "font.h"
 #include "draw.h"
+#include "score.h"
 
 const Color SHADOW = {0, 0, 0, 0xC0};
 const Color BLACK =  {0, 0, 0, 0xFF};
@@ -276,12 +277,16 @@ void drawMainMenu(GlobalData data, MainMenu menu) {
 		{timeSize.x + 18, -1}}; //I mean, it works...
 	drawTriangle(TRANSP, triangle2);
 
+	Score score;
+	score.string.str = showSaveData();
+	
 	//actual text
 	writeFont(WHITE, title, level.name.str, FONT32, ALIGN_LEFT_C);
 	writeFont(GREY, difficulty, level.difficulty.str, FONT16, ALIGN_LEFT_C);
 	writeFont(GREY, mode, level.mode.str, FONT16, ALIGN_LEFT_C);
 	writeFont(GREY, creator, level.creator.str, FONT16, ALIGN_LEFT_C);
-	writeFont(WHITE, time, "SCORE: ??????", FONT16, ALIGN_LEFT_C);
+	writeFont(WHITE, time, score.string.str, FONT16, ALIGN_LEFT_C);
+	free(score.string.str);
 }
 
 //EXTERNAL
@@ -364,6 +369,10 @@ void drawGameOverBot(int score, double fps, int frame) {
 	int decimalPart = (int)(((double)score/60.0 - (double)scoreInt) * 100.0);
 	snprintf(buffer, 12+1, "TIME: %03d:%02d", scoreInt, decimalPart);
 	writeFont(WHITE, timePosition, buffer, FONT16, ALIGN_CENTER_C);
+	
+	if (isCurrentScoreHigher(scoreInt, decimalPart) == true){
+		saveScore(scoreInt, decimalPart);
+	}
 	
 	if(frame == 0) {
 		Point aPosition = {BOT_WIDTH / 2, 70};

@@ -10,6 +10,7 @@
 #include "levels.h"
 #include "sound.h"
 #include "logic.h"
+#include "score.h"
 
 //file location for built in levels
 const char* NAME_ROMFS_PROJECT = "romfs:/levels.haxagon";
@@ -89,7 +90,7 @@ int main() {
 			audioPlay(&hexagon, ONCE);
 			audioPlay(&mainMenu, LOOP);
 			state = doMainMenu(data, loaded, select, &nlevel);
-			level = data.levels[nlevel];
+			level = data.levels[nlevel];			
 			audioStop(&mainMenu);
 			if(state == PLAYING) {
 				if(nlevel != nLastLevel) {

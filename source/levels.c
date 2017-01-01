@@ -34,7 +34,7 @@ void* getMalloc(FILE* file, size_t size, int* length, int extra, char* message) 
 	fread(length, sizeof(int), 1, file);
 	
 	if(*length > 300 || *length < 1) check(0, "SIZE ERROR!", message, DEF_DEBUG, ftell(file));
-	
+
 	void* address = malloc(size * (*length + extra));
 	check(!address, "MALLOC ERROR!", message, DEF_DEBUG, ftell(file));
 	return address;

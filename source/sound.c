@@ -6,6 +6,7 @@
 #include "sound.h"
 
 ndspWaveBuf waveBuffs[23];
+const Track EMPTY_TRACK = {0};
 
 /** INTERNAL
  * Creates a DSP block to  play audio through the DSP  sound system

@@ -31,7 +31,7 @@ int main() {
 	//pattern loading
 	LoadedState loaded = NOT_LOADED;
 	FILE* file;
-	GlobalData data;
+	GlobalData data = EMPTY_GLOBAL_DATA;
 	data.loaded = 0;
 	
 	//program init
@@ -43,7 +43,7 @@ int main() {
 	Track over;
 	Track select;
 	Track mainMenu;
-	Track bgm;
+	Track bgm = EMPTY_TRACK;
 	audioLoad("romfs:/sound/begin.wav", &begin, 0);
 	audioLoad("romfs:/sound/hexagon.wav", &hexagon, 1);
 	audioLoad("romfs:/sound/over.wav", &over, 2);
@@ -53,12 +53,12 @@ int main() {
 	//level selection and game over
 	int nlevel = 0;
 	int nLastLevel = -1;
-	Level level;
-	LiveLevel gameOver;
+	Level level = EMPTY_LEVEL;
+	LiveLevel gameOver = EMPTY_LIVE_LEVEL;
 	
 	//Controller
 	GameState state = SWITCH_LOAD_LOCATION;
-	while(1) {
+	while(state != PROGRAM_QUIT) {
 		switch(state) {
 		case SWITCH_LOAD_LOCATION:
 			switch(loaded) {
@@ -110,7 +110,6 @@ int main() {
 			break;
 		case PROGRAM_QUIT:;
 		}
-		if(state == PROGRAM_QUIT) break;
 	}
 	
 	//level free

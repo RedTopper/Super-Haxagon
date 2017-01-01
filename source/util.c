@@ -149,3 +149,12 @@ ButtonState getButton(void) {
 		snprintf(buffer, 12+1, "TIME: %03d:%02d", scoreInt, decimalPart);
 		return buffer;
  }
+
+ //EXTERNAL
+ char* getBestTime(int score) {
+		char* buffer = malloc(sizeof(char) * 12 + 1);
+		int scoreInt = (int)((double)score/60.0);
+		int decimalPart = (int)(((double)score/60.0 - (double)scoreInt) * 100.0);
+		snprintf(buffer, 12+1, "BEST: %03d:%02d", scoreInt, decimalPart);
+		return buffer;
+ }

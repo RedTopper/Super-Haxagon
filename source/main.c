@@ -33,7 +33,7 @@ int main() {
 	LoadedState loaded = NOT_LOADED;
 	GlobalData data = EMPTY_GLOBAL_DATA;
 	FILE* fileData;
-	char* scorePath;
+	const char*  scorePath;
 	data.loaded = 0;
 	
 	//program init
@@ -64,6 +64,7 @@ int main() {
 		switch(state) {
 		case SWITCH_LOAD_LOCATION:
 			freeData(data);
+			data.loaded = 0;
 			switch(loaded) {
 			default:
 			case NOT_LOADED:
@@ -71,14 +72,14 @@ int main() {
 				fileData = fopen(NAME_ROMFS_PROJECT, "rb");
 				if(!fileData) panic("NO INTERNAL FILE!", "There was no internal file to load. \
 				The game was likely compiled incorrectly.", DEF_DEBUG, (int)fileData);
-				scorePath = (char*)NAME_ROMFS_SCORE;
+				scorePath = NAME_ROMFS_SCORE;
 				loaded = ROMFS;
 				break;
 			case ROMFS:;
 				fileData = fopen(NAME_SDMC_PROJECT, "rb");
 				if(!fileData) panic("NO EXTERNAL FILE TO LOAD!", "There was no external file to load. \
 				You need to put external levels in the location defined in the README", DEF_DEBUG, (int)fileData);
-				scorePath = (char*)NAME_SDMC_SCORE;
+				scorePath = NAME_SDMC_SCORE;
 				loaded = SDMC;
 				break;
 			}

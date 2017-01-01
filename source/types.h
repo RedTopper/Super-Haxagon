@@ -34,6 +34,11 @@
 #define FILE_SCORE_ROMFS "/dataromfs.db"
 #define FILE_PROJECT "/levels.haxagon"
 
+//prefixes
+#define PREFIX_DIFFICULTY "DIFFICULTY: "
+#define PREFIX_MODE "MODE: "
+#define PREFIX_CREATOR "CREATOR: "
+
 /**
  * A color but as a structure instead of a long.
  */

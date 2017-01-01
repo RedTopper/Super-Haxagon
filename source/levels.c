@@ -59,12 +59,7 @@ FileString getString(FILE* file) {
 	return string;
 }
 
-/** INTERNAL
- * Similar to getString(...), this method obtains a string from a file, but
- * appends a constant string to the beginning of  the buffer. Useful for
- * adding prefixes to things, such as  "DIFFICULTY: " or "CREATOR: ", 
- * or even a file path location.
- */
+//EXTERNAL
 FileString getStringPrefix(const char* prefix, FILE* file) {
 	FileString string = EMPTY_STRING;
 	int prefixlen = strlen(prefix);
@@ -195,9 +190,9 @@ Level getLevel(FILE* file, Pattern* patterns, int numPatterns) {
 	
 	//strings
 	level.name = getString(file);
-	level.difficulty = getStringPrefix("DIFFICULTY: ", file);
-	level.mode = getStringPrefix("MODE: ", file);
-	level.creator = getStringPrefix("CREATOR: ", file);
+	level.difficulty = getStringPrefix(PREFIX_DIFFICULTY, file);
+	level.mode = getStringPrefix(PREFIX_MODE, file);
+	level.creator = getStringPrefix(PREFIX_CREATOR, file);
 	level.music = getStringPrefix(DIR_BGM, file);
 	
 	//colors

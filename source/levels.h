@@ -26,6 +26,14 @@ int compare(FILE* file, const char* string);
 FileString getString(FILE* file);
 
 /**
+ * Similar to getString(...), this method obtains a string from a file, but
+ * appends a constant string to the beginning of  the buffer. Useful for
+ * adding prefixes to things, such as  "DIFFICULTY: " or "CREATOR: ",
+ * or even a file path location.
+ */
+FileString getStringPrefix(const char* prefix, FILE* file);
+
+/**
  * Completely loads all information from a file.
  */
 GlobalData getData(FILE* file);

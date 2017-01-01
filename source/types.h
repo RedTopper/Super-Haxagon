@@ -95,6 +95,7 @@ typedef struct {
 	float speedRotation;
 	float speedCursor;
 	int speedPulse;
+	int score;
 	Pattern* patterns;
 	int numPatterns; 
 } Level;

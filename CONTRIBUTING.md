@@ -41,3 +41,7 @@ all pull requests:
 1. Create an issue! Tell everyone what you are working on before you do it!
 2. Wait for me to respond! If I'm no longer available, I'll never be able to merge your pull request :cry:
 3. Do it!  (and try to follow the current coding style)!
+
+## New levels
+
+Don't commit new levels here, instead,  open an issue in [Haxa-Editor](https://github.com/RedInquisitive/Haxa-Editor) to describe your  level. If it's good, I'll help you create a pull request!

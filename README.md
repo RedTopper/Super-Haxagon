@@ -13,7 +13,10 @@ A: Downloads are available on the [releases page](https://github.com/RedInquisit
 A: You can use [Haxa-Editor](https://github.com/RedInquisitive/Haxa-Editor/tree/master)! Follow the directions in the README.md of that repository for more details.
 
 #### Q: I made this really cool level, can I show you?
-A: Of course you can! If it's really good I'll add it to the game!
+A: Of course you can! If it's really good I'll add it to the game! Please follow the guidelines in [the contributing file](https://github.com/RedInquisitive/Super-Haxagon/blob/master/CONTRIBUTING.md) before you submit your level, though!
+
+#### Q: Can I contribute?
+A: Yup, follow the directions [here](https://github.com/RedInquisitive/Super-Haxagon/blob/master/CONTRIBUTING.md)!
 
 #### Q: Can I use my own music/levels?
 A: Yes! See the readme in the [sdmc folder](https://github.com/RedInquisitive/Super-Haxagon/tree/master/sdmc) for more details.

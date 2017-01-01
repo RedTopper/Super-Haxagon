@@ -106,7 +106,7 @@ LivePattern getLivePattern(Pattern* patterns, int numPatterns, double distance) 
 	live.numWalls = pattern.numWalls;
 	live.sides = pattern.sides;
 	live.walls = malloc(sizeof(LiveWall) * pattern.numWalls);
-	check(!(live.walls), "LIVE PATTERN ERROR!", "No memory!", DEF_DEBUG, 0);
+	if(!(live.walls)) panic("LIVE PATTERN ERROR!", "No memory!", DEF_DEBUG, 0x0000DEAD);
 	
 	for(int i = 0; i < pattern.numWalls; i++) {
 		

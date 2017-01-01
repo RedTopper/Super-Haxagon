@@ -30,13 +30,13 @@ const int MIN_PATTERN_SIDES = 3;
  * This memory must be freed!
  */
 void* getMalloc(FILE* file, int size, int* length, int extra, char* message) {
-	if(extra < 0) extra = 0;
-	fread(length, sizeof(int), 1, file);
-	
-	if(*length > 300 || *length < 1) check(0, "SIZE ERROR!", message, DEF_DEBUG, ftell(file));
+	if(extra < 0) extra = 0; //check for me
 
+	fread(length, sizeof(int), 1, file);
+	if(*length > 300 || *length < 1) panic("SIZE ERROR!", message, DEF_DEBUG, ftell(file));
+	
 	void* address = malloc(size * (*length + extra));
-	check(!address, "MALLOC ERROR!", message, DEF_DEBUG, ftell(file));
+	if(!address) panic("MALLOC ERROR!", message, DEF_DEBUG, ftell(file));
 	return address;
 }
 
@@ -48,7 +48,7 @@ int compare(FILE* file, const char* string) {
 	int len = strlen(string);
 	char* buff = malloc(sizeof(char) * (len + 1)); //for '/0'
 	
-	check(!buff, "NO MEM CHECK!", 
+	if(!buff) panic("NO MEM CHECK!",
 	"It is impossible to  allocate enough RAM to check \
 	this string. This should never happen.", DEF_DEBUG, ftell(file));
 	
@@ -138,7 +138,7 @@ Pattern getPattern(FILE* file) {
 	pattern.name = getString(file);
 	
 	//header
-	check(compare(file, PATTERN_HEADER), "WRONG PATTERN HEADER!", 
+	if(compare(file, PATTERN_HEADER) != 0) panic("WRONG PATTERN HEADER!",
 	"The pattern that was being loaded had the wrong header. \
 	You probably need to re-export your levels in an updated \
 	format to fix this error.", DEF_DEBUG, ftell(file));
@@ -153,7 +153,7 @@ Pattern getPattern(FILE* file) {
 	for(int i = 0; i < pattern.numWalls; i++) pattern.walls[i] = getWall(file, pattern.sides);
 	
 	//footer
-	check(compare(file, PATTERN_FOOTER), "WRONG PATTERN FOOTER!", 
+	if(compare(file, PATTERN_FOOTER) != 0) panic("WRONG PATTERN FOOTER!",
 	"The pattern that was being loaded had the wrong footer. \
 	Try re-exporting your levels in an updated format \
 	to fix this error.", DEF_DEBUG, ftell(file));
@@ -185,7 +185,7 @@ Pattern getLoadedPattern(FILE* file, Pattern* patterns, int numPatterns) {
 	free(search.str);
 	
 	//could not find pattern
-	check(i == numPatterns, "NO PATTERN LOCATED!", 
+	if(i == numPatterns) panic("NO PATTERN LOCATED!",
 	"Could not locate the pattern that needed to be linked. \
 	There was a level in the exported file that referenced a \
 	pattern that was not found. Make sure all levels \
@@ -204,7 +204,7 @@ Level getLevel(FILE* file, Pattern* patterns, int numPatterns) {
 	Level level = EMPTY_LEVEL;
 	
 	//header
-	check(compare(file, LEVEL_HEADER), "WRONG LEVEL HEADER!",  
+	if(compare(file, LEVEL_HEADER) != 0) panic("WRONG LEVEL HEADER!",
 	"The level that was being loaded had the wrong header. \
 	Try re-exporting your levels in an updated format \
 	to fix this error.", DEF_DEBUG, ftell(file));
@@ -239,11 +239,11 @@ Level getLevel(FILE* file, Pattern* patterns, int numPatterns) {
 	
 	//linked patterns (a copy of loaded patterns)
 	level.patterns = getMalloc(file, sizeof(Pattern), &level.numPatterns, 0, 
-	"Cannot alloc patterns! Check to see if all levels have at least 1 pattern.");
+	"Cannot allocate patterns! Check to see if all levels have at least 1 pattern.");
 	for(int i = 0; i < level.numPatterns; i++) level.patterns[i] = getLoadedPattern(file, patterns, numPatterns);
 	
 	//footer
-	check(compare(file, LEVEL_FOOTER), "WRONG LEVEL FOOTER!",  
+	if(compare(file, LEVEL_FOOTER) != 0) panic("WRONG LEVEL FOOTER!",
 	"The level that was being loaded had the wrong footer. \
 	Try re-exporting your levels in an updated format \
 	to fix this error.", DEF_DEBUG, ftell(file));
@@ -273,7 +273,7 @@ GlobalData getData(FILE* file) {
 	data.loaded = 0;
 	
 	//header
-	check(compare(file, PROJECT_HEADER), "WRONG PROJ HEADER!",
+	if(compare(file, PROJECT_HEADER) != 0) panic("WRONG PROJ HEADER!",
 	"The project being loaded had the wrong file header. Either you tried to \
 	load a file of the wrong format, or your  project file is out of date. Try \
 	re-exporting all levels to fix this problem.", DEF_DEBUG, ftell(file));
@@ -289,7 +289,7 @@ GlobalData getData(FILE* file) {
 	for(int i = 0; i < data.numLevels; i++) data.levels[i] = getLevel(file, data.patterns, data.numPatterns);
 	
 	//footer
-	check(compare(file, PROJECT_FOOTER), "WRONG PROJ FOOTER!",
+	if(compare(file, PROJECT_FOOTER) != 0) panic("WRONG PROJ FOOTER!",
 	"The project being loaded had the wrong file footer. Your project file \
 	is out of date or corrupted. Try re-exporting all levels to fix \
 	this problem.", DEF_DEBUG, ftell(file));

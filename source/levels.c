@@ -29,12 +29,14 @@ const int MIN_PATTERN_SIDES = 3;
  *
  * This memory must be freed!
  */
-void* getMalloc(FILE* file, size_t size, int* length, int extra, char* error) {
+void* getMalloc(FILE* file, size_t size, int* length, int extra, char* message) {
 	if(extra < 0) extra = 0;
 	fread(length, sizeof(int), 1, file);
-	if(*length > 300) check(0, "Huge alloc found!", DEF_DEBUG, ftell(file));
+	
+	if(*length > 300 || *length < 1) check(0, "SIZE ERROR!", message, DEF_DEBUG, ftell(file));
+	
 	void* address = malloc(size * (*length + extra));
-	check(!address, error, DEF_DEBUG, ftell(file));
+	check(!address, "MALLOC ERROR!", message, DEF_DEBUG, ftell(file));
 	return address;
 }
 
@@ -45,7 +47,11 @@ void* getMalloc(FILE* file, size_t size, int* length, int extra, char* error) {
 int compare(FILE* file, const char* string) {
 	int len = strlen(string);
 	char* buff = malloc(sizeof(char) * (len + 1)); //for '/0'
-	check(!buff, "Cannot check file string!", DEF_DEBUG, ftell(file));
+	
+	check(!buff, "NO MEM CHECK!", 
+	"It is impossible to  allocate enough RAM to check \
+	this string. This should never happen.", DEF_DEBUG, ftell(file));
+	
 	fread(buff, sizeof(char), len, file); //no '/0' in file, only len
 	buff[len] = '\0'; //add '/0'
 	int result = strcmp(buff, string);
@@ -60,7 +66,10 @@ int compare(FILE* file, const char* string) {
  */
 FileString getString(FILE* file) {
 	FileString string;
-	string.str = getMalloc(file, sizeof(char), &string.len, 1, "Cannot load string from file!");
+	
+	string.str = getMalloc(file, sizeof(char), &string.len, 1, 
+	"Cannot load string from file! All strings must have at least one letter.");
+	
 	fread(string.str, sizeof(char), string.len, file);
 	string.str[string.len] = '\0';
 	return string;
@@ -75,7 +84,10 @@ FileString getString(FILE* file) {
 FileString getStringPrefix(const char* prefix, FILE* file) {
 	FileString string;
 	int prefixlen = strlen(prefix);
-	string.str = getMalloc(file, sizeof(char), &string.len, prefixlen + 1, "Cannot load string from file!");
+	
+	string.str = getMalloc(file, sizeof(char), &string.len, prefixlen + 1, 
+	"Cannot load string from file with prefix!");
+	
 	memcpy(string.str, prefix, prefixlen);
 	fread(&(string.str[prefixlen]), sizeof(char), string.len, file); //potentially dangerous?
 	string.len += prefixlen;
@@ -126,19 +138,25 @@ Pattern getPattern(FILE* file) {
 	pattern.name = getString(file);
 	
 	//header
-	check(compare(file, PATTERN_HEADER), "Pattern header incorrect!", DEF_DEBUG, ftell(file));
+	check(compare(file, PATTERN_HEADER), "WRONG PATTERN HEADER!", 
+	"The pattern that was being loaded had the wrong header. \
+	You probably need to re-export your levels in an updated \
+	format to fix this error.", DEF_DEBUG, ftell(file));
 	
 	//number of sides
 	fread(&pattern.sides, sizeof(int), 1, file);
 	if(pattern.sides < MIN_PATTERN_SIDES) pattern.sides = MIN_PATTERN_SIDES;
 	
 	//walls
-	pattern.walls = getMalloc(file, sizeof(Wall), &pattern.numWalls, 0, "Cannot alloc walls!");
-	check(!pattern.numWalls, "Pattern must have at least one wall!", DEF_DEBUG, ftell(file));
+	pattern.walls = getMalloc(file, sizeof(Wall), &pattern.numWalls, 0, 
+	"Cannot alloc walls! Check to see if all patterns have at least one wall.");
 	for(int i = 0; i < pattern.numWalls; i++) pattern.walls[i] = getWall(file, pattern.sides);
 	
 	//footer
-	check(compare(file, PATTERN_FOOTER), "Pattern header incorrect!", DEF_DEBUG, ftell(file));
+	check(compare(file, PATTERN_FOOTER), "WRONG PATTERN FOOTER!", 
+	"The pattern that was being loaded had the wrong footer. \
+	Try re-exporting your levels in an updated format \
+	to fix this error.", DEF_DEBUG, ftell(file));
 	
 	//exit
 	return pattern;
@@ -167,7 +185,11 @@ Pattern getLoadedPattern(FILE* file, Pattern* patterns, int numPatterns) {
 	free(search.str);
 	
 	//could not find pattern
-	check(i == numPatterns, "Could not locate pattern!", DEF_DEBUG, ftell(file));
+	check(i == numPatterns, "NO PATTERN LOCATED!", 
+	"Could not locate the pattern that needed to be linked. \
+	There was a level in the exported file that referenced a \
+	pattern that was not found. Make sure all levels \
+	have patterns that actually exist.", DEF_DEBUG, ftell(file));
 	
 	//copy pattern if located.
 	Pattern located;
@@ -182,7 +204,10 @@ Level getLevel(FILE* file, Pattern* patterns, int numPatterns) {
 	Level level;
 	
 	//header
-	check(compare(file, LEVEL_HEADER), "Level header incorrect!", DEF_DEBUG, ftell(file));
+	check(compare(file, LEVEL_HEADER), "WRONG LEVEL HEADER!",  
+	"The level that was being loaded had the wrong header. \
+	Try re-exporting your levels in an updated format \
+	to fix this error.", DEF_DEBUG, ftell(file));
 	
 	//strings
 	level.name = getString(file);
@@ -192,14 +217,16 @@ Level getLevel(FILE* file, Pattern* patterns, int numPatterns) {
 	level.music = getStringPrefix(BGM_PATH, file);
 	
 	//colors
-	level.colorsBG1 = getMalloc(file, sizeof(Color), &level.numBG1, 0, "Cannot alloc BG1 colors!");
-	check(!level.numBG1, "Level must have at least one bg1 color!", DEF_DEBUG, ftell(file));
+	level.colorsBG1 = getMalloc(file, sizeof(Color), &level.numBG1, 0, 
+	"Cannot alloc BG1 colors! Check to see if all levels have at least 1 background 1 color.");
 	for(int i = 0; i < level.numBG1; i++) level.colorsBG1[i] = getColor(file);
-	level.colorsBG2 = getMalloc(file, sizeof(Color), &level.numBG2, 0, "Cannot alloc BG2 colors!");
-	check(!level.numBG2, "Level must have at least one bg2 color!", DEF_DEBUG, ftell(file));
+	
+	level.colorsBG2 = getMalloc(file, sizeof(Color), &level.numBG2, 0, 
+	"Cannot alloc BG2 colors! Check to see if all levels have at least 1 background 2 color.");
 	for(int i = 0; i < level.numBG2; i++) level.colorsBG2[i] = getColor(file);
-	level.colorsFG = getMalloc(file, sizeof(Color), &level.numFG, 0, "Cannot alloc FG colors!");
-	check(!level.numFG, "Level must have at least one fg color!", DEF_DEBUG, ftell(file));
+	
+	level.colorsFG = getMalloc(file, sizeof(Color), &level.numFG, 0, 
+	"Cannot alloc FG colors! Check to see if all levels have at least 1 foreground color.");
 	for(int i = 0; i < level.numFG; i++) level.colorsFG[i] = getColor(file);
 	
 	//floats
@@ -211,12 +238,15 @@ Level getLevel(FILE* file, Pattern* patterns, int numPatterns) {
 	fread(&level.speedPulse, sizeof(int), 1, file);
 	
 	//linked patterns (a copy of loaded patterns)
-	level.patterns = getMalloc(file, sizeof(Pattern), &level.numPatterns, 0, "Cannot alloc patterns!");
-	check(!level.numPatterns, "Level must have at least one pattern!", DEF_DEBUG, ftell(file));
+	level.patterns = getMalloc(file, sizeof(Pattern), &level.numPatterns, 0, 
+	"Cannot alloc patterns! Check to see if all levels have at least 1 pattern.");
 	for(int i = 0; i < level.numPatterns; i++) level.patterns[i] = getLoadedPattern(file, patterns, numPatterns);
 	
 	//footer
-	check(compare(file, LEVEL_FOOTER), "Level footer incorrect!", DEF_DEBUG, ftell(file));
+	check(compare(file, LEVEL_FOOTER), "WRONG LEVEL FOOTER!",  
+	"The level that was being loaded had the wrong footer. \
+	Try re-exporting your levels in an updated format \
+	to fix this error.", DEF_DEBUG, ftell(file));
 	
 	//exit
 	return level;
@@ -243,20 +273,27 @@ GlobalData getData(FILE* file) {
 	data.loaded = 0;
 	
 	//header
-	check(compare(file, PROJECT_HEADER), "Wrong file type/format/version!", DEF_DEBUG, ftell(file));
+	check(compare(file, PROJECT_HEADER), "WRONG PROJ HEADER!",
+	"The project being loaded had the wrong file header. Either you tried to \
+	load a file of the wrong format, or your  project file is out of date. Try \
+	re-exporting all levels to fix this problem.", DEF_DEBUG, ftell(file));
 	
 	//patterns
-	data.patterns = getMalloc(file, sizeof(Pattern), &data.numPatterns, 0, "Cannot alloc patterns!");
-	check(!data.numPatterns, "Must load at least one pattern!", DEF_DEBUG, ftell(file));
+	data.patterns = getMalloc(file, sizeof(Pattern), &data.numPatterns, 0, 
+	"Cannot alloc patterns! You must load at least one pattern!");
 	for(int i = 0; i < data.numPatterns; i++) data.patterns[i] = getPattern(file);
 	
 	//levels
-	data.levels = getMalloc(file, sizeof(Level), &data.numLevels, 0, "Cannot alloc levels!");
-	check(!data.numLevels, "Must load at least one level!", DEF_DEBUG, ftell(file));
+	data.levels = getMalloc(file, sizeof(Level), &data.numLevels, 0, 
+	"Cannot alloc levels! You must load at least one level!");
 	for(int i = 0; i < data.numLevels; i++) data.levels[i] = getLevel(file, data.patterns, data.numPatterns);
 	
 	//footer
-	check(compare(file, PROJECT_FOOTER), "Project footer incorrect!", DEF_DEBUG, ftell(file));
+	check(compare(file, PROJECT_FOOTER), "WRONG PROJ FOOTER!",
+	"The project being loaded had the wrong file footer. Your project file \
+	is out of date or curropted. Try re-exporting all levels to fix \
+	this problem.", DEF_DEBUG, ftell(file));
+	
 	data.loaded = 1;
 	return data;
 }

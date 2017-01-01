@@ -5,7 +5,7 @@
 #define SCREEN_HEIGHT 240
 #define TOP_WIDTH  400
 #define BOT_WIDTH  320
-#define TOTAL_PATTERNS_AT_ONE_TIME 3
+#define TOTAL_PATTERNS_AT_ONE_TIME 4
 
 //Inside hexagon style
 #define DEF_HEX_FULL_LEN 24.0
@@ -100,7 +100,6 @@ typedef struct {
 typedef struct {
 	int transitionFrame;
 	int transitionDirection;
-	int transitioning;
 	int lastLevel;
 	int level;
 } MainMenu;

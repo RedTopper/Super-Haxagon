@@ -106,7 +106,8 @@ LivePattern getLivePattern(Pattern* patterns, int numPatterns, double distance) 
 	live.numWalls = pattern.numWalls;
 	live.sides = pattern.sides;
 	live.walls = malloc(sizeof(LiveWall) * pattern.numWalls);
-	check(!(live.walls), "Failed to allocate new live patterns!", DEF_DEBUG, 0);
+	check(!(live.walls), "LIVE PATTERN ERROR!", "No memory!", DEF_DEBUG, 0);
+	
 	for(int i = 0; i < pattern.numWalls; i++) {
 		
 		//clamp it to the amount of sides in the pattern.
@@ -148,7 +149,7 @@ GameState doMainMenu(GlobalData data, LoadedState loaded, Track select, int* lev
 		//LOGIC
 		ButtonState press = getButton();
 		if(press == QUIT) return PROGRAM_QUIT;
-		if(!(menu.transitioning)) {
+		if(!(menu.transitionDirection)) {
 			switch(press) {
 			case BACK:
 				return SWITCH_LOAD_LOCATION;
@@ -156,14 +157,12 @@ GameState doMainMenu(GlobalData data, LoadedState loaded, Track select, int* lev
 				*level = menu.level;
 				return PLAYING;
 			case DIR_RIGHT:
-				menu.transitioning = true;
 				menu.transitionDirection = 1;
 				menu.lastLevel = menu.level;
 				menu.level++;
 				audioPlay(&select, ONCE);
 				break;
 			case DIR_LEFT:
-				menu.transitioning = true;
 				menu.transitionDirection = -1;
 				menu.lastLevel = menu.level;
 				menu.level--;
@@ -174,10 +173,10 @@ GameState doMainMenu(GlobalData data, LoadedState loaded, Track select, int* lev
 		}
 		if(menu.level >=  data.numLevels) menu.level = 0;
 		if(menu.level < 0) menu.level = data.numLevels - 1;
-		if(menu.transitioning) menu.transitionFrame++;
+		if(menu.transitionDirection) menu.transitionFrame++;
 		if(menu.transitionFrame >= DEF_FRAMES_PER_TRANSITION) {
-			menu.transitioning = false;
 			menu.transitionFrame = 0;
+			menu.transitionDirection = 0;
 		}
 		
 		//DRAW
@@ -194,7 +193,6 @@ GameState doMainMenu(GlobalData data, LoadedState loaded, Track select, int* lev
 
 //EXTERNAL
 GameState doPlayGame(Level level, LiveLevel* gameOver) {
-	
 	int delayFrame = 0; //tweening between side switches
 	int flipFrame = FLIP_FRAMES_MAX; //amount of frames left until flip
 	
@@ -213,7 +211,7 @@ GameState doPlayGame(Level level, LiveLevel* gameOver) {
 	liveLevel.nextIndexBG2 = (1 < level.numBG2 ? 1 : 0);
 	liveLevel.nextIndexFG = (1 < level.numFG ? 1 : 0);
 	liveLevel.score = 0;
-	
+
 	//fetch some random starting patterns
 	double distance = (double)SCREEN_TOP_DIAG_FROM_CENTER;
 	for(int i = 0;  i < TOTAL_PATTERNS_AT_ONE_TIME;  i++) {
@@ -224,7 +222,7 @@ GameState doPlayGame(Level level, LiveLevel* gameOver) {
 	//set up the amount of sides the level should have.
 	int lastSides = liveLevel.patterns[0].sides;
 	int currentSides = liveLevel.patterns[0].sides;
-	
+
 	while(aptMainLoop()) {
 		
 		//current value of sides.
@@ -342,6 +340,7 @@ GameState doPlayGame(Level level, LiveLevel* gameOver) {
 		drawPlayGameBot(level.name, liveLevel.score, sf2d_get_fps());
 		sf2d_end_frame();
 		sf2d_swapbuffers();
+
 	}
 	audioFree(&levelUp);
 	return PROGRAM_QUIT;

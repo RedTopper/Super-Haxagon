@@ -115,7 +115,8 @@ void drawRegular(Color color, Point focus, int height, double rotation, double s
 	int exactSides = (int)(sides + 0.99999);
 	
 	Point* edges = malloc(sizeof(Point) * exactSides);
-	check(!edges, "Error drawing regular polygon!", DEF_DEBUG, 0x0);
+	check(!edges, "POLYGON ERROR!", "There was an error allocating memory for \
+	a regular polygon. This should never happen.", DEF_DEBUG, 0x0);
 	
 	//calculate the triangle backwards so it overlaps correctly.
 	for(int i = 0; i < exactSides; i++) {
@@ -154,7 +155,8 @@ void drawBackground(Color color1, Color color2, Point focus, double height, doub
 	
 	//This draws the main background.
 	Point* edges = malloc(sizeof(Point) * exactSides);
-	check(!edges, "Error drawing background!", DEF_DEBUG, 0x0);
+	check(!edges, "BG ERROR!", "There was an error allocating memory for \
+	the background. This should never happen.", DEF_DEBUG, 0x0);
 	
 	for(int i = 0; i < exactSides; i++) {
 		edges[i].x = (int)(height * cos(rotation + (double)i * TAU/sides) + (double)(focus.x) + 0.5);
@@ -217,7 +219,7 @@ void drawMainMenu(GlobalData data, MainMenu menu) {
 	Color BG3;
 	Level lastLevel = data.levels[menu.lastLevel];
 	Level level = data.levels[menu.level];
-	if(menu.transitioning) {
+	if(menu.transitionDirection) {
 		FG = interpolateColor(lastLevel.colorsFG[0], level.colorsFG[0], percentRotated);
 		BG1 = interpolateColor(lastLevel.colorsBG1[0], level.colorsBG2[0], percentRotated);
 		BG2 = interpolateColor(lastLevel.colorsBG2[0], level.colorsBG1[0], percentRotated);
@@ -313,7 +315,7 @@ void drawPlayGame(Level level, LiveLevel liveLevel, double offset, double sides)
 	//fix for triangle levels 
 	int diagnal = (sides >= 3 && sides < 4 ? SCREEN_TOP_DIAG_FROM_CENTER * 2 : SCREEN_TOP_DIAG_FROM_CENTER);
 	
-	drawBackground(BG1, BG2, SCREEN_CENTER, diagnal * 2, liveLevel.rotation, sides);
+	drawBackground(BG1, BG2, SCREEN_CENTER, diagnal, liveLevel.rotation, sides);
 	
 	//draw shadows
 	Point offsetFocus = {SCREEN_CENTER.x + SHADOW_X, SCREEN_CENTER.y + SHADOW_Y};

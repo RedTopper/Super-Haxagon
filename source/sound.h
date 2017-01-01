@@ -9,7 +9,7 @@ typedef struct {
 	u16 ndspFormat;
 	int ndspChannel;
 	int level;
-	bool loaded;
+	int loaded;
 } Track;
 
 typedef enum {

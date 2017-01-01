@@ -9,7 +9,7 @@ double linear(double start, double end, double percent);
  * Checks a result and, if it's bad, will hang the program in a loop and
  * display an error to the user with a file offset.
  */
-int check(int result, const char* message, const char* file, const char* function, int line, int error);
+int check(int result, const char* title, const char* message, const char* file, const char* function, int line, int error);
 
 /**
  * Full linear interpolation of a color.

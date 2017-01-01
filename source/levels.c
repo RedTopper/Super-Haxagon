@@ -22,7 +22,7 @@ const int MIN_PATTERN_SIDES = 3;
 /** INTERNAL
  * Gets a memory address with specific parameters.
  * FILE* file Pointer to a file stream
- * int size The size of the struct/data type to allocate
+ * int size The size of the data type to allocate
  * int* length A pointer to a variable to hold the length of the objects read.
  * int extra A value to allocate extra memory
  * char* error A string to show the user if there is a problem allocating memory.
@@ -218,15 +218,15 @@ Level getLevel(FILE* file, Pattern* patterns, int numPatterns) {
 	
 	//colors
 	level.colorsBG1 = getMalloc(file, sizeof(Color), &level.numBG1, 0, 
-	"Cannot alloc BG1 colors! Check to see if all levels have at least 1 background 1 color.");
+	"Cannot allocate BG1 colors! Check to see if all levels have at least 1 background 1 color.");
 	for(int i = 0; i < level.numBG1; i++) level.colorsBG1[i] = getColor(file);
 	
 	level.colorsBG2 = getMalloc(file, sizeof(Color), &level.numBG2, 0, 
-	"Cannot alloc BG2 colors! Check to see if all levels have at least 1 background 2 color.");
+	"Cannot allocate BG2 colors! Check to see if all levels have at least 1 background 2 color.");
 	for(int i = 0; i < level.numBG2; i++) level.colorsBG2[i] = getColor(file);
 	
 	level.colorsFG = getMalloc(file, sizeof(Color), &level.numFG, 0, 
-	"Cannot alloc FG colors! Check to see if all levels have at least 1 foreground color.");
+	"Cannot allocate FG colors! Check to see if all levels have at least 1 foreground color.");
 	for(int i = 0; i < level.numFG; i++) level.colorsFG[i] = getColor(file);
 	
 	//floats
@@ -280,18 +280,18 @@ GlobalData getData(FILE* file) {
 	
 	//patterns
 	data.patterns = getMalloc(file, sizeof(Pattern), &data.numPatterns, 0, 
-	"Cannot alloc patterns! You must load at least one pattern!");
+	"Cannot allocate patterns! You must load at least one pattern!");
 	for(int i = 0; i < data.numPatterns; i++) data.patterns[i] = getPattern(file);
 	
 	//levels
 	data.levels = getMalloc(file, sizeof(Level), &data.numLevels, 0, 
-	"Cannot alloc levels! You must load at least one level!");
+	"Cannot allocate levels! You must load at least one level!");
 	for(int i = 0; i < data.numLevels; i++) data.levels[i] = getLevel(file, data.patterns, data.numPatterns);
 	
 	//footer
 	check(compare(file, PROJECT_FOOTER), "WRONG PROJ FOOTER!",
 	"The project being loaded had the wrong file footer. Your project file \
-	is out of date or curropted. Try re-exporting all levels to fix \
+	is out of date or corrupted. Try re-exporting all levels to fix \
 	this problem.", DEF_DEBUG, ftell(file));
 	
 	data.loaded = 1;

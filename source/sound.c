@@ -11,7 +11,7 @@ ndspWaveBuf waveBuffs[23];
  * Creates a DSP block to  play audio through the DSP  sound system
  * Found in LPP by Rinnegatamante (Thanks!)
  */
-void createDspBlock(ndspWaveBuf* waveBuf, u16 bps, u32 size, bool loop, u32* data){
+void createDspBlock(ndspWaveBuf* waveBuf, u16 bps, u32 size, int loop, u32* data){
 	waveBuf->data_vaddr = (void*)data;
 	waveBuf->nsamples = size / bps;
 	waveBuf->looping = loop;
@@ -21,7 +21,7 @@ void createDspBlock(ndspWaveBuf* waveBuf, u16 bps, u32 size, bool loop, u32* dat
 
 //EXTERNAL
 void audioLoad(char* path, Track* sound, int channel) {
-	sound->loaded = false;
+	sound->loaded = 0;
 	
 	//open file
 	FILE *file = fopen(path, "rb");
@@ -72,7 +72,7 @@ void audioLoad(char* path, Track* sound, int channel) {
 	}
 	
 	//finish load
-	sound->loaded = true;
+	sound->loaded = 1;
 	sound->ndspChannel = channel;
 }
 

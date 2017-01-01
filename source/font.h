@@ -12,7 +12,6 @@ typedef enum {
 } TextAlignmentC;
 
 #ifdef __cplusplus
-#include "font/source/BmpFont.h"
 extern "C" {
 #endif
 

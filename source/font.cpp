@@ -3,6 +3,7 @@
 
 #include "types.h"
 #include "font.h"
+#include "font/source/BmpFont.h"
 
 BmpFont font16;
 BmpFont font32;

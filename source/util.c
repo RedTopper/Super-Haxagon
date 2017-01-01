@@ -16,12 +16,13 @@
  * TODO: Change this to a graphical error message if possible. This method should
  * hang the program until the user quits via  home or homebrew exit.
  */
-void panic(const char* message, const char* file, const char* function, int line, int error) {
+void panic(const char* title, const char* message, const char* file, const char* function, int line, int error) {
 	FILE* panic = fopen("sdmc:/haxapanic.txt", "a");
 	if(panic) {
 		fprintf(panic, "Compilation date: %s %s\n", __DATE__, __TIME__);
 		fprintf(panic, "Sorry! There was a problem during runtime.\n");
-		fprintf(panic, "Message: %s\n", message);
+		fprintf(panic, "Title: %s\n", title);
+		fprintf(panic, "...with message: %s\n", message);
 		fprintf(panic, "...in file: %s.\n", file);
 		fprintf(panic, "...in function: %s.\n", function);
 		fprintf(panic, "...on line: %d.\n", line);
@@ -50,14 +51,14 @@ void panic(const char* message, const char* file, const char* function, int line
 }
 
 //EXTERNAL
-double linear(double start, double end, double percent) {
-    return (end - start) * percent + start;
+int check(int result, const char* title, const char* message, const char* file, const char* function, int line, int error) {
+	if(result) panic(title, message, file, function, line, error);
+	return result;
 }
 
 //EXTERNAL
-int check(int result, const char* message, const char* file, const char* function, int line, int error) {
-	if(result) panic(message, file, function, line, error);
-	return result;
+double linear(double start, double end, double percent) {
+    return (end - start) * percent + start;
 }
 
 //EXTERNAL

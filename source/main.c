@@ -12,8 +12,10 @@
 #include "logic.h"
 
 //file location for built in levels
-const char* PROJECT_FILE_NAME = "romfs:/levels.haxagon";
-const char* SDMC_PROJECT_NAME = "sdmc:/3ds/data/haxagon/levels.haxagon";
+const char* NAME_ROMFS_PROJECT = "romfs:/levels.haxagon";
+const char* NAME_ROMFS_SCORE = "sdmc:/3ds/data/haxagon/dataromfs.db";
+const char* NAME_SDMC_PROJECT = "sdmc:/3ds/data/haxagon/levels.haxagon";
+const char* NAME_SDMC_SCORE = "sdmc:/3ds/data/haxagon/datasdmc.db";
 
 int main() {
 	
@@ -28,6 +30,7 @@ int main() {
 	
 	//pattern loading
 	LoadedState loaded = NOT_LOADED;
+	FILE* file;
 	GlobalData data;
 	data.loaded = 0;
 	
@@ -57,24 +60,26 @@ int main() {
 	GameState state = SWITCH_LOAD_LOCATION;
 	while(1) {
 		switch(state) {
-		case SWITCH_LOAD_LOCATION:;
-			FILE* file;
+		case SWITCH_LOAD_LOCATION:
 			switch(loaded) {
 			default:
 			case NOT_LOADED:
 			case SDMC:;
-				file = fopen(PROJECT_FILE_NAME, "rb");
-				check(!file, "NO INTERNAL FILE!", DEF_DEBUG, 0);
+				file = fopen(NAME_ROMFS_PROJECT, "rb");
+				check(!file, "NO INTERNAL FILE!", "There was no internal file to load. \
+				The game was likely compiled incorrectly.", DEF_DEBUG, 0);
 				loaded = ROMFS;
 				break;
 			case ROMFS:;
-				file = fopen(SDMC_PROJECT_NAME, "rb");
-				check(!file, "NO EXTERNAL FILE TO LOAD!", DEF_DEBUG, 0);
+				file = fopen(NAME_SDMC_PROJECT, "rb");
+				check(!file, "NO EXTERNAL FILE TO LOAD!", "There was no external file to load. \
+				You need to put external levels in the location defined in the README", DEF_DEBUG, 0);
 				loaded = SDMC;
 				break;
 			}
 			freeData(data);
 			data = getData(file);
+			fclose(file);
 			state = MAIN_MENU;
 			nlevel = 0;
 			nLastLevel = -1;
@@ -103,8 +108,7 @@ int main() {
 			audioPlay(&over, ONCE);
 			state = doGameOver(level, gameOver);
 			break;
-		case PROGRAM_QUIT:
-		default:;
+		case PROGRAM_QUIT:;
 		}
 		if(state == PROGRAM_QUIT) break;
 	}

@@ -398,7 +398,7 @@ void drawPanic(const char* message, const char* file, const char* function, int 
 }
 
 //EXTERNAL
-void drawPanicBot() {
+void drawPanicBot(void) {
 	Point topLeft = {0,0};
 	Point screenSize = {BOT_WIDTH, SCREEN_HEIGHT};
 	Point posCanada = {BOT_WIDTH / 2, SCREEN_HEIGHT / 2 - 16};

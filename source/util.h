@@ -27,7 +27,7 @@ Point calcPoint(Point focus, double rotation, double offset, double distance);
 /**
  * Gets a button state from user input.
  */
-ButtonState getButton();
+ButtonState getButton(void);
 
 /**
  * Gets the current level that the score represents (for example, point)

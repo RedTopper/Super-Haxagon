@@ -22,4 +22,4 @@ void drawGameOverBot(int score, double fps, int frame);
  * :(
  */
 void drawPanic(const char* message, const char* file, const char* function, int line, int error);
-void drawPanicBot();
+void drawPanicBot(void);

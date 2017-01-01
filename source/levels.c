@@ -1,5 +1,5 @@
-#include <stdio.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 
 #include "types.h"
@@ -22,14 +22,14 @@ const int MIN_PATTERN_SIDES = 3;
 /** INTERNAL
  * Gets a memory address with specific parameters.
  * FILE* file Pointer to a file stream
- * size_t size The size of the struct/data type to allocate
+ * int size The size of the struct/data type to allocate
  * int* length A pointer to a variable to hold the length of the objects read.
  * int extra A value to allocate extra memory
  * char* error A string to show the user if there is a problem allocating memory.
  *
  * This memory must be freed!
  */
-void* getMalloc(FILE* file, size_t size, int* length, int extra, char* message) {
+void* getMalloc(FILE* file, int size, int* length, int extra, char* message) {
 	if(extra < 0) extra = 0;
 	fread(length, sizeof(int), 1, file);
 	

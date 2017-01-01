@@ -90,7 +90,7 @@ Point calcPoint(Point focus, double rotation, double offset, double distance)  {
 }
 
 //EXTERNAL
-ButtonState getButton() {
+ButtonState getButton(void) {
 	hidScanInput();
 	u32 kDown = hidKeysDown();
 	u32 kHold = hidKeysHeld();

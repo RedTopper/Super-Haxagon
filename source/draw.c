@@ -39,7 +39,7 @@ void drawTriangle(Color color, Point points[3]) {
 }
 
 /** INTERNAL
- * Draws a trapizoid using an array of points and a color.
+ * Draws a trapezoid using an array of points and a color.
  * The array must have 4 points.
  */
 void drawTrap(Color color, Point points[4]) {
@@ -55,7 +55,7 @@ void drawTrap(Color color, Point points[4]) {
 
 /** INTERNAL
  * Draws a rectangle using the super fast 2d library and
- * the color/point datatype.
+ * the color/point data type.
  */
 void drawRect(Color color, Point position, Point size) {
 	long paint = RGBA8(color.r,color.g,color.b,color.a);
@@ -69,7 +69,6 @@ void drawRect(Color color, Point position, Point size) {
 void drawMovingWall(Color color, Point focus, LiveWall wall, double rotation, double sides) {
 	double distance = wall.distance;
 	double height = wall.height;
-	
 	if(distance + height < DEF_HEX_FULL_LEN) return; //TOO_CLOSE;
 	if(distance > SCREEN_TOP_DIAG_FROM_CENTER) return; //TOO_FAR; 
 	if(wall.side >= sides) return; //NOT_IN_RANGE
@@ -108,7 +107,7 @@ void drawMovingPatterns(Color color, Point focus, LiveLevel live, double offset,
 }
 
 /** INTERNAL
- * Draws a regular polygon at some point focus. Usefull for generating
+ * Draws a regular polygon at some point focus. Useful for generating
  * the regular polygon in the center of the screen.
  */
 void drawRegular(Color color, Point focus, int height, double rotation, double sides) {
@@ -246,59 +245,58 @@ void drawMainMenu(GlobalData data, MainMenu menu) {
 	drawRegular(BG3, focus, DEF_HEX_FULL_LEN - DEF_HEX_BORDER_LEN, rotation, 6.0);
 	drawHumanCursor(FG, focus, TAU/4.0, 0); //Draw cursor fixed quarter circle, no movement.
 
-	//text positions
-	Point title = {4, 4};
-	Point difficulty = {4, 40};
-	Point mode = {4, 56};
-	Point creator = {4, 72};
-	Point time = {4, SCREEN_HEIGHT - 18};
-	
 	//top rectangle and triangle
-	int triangleWidth = 70;
-	int distanceFromRightSide = 30;
-	
+	int TRIANGLE_WIDTH = 70;
+	int GAP_FROM_RIGHT_SIDE = 30;
+
+	//text positions
+	Point posTitle = {4, 4};
+	Point posDifficulty = {4, 40};
+	Point posMode = {4, 56};
+	Point posCreator = {4, 72};
+	Point posTime = {4, SCREEN_HEIGHT - 18};
+
 	Point infoPos = {0, 0};
-	Point infoSize = {TOP_WIDTH - triangleWidth - distanceFromRightSide, creator.y + 16 + 2};
-	drawRect(TRANSP, infoPos, infoSize);
-	Point triangle1[3] = {
+	Point infoSize = {TOP_WIDTH - TRIANGLE_WIDTH - GAP_FROM_RIGHT_SIDE, posCreator.y + 16 + 2};
+	Point infoTriangle[3] = {
 		{infoSize.x, SCREEN_HEIGHT - 1 - infoSize.y},
 		{infoSize.x, SCREEN_HEIGHT - 1},
-		{infoSize.x + triangleWidth, SCREEN_HEIGHT - 1}};
-	drawTriangle(TRANSP, triangle1);
+		{infoSize.x + TRIANGLE_WIDTH, SCREEN_HEIGHT - 1}};
+	drawRect(TRANSP, infoPos, infoSize);
+	drawTriangle(TRANSP, infoTriangle);
 	
 	//score block with triangle
-	Point timePos = {0, time.y - 4};
-	Point timeSize = {11/*chars*/ * 16, 16 + 8};
-	drawRect(TRANSP, timePos, timeSize);
-	Point triangle2[3] = {
-		{timeSize.x, timeSize.y - 2}, //Why -2?
+	Point timePos = {0, posTime.y - 4};
+	Point timeSize = {9/*chars?*/ * 16 + 4, 16 + 8};
+	Point timeTriangle[3] = {
+		{timeSize.x, timeSize.y - 3},
 		{timeSize.x, - 1}, //why does this have to be -1?
 		{timeSize.x + 18, -1}}; //I mean, it works...
-	drawTriangle(TRANSP, triangle2);
+	drawRect(TRANSP, timePos, timeSize);
+	drawTriangle(TRANSP, timeTriangle);
 
 	//actual text
-	writeFont(WHITE, title, level.name.str, FONT32, ALIGN_LEFT_C);
-	writeFont(GREY, difficulty, level.difficulty.str, FONT16, ALIGN_LEFT_C);
-	writeFont(GREY, mode, level.mode.str, FONT16, ALIGN_LEFT_C);
-	writeFont(GREY, creator, level.creator.str, FONT16, ALIGN_LEFT_C);
-	writeFont(WHITE, time, "SCORE: ??????", FONT16, ALIGN_LEFT_C);
+	char* scoreTime  = getScoreTime(level.score);
+	writeFont(WHITE, posTitle, level.name.str, FONT32, ALIGN_LEFT_C);
+	writeFont(GREY, posDifficulty, level.difficulty.str, FONT16, ALIGN_LEFT_C);
+	writeFont(GREY, posMode, level.mode.str, FONT16, ALIGN_LEFT_C);
+	writeFont(GREY, posCreator, level.creator.str, FONT16, ALIGN_LEFT_C);
+	writeFont(WHITE, posTime, scoreTime, FONT16, ALIGN_LEFT_C);
 }
 
 //EXTERNAL
 void drawMainMenuBot(LoadedState loaded, double fps) {
 	Point topLeft = {0,0};
 	Point screenSize = {BOT_WIDTH, SCREEN_HEIGHT};
+	Point posButton = {4, 4};
+	Point posLocation = {194, 4};
+	Point posLevels = {4, posLocation.y + 16 + 2};
+
 	drawRect(BLACK, topLeft, screenSize);
-	
-	Point location = {4, 4};
-	writeFont(WHITE, location, "PRESS B TO LOAD", FONT16, ALIGN_LEFT_C);
-	
-	Point state = {194, 4};
-	if(loaded == ROMFS) writeFont(WHITE, state, "SDMC", FONT16, ALIGN_LEFT_C);
-	if(loaded == SDMC) writeFont(WHITE, state, "ROMFS", FONT16, ALIGN_LEFT_C);
-	
-	Point levels = {4, state.y + 16 + 2};
-	writeFont(WHITE, levels, "LEVELS", FONT16, ALIGN_LEFT_C);
+	writeFont(WHITE, posButton, "PRESS B TO LOAD", FONT16, ALIGN_LEFT_C);
+	if(loaded == ROMFS) writeFont(WHITE, posLocation, "SDMC", FONT16, ALIGN_LEFT_C);
+	if(loaded == SDMC) writeFont(WHITE, posLocation, "ROMFS", FONT16, ALIGN_LEFT_C);
+	writeFont(WHITE, posLevels, "LEVELS", FONT16, ALIGN_LEFT_C);
 	
 	drawFramerate(fps);
 }
@@ -334,17 +332,15 @@ void drawPlayGame(Level level, LiveLevel liveLevel, double offset, double sides)
 void drawPlayGameBot(FileString name, int score, double fps) {
 	Point topLeft = {0,0};
 	Point screenSize = {BOT_WIDTH, SCREEN_HEIGHT};
+	Point posLevelUp = {4,4};
+	Point posScore = {BOT_WIDTH - 4, 4};
+
 	drawRect(BLACK, topLeft, screenSize);
-	
-	Point levelUpPosition = {4,4};
-	writeFont(WHITE, levelUpPosition, getScoreText(score), FONT16, ALIGN_LEFT_C);
-	
-	Point scorePosition = {BOT_WIDTH - 4, 4};
-	char buffer[6 + 1]; //null term
-	int scoreInt = (int)((double)score/60.0);
-	int decimalPart = (int)(((double)score/60.0 - (double)scoreInt) * 100.0);
-	snprintf(buffer, 6 + 1, "%03d:%02d", scoreInt, decimalPart); //Emergency stack overflow prevention
-	writeFont(WHITE, scorePosition, buffer, FONT16, ALIGN_RIGHT_C);
+
+	char* scoreTime  = getScoreTime(score);
+	writeFont(WHITE, posScore, scoreTime, FONT16, ALIGN_RIGHT_C);
+	writeFont(WHITE, posLevelUp, getScoreText(score), FONT16, ALIGN_LEFT_C);
+	free(scoreTime);
 	
 	drawFramerate(fps);
 }
@@ -353,23 +349,21 @@ void drawPlayGameBot(FileString name, int score, double fps) {
 void drawGameOverBot(int score, double fps, int frame) {
 	Point topLeft = {0,0};
 	Point screenSize = {BOT_WIDTH, SCREEN_HEIGHT};
+	Point posGameOver = {BOT_WIDTH / 2, 4};
+	Point posTime = {BOT_WIDTH / 2, 40};
+	Point posA = {BOT_WIDTH / 2, 70};
+	Point posB = {BOT_WIDTH / 2, 86};
+
 	drawRect(BLACK, topLeft, screenSize);
 
-	Point gameOverPosition = {BOT_WIDTH / 2, 4};
-	writeFont(WHITE, gameOverPosition, "GAME OVER", FONT32, ALIGN_CENTER_C);
-	
-	Point timePosition = {BOT_WIDTH / 2, 40};
-	char buffer[12+1];
-	int scoreInt = (int)((double)score/60.0);
-	int decimalPart = (int)(((double)score/60.0 - (double)scoreInt) * 100.0);
-	snprintf(buffer, 12+1, "TIME: %03d:%02d", scoreInt, decimalPart);
-	writeFont(WHITE, timePosition, buffer, FONT16, ALIGN_CENTER_C);
+	char* scoreTime  = getScoreTime(score);
+	writeFont(WHITE, posGameOver, "GAME OVER", FONT32, ALIGN_CENTER_C);
+	writeFont(WHITE, posTime, scoreTime, FONT16, ALIGN_CENTER_C);
+	free(scoreTime);
 	
 	if(frame == 0) {
-		Point aPosition = {BOT_WIDTH / 2, 70};
-		writeFont(WHITE, aPosition, "PRESS A TO PLAY", FONT16, ALIGN_CENTER_C);
-		Point bPosition = {BOT_WIDTH / 2, 86};
-		writeFont(WHITE, bPosition, "PRESS B TO QUIT", FONT16, ALIGN_CENTER_C);
+		writeFont(WHITE, posA, "PRESS A TO PLAY", FONT16, ALIGN_CENTER_C);
+		writeFont(WHITE, posB, "PRESS B TO QUIT", FONT16, ALIGN_CENTER_C);
 	}
 	
 	drawFramerate(fps);
@@ -379,37 +373,36 @@ void drawGameOverBot(int score, double fps, int frame) {
 void drawPanic(const char* message, const char* file, const char* function, int line, int error) {
 	Point topLeft = {0,0};
 	Point screenSize = {TOP_WIDTH, SCREEN_HEIGHT};
+	Point posAwwSnap = {TOP_WIDTH / 2, 4};
+	Point posCrash = {TOP_WIDTH / 2, posAwwSnap.y + 32 + 4};
+	Point posInfo = {TOP_WIDTH / 2, posCrash.y + 16 + 2};
+	Point posMessage = {TOP_WIDTH / 2, posInfo.y + 32 + 2};
+	Point posFile = {TOP_WIDTH / 2, posMessage.y + 16 + 2};
+	Point posFunct = {TOP_WIDTH / 2, posFile.y + 16 + 2};
+	Point posCheck = {TOP_WIDTH / 2, posFunct.y + 48 + 2};
+	Point posButtons = {TOP_WIDTH / 2, posCheck.y + 16 + 2};
+
 	drawRect(BLACK, topLeft, screenSize);
 	
-	Point awwsnap = {TOP_WIDTH / 2, 4};
-	writeFont(WHITE, awwsnap, "AWW SNAP!", FONT32, ALIGN_CENTER_C);
+	writeFont(WHITE, posAwwSnap, "AWW SNAP!", FONT32, ALIGN_CENTER_C);
+	writeFont(WHITE, posCrash, "LOOKS LIKE THE GAME CRASHED!", FONT16, ALIGN_CENTER_C);
+	writeFont(WHITE, posInfo, "HERE'S SOME INFORMATION:", FONT16, ALIGN_CENTER_C);
 	
-	Point crash = {TOP_WIDTH / 2, awwsnap.y + 32 + 4};
-	writeFont(WHITE, crash, "LOOKS LIKE THE GAME CRASHED!", FONT16, ALIGN_CENTER_C);
-	
-	Point info = {TOP_WIDTH / 2, crash.y + 16 + 2};
-	writeFont(WHITE, info, "HERE'S SOME INFORMATION:", FONT16, ALIGN_CENTER_C);
-	
-	//WARNING: PROGRAM WILL SHIT ITSELF IF writeFont(...) EVER MESSES WITH THE STRING! 
-	Point msg = {TOP_WIDTH / 2, info.y + 32 + 2};
-	writeFont(WHITE, msg, (char*)message, FONT16, ALIGN_CENTER_C);
-	Point fl = {TOP_WIDTH / 2, msg.y + 16 + 2};
-	writeFont(WHITE, fl, (char*)file, FONT16, ALIGN_CENTER_C);
-	Point fc = {TOP_WIDTH / 2, fl.y + 16 + 2};
-	writeFont(WHITE, fc, (char*)function, FONT16, ALIGN_CENTER_C);
-	
-	Point check = {TOP_WIDTH / 2, fc.y + 48 + 2};
-	writeFont(WHITE, check, "CHECK HAXAPANIC.TXT FOR INFO", FONT16, ALIGN_CENTER_C);
-	Point buttons = {TOP_WIDTH / 2, check.y + 16 + 2};
-	writeFont(WHITE, buttons, "PRESS START OR HOME TO QUIT", FONT16, ALIGN_CENTER_C);
+	//WARNING: PROGRAM WILL BE MAD IF writeFont(...) EVER MESSES WITH THE STRING!
+	writeFont(WHITE, posMessage, (char*)message, FONT16, ALIGN_CENTER_C);
+	writeFont(WHITE, posFile, (char*)file, FONT16, ALIGN_CENTER_C);
+	writeFont(WHITE, posFunct, (char*)function, FONT16, ALIGN_CENTER_C);
+
+	writeFont(WHITE, posCheck, "CHECK HAXAPANIC.TXT FOR INFO", FONT16, ALIGN_CENTER_C);
+	writeFont(WHITE, posButtons, "PRESS START OR HOME TO QUIT", FONT16, ALIGN_CENTER_C);
 }
 
 //EXTERNAL
 void drawPanicBot() {
 	Point topLeft = {0,0};
 	Point screenSize = {BOT_WIDTH, SCREEN_HEIGHT};
+	Point posCanada = {BOT_WIDTH / 2, SCREEN_HEIGHT / 2 - 16};
+
 	drawRect(BLACK, topLeft, screenSize);
-	
-	Point frown = {BOT_WIDTH / 2, SCREEN_HEIGHT / 2 - 16};
-	writeFont(WHITE, frown, "SORRY", FONT32, ALIGN_CENTER_C);
+	writeFont(WHITE, posCanada, "SORRY", FONT32, ALIGN_CENTER_C);
 }

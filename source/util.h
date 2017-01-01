@@ -34,3 +34,13 @@ ButtonState getButton();
  * if the user is less than 10 seconds into the game)
  */
  char* getScoreText(int score);
+
+ /**
+  * Kind of like getScoreText(int score), this method converts a score
+  * into a string. The resulting string MUST be freed! The format of  this
+  * method looks like such:
+  *
+  * TTT:%% where  TTT is the current time in seconds, and %% is  the percent
+  * through the current second.
+  */
+ char* getScoreTime(int score);

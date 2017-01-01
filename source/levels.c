@@ -65,7 +65,7 @@ int compare(FILE* file, const char* string) {
  * well as the length
  */
 FileString getString(FILE* file) {
-	FileString string;
+	FileString string = EMPTY_STRING;
 	
 	string.str = getMalloc(file, sizeof(char), &string.len, 1, 
 	"Cannot load string from file! All strings must have at least one letter.");
@@ -82,7 +82,7 @@ FileString getString(FILE* file) {
  * or even a file path location.
  */
 FileString getStringPrefix(const char* prefix, FILE* file) {
-	FileString string;
+	FileString string = EMPTY_STRING;
 	int prefixlen = strlen(prefix);
 	
 	string.str = getMalloc(file, sizeof(char), &string.len, prefixlen + 1, 
@@ -100,7 +100,7 @@ FileString getStringPrefix(const char* prefix, FILE* file) {
  * isn't too crazy.
  */
 Wall getWall(FILE* file, int maxSide) {
-	Wall wall;
+	Wall wall = EMPTY_WALL;
 	
 	//wall data
 	fread(&wall.distance, sizeof(short), 1, file);
@@ -120,7 +120,7 @@ Wall getWall(FILE* file, int maxSide) {
  * Gets an RGB color from a file. The alpha is always solid (0xFF).
  */ 
 Color getColor(FILE* file) {
-	Color color;
+	Color color = EMPTY_COLOR;
 	fread(&color.r, sizeof(char), 1, file);
 	fread(&color.g, sizeof(char), 1, file);
 	fread(&color.b, sizeof(char), 1, file);
@@ -132,7 +132,7 @@ Color getColor(FILE* file) {
  * Gets a pattern from a file.
  */
 Pattern getPattern(FILE* file) {
-	Pattern pattern;
+	Pattern pattern = EMPTY_PATTERN;
 	
 	//pattern (file) name
 	pattern.name = getString(file);
@@ -201,7 +201,7 @@ Pattern getLoadedPattern(FILE* file, Pattern* patterns, int numPatterns) {
  * Loads a level from a file based on the loaded patterns.
  */
 Level getLevel(FILE* file, Pattern* patterns, int numPatterns) {
-	Level level;
+	Level level = EMPTY_LEVEL;
 	
 	//header
 	check(compare(file, LEVEL_HEADER), "WRONG LEVEL HEADER!",  
@@ -269,7 +269,7 @@ void freeLevel(Level level) {
 
 //EXTERNAL
 GlobalData getData(FILE* file) {
-	GlobalData data;
+	GlobalData data = EMPTY_GLOBAL_DATA;
 	data.loaded = 0;
 	
 	//header

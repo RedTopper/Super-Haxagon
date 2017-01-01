@@ -41,13 +41,13 @@ int main() {
 	Track begin;
 	Track hexagon; 
 	Track over;
-	Track select;
+	Track rotate;
 	Track mainMenu;
 	Track bgm = EMPTY_TRACK;
 	audioLoad("romfs:/sound/begin.wav", &begin, 0);
 	audioLoad("romfs:/sound/hexagon.wav", &hexagon, 1);
 	audioLoad("romfs:/sound/over.wav", &over, 2);
-	audioLoad("romfs:/sound/select.wav", &select, 3);
+	audioLoad("romfs:/sound/select.wav", &rotate, 3);
 	audioLoad("romfs:/bgm/pamgaea.wav", &mainMenu, 5);
 	
 	//level selection and game over
@@ -88,7 +88,7 @@ int main() {
 			audioStop(&bgm);
 			audioPlay(&hexagon, ONCE);
 			audioPlay(&mainMenu, LOOP);
-			state = doMainMenu(data, loaded, select, &nlevel);
+			state = doMainMenu(data, loaded, rotate, &nlevel);
 			level = data.levels[nlevel];
 			audioStop(&mainMenu);
 			if(state == PLAYING) {
@@ -119,7 +119,7 @@ int main() {
 	audioFree(&begin);
 	audioFree(&hexagon);
 	audioFree(&over);
-	audioFree(&select);
+	audioFree(&rotate);
 	audioFree(&mainMenu);
 	audioFree(&bgm);
 	

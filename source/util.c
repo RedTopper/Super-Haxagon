@@ -11,11 +11,7 @@
 
 
 
-/** INTERNAL
- * Panics the game. This version appends to a file and immediately quits the game.
- * TODO: Change this to a graphical error message if possible. This method should
- * hang the program until the user quits via  home or homebrew exit.
- */
+//EXTERNAL
 void panic(const char* title, const char* message, const char* file, const char* function, int line, int error) {
 	FILE* panic = fopen("sdmc:/haxapanic.txt", "a");
 	if(panic) {
@@ -48,12 +44,6 @@ void panic(const char* title, const char* message, const char* file, const char*
 	sdmcExit();
 	ndspExit();	
 	exit(1);
-}
-
-//EXTERNAL
-int check(int result, const char* title, const char* message, const char* file, const char* function, int line, int error) {
-	if(result) panic(title, message, file, function, line, error);
-	return result;
 }
 
 //EXTERNAL

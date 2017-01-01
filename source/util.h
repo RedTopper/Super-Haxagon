@@ -6,10 +6,10 @@
 double linear(double start, double end, double percent);
 
 /**
- * Checks a result and, if it's bad, will hang the program in a loop and
- * display an error to the user with a file offset.
+ * Panics the game. This version appends to a file and immediately quits the game.
+ * This method should hang the program until the user quits via home or homebrew exit.
  */
-int check(int result, const char* title, const char* message, const char* file, const char* function, int line, int error);
+void panic(const char* title, const char* message, const char* file, const char* function, int line, int error);
 
 /**
  * Full linear interpolation of a color.
@@ -33,7 +33,7 @@ ButtonState getButton(void);
  * Gets the current level that the score represents (for example, point)
  * if the user is less than 10 seconds into the game)
  */
- char* getScoreText(int score);
+char* getScoreText(int score);
 
  /**
   * Kind of like getScoreText(int score), this method converts a score
@@ -43,4 +43,4 @@ ButtonState getButton(void);
   * TTT:%% where  TTT is the current time in seconds, and %% is  the percent
   * through the current second.
   */
- char* getScoreTime(int score);
+char* getScoreTime(int score);

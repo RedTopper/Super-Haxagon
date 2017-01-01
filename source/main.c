@@ -30,7 +30,8 @@ int main() {
 	
 	//pattern loading
 	LoadedState loaded = NOT_LOADED;
-	FILE* file;
+	FILE* dataFile;
+	FILE* scoreFile;
 	GlobalData data = EMPTY_GLOBAL_DATA;
 	data.loaded = 0;
 	
@@ -65,21 +66,23 @@ int main() {
 			default:
 			case NOT_LOADED:
 			case SDMC:;
-				file = fopen(NAME_ROMFS_PROJECT, "rb");
-				check(!file, "NO INTERNAL FILE!", "There was no internal file to load. \
-				The game was likely compiled incorrectly.", DEF_DEBUG, 0);
+				dataFile = fopen(NAME_ROMFS_PROJECT, "rb");
+				if(!dataFile) panic("NO INTERNAL FILE!", "There was no internal file to load. \
+				The game was likely compiled incorrectly.", DEF_DEBUG, (int)dataFile);
+				scoreFile = fopen(NAME_ROMFS_SCORE, "rb");
 				loaded = ROMFS;
 				break;
 			case ROMFS:;
-				file = fopen(NAME_SDMC_PROJECT, "rb");
-				check(!file, "NO EXTERNAL FILE TO LOAD!", "There was no external file to load. \
-				You need to put external levels in the location defined in the README", DEF_DEBUG, 0);
+				dataFile = fopen(NAME_SDMC_PROJECT, "rb");
+				if(!dataFile) panic("NO EXTERNAL FILE TO LOAD!", "There was no external file to load. \
+				You need to put external levels in the location defined in the README", DEF_DEBUG, (int)dataFile);
+				scoreFile = fopen(NAME_SDMC_SCORE, "rb");
 				loaded = SDMC;
 				break;
 			}
 			freeData(data);
-			data = getData(file);
-			fclose(file);
+			data = getData(dataFile);
+			fclose(dataFile);
 			state = MAIN_MENU;
 			nlevel = 0;
 			nLastLevel = -1;

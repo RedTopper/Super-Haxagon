@@ -12,6 +12,12 @@ double linear(double start, double end, double percent);
 void panic(const char* title, const char* message, const char* file, const char* function, int line, int error);
 
 /**
+ * Similar to panic, this function freezes the game on a  message screen. This function DOES NOT
+ * quit out of the game, unlike panic.
+ */
+void warning(const char* title, const char* message, const char* file, const char* function, int line);
+
+/**
  * Full linear interpolation of a color.
  */
 Color interpolateColor(Color one, Color two, double percent);

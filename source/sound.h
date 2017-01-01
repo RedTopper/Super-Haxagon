@@ -11,6 +11,7 @@ typedef struct {
 	int level;
 	int loaded;
 } Track;
+extern const Track EMPTY_TRACK;
 
 typedef enum {
 	LOOP,

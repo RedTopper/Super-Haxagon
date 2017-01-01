@@ -35,6 +35,7 @@ typedef struct {
 	char b;
 	char a;
 } Color;
+extern const Color EMPTY_COLOR;
 
 /**
  * A simple integer representation of an X and Y point.
@@ -43,6 +44,7 @@ typedef struct {
 	int x;
 	int y;
 } Point;
+extern const Point EMPTY_POINT;
 
 /**
  * A string as it appears in a project file.
@@ -51,6 +53,7 @@ typedef struct {
 	char* str;
 	int len;
 } FileString;
+extern const FileString EMPTY_STRING;
 
 /**
  * A wall as it appears in the project file.
@@ -60,6 +63,7 @@ typedef struct {
 	short height;
 	short side;
 } Wall;
+extern const Wall EMPTY_WALL;
 
 /**
  * A pattern as it appears in a project file.
@@ -70,6 +74,7 @@ typedef struct {
 	int numWalls;
 	int sides;
 } Pattern;
+extern const Pattern EMPTY_PATTERN;
 
 /**
  * Level data as it appears in a file.
@@ -93,6 +98,7 @@ typedef struct {
 	Pattern* patterns;
 	int numPatterns; 
 } Level;
+extern const Level EMPTY_LEVEL;
 
 /**
  * The current state of the main menu.
@@ -103,6 +109,7 @@ typedef struct {
 	int lastLevel;
 	int level;
 } MainMenu;
+extern const MainMenu EMPTY_MAIN_MENU;
 
 /**
  * A wall as it appears during runtime.
@@ -112,6 +119,7 @@ typedef struct {
 	double height;
 	int side;
 } LiveWall;
+extern const LiveWall EMPTY_LIVE_WALL;
 
 /**
  * A pattern as it appears during runtime.
@@ -121,6 +129,7 @@ typedef struct {
 	int numWalls;
 	int sides;
 } LivePattern;
+extern const LivePattern EMPTY_LIVE_PATTERN;
 
 /**
  * A level as it appears during runtime.
@@ -138,6 +147,7 @@ typedef struct {
 	int score;
 	LivePattern patterns[TOTAL_PATTERNS_AT_ONE_TIME];
 } LiveLevel;
+extern const LiveLevel EMPTY_LIVE_LEVEL;
 
 /**
  * All of the data loaded, ever.
@@ -149,6 +159,7 @@ typedef struct {
 	int numLevels;
 	int numPatterns;
 } GlobalData;
+extern const GlobalData EMPTY_GLOBAL_DATA;
 
 //States
 typedef enum {

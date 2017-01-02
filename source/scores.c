@@ -8,21 +8,16 @@
 #include "levels.h"
 #include "scores.h"
 
-const char* SCOREDB_HEADER = "SCDB1.0";
-const char* SCOREDB_FOOTER = "ENDSCDB";
+#define SCOREDB_HEADER "SCDB1.0"
+#define SCOREDB_FOOTER "ENDSCDB"
 
 /** INTERNAL
  * Reads the database file.
  */
-void createDatabase(const char* path) {
+void createPath(void) {
 	mkdir("sdmc:" DIR_3DS, 0777);
 	mkdir("sdmc:" DIR_3DS DIR_DATA, 0777);
 	mkdir("sdmc:" DIR_3DS DIR_DATA DIR_HAXAGON, 0777);
-	FILE* create = fopen(path, "wb");
-	if(!create) panic("SAVE ERROR!", "It is impossible to open the scores data for writing. "
-			"You might need to change the permissions of the save data or create the save "
-			"database manually.", DEF_DEBUG, 0xDEADF11E);
-	fclose(create);
 }
 
 /** INTERNAL
@@ -39,17 +34,38 @@ void match(GlobalData data, FileString name, FileString difficulty, FileString m
 			data.levels[i].highScore = score;
 			break;
 		}
-		warning(level.name.str, "test", DEF_DEBUG);
-		warning(level.difficulty.str, "test", DEF_DEBUG);
-		warning(level.mode.str, "test", DEF_DEBUG);
-		warning(level.creator.str, "test", DEF_DEBUG);
 	}
 }
 
 //EXTERNAL
 void putScores(const char* path, GlobalData data) {
 	FILE* file = fopen(path, "wb");
-	if(!file) createDatabase(path);
+	if(!file) {
+		createPath();
+		file = fopen(path, "wb");
+		if(!file) panic("ERROR SAVING SCORES!", "Could not open the score database in write mode.", DEF_DEBUG, (int)file);
+	}
+
+	fwrite(SCOREDB_HEADER, sizeof(char), sizeof(SCOREDB_HEADER) - 1, file);
+	fwrite(&data.numLevels, sizeof(int), 1, file);
+	for(int i = 0; i < data.numLevels; i++) {
+		Level level  = data.levels[i];
+		fwrite(&level.name.len, sizeof(int), 1, file);
+		fwrite(level.name.str, sizeof(char), level.name.len, file);
+
+		fwrite(&level.difficulty.len, sizeof(int), 1, file);
+		fwrite(level.difficulty.str, sizeof(char), level.difficulty.len, file);
+
+		fwrite(&level.mode.len, sizeof(int), 1, file);
+		fwrite(level.mode.str, sizeof(char), level.mode.len, file);
+
+		fwrite(&level.creator.len, sizeof(int), 1, file);
+		fwrite(level.creator.str, sizeof(char), level.creator.len, file);
+
+		fwrite(&level.highScore, sizeof(int), 1, file);
+	}
+	fwrite(SCOREDB_FOOTER, sizeof(char), sizeof(SCOREDB_FOOTER) - 1, file);
+	fclose(file);
 }
 
 //EXTERNAL
@@ -59,13 +75,13 @@ void getScores(const char* path, GlobalData data) {
 	//We'll at least create the file  if  it does not exist, so the user
 	//can always  save their scores.
 	if(!file) {
-		createDatabase(path);
+		putScores(path, data);
 		return;
 	}
 
 	if(compare(file, SCOREDB_HEADER) != 0) {
 		warning("WRONG SCORE DB HEADER!", "Looks like your score database "
-				"has the wrong file signature. You'll have to delete your score  database and let the game create a"
+				"has the wrong file signature. You'll have to delete your score  database and let the game create a "
 				"new one", DEF_DEBUG);
 		return;
 	}
@@ -77,9 +93,9 @@ void getScores(const char* path, GlobalData data) {
 	for(int i = 0; i < numEntries; i++) {
 		int score = 0;
 		FileString name = getString(file);
-		FileString difficulty = getStringPrefix(PREFIX_DIFFICULTY, file);
-		FileString mode = getStringPrefix(PREFIX_MODE, file);
-		FileString creator = getStringPrefix(PREFIX_CREATOR, file);
+		FileString difficulty = getString(file);
+		FileString mode = getString(file);
+		FileString creator = getString(file);
 		fread(&score, sizeof(int), 1, file);
 
 		match(data, name, difficulty, mode, creator, score);
@@ -92,7 +108,7 @@ void getScores(const char* path, GlobalData data) {
 
 	if(compare(file, SCOREDB_FOOTER) != 0) {
 		warning("WRONG SCORE DB FOOTER!", "Looks like your score database "
-				"has the wrong file footer. You'll have to delete your score database and let the game create a"
+				"has the wrong file footer. You'll have to delete your score database and let the game create a "
 				"new one", DEF_DEBUG);
 		return;
 	}

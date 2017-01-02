@@ -96,6 +96,8 @@ int main() {
 			audioPlay(&mainMenu, LOOP);
 			state = doMainMenu(data, loaded, rotate, &nlevel);
 			level = data.levels[nlevel];
+
+			//load audio
 			audioStop(&mainMenu);
 			if(state == PLAYING) {
 				if(nlevel != nLastLevel) {
@@ -113,6 +115,12 @@ int main() {
 		case GAME_OVER:
 			audioPlay(&over, ONCE);
 			state = doGameOver(level, gameOver);
+
+			//replace and save high score if needed.
+			if(gameOver.score > level.highScore) {
+				data.levels[nlevel].highScore = gameOver.score;
+				putScores(scorePath, data);
+			}
 			break;
 		case PROGRAM_QUIT:;
 		}

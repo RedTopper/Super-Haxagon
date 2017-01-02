@@ -70,15 +70,15 @@ int main() {
 			case NOT_LOADED:
 			case SDMC:;
 				fileData = fopen(NAME_ROMFS_PROJECT, "rb");
-				if(!fileData) panic("NO INTERNAL FILE!", "There was no internal file to load. \
-				The game was likely compiled incorrectly.", DEF_DEBUG, (int)fileData);
+				if(!fileData) panic("NO INTERNAL FILE!", "There was no internal file to load. "
+						"The game was likely compiled incorrectly.", DEF_DEBUG, (int)fileData);
 				scorePath = NAME_ROMFS_SCORE;
 				loaded = ROMFS;
 				break;
 			case ROMFS:;
 				fileData = fopen(NAME_SDMC_PROJECT, "rb");
-				if(!fileData) panic("NO EXTERNAL FILE TO LOAD!", "There was no external file to load. \
-				You need to put external levels in the location defined in the README", DEF_DEBUG, (int)fileData);
+				if(!fileData) panic("NO EXTERNAL FILE TO LOAD!", "There was no external file to load. "
+						"You need to put external levels in the location defined in the README", DEF_DEBUG, (int)fileData);
 				scorePath = NAME_SDMC_SCORE;
 				loaded = SDMC;
 				break;

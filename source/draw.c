@@ -114,8 +114,8 @@ void drawRegular(Color color, Point focus, int height, double rotation, double s
 	int exactSides = (int)(sides + 0.99999);
 	
 	Point* edges = malloc(sizeof(Point) * exactSides);
-	if(!edges) panic("POLYGON ERROR!", "There was an error allocating memory for \
-	a regular polygon. This should never happen.", DEF_DEBUG, 0x0000DEAD);
+	if(!edges) panic("POLYGON ERROR!", "There was an error allocating memory for "
+			"a regular polygon. This should never happen.", DEF_DEBUG, 0x0000DEAD);
 	
 	//calculate the triangle backwards so it overlaps correctly.
 	for(int i = 0; i < exactSides; i++) {
@@ -154,8 +154,8 @@ void drawBackground(Color color1, Color color2, Point focus, double height, doub
 	
 	//This draws the main background.
 	Point* edges = malloc(sizeof(Point) * exactSides);
-	if(!edges) panic("BG ERROR!", "There was an error allocating memory for \
-	the background. This should never happen.", DEF_DEBUG, 0x0000DEAD);
+	if(!edges) panic("BG ERROR!", "There was an error allocating memory for "
+			"the background. This should never happen.", DEF_DEBUG, 0x0000DEAD);
 	
 	for(int i = 0; i < exactSides; i++) {
 		edges[i].x = (int)(height * cos(rotation + (double)i * TAU/sides) + (double)(focus.x) + 0.5);

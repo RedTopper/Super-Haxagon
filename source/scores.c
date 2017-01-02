@@ -37,6 +37,14 @@ void match(GlobalData data, FileString name, FileString difficulty, FileString m
 	}
 }
 
+/** INTERNAL
+ * Puts a string into a file.
+ */
+void putString(FileString string, FILE* file) {
+	fwrite(&string.len, sizeof(int), 1, file);
+	fwrite(string.str, sizeof(char), string.len, file);
+}
+
 //EXTERNAL
 void putScores(const char* path, GlobalData data) {
 	FILE* file = fopen(path, "wb");
@@ -50,18 +58,10 @@ void putScores(const char* path, GlobalData data) {
 	fwrite(&data.numLevels, sizeof(int), 1, file);
 	for(int i = 0; i < data.numLevels; i++) {
 		Level level  = data.levels[i];
-		fwrite(&level.name.len, sizeof(int), 1, file);
-		fwrite(level.name.str, sizeof(char), level.name.len, file);
-
-		fwrite(&level.difficulty.len, sizeof(int), 1, file);
-		fwrite(level.difficulty.str, sizeof(char), level.difficulty.len, file);
-
-		fwrite(&level.mode.len, sizeof(int), 1, file);
-		fwrite(level.mode.str, sizeof(char), level.mode.len, file);
-
-		fwrite(&level.creator.len, sizeof(int), 1, file);
-		fwrite(level.creator.str, sizeof(char), level.creator.len, file);
-
+		putString(level.name, file);
+		putString(level.difficulty, file);
+		putString(level.mode, file);
+		putString(level.creator, file);
 		fwrite(&level.highScore, sizeof(int), 1, file);
 	}
 	fwrite(SCOREDB_FOOTER, sizeof(char), sizeof(SCOREDB_FOOTER) - 1, file);

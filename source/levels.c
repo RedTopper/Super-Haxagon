@@ -184,9 +184,9 @@ Level getLevel(FILE* file, Pattern* patterns, int numPatterns) {
 	
 	//header
 	if(compare(file, LEVEL_HEADER) != 0) panic("WRONG LEVEL HEADER!",
-	"The level that was being loaded had the wrong header. \
-	Try re-exporting your levels in an updated format \
-	to fix this error.", DEF_DEBUG, ftell(file));
+			"The level that was being loaded had the wrong header. "
+			"Try re-exporting your levels in an updated format "
+			"to fix this error.", DEF_DEBUG, ftell(file));
 	
 	//strings
 	level.name = getString(file);
@@ -197,15 +197,15 @@ Level getLevel(FILE* file, Pattern* patterns, int numPatterns) {
 	
 	//colors
 	level.colorsBG1 = getMalloc(file, sizeof(Color), &level.numBG1, 0, 
-	"Cannot allocate BG1 colors! Check to see if all levels have at least 1 background 1 color.");
+			"Cannot allocate BG1 colors! Check to see if all levels have at least 1 background 1 color.");
 	for(int i = 0; i < level.numBG1; i++) level.colorsBG1[i] = getColor(file);
 	
 	level.colorsBG2 = getMalloc(file, sizeof(Color), &level.numBG2, 0, 
-	"Cannot allocate BG2 colors! Check to see if all levels have at least 1 background 2 color.");
+			"Cannot allocate BG2 colors! Check to see if all levels have at least 1 background 2 color.");
 	for(int i = 0; i < level.numBG2; i++) level.colorsBG2[i] = getColor(file);
 	
 	level.colorsFG = getMalloc(file, sizeof(Color), &level.numFG, 0, 
-	"Cannot allocate FG colors! Check to see if all levels have at least 1 foreground color.");
+			"Cannot allocate FG colors! Check to see if all levels have at least 1 foreground color.");
 	for(int i = 0; i < level.numFG; i++) level.colorsFG[i] = getColor(file);
 	
 	//floats
@@ -218,14 +218,14 @@ Level getLevel(FILE* file, Pattern* patterns, int numPatterns) {
 	
 	//linked patterns (a copy of loaded patterns)
 	level.patterns = getMalloc(file, sizeof(Pattern), &level.numPatterns, 0, 
-	"Cannot allocate patterns! Check to see if all levels have at least 1 pattern.");
+			"Cannot allocate patterns! Check to see if all levels have at least 1 pattern.");
 	for(int i = 0; i < level.numPatterns; i++) level.patterns[i] = getLoadedPattern(file, patterns, numPatterns);
 	
 	//footer
 	if(compare(file, LEVEL_FOOTER) != 0) panic("WRONG LEVEL FOOTER!",
-	"The level that was being loaded had the wrong footer. \
-	Try re-exporting your levels in an updated format \
-	to fix this error.", DEF_DEBUG, ftell(file));
+			"The level that was being loaded had the wrong footer. "
+			"Try re-exporting your levels in an updated format "
+			"to fix this error.", DEF_DEBUG, ftell(file));
 	
 	//exit
 	return level;
@@ -253,25 +253,25 @@ GlobalData getData(FILE* file) {
 	
 	//header
 	if(compare(file, PROJECT_HEADER) != 0) panic("WRONG PROJ HEADER!",
-	"The project being loaded had the wrong file header. Either you tried to \
-	load a file of the wrong format, or your  project file is out of date. Try \
-	re-exporting all levels to fix this problem.", DEF_DEBUG, ftell(file));
+			"The project being loaded had the wrong file header. Either you tried to "
+			"load a file of the wrong format, or your  project file is out of date. Try "
+			"re-exporting all levels to fix this problem.", DEF_DEBUG, ftell(file));
 	
 	//patterns
 	data.patterns = getMalloc(file, sizeof(Pattern), &data.numPatterns, 0, 
-	"Cannot allocate patterns! You must load at least one pattern!");
+			"Cannot allocate patterns! You must load at least one pattern!");
 	for(int i = 0; i < data.numPatterns; i++) data.patterns[i] = getPattern(file);
 	
 	//levels
 	data.levels = getMalloc(file, sizeof(Level), &data.numLevels, 0, 
-	"Cannot allocate levels! You must load at least one level!");
+			"Cannot allocate levels! You must load at least one level!");
 	for(int i = 0; i < data.numLevels; i++) data.levels[i] = getLevel(file, data.patterns, data.numPatterns);
 	
 	//footer
 	if(compare(file, PROJECT_FOOTER) != 0) panic("WRONG PROJ FOOTER!",
-	"The project being loaded had the wrong file footer. Your project file \
-	is out of date or corrupted. Try re-exporting all levels to fix \
-	this problem.", DEF_DEBUG, ftell(file));
+			"The project being loaded had the wrong file footer. Your project file "
+			"is out of date or corrupted. Try re-exporting all levels to fix "
+			"this problem.", DEF_DEBUG, ftell(file));
 	
 	data.loaded = 1;
 	return data;

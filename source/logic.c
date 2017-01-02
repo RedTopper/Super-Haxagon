@@ -41,7 +41,7 @@ MovementState collisionLiveWall(LiveWall wall, double cursorPos, double cursorSt
 	double leftRotStep = cursorPos + cursorStep;
 	double rightRotStep = cursorPos - cursorStep;
 	
-	//If the cursor wrapped and the range we need to calculate overflows beyond TAU we also need to check the other equivilent regions:
+	//If the cursor wrapped and the range we need to calculate overflows beyond TAU we also need to check the other equivalent regions:
 	//exactly one TAU ago and the next TAU.
 	//This is particularly usefull when the cursor's next step is beyond a TAU or below zero, OR a wall resides along "the seam"
 	double leftSideRads = ((double)(wall.side) + 1.0) * TAU/(double)(sides); 

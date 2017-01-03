@@ -256,17 +256,17 @@ void drawMainMenu(GlobalData data, MainMenu menu) {
 
 	//top rectangle and triangle
 	int TRIANGLE_WIDTH = 70;
-	int GAP_FROM_RIGHT_SIDE = 30;
+	int GAP_FROM_RIGHT_SIDE = 20;
 
 	//text positions
-	Point posTitle = {4, 4};
-	Point posDifficulty = {4, 40};
-	Point posMode = {4, 56};
-	Point posCreator = {4, 72};
+	Point posTitle = {4, 2};
+	Point posDifficulty = {4, posTitle.y + 32 + 1};
+	Point posMode = {4, posDifficulty.y + 16 + 1};
+	Point posCreator = {4, posMode.y + 16 + 1};
 	Point posTime = {4, SCREEN_HEIGHT - 18};
 
 	Point infoPos = {0, 0};
-	Point infoSize = {TOP_WIDTH - TRIANGLE_WIDTH - GAP_FROM_RIGHT_SIDE, posCreator.y + 16 + 2};
+	Point infoSize = {TOP_WIDTH - TRIANGLE_WIDTH - GAP_FROM_RIGHT_SIDE, posCreator.y + 16 + 3};
 	Point infoTriangle[3] = {
 		{infoSize.x, SCREEN_HEIGHT - 1 - infoSize.y},
 		{infoSize.x, SCREEN_HEIGHT - 1},
@@ -275,8 +275,8 @@ void drawMainMenu(GlobalData data, MainMenu menu) {
 	drawTriangle(TRANSP, infoTriangle);
 	
 	//score block with triangle
-	Point timePos = {0, posTime.y - 4};
-	Point timeSize = {9/*chars?*/ * 16 + 4, 16 + 8};
+	Point timePos = {0, posTime.y - 3};
+	Point timeSize = {10/*chars?*/ * 16 + 4, 16 + 7};
 	Point timeTriangle[3] = {
 		{timeSize.x, timeSize.y - 3},
 		{timeSize.x, - 1}, //why does this have to be -1?
@@ -381,16 +381,25 @@ void drawBlackBot(void) {
 }
 
 //EXTERNAL
-void drawMainMenuBot(LoadedState loaded, double fps) {
+void drawMainMenuBot(LoadedState loaded, double fps, int showGetBGM) {
 	Point posButton = {4, 4};
-	Point posLocation = {194, 4};
-	Point posLevels = {4, posLocation.y + 16 + 2};
+	Point posLocation = {210, 4};
+	Point posLevels = {4, posLocation.y + 16 + 1};
+	Point posDownload = {4, posLevels.y + 32 + 1};
+	Point posDownload2 = {4, posDownload.y + 16 + 1};
+	Point posDownload3 = {4, posDownload2.y + 16 + 1};
 
 	drawBlackBot();
 	writeFont(WHITE, posButton, "PRESS B TO LOAD", FONT16, ALIGN_LEFT_C);
 	if(loaded == ROMFS) writeFont(WHITE, posLocation, "SDMC", FONT16, ALIGN_LEFT_C);
 	if(loaded == SDMC) writeFont(WHITE, posLocation, "ROMFS", FONT16, ALIGN_LEFT_C);
 	writeFont(WHITE, posLevels, "LEVELS", FONT16, ALIGN_LEFT_C);
+
+	if(showGetBGM) {
+		writeFont(WHITE, posDownload, "GET BGM FROM GITHUB: ", FONT16, ALIGN_LEFT_C);
+		writeFont(WHITE, posDownload2, "REDINQUISITIVE/", FONT16, ALIGN_LEFT_C);
+		writeFont(WHITE, posDownload3, "SUPER-HAXAGON!", FONT16, ALIGN_LEFT_C);
+	}
 
 	drawFramerate(fps);
 }

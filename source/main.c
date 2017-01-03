@@ -45,12 +45,16 @@ int main() {
 	Track over;
 	Track rotate;
 	Track mainMenu;
+	Track levelUp;
 	Track bgm = EMPTY_TRACK;
 	audioLoad("romfs:/sound/begin.wav", &begin, 0);
 	audioLoad("romfs:/sound/hexagon.wav", &hexagon, 1);
 	audioLoad("romfs:/sound/over.wav", &over, 2);
 	audioLoad("romfs:/sound/select.wav", &rotate, 3);
+	audioLoad("romfs:/sound/level.wav", &levelUp, 4);
 	audioLoad("romfs:/bgm/pamgaea.wav", &mainMenu, 5);
+	int channelBGM = 6; //Last channel + 1. Remember to update this!
+	int showGetBGM = 1; //Used to hide the get BGM info after a button press.
 	
 	//level selection and game over
 	int nlevel = 0;
@@ -94,7 +98,7 @@ int main() {
 			audioStop(&bgm);
 			audioPlay(&hexagon, ONCE);
 			audioPlay(&mainMenu, LOOP);
-			state = doMainMenu(data, loaded, rotate, &nlevel);
+			state = doMainMenu(data, loaded, rotate, &nlevel, showGetBGM);
 			level = data.levels[nlevel];
 
 			//load audio
@@ -102,15 +106,18 @@ int main() {
 			if(state == PLAYING) {
 				if(nlevel != nLastLevel) {
 					audioFree(&bgm);
-					audioLoad(level.music.str, &bgm, 6);
+					audioLoad(level.music.str, &bgm, channelBGM);
 					nLastLevel = nlevel;
 				}
 				audioPlay(&bgm, LOOP);
 			}
+
+			//never show again.
+			showGetBGM = 0;
 			break;
 		case PLAYING:
 			audioPlay(&begin, ONCE);
-			state = doPlayGame(level, &gameOver);
+			state = doPlayGame(level, &gameOver, levelUp);
 			break;
 		case GAME_OVER:
 			audioPlay(&over, ONCE);
@@ -135,6 +142,7 @@ int main() {
 	audioFree(&over);
 	audioFree(&rotate);
 	audioFree(&mainMenu);
+	audioFree(&levelUp);
 	audioFree(&bgm);
 	
 	//close GFX

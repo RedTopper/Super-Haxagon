@@ -4,7 +4,7 @@
  * Draws the main menu of the program based on loaded data and main menu variables.
  */
 void drawMainMenu(GlobalData data, MainMenu menu);
-void drawMainMenuBot(LoadedState loaded, double fps);
+void drawMainMenuBot(LoadedState loaded, double fps, int showGetBGM);
 
 /**
  * Base render for the game. Draws based on a single active level. 

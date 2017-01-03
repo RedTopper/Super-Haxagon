@@ -35,7 +35,7 @@
 #define FILE_PROJECT "/levels.haxagon"
 
 //prefixes
-#define PREFIX_DIFFICULTY "DIFFICULTY: "
+#define PREFIX_DIFFICULTY "DIFF: "
 #define PREFIX_MODE "MODE: "
 #define PREFIX_CREATOR "CREATOR: "
 

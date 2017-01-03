@@ -141,7 +141,7 @@ double getFurthestWallDistance(LivePattern pattern) {
 }
 
 //EXTERNAL
-GameState doMainMenu(GlobalData data, LoadedState loaded, Track select, int* level) {
+GameState doMainMenu(GlobalData data, LoadedState loaded, Track select, int* level, int showGetBGM) {
 	MainMenu menu = {0};
 	menu.level = *level;
 	while(aptMainLoop()) {
@@ -160,12 +160,14 @@ GameState doMainMenu(GlobalData data, LoadedState loaded, Track select, int* lev
 				menu.transitionDirection = 1;
 				menu.lastLevel = menu.level;
 				menu.level++;
+				showGetBGM = 0;
 				audioPlay(&select, ONCE);
 				break;
 			case DIR_LEFT:
 				menu.transitionDirection = -1;
 				menu.lastLevel = menu.level;
 				menu.level--;
+				showGetBGM = 0;
 				audioPlay(&select, ONCE);
 				break;
 			default:;
@@ -184,7 +186,7 @@ GameState doMainMenu(GlobalData data, LoadedState loaded, Track select, int* lev
 		drawMainMenu(data, menu);
 		sf2d_end_frame();
 		sf2d_start_frame(GFX_BOTTOM, GFX_LEFT);
-		drawMainMenuBot(loaded, sf2d_get_fps());
+		drawMainMenuBot(loaded, sf2d_get_fps(), showGetBGM);
 		sf2d_end_frame();
 		sf2d_swapbuffers();
 	}
@@ -192,12 +194,9 @@ GameState doMainMenu(GlobalData data, LoadedState loaded, Track select, int* lev
 }
 
 //EXTERNAL
-GameState doPlayGame(Level level, LiveLevel* gameOver) {
+GameState doPlayGame(Level level, LiveLevel* gameOver, Track levelUp) {
 	int delayFrame = 0; //tweening between side switches
 	int flipFrame = FLIP_FRAMES_MAX; //amount of frames left until flip
-	
-	Track levelUp;
-	audioLoad("romfs:/sound/level.wav", &levelUp, 4);
 	
 	//create live level
 	LiveLevel liveLevel;
@@ -303,11 +302,9 @@ GameState doPlayGame(Level level, LiveLevel* gameOver) {
 		//handle player
 		switch(press) {
 		case QUIT:
-			audioFree(&levelUp);
 			return PROGRAM_QUIT;
 		case BACK:
 			memcpy(gameOver, &liveLevel, sizeof(LiveLevel)); //copy to game over screen
-			audioFree(&levelUp);
 			return GAME_OVER;
 		case DIR_RIGHT:
 			if(collision == CANNOT_MOVE_RIGHT) break;
@@ -342,7 +339,6 @@ GameState doPlayGame(Level level, LiveLevel* gameOver) {
 		sf2d_swapbuffers();
 
 	}
-	audioFree(&levelUp);
 	return PROGRAM_QUIT;
 }
 

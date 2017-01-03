@@ -45,6 +45,7 @@ A: Have you ever heard of [citra-emu/citra](https://github.com/citra-emu/citra)?
 
 ### Credits
  * Audio from [Open Hexagon](http://vittorioromeo.info/projects.html)
+ * ...And more audio by [Kevin MacLeod](http://incompetech.com/) under [Creative Commons: By Attribution 3.0](http://creativecommons.org/licenses/by/3.0/)
  * Font engine by [flarn2006/SF2DBmpFont](https://github.com/flarn2006/SF2DBmpFont)
  * 2D engine by [xerpi/sf2dlib](https://github.com/xerpi/sf2dlib)
  * 3D engine by [fincs/citro3D](https://github.com/fincs/citro3d)

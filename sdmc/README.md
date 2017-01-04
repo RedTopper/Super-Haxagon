@@ -1,6 +1,6 @@
 # The SD card
 
-### The default music for the game can be downloaded in the folder above!
+### The default music for the game can be downloaded from the folder above!
 (that is `sdmc:/3ds/data/haxagon/`)!
 
 ### Other Information

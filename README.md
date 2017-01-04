@@ -11,6 +11,9 @@ to delete `main.c` from the fonts folder so that this program  will actually com
 #### Q: How do I download this?
 A: Downloads are available on the [releases page](https://github.com/RedInquisitive/Super-Haxagon/releases).
 
+#### Q: How do I download the default music?
+A: See the readme in the [sdmc folder](https://github.com/RedInquisitive/Super-Haxagon/tree/master/sdmc).
+
 #### Q: How can I create my own levels?
 A: You can use [Haxa-Editor](https://github.com/RedInquisitive/Haxa-Editor/tree/master)! Follow the directions in the README.md of that repository for more details.
 
@@ -25,9 +28,6 @@ A: Yes! See the readme in the [sdmc folder](https://github.com/RedInquisitive/Su
 
 #### Q: It says "AWW SNAP!" whenever I launch the game or press B on the main menu!
 A: OK, that's not a question, but please look in the root of your SD card for the file "haxapanic.txt" and read it. If it does not answer your question, file a bug report here.
-
-#### Q: Why do sound effects work, but in-game music does not?
-A: See the readme in the [sdmc folder](https://github.com/RedInquisitive/Super-Haxagon/tree/master/sdmc).
 
 #### Q: Why is there no audio at all?
 A: You need to dump your DSP firmware! Normally this is covered when installing A9LH through [3ds.guide](https://3ds.guide/installing-arm9loaderhax#section-vi---finalizing-setup)'s "Section VI - Finalizing setup". If it is not, Launch the Homebrew Launcher from the home menu and select “DSP Dump”.

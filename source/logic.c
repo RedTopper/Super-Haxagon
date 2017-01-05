@@ -344,12 +344,14 @@ GameState doPlayGame(Level level, LiveLevel* gameOver, Track levelUp) {
 
 //EXTERNAL
 GameState doGameOver(Level level, LiveLevel gameOver) {
-	int frames = FRAMES_PER_GAME_OVER;
+	int frames = 0;
 	double offsetDistance = 1.0;
 	int sides = gameOver.patterns[0].sides;
 	while(aptMainLoop()) {
 
 		//LOGIC
+		frames++;
+
 		gameOver.rotation += GAME_OVER_ROT_SPEED;
 		if(gameOver.rotation >= TAU) gameOver.rotation -= TAU;
 		if(gameOver.rotation < 0) gameOver.rotation  += TAU;
@@ -357,17 +359,16 @@ GameState doGameOver(Level level, LiveLevel gameOver) {
 		ButtonState press = getButton();
 		if(press == QUIT) return PROGRAM_QUIT;
 
-		if(frames > 0) {
-			frames--;
+		if(frames <= FRAMES_PER_GAME_OVER) {
 			offsetDistance *= GAME_OVER_ACCEL_RATE;
 		}
-		if(frames == 1) {
+		if(frames == FRAMES_PER_GAME_OVER - 1) {
 			for(int i = 0; i < TOTAL_PATTERNS_AT_ONE_TIME; i++){
 				freeLivePattern(gameOver.patterns[i]);
 				gameOver.patterns[i].numWalls = 0;
 			}
 		}
-		if(frames == 0) {
+		if(frames >= FRAMES_PER_GAME_OVER) {
 			switch(press) {
 			case SELECT:
 				return PLAYING;
@@ -377,13 +378,12 @@ GameState doGameOver(Level level, LiveLevel gameOver) {
 			}
 		}
 
-
 		//DRAW
 		sf2d_start_frame(GFX_TOP, GFX_LEFT);
 		drawPlayGame(level, gameOver, offsetDistance, (double)sides);
 		sf2d_end_frame();
 		sf2d_start_frame(GFX_BOTTOM, GFX_LEFT);
-		drawGameOverBot(gameOver.score, sf2d_get_fps(), frames);
+		drawGameOverBot(gameOver.score, level.highScore, sf2d_get_fps(), frames, frames >= FRAMES_PER_GAME_OVER);
 		sf2d_end_frame();
 		sf2d_swapbuffers();
 	}

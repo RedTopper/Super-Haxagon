@@ -408,7 +408,7 @@ void drawMainMenuBot(LoadedState loaded, double fps, int showGetBGM) {
 void drawPlayGameBot(Level level, LiveLevel liveLevel, double fps) {
 	Point posLevelUp = {4,4};
 	Point posScore = {BOT_WIDTH - 4, 4};
-	Point posBest = {BOT_WIDTH - 4, 24};
+	Point posBest = {BOT_WIDTH - 4, 20};
 
 	drawBlackBot();
 
@@ -429,11 +429,12 @@ void drawPlayGameBot(Level level, LiveLevel liveLevel, double fps) {
 }
 
 //EXTERNAL
-void drawGameOverBot(int score, double fps, int frame) {
+void drawGameOverBot(int score, int highScore, double fps, int frames, int showText) {
 	Point posGameOver = {BOT_WIDTH / 2, 4};
 	Point posTime = {BOT_WIDTH / 2, 40};
-	Point posA = {BOT_WIDTH / 2, 70};
-	Point posB = {BOT_WIDTH / 2, 86};
+	Point posBest = {BOT_WIDTH / 2, 56};
+	Point posA = {BOT_WIDTH / 2, 78};
+	Point posB = {BOT_WIDTH / 2, 94};
 
 	drawBlackBot();
 
@@ -442,7 +443,15 @@ void drawGameOverBot(int score, double fps, int frame) {
 	writeFont(WHITE, posTime, scoreTime, FONT16, ALIGN_CENTER_C);
 	free(scoreTime);
 
-	if(frame == 0) {
+	if(score > highScore) {
+		writeFont(WHITE, posBest, "NEW RECORD!", FONT16, ALIGN_CENTER_C);
+	} else {
+		char* bestTime = getBestTime(highScore);
+		writeFont(WHITE, posBest, bestTime, FONT16, ALIGN_CENTER_C);
+		free(bestTime);
+	}
+
+	if(showText) {
 		writeFont(WHITE, posA, "PRESS A TO PLAY", FONT16, ALIGN_CENTER_C);
 		writeFont(WHITE, posB, "PRESS B TO QUIT", FONT16, ALIGN_CENTER_C);
 	}

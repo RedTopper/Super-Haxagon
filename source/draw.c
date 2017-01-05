@@ -23,6 +23,12 @@ const int SHADOW_Y = -4;
 //The center of the screen
 const Point SCREEN_CENTER = {TOP_WIDTH/2, SCREEN_HEIGHT/2};
 
+//Record pulsing settings
+const Color PULSE_LOW = {0xFF, 0xFF, 0xFF, 0x7F};
+const Color PULSE_HIGH = {0xFF, 0xFF, 0xFF, 0xFF};
+const int PULSE_TIME = 75;
+const double PULSE_TIMES = 2.0;
+
 /** INTERNAL
  * Draws a simple triangle using an array of points and a color.
  * The array must have 3 points.
@@ -304,9 +310,9 @@ void drawPlayGame(Level level, LiveLevel liveLevel, double offset, double sides)
 	Color BG2 = interpolateColor(level.colorsBG2[liveLevel.indexBG2], level.colorsBG2[liveLevel.nextIndexBG2], percentTween);
 
 	//fix for triangle levels
-	int diagnal = (sides >= 3 && sides < 4 ? SCREEN_TOP_DIAG_FROM_CENTER * 2 : SCREEN_TOP_DIAG_FROM_CENTER);
+	int diagonal = (sides >= 3 && sides < 4 ? SCREEN_TOP_DIAG_FROM_CENTER * 2 : SCREEN_TOP_DIAG_FROM_CENTER);
 
-	drawBackground(BG1, BG2, SCREEN_CENTER, diagnal, liveLevel.rotation, sides);
+	drawBackground(BG1, BG2, SCREEN_CENTER, diagonal, liveLevel.rotation, sides);
 
 	//draw shadows
 	Point offsetFocus = {SCREEN_CENTER.x + SHADOW_X, SCREEN_CENTER.y + SHADOW_Y};
@@ -418,7 +424,12 @@ void drawPlayGameBot(Level level, LiveLevel liveLevel, double fps) {
 	free(scoreTime);
 
 	if(level.highScore > 0 && liveLevel.score > level.highScore) {
-		writeFont(WHITE, posBest, "NEW RECORD!", FONT16, ALIGN_RIGHT_C);
+		Color textColor = WHITE;
+		if (liveLevel.score - level.highScore <= PULSE_TIMES * PULSE_TIME) {
+			double percent = getPulse(liveLevel.score, PULSE_TIME, level.highScore);
+			textColor = interpolateColor(PULSE_LOW, PULSE_HIGH, percent);
+		}
+		writeFont(textColor, posBest, "NEW RECORD!", FONT16, ALIGN_RIGHT_C);
 	} else {
 		char* bestTime = getBestTime(level.highScore);
 		writeFont(WHITE, posBest, bestTime, FONT16, ALIGN_RIGHT_C);
@@ -444,7 +455,9 @@ void drawGameOverBot(int score, int highScore, double fps, int frames, int showT
 	free(scoreTime);
 
 	if(score > highScore) {
-		writeFont(WHITE, posBest, "NEW RECORD!", FONT16, ALIGN_CENTER_C);
+		double percent = getPulse(frames, PULSE_TIME, 0);
+		Color pulse = interpolateColor(PULSE_LOW, PULSE_HIGH, percent);
+		writeFont(pulse, posBest, "NEW RECORD!", FONT16, ALIGN_CENTER_C);
 	} else {
 		char* bestTime = getBestTime(highScore);
 		writeFont(WHITE, posBest, bestTime, FONT16, ALIGN_CENTER_C);

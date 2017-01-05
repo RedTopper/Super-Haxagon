@@ -39,10 +39,10 @@ void panic(const char* title, const char* message, const char* file, const char*
 		sf2d_swapbuffers();
 	}
 	sf2d_fini();
-	gfxExit();	
-	romfsExit();	
+	gfxExit();
+	romfsExit();
 	sdmcExit();
-	ndspExit();	
+	ndspExit();
 	exit(1);
 }
 
@@ -114,24 +114,24 @@ ButtonState getButton(void) {
 	u32 kHold = hidKeysHeld();
 	if(kDown & KEY_A ) {
 		return SELECT;
-	} 
+	}
 	if(kDown & KEY_START ) {
 		return QUIT;
-	} 
+	}
 	if(kDown & KEY_B ) {
 		return BACK;
-	} 
+	}
 	if(kHold & (KEY_R | KEY_ZR | KEY_CSTICK_RIGHT | KEY_CPAD_RIGHT | KEY_DRIGHT | KEY_X)) {
 		return DIR_RIGHT;
-	} 
+	}
 	if(kHold & (KEY_L | KEY_ZL | KEY_CSTICK_LEFT | KEY_CPAD_LEFT | KEY_DLEFT | KEY_Y)) {
 		return DIR_LEFT;
-	} 
+	}
 	return NOTHING;
 }
 
 //EXTERNAL
- char* getScoreText(int score) {
+char* getScoreText(int score) {
 	if(score < 10 * 60) return "SPACE";
 	if(score < 20 * 60) return "POINT";
 	if(score < 30 * 60) return "LINE";
@@ -139,22 +139,22 @@ ButtonState getButton(void) {
 	if(score < 50 * 60) return "SQUARE";
 	if(score < 60 * 60) return "PENTAGON";
 	return "HEXAGON";
- }
+}
 
- //EXTERNAL
- char* getScoreTime(int score) {
-		char* buffer = malloc(sizeof(char) * 12 + 1);
-		int scoreInt = (int)((double)score/60.0);
-		int decimalPart = (int)(((double)score/60.0 - (double)scoreInt) * 100.0);
-		snprintf(buffer, 12+1, "TIME: %03d:%02d", scoreInt, decimalPart);
-		return buffer;
- }
+//EXTERNAL
+char* getScoreTime(int score) {
+	char* buffer = malloc(sizeof(char) * 12 + 1);
+	int scoreInt = (int)((double)score/60.0);
+	int decimalPart = (int)(((double)score/60.0 - (double)scoreInt) * 100.0);
+	snprintf(buffer, 12+1, "TIME: %03d:%02d", scoreInt, decimalPart);
+	return buffer;
+}
 
- //EXTERNAL
- char* getBestTime(int score) {
-		char* buffer = malloc(sizeof(char) * 12 + 1);
-		int scoreInt = (int)((double)score/60.0);
-		int decimalPart = (int)(((double)score/60.0 - (double)scoreInt) * 100.0);
-		snprintf(buffer, 12+1, "BEST: %03d:%02d", scoreInt, decimalPart);
-		return buffer;
- }
+//EXTERNAL
+char* getBestTime(int score) {
+	char* buffer = malloc(sizeof(char) * 12 + 1);
+	int scoreInt = (int)((double)score/60.0);
+	int decimalPart = (int)(((double)score/60.0 - (double)scoreInt) * 100.0);
+	snprintf(buffer, 12+1, "BEST: %03d:%02d", scoreInt, decimalPart);
+	return buffer;
+}

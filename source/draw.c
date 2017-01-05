@@ -29,7 +29,7 @@ const Point SCREEN_CENTER = {TOP_WIDTH/2, SCREEN_HEIGHT/2};
  */
 void drawTriangle(Color color, Point points[3]) {
 	long paint = RGBA8(color.r,color.g,color.b,color.a);
-	
+
 	//draws a triangle on the correct axis
 	sf2d_draw_triangle(
 		points[0].x, SCREEN_HEIGHT - 1 - points[0].y,
@@ -70,14 +70,14 @@ void drawMovingWall(Color color, Point focus, LiveWall wall, double rotation, do
 	double distance = wall.distance;
 	double height = wall.height;
 	if(distance + height < DEF_HEX_FULL_LEN) return; //TOO_CLOSE;
-	if(distance > SCREEN_TOP_DIAG_FROM_CENTER) return; //TOO_FAR; 
+	if(distance > SCREEN_TOP_DIAG_FROM_CENTER) return; //TOO_FAR;
 	if(wall.side >= sides) return; //NOT_IN_RANGE
-	
+
 	if(distance < DEF_HEX_FULL_LEN - 2.0) {//so the distance is never negative as it enters.
 		height -= DEF_HEX_FULL_LEN - 2.0 - distance;
 		distance = DEF_HEX_FULL_LEN - 2.0; //Should never be 0!!!
 	}
-	
+
 	Point edges[4] = {0};
 	edges[0] = calcPointWall(focus, rotation, OVERFLOW_OFFSET, distance, wall.side + 1, sides);
 	edges[1] = calcPointWall(focus, rotation, OVERFLOW_OFFSET, distance + height, wall.side + 1, sides);
@@ -92,11 +92,11 @@ void drawMovingWall(Color color, Point focus, LiveWall wall, double rotation, do
  * an "Explosion" effect if you use "offset". (for game overs)
  */
 void drawMovingPatterns(Color color, Point focus, LiveLevel live, double offset, double sides) {
-	
+
 	//for all patterns
 	for(int iPattern = 0; iPattern < TOTAL_PATTERNS_AT_ONE_TIME; iPattern++) {
 		LivePattern pattern = live.patterns[iPattern];
-		
+
 		//draw all walls
 		for(int iWall = 0; iWall < pattern.numWalls; iWall++) {
 			LiveWall wall = pattern.walls[iWall];
@@ -112,32 +112,32 @@ void drawMovingPatterns(Color color, Point focus, LiveLevel live, double offset,
  */
 void drawRegular(Color color, Point focus, int height, double rotation, double sides) {
 	int exactSides = (int)(sides + 0.99999);
-	
+
 	Point* edges = malloc(sizeof(Point) * exactSides);
 	if(!edges) panic("POLYGON ERROR!", "There was an error allocating memory for "
 			"a regular polygon. This should never happen.", DEF_DEBUG, 0x0000DEAD);
-	
+
 	//calculate the triangle backwards so it overlaps correctly.
 	for(int i = 0; i < exactSides; i++) {
 		edges[i].x = (int)(height * cos(rotation + (double)i * TAU/sides) + (double)(focus.x) + 0.5);
 		edges[i].y = (int)(height * sin(rotation + (double)i * TAU/sides) + (double)(focus.y) + 0.5);
 	}
-	
+
 	Point triangle[3];
 	triangle[0] = focus;
-	
+
 	//connect last triangle edge to first
 	triangle[1] = edges[exactSides - 1];
 	triangle[2] = edges[0];
 	drawTriangle(color, triangle);
-	
+
 	//draw rest of regular polygon
 	for(int i = 0; i < exactSides - 1; i++) {
 		triangle[1] = edges[i];
 		triangle[2] = edges[i + 1];
 		drawTriangle(color, triangle);
 	}
-	
+
 	free(edges);
 }
 
@@ -146,39 +146,39 @@ void drawRegular(Color color, Point focus, int height, double rotation, double s
  */
 void drawBackground(Color color1, Color color2, Point focus, double height, double rotation, double sides) {
 	int exactSides = (int)(sides + 0.99999);
-	
+
 	//solid background.
 	Point position = {0,0};
 	Point size = {TOP_WIDTH, SCREEN_HEIGHT};
 	drawRect(color1, position, size);
-	
+
 	//This draws the main background.
 	Point* edges = malloc(sizeof(Point) * exactSides);
 	if(!edges) panic("BG ERROR!", "There was an error allocating memory for "
 			"the background. This should never happen.", DEF_DEBUG, 0x0000DEAD);
-	
+
 	for(int i = 0; i < exactSides; i++) {
 		edges[i].x = (int)(height * cos(rotation + (double)i * TAU/sides) + (double)(focus.x) + 0.5);
 		edges[i].y = (int)(height * sin(rotation + (double)i * TAU/sides) + (double)(focus.y) + 0.5);
 	}
-	
+
 	Point triangle[3];
 	triangle[0] = focus;
-	
+
 	//if the sides is odd we need to "make up a color" to put in the gap between the last and first color
 	if(exactSides % 2) {
 		triangle[1] = edges[exactSides - 1];
 		triangle[2] = edges[0];
 		drawTriangle(interpolateColor(color1, color2, 0.5f), triangle);
 	}
-	
+
 	//Draw the rest of the triangles
 	for(int i = 0; i < exactSides - 1; i = i + 2) {
 		triangle[1] = edges[i];
 		triangle[2] = edges[i + 1];
 		drawTriangle(color2, triangle);
 	}
-	
+
 	free(edges);
 }
 
@@ -219,7 +219,7 @@ void drawMainMenu(GlobalData data, MainMenu menu) {
 	if(menu.transitionDirection == -1) { //if the user is going to the left, flip the radians so the animation plays backwards.
 		rotation *= -1.0;
 	}
-	
+
 	//Colors
 	Color FG;
 	Color BG1;
@@ -237,18 +237,18 @@ void drawMainMenu(GlobalData data, MainMenu menu) {
 		BG1 = level.colorsBG1[0];
 		BG2 = level.colorsBG2[0];
 		BG3 = level.colorsBG2[0]; //same as BG2
-	} 
-	
+	}
+
 	Point focus = {TOP_WIDTH/2, SCREEN_HEIGHT/2 - 60};
 	Point offsetFocus = {focus.x + SHADOW_X, focus.y + SHADOW_Y};
-	
+
 	//home screen always has 6 sides.
-	drawBackground(BG1, BG2, focus, SCREEN_TOP_DIAG_FROM_CENTER, rotation, 6.0); 
-	
+	drawBackground(BG1, BG2, focus, SCREEN_TOP_DIAG_FROM_CENTER, rotation, 6.0);
+
 	//shadows
 	drawRegular(SHADOW, offsetFocus, DEF_HEX_FULL_LEN, rotation, 6.0);
 	drawHumanCursor(SHADOW, offsetFocus, TAU/4.0, 0);
-	
+
 	//geometry
 	drawRegular(FG, focus, DEF_HEX_FULL_LEN, rotation, 6.0);
 	drawRegular(BG3, focus, DEF_HEX_FULL_LEN - DEF_HEX_BORDER_LEN, rotation, 6.0);
@@ -273,7 +273,7 @@ void drawMainMenu(GlobalData data, MainMenu menu) {
 		{infoSize.x + TRIANGLE_WIDTH, SCREEN_HEIGHT - 1}};
 	drawRect(TRANSP, infoPos, infoSize);
 	drawTriangle(TRANSP, infoTriangle);
-	
+
 	//score block with triangle
 	Point timePos = {0, posTime.y - 3};
 	Point timeSize = {10/*chars?*/ * 16 + 4, 16 + 7};
@@ -296,24 +296,24 @@ void drawMainMenu(GlobalData data, MainMenu menu) {
 
 //EXTERNAL
 void drawPlayGame(Level level, LiveLevel liveLevel, double offset, double sides) {
-	
+
 	//calculate colors
 	double percentTween = (double)(liveLevel.tweenFrame) / (double)(level.speedPulse);
 	Color FG = interpolateColor(level.colorsFG[liveLevel.indexFG], level.colorsFG[liveLevel.nextIndexFG], percentTween);
 	Color BG1 = interpolateColor(level.colorsBG1[liveLevel.indexBG1], level.colorsBG1[liveLevel.nextIndexBG1], percentTween);
 	Color BG2 = interpolateColor(level.colorsBG2[liveLevel.indexBG2], level.colorsBG2[liveLevel.nextIndexBG2], percentTween);
-	
-	//fix for triangle levels 
+
+	//fix for triangle levels
 	int diagnal = (sides >= 3 && sides < 4 ? SCREEN_TOP_DIAG_FROM_CENTER * 2 : SCREEN_TOP_DIAG_FROM_CENTER);
-	
+
 	drawBackground(BG1, BG2, SCREEN_CENTER, diagnal, liveLevel.rotation, sides);
-	
+
 	//draw shadows
 	Point offsetFocus = {SCREEN_CENTER.x + SHADOW_X, SCREEN_CENTER.y + SHADOW_Y};
 	drawMovingPatterns(SHADOW, offsetFocus, liveLevel, offset, sides);
 	drawRegular(SHADOW, offsetFocus, DEF_HEX_FULL_LEN, liveLevel.rotation, sides);
 	drawHumanCursor(SHADOW, offsetFocus, liveLevel.cursorPos, liveLevel.rotation);
-	
+
 	//draw real thing
 	drawMovingPatterns(FG, SCREEN_CENTER, liveLevel, offset, sides);
 	drawRegular(FG, SCREEN_CENTER, DEF_HEX_FULL_LEN, liveLevel.rotation, sides);
@@ -333,11 +333,11 @@ void drawPanic(const char* message, const char* file, const char* function, int 
 	Point posButtons = {TOP_WIDTH / 2, posCheck.y + 16 + 2};
 
 	drawBlack();
-	
+
 	writeFont(WHITE, posAwwSnap, "AWW SNAP!", FONT32, ALIGN_CENTER_C);
 	writeFont(WHITE, posCrash, "LOOKS LIKE THE GAME CRASHED!", FONT16, ALIGN_CENTER_C);
 	writeFont(WHITE, posInfo, "HERE'S SOME INFORMATION:", FONT16, ALIGN_CENTER_C);
-	
+
 	//WARNING: PROGRAM WILL BE MAD IF writeFont(...) EVER MESSES WITH THE STRING!
 	writeFont(WHITE, posMessage, (char*)message, FONT16, ALIGN_CENTER_C);
 	writeFont(WHITE, posFile, (char*)file, FONT16, ALIGN_CENTER_C);
@@ -405,16 +405,25 @@ void drawMainMenuBot(LoadedState loaded, double fps, int showGetBGM) {
 }
 
 //EXTERNAL
-void drawPlayGameBot(FileString name, int score, double fps) {
+void drawPlayGameBot(Level level, LiveLevel liveLevel, double fps) {
 	Point posLevelUp = {4,4};
 	Point posScore = {BOT_WIDTH - 4, 4};
+	Point posBest = {BOT_WIDTH - 4, 24};
 
 	drawBlackBot();
 
-	char* scoreTime  = getScoreTime(score);
+	char* scoreTime = getScoreTime(liveLevel.score);
 	writeFont(WHITE, posScore, scoreTime, FONT16, ALIGN_RIGHT_C);
-	writeFont(WHITE, posLevelUp, getScoreText(score), FONT16, ALIGN_LEFT_C);
+	writeFont(WHITE, posLevelUp, getScoreText(liveLevel.score), FONT16, ALIGN_LEFT_C);
 	free(scoreTime);
+
+	if(level.highScore > 0 && liveLevel.score > level.highScore) {
+		writeFont(WHITE, posBest, "NEW RECORD!", FONT16, ALIGN_RIGHT_C);
+	} else {
+		char* bestTime = getBestTime(level.highScore);
+		writeFont(WHITE, posBest, bestTime, FONT16, ALIGN_RIGHT_C);
+		free(bestTime);
+	}
 
 	drawFramerate(fps);
 }

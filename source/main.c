@@ -19,7 +19,7 @@ const char* NAME_ROMFS_SCORE = "sdmc:" DIR_3DS DIR_DATA DIR_HAXAGON FILE_SCORE_R
 const char* NAME_SDMC_SCORE = "sdmc:" DIR_3DS DIR_DATA DIR_HAXAGON FILE_SCORE_SDMC;
 
 int main() {
-	
+
 	//3ds init
 	sf2d_init();
 	sf2d_set_vblank_wait(1);
@@ -28,20 +28,20 @@ int main() {
 	sdmcInit();
 	ndspInit();
 	ndspSetOutputMode(NDSP_OUTPUT_STEREO);
-	
+
 	//pattern loading
 	LoadedState loaded = NOT_LOADED;
 	GlobalData data = EMPTY_GLOBAL_DATA;
 	FILE* fileData;
 	const char*  scorePath;
 	data.loaded = 0;
-	
+
 	//program init
 	srand(svcGetSystemTick());
-	
+
 	//audio loading
 	Track begin;
-	Track hexagon; 
+	Track hexagon;
 	Track over;
 	Track rotate;
 	Track mainMenu;
@@ -55,13 +55,13 @@ int main() {
 	audioLoad("romfs:/bgm/pamgaea.wav", &mainMenu, 5);
 	int channelBGM = 6; //Last channel + 1. Remember to update this!
 	int showGetBGM = 1; //Used to hide the get BGM info after a button press.
-	
+
 	//level selection and game over
 	int nlevel = 0;
 	int nLastLevel = -1;
 	Level level = EMPTY_LEVEL;
 	LiveLevel gameOver = EMPTY_LIVE_LEVEL;
-	
+
 	//Controller
 	GameState state = SWITCH_LOAD_LOCATION;
 	while(state != PROGRAM_QUIT) {
@@ -125,6 +125,7 @@ int main() {
 
 			//replace and save high score if needed.
 			if(gameOver.score > level.highScore) {
+				level.highScore = gameOver.score;
 				data.levels[nlevel].highScore = gameOver.score;
 				putScores(scorePath, data);
 			}
@@ -132,10 +133,10 @@ int main() {
 		case PROGRAM_QUIT:;
 		}
 	}
-	
+
 	//level free
 	freeData(data);
-	
+
 	//audio free
 	audioFree(&begin);
 	audioFree(&hexagon);
@@ -144,12 +145,12 @@ int main() {
 	audioFree(&mainMenu);
 	audioFree(&levelUp);
 	audioFree(&bgm);
-	
+
 	//close GFX
 	sf2d_fini();
-	gfxExit();	
-	romfsExit();	
+	gfxExit();
+	romfsExit();
 	sdmcExit();
-	ndspExit();	
+	ndspExit();
 	return 0;
 }

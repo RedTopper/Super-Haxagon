@@ -53,3 +53,10 @@ char* getScoreText(int score);
   */
 char* getScoreTime(int score);
 char* getBestTime(int score);
+
+/**
+ * Will pulse between 0.0 and 1.0 at the speed given (in tenths of a
+ * second).
+ * start is when the pulse should (have) start(ed).
+ */
+double getPulse(int frame, int speed, int start);

@@ -164,6 +164,6 @@ double getPulse(int frame, int range, int start) {
 	frame -= start;
 	// Alternate algorithm:
 	//double percent = sin((double)frame * <speed>) / 2.0 + 0.5;
-	return fabs(((double)(frame % range * 2) - (double)frame)
-							  / (double)frame);
+	return fabs(((double)(frame % range * 2) - (double)range)
+							  / (double)range);
 }

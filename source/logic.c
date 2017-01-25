@@ -141,7 +141,7 @@ double getFurthestWallDistance(LivePattern pattern) {
 }
 
 //EXTERNAL
-GameState doMainMenu(GlobalData data, LoadedState loaded, Track select, int* level, int showGetBGM) {
+GameState doMainMenu(GlobalData data, LoadedState loaded, Track select, int* level, int showGetBGM, int showLoadLevels) {
 	MainMenu menu = {0};
 	menu.level = *level;
 	while(aptMainLoop()) {
@@ -152,7 +152,8 @@ GameState doMainMenu(GlobalData data, LoadedState loaded, Track select, int* lev
 		if(!(menu.transitionDirection)) {
 			switch(press) {
 			case BACK:
-				return SWITCH_LOAD_LOCATION;
+				if(showLoadLevels) return SWITCH_LOAD_LOCATION;
+				break;
 			case SELECT:
 				*level = menu.level;
 				return PLAYING;
@@ -180,13 +181,13 @@ GameState doMainMenu(GlobalData data, LoadedState loaded, Track select, int* lev
 			menu.transitionFrame = 0;
 			menu.transitionDirection = 0;
 		}
-
+		
 		//DRAW
 		sf2d_start_frame(GFX_TOP, GFX_LEFT);
 		drawMainMenu(data, menu);
 		sf2d_end_frame();
 		sf2d_start_frame(GFX_BOTTOM, GFX_LEFT);
-		drawMainMenuBot(loaded, sf2d_get_fps(), showGetBGM);
+		drawMainMenuBot(loaded, sf2d_get_fps(), showGetBGM, showLoadLevels);
 		sf2d_end_frame();
 		sf2d_swapbuffers();
 	}

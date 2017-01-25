@@ -4,6 +4,7 @@
 #include <3ds.h>
 #include <sf2d.h>
 #include <time.h>
+#include <unistd.h>
 
 #include "types.h"
 #include "util.h"
@@ -12,7 +13,7 @@
 #include "sound.h"
 #include "logic.h"
 
-//file location for built in levels
+//file locations for levels and scores
 const char* NAME_ROMFS_PROJECT = "romfs:" FILE_PROJECT;
 const char* NAME_SDMC_PROJECT = "sdmc:" DIR_3DS DIR_DATA DIR_HAXAGON FILE_PROJECT;
 const char* NAME_ROMFS_SCORE = "sdmc:" DIR_3DS DIR_DATA DIR_HAXAGON FILE_SCORE_ROMFS;
@@ -56,6 +57,7 @@ int main() {
 	int channelBGM = 6; //Last channel + 1. Remember to update this!
 	int showGetBGM = 1; //Used to hide the get BGM info after a button press.
 
+    int showLoadLevels = 0; //Used to show option to load levels if external levels exist.
 	//level selection and game over
 	int nlevel = 0;
 	int nLastLevel = -1;
@@ -73,18 +75,19 @@ int main() {
 			default:
 			case NOT_LOADED:
 			case SDMC:;
-				fileData = fopen(NAME_ROMFS_PROJECT, "rb");
-				if(!fileData) panic("NO INTERNAL FILE!", "There was no internal file to load. "
-						"The game was likely compiled incorrectly.", DEF_DEBUG, (int)fileData);
-				scorePath = NAME_ROMFS_SCORE;
-				loaded = ROMFS;
+
+                fileData = fopen(NAME_ROMFS_PROJECT, "rb");
+                if(!fileData) panic("NO INTERNAL FILE!", "There was no internal file to load. "
+                        "The game was likely compiled incorrectly.", DEF_DEBUG, (int)fileData);
+                scorePath = NAME_ROMFS_SCORE;
+                loaded = ROMFS;
 				break;
 			case ROMFS:;
-				fileData = fopen(NAME_SDMC_PROJECT, "rb");
-				if(!fileData) panic("NO EXTERNAL FILE TO LOAD!", "There was no external file to load. "
-						"You need to put external levels in the location defined in the README", DEF_DEBUG, (int)fileData);
-				scorePath = NAME_SDMC_SCORE;
-				loaded = SDMC;
+                fileData = fopen(NAME_SDMC_PROJECT, "rb");
+                if(!fileData) panic("NO EXTERNAL FILE TO LOAD!", "There was no external file to load. "
+                        "You need to put external levels in the location defined in the README", DEF_DEBUG, (int)fileData);
+                scorePath = NAME_SDMC_SCORE;
+                loaded = SDMC;
 				break;
 			}
 			data = getData(fileData);
@@ -98,9 +101,13 @@ int main() {
 			audioStop(&bgm);
 			audioPlay(&hexagon, ONCE);
 			audioPlay(&mainMenu, LOOP);
-			state = doMainMenu(data, loaded, rotate, &nlevel, showGetBGM);
+			//Check external levels exist.
+			if(access(NAME_SDMC_PROJECT, 0) != -1){
+				showLoadLevels = 1;
+			}
+			state = doMainMenu(data, loaded, rotate, &nlevel, showGetBGM, showLoadLevels);
 			level = data.levels[nlevel];
-
+			
 			//load audio
 			audioStop(&mainMenu);
 			if(state == PLAYING) {

@@ -56,7 +56,7 @@ int main() {
 	audioLoad("romfs:/bgm/pamgaea.wav", &mainMenu, 5);
 	int channelBGM = 6; //Last channel + 1. Remember to update this!
 	int showGetBGM = 1; //Used to hide the get BGM info after a button press.
-    int showLoadLevels = 0; //Used to show option to load levels if external levels exist.
+	int showLoadLevels = 0; //Used to show option to load levels if external levels exist.
 	if(access(NAME_SDMC_PROJECT, 0) != -1) showLoadLevels = 1; //Set true if accessible at startup.
 	//Note: will still panic if file is ever removed during runtime when it needs it (by design?)
 
@@ -84,11 +84,11 @@ int main() {
                 loaded = ROMFS;
 				break;
 			case ROMFS:;
-                fileData = fopen(NAME_SDMC_PROJECT, "rb");
-                if(!fileData) panic("NO EXTERNAL FILE TO LOAD!", "There was no external file to load. "
-                        "You need to put external levels in the location defined in the README", DEF_DEBUG, (int)fileData);
-                scorePath = NAME_SDMC_SCORE;
-                loaded = SDMC;
+				fileData = fopen(NAME_SDMC_PROJECT, "rb");
+				if(!fileData) panic("NO EXTERNAL FILE TO LOAD!", "There was no external file to load. "
+						"You need to put external levels in the location defined in the README", DEF_DEBUG, (int)fileData);
+				scorePath = NAME_SDMC_SCORE;
+				loaded = SDMC;
 				break;
 			}
 			data = getData(fileData);

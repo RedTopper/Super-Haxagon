@@ -56,8 +56,10 @@ int main() {
 	audioLoad("romfs:/bgm/pamgaea.wav", &mainMenu, 5);
 	int channelBGM = 6; //Last channel + 1. Remember to update this!
 	int showGetBGM = 1; //Used to hide the get BGM info after a button press.
-
     int showLoadLevels = 0; //Used to show option to load levels if external levels exist.
+	if(access(NAME_SDMC_PROJECT, 0) != -1) showLoadLevels = 1; //Set true if accessible at startup.
+	//Note: will still panic if file is ever removed during runtime when it needs it (by design?)
+
 	//level selection and game over
 	int nlevel = 0;
 	int nLastLevel = -1;
@@ -75,7 +77,6 @@ int main() {
 			default:
 			case NOT_LOADED:
 			case SDMC:;
-
                 fileData = fopen(NAME_ROMFS_PROJECT, "rb");
                 if(!fileData) panic("NO INTERNAL FILE!", "There was no internal file to load. "
                         "The game was likely compiled incorrectly.", DEF_DEBUG, (int)fileData);
@@ -101,10 +102,6 @@ int main() {
 			audioStop(&bgm);
 			audioPlay(&hexagon, ONCE);
 			audioPlay(&mainMenu, LOOP);
-			//Check external levels exist.
-			if(access(NAME_SDMC_PROJECT, 0) != -1){
-				showLoadLevels = 1;
-			}
 			state = doMainMenu(data, loaded, rotate, &nlevel, showGetBGM, showLoadLevels);
 			level = data.levels[nlevel];
 			

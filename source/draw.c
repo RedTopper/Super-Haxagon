@@ -395,6 +395,10 @@ void drawMainMenuBot(LoadedState loaded, double fps, int showGetBGM, int showLoa
 	Point posDownload2 = {4, posDownload.y + 16 + 1};
 	Point posDownload3 = {4, posDownload2.y + 16 + 1};
 
+	Point posDownloadHigh = {4, posButton.y};
+	Point posDownloadHigh2 = {4, posDownloadHigh.y + 16 + 1};
+	Point posDownloadHigh3 = {4, posDownloadHigh2.y + 16 + 1};
+
 	drawBlackBot();
 	if(showLoadLevels){
 		writeFont(WHITE, posButton, "PRESS B TO LOAD", FONT16, ALIGN_LEFT_C);
@@ -403,9 +407,15 @@ void drawMainMenuBot(LoadedState loaded, double fps, int showGetBGM, int showLoa
 		writeFont(WHITE, posLevels, "LEVELS", FONT16, ALIGN_LEFT_C);
 	}
 	if(showGetBGM) {
-		writeFont(WHITE, posDownload, "GET BGM FROM GITHUB: ", FONT16, ALIGN_LEFT_C);
-		writeFont(WHITE, posDownload2, "REDINQUISITIVE/", FONT16, ALIGN_LEFT_C);
-		writeFont(WHITE, posDownload3, "SUPER-HAXAGON!", FONT16, ALIGN_LEFT_C);
+		if(showLoadLevels) {
+			writeFont(WHITE, posDownload, "GET BGM FROM GITHUB: ", FONT16, ALIGN_LEFT_C);
+			writeFont(WHITE, posDownload2, "REDINQUISITIVE/", FONT16, ALIGN_LEFT_C);
+			writeFont(WHITE, posDownload3, "SUPER-HAXAGON!", FONT16, ALIGN_LEFT_C);
+		} else {
+			writeFont(WHITE, posDownloadHigh, "GET BGM FROM GITHUB: ", FONT16, ALIGN_LEFT_C);
+			writeFont(WHITE, posDownloadHigh2, "REDINQUISITIVE/", FONT16, ALIGN_LEFT_C);
+			writeFont(WHITE, posDownloadHigh3, "SUPER-HAXAGON!", FONT16, ALIGN_LEFT_C);
+		}
 	}
 
 	drawFramerate(fps);

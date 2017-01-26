@@ -387,7 +387,7 @@ void drawBlackBot(void) {
 }
 
 //EXTERNAL
-void drawMainMenuBot(LoadedState loaded, double fps, int showGetBGM) {
+void drawMainMenuBot(LoadedState loaded, double fps, int showGetBGM, int showLoadLevels) {
 	Point posButton = {4, 4};
 	Point posLocation = {210, 4};
 	Point posLevels = {4, posLocation.y + 16 + 1};
@@ -396,11 +396,12 @@ void drawMainMenuBot(LoadedState loaded, double fps, int showGetBGM) {
 	Point posDownload3 = {4, posDownload2.y + 16 + 1};
 
 	drawBlackBot();
-	writeFont(WHITE, posButton, "PRESS B TO LOAD", FONT16, ALIGN_LEFT_C);
-	if(loaded == ROMFS) writeFont(WHITE, posLocation, "SDMC", FONT16, ALIGN_LEFT_C);
-	if(loaded == SDMC) writeFont(WHITE, posLocation, "ROMFS", FONT16, ALIGN_LEFT_C);
-	writeFont(WHITE, posLevels, "LEVELS", FONT16, ALIGN_LEFT_C);
-
+	if(showLoadLevels){
+		writeFont(WHITE, posButton, "PRESS B TO LOAD", FONT16, ALIGN_LEFT_C);
+		if(loaded == ROMFS) writeFont(WHITE, posLocation, "SDMC", FONT16, ALIGN_LEFT_C);
+		if(loaded == SDMC) writeFont(WHITE, posLocation, "ROMFS", FONT16, ALIGN_LEFT_C);
+		writeFont(WHITE, posLevels, "LEVELS", FONT16, ALIGN_LEFT_C);
+	}
 	if(showGetBGM) {
 		writeFont(WHITE, posDownload, "GET BGM FROM GITHUB: ", FONT16, ALIGN_LEFT_C);
 		writeFont(WHITE, posDownload2, "REDINQUISITIVE/", FONT16, ALIGN_LEFT_C);

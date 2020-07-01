@@ -1,6 +1,3 @@
-[submodule "source/font"]
-	path = source/font
-	url = https://github.com/flarn2006/SF2DBmpFont.git
 [submodule "buildtools"]
 	path = buildtools
 	url = https://github.com/Steveice10/buildtools.git

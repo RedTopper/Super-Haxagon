@@ -9,3 +9,5 @@
 /output
 /leveledit-two/hexlevels/main/backup
 /leveledit-two/hexlevels/backup
+/cmake-build-debug
+/.idea

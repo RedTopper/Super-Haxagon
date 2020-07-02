@@ -13,11 +13,13 @@ add_executable(SuperHaxagon ${OPTIONS}
         source/font.cpp
         source/levels.c
         source/logic.c
-        source/main.cpp
+        source/Main.cpp
         source/scores.c
         source/sound.c
         source/types.c
         source/util.c
-        source/driver/driver_windows.cpp
-        source/driver/driver_3ds.cpp
-        source/driver/driver_3ds_audio.cpp)
+        source/Driver/PlatformWin.cpp
+        source/Driver/Platform3DS.cpp
+        source/Driver/Audio3DS.cpp
+        source/Driver/AudioWin.cpp
+        source/Driver/Player3DS.cpp)

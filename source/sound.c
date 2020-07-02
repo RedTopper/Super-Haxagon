@@ -15,18 +15,18 @@ void createDspBlock(ndspWaveBuf* waveBuf, u16 bps, u32 size, int loop, u32* data
 	waveBuf->data_vaddr = (void*)data;
 	waveBuf->nsamples = size / bps;
 	waveBuf->looping = loop;
-	waveBuf->offset = 0;	
+	waveBuf->offset = 0;
 	DSP_FlushDataCache(data, size);
 }
 
 //EXTERNAL
 void audioLoad(char* path, Track* sound, int channel) {
 	sound->loaded = 0;
-	
+
 	//open file
 	FILE *file = fopen(path, "rb");
 	if(!file) return;
-	
+
 	//check signature
 	char sig[4];
 	fread(sig, 1, 4, file);
@@ -34,7 +34,7 @@ void audioLoad(char* path, Track* sound, int channel) {
 		fclose(file);
 		return;
 	}
-	
+
 	//file sizes and metadata
 	fseek(file, 40, SEEK_SET);
 	fread(&(sound->dataSize), 4, 1, file);
@@ -44,33 +44,33 @@ void audioLoad(char* path, Track* sound, int channel) {
 	fread(&(sound->sampleRate), 4, 1, file);
 	fseek(file, 34, SEEK_SET);
 	fread(&(sound->bitsPerSample), 2, 1, file);
-	
+
 	//check header
 	if(sound->dataSize == 0 || !(sound->channels == 1 || sound->channels == 2) || !(sound->bitsPerSample == 8 || sound->bitsPerSample == 16)) {
 		fclose(file);
 		return;
 	}
-	
+
 	sound->data = linearAlloc(sound->dataSize);
-	
+
 	//check buffer
 	if(!(sound->data)) {
 		fclose(file);
 		return;
 	}
-	
+
 	//read file
 	fseek(file, 44, SEEK_SET);
 	fread(sound->data, 1, sound->dataSize, file);
 	fclose(file);
-	
+
 	//set sound format
 	if(sound->bitsPerSample == 8) {
 		sound->ndspFormat = (sound->channels == 1) ? NDSP_FORMAT_MONO_PCM8  : NDSP_FORMAT_STEREO_PCM8 ;
 	} else {
 		sound->ndspFormat = (sound->channels == 1) ? NDSP_FORMAT_MONO_PCM16 : NDSP_FORMAT_STEREO_PCM16;
 	}
-	
+
 	//finish load
 	sound->loaded = 1;
 	sound->ndspChannel = channel;

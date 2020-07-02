@@ -10,7 +10,7 @@
 #include "scores.h"
 #include "sound.h"
 #include "logic.h"
-#include "driver/driver.h"
+#include "Driver/Platform.h"
 
 namespace SuperHaxagon {
 
@@ -20,7 +20,7 @@ namespace SuperHaxagon {
 	const char *NAME_ROMFS_SCORE = "sdmc:" DIR_3DS DIR_DATA DIR_HAXAGON FILE_SCORE_ROMFS;
 	const char *NAME_SDMC_SCORE = "sdmc:" DIR_3DS DIR_DATA DIR_HAXAGON FILE_SCORE_SDMC;
 
-	int game(const std::shared_ptr<Driver>& driver) {
+	int game(const std::unique_ptr<Platform>& driver) {
 
 		//pattern loading
 		LoadedState loaded = NOT_LOADED;
@@ -153,7 +153,7 @@ namespace SuperHaxagon {
 
 int main() {
 	try {
-		return SuperHaxagon::game(getPlatformDriver());
+		return SuperHaxagon::game(SuperHaxagon::getPlatform());
 	} catch (std::exception& e) {
 		// Do something?
 	}

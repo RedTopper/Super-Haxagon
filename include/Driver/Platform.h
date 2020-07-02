@@ -14,6 +14,11 @@ namespace SuperHaxagon {
 		virtual std::string getPathRom(const std::string& partial) = 0;
 
 		virtual std::unique_ptr<Audio> loadAudio(const std::string& path) = 0;
+
+		/**
+		 * Plays a sound effect
+		 * @param audio The sound effect to play
+		 */
 		virtual void playSFX(Audio* audio) = 0;
 		virtual void playBGM(Audio* audio) = 0;
 		virtual void stopBGM() = 0;

@@ -40,11 +40,22 @@ namespace SuperHaxagon {
 	}
 
 	void Platform3DS::playSFX(Audio* audio) {
+		int channel = 1;
+		for (auto& player : sfx) {
+			if (!player || player->isDone()) {
+				player = audio->instantiate();
+				player->setChannel(channel);
+				player->setLoop(false);
+				player->play();
+			}
 
+			channel++;
+		}
 	}
 
 	void Platform3DS::playBGM(Audio* audio) {
-
+		bgm = audio->instantiate();
+		bgm->play();
 	}
 
 	void Platform3DS::stopBGM() {

@@ -3,6 +3,7 @@
 
 #include "Platform.h"
 #include "Audio.h"
+#include "Player.h"
 
 static const int MAX_TRACKS = 4;
 
@@ -16,13 +17,17 @@ namespace SuperHaxagon {
 		std::string getPathRom(const std::string& partial) override;
 
 		std::unique_ptr<Audio> loadAudio(const std::string& path) override;
+
+		/**
+		 * Note: If there are no available channels the audio is silently discarded
+		 */
 		void playSFX(Audio* audio) override;
 		void playBGM(Audio* audio) override;
 		void stopBGM() override;
 
 	private:
-		std::unique_ptr<Audio> sfx[MAX_TRACKS];
-		std::unique_ptr<Audio> bgm;
+		std::unique_ptr<Player> sfx[MAX_TRACKS];
+		std::unique_ptr<Player> bgm;
 	};
 }
 

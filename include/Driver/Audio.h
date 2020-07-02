@@ -6,7 +6,7 @@
 namespace SuperHaxagon {
 	class Audio {
 	public:
-		virtual std::unique_ptr<Player> instantiate(bool loop) = 0;
+		virtual std::unique_ptr<Player> instantiate() = 0;
 	};
 }
 

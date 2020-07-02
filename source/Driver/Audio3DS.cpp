@@ -55,11 +55,9 @@ namespace SuperHaxagon {
 		linearFree(data);
 	}
 
-	std::unique_ptr<Player> Audio3DS::instantiate(bool loop) {
+	std::unique_ptr<Player> Audio3DS::instantiate() {
 		if (!loaded) return nullptr;
-		auto player = std::make_unique<Player3DS>();
-
-		return player;
+		return std::make_unique<Player3DS>(data, sampleRate, dataSize, channels, bitsPerSample, ndspFormat);
 	}
 }
 

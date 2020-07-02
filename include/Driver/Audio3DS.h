@@ -9,19 +9,19 @@
 namespace SuperHaxagon {
 	class Audio3DS : public Audio {
 	public:
-		Audio3DS(const std::string& path);
+		explicit Audio3DS(const std::string& path);
 		~Audio3DS();
 
-		std::unique_ptr<Player> instantiate(bool loop) override;
+		std::unique_ptr<Player> instantiate() override;
 
 	private:
-		u8* data;
-		u32 sampleRate;
-		u32 dataSize;
-		u16 channels;
-		u16 bitsPerSample;
-		u16 ndspFormat;
-		int level;
+		u8* data = nullptr;
+		u32 sampleRate = 0;
+		u32 dataSize = 0;
+		u16 channels = 0;
+		u16 bitsPerSample = 0;
+		u16 ndspFormat = 0;
+
 		bool loaded;
 	};
 }

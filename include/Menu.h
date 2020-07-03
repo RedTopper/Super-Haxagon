@@ -25,7 +25,7 @@ namespace SuperHaxagon {
 		int transitionFrame = 0;
 		int transitionDirection = 0;
 		int lastLevel = 0;
-		int level = 0;
+		size_t level = 0;
 	};
 }
 

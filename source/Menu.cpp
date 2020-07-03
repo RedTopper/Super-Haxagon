@@ -47,7 +47,7 @@ namespace SuperHaxagon {
 		}
 
 		if(level >=  game.getLevels().size()) level = 0;
-		if(level < 0) level = game.getLevels().size()) - 1;
+		if(level < 0) level = game.getLevels().size() - 1;
 		if(transitionDirection) transitionFrame++;
 		if(transitionFrame >= FRAMES_PER_TRANSITION) {
 			transitionFrame = 0;
@@ -142,7 +142,7 @@ namespace SuperHaxagon {
 		platform.drawTriangle(COLOR_TRANSPARENT, timeTriangle);
 
 		// Actual text
-		auto scoreTime  = Game::getBestTime(levelCur.getScore());
+		auto scoreTime  = Game::getBestTime(levelCur.getHighScore());
 		writeFont(COLOR_WHITE, posTitle, levelCur.getName(), FONT32, ALIGN_LEFT_C);
 		writeFont(COLOR_GREY, posDifficulty, levelCur.getDifficulty().str, FONT16, ALIGN_LEFT_C);
 		writeFont(COLOR_GREY, posMode, levelCur.getMode(), FONT16, ALIGN_LEFT_C);

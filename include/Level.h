@@ -19,9 +19,15 @@ namespace SuperHaxagon {
 		const std::string& getMode() const {return mode;}
 		const std::string& getCreator() const {return creator;}
 		const std::string& getMusic() const {return music;}
-		int getScore() const {return score;}
+
+		int getHighScore() const {return highScore;}
+		int getSpeedPulse() const {return speedPulse;}
+		float getSpeedCursor() const {return speedCursor;}
+		float getSpeedRotation() const {return speedRotation;}
+		float getSpeedWall() const {return speedWall;}
 
 	private:
+		std::vector<int> patterns;
 		std::vector<Color> colorsFG;
 		std::vector<Color> colorsBG1;
 		std::vector<Color> colorsBG2;
@@ -32,7 +38,11 @@ namespace SuperHaxagon {
 		std::string creator;
 		std::string music;
 
-		int score;
+		int highScore;
+		int speedPulse;
+		float speedWall;
+		float speedRotation;
+		float speedCursor;
 	};
 }
 

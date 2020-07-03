@@ -86,10 +86,6 @@ namespace SuperHaxagon {
 		return {screen == Screen::TOP ? 400 : 320, 240};
 	}
 
-	Point Platform3DS::getShadowOffset() const {
-		return {4, 4};
-	}
-
 	void Platform3DS::drawRect(const Color& color, const Point& point, const Point& size) const {
 
 	}

@@ -6,6 +6,7 @@
 
 #include "Game.hpp"
 #include "Menu.hpp"
+#include "Pattern.hpp"
 
 namespace SuperHaxagon {
 	Game::Game(Platform& platform) : platform(platform) {
@@ -125,7 +126,7 @@ namespace SuperHaxagon {
 		return 0;
 	}
 
-	void Game::drawBackground(const Color& color1, const Color& color2, const Point& focus, double height, double rotation, double sides) {
+	void Game::drawBackground(const Color& color1, const Color& color2, const Point& focus, double height, double rotation, double sides) const {
 		int exactSides = std::ceil(sides);
 
 		//solid background.
@@ -160,13 +161,13 @@ namespace SuperHaxagon {
 		}
 	}
 
-	void Game::drawRegular(const Color& color, const Point& focus, int height, double rotation, double sides) {
+	void Game::drawRegular(const Color& color, const Point& focus, int height, double rotation, double sides) const {
 		int exactSides = std::ceil(sides);
 
 		std::vector<Point> edges;
 		edges.reserve(exactSides);
 
-		//calculate the triangle backwards so it overlaps correctly.
+		// Calculate the triangle backwards so it overlaps correctly.
 		for(int i = 0; i < exactSides; i++) {
 			edges[i].x = lround(height * cos(rotation + (double)i * TAU/sides) + (double)(focus.x));
 			edges[i].y = lround(height * sin(rotation + (double)i * TAU/sides) + (double)(focus.y));
@@ -175,12 +176,12 @@ namespace SuperHaxagon {
 		std::array<Point, 3> triangle{};
 		triangle[0] = focus;
 
-		//connect last triangle edge to first
+		// Connect last triangle edge to first
 		triangle[1] = edges[exactSides - 1];
 		triangle[2] = edges[0];
 		platform.drawTriangle(color, triangle);
 
-		//draw rest of regular polygon
+		// Draw rest of regular polygon
 		for(int i = 0; i < exactSides - 1; i++) {
 			triangle[1] = edges[i];
 			triangle[2] = edges[i + 1];
@@ -188,12 +189,45 @@ namespace SuperHaxagon {
 		}
 	}
 
-	void Game::drawHumanCursor(const Color& color, const Point& focus, double cursor, double rotation) {
+	void Game::drawHumanCursor(const Color& color, const Point& focus, double cursor, double rotation) const {
 		std::array<Point, 3> triangle{};
 		triangle[0] = calcPoint(focus, cursor + rotation, 0.0, getHexLength() + getHumanPadding() + getHumanHeight());
-		triangle[1] = calcPoint(focus, cursor + rotation, getHumanWidth()/2, getHexLength()  + getHumanPadding());
-		triangle[2] = calcPoint(focus, cursor + rotation, -getHumanWidth()/2, getHexLength()  + getHumanPadding());
+		triangle[1] = calcPoint(focus, cursor + rotation, Game::getHumanWidth()/2, getHexLength()  + getHumanPadding());
+		triangle[2] = calcPoint(focus, cursor + rotation, -Game::getHumanWidth()/2, getHexLength()  + getHumanPadding());
 		platform.drawTriangle(color, triangle);
+	}
+
+	void Game::drawMovingPatterns(const Color& color, const Point& focus, const std::deque<PatternActive>& patterns, double rotation, double sides, double offset) const {
+		for(const auto& pattern : patterns) {
+			for(const auto& wall : pattern.getWalls()) {
+				drawMovingWall(color, focus, wall, rotation, sides, offset);
+			}
+		}
+	}
+
+	void Game::drawMovingWall(const Color& color, const Point& focus, const WallActive& wall, double rotation, double sides, double offset) const {
+		double distance = wall.getDistance() + offset;
+		double height = wall.getHeight();
+		if(distance + height < getHexLength()) return; //TOO_CLOSE;
+		if(distance > getRenderDistance()) return; //TOO_FAR;
+		if(wall.getSide() >= sides) return; //NOT_IN_RANGE
+		drawTrap(color, wall.calcPoints(focus, rotation, sides, getHexLength()));
+	}
+
+	void Game::drawTrap(Color color, const std::array<Point, 4>& points) const {
+		std::array<Point, 3> triangle{};
+		triangle[0] = points[0];
+		triangle[1] = points[1];
+		triangle[2] = points[2];
+		platform.drawTriangle(color, triangle);
+		triangle[1] = points[2];
+		triangle[2] = points[3];
+		platform.drawTriangle(color, triangle);
+	}
+
+	Point Game::getScreenCenter() const {
+		Point dim = platform.getScreenDim();
+		return {dim.x/2, dim.y/2};
 	}
 
 	Color Game::interpolateColor(const Color& one, const Color& two, double percent) {
@@ -209,7 +243,7 @@ namespace SuperHaxagon {
 		return (end - start) * percent + start;
 	}
 
-	Point Game::calcPoint(const Point& focus, double rotation, double offset, double distance)  {
+	Point Game::calcPoint(const Point& focus, double rotation, double offset, double distance) {
 		Point point = {0,0};
 		point.x = lround(distance * cos(rotation + offset) + focus.x);
 		point.y = lround(distance * sin(rotation + offset) + focus.y);

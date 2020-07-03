@@ -26,7 +26,6 @@ namespace SuperHaxagon {
 		Buttons getPressed() override;
 
 		Point getScreenDim() const override;
-		Point getShadowOffset() const override;
 
 		void drawRect(const Color& color, const Point& point, const Point& size) const override;
 		void drawTriangle(const Color& color, const std::array<Point, 3>& points) const override;

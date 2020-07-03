@@ -41,7 +41,6 @@ namespace SuperHaxagon {
 		virtual Buttons getPressed() = 0;
 
 		virtual Point getScreenDim() const = 0;
-		virtual Point getShadowOffset() const = 0;
 
 		virtual void drawRect(const Color& color, const Point& point, const Point& size) const = 0;
 		virtual void drawTriangle(const Color& color, const std::array<Point, 3>& points) const = 0;

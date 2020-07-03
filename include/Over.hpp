@@ -5,7 +5,9 @@
 
 namespace SuperHaxagon {
 	class Over : public State {
+		std::unique_ptr<State> update() override;
 
+		void draw() override;
 	};
 }
 

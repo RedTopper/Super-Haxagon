@@ -24,7 +24,8 @@ namespace SuperHaxagon {
 		void draw() override;
 
 	private:
-		Movement collision();
+		Movement collision() const;
+		Point getShadowOffset() const;
 
 		std::deque<PatternActive> patterns;
 

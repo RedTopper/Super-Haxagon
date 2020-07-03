@@ -1,3 +1,5 @@
+#include <cmath>
+
 #include "Wall.hpp"
 #include "Pattern.hpp"
 
@@ -49,6 +51,29 @@ namespace SuperHaxagon {
 		return Movement::CAN_MOVE;
 	}
 
+	std::array<Point, 4> WallActive::calcPoints(const Point& focus, double rotation, double sides, double hexLength) const {
+		std::array<Point, 4> quad{};
+		double tHeight = height;
+		double tDistance = distance;
+		if(distance < hexLength - 2.0) {//so the distance is never negative as it enters.
+			tHeight -= hexLength - 2.0 - distance;
+			tDistance = hexLength - 2.0; //Should never be 0!!!
+		}
+
+		quad[0] = calcPoint(focus, rotation, WALL_OVERFLOW, tDistance, sides, side + 1);
+		quad[1] = calcPoint(focus, rotation, WALL_OVERFLOW, tDistance + tHeight, sides, side + 1);
+		quad[2] = calcPoint(focus, rotation, -WALL_OVERFLOW, tDistance + tHeight, sides, side);
+		quad[3] = calcPoint(focus, rotation, -WALL_OVERFLOW, tDistance, sides, side);
+	}
+
+	Point WallActive::calcPoint(const Point& focus, double rotation, double overflow, double distance, double sides, int side) {
+		Point point = {0,0};
+		double width = (double)side * TAU/sides + overflow;
+		if(width > TAU + WALL_OVERFLOW) width = TAU + WALL_OVERFLOW;
+		point.x = lround(distance * std::cos(rotation + width) + (double)(focus.x));
+		point.y = lround(distance * std::sin(rotation + width) + (double)(focus.y));
+		return point;
+	}
 
 
 	Wall::Wall(short distance, short height, short side) :

@@ -2,16 +2,21 @@
 #define SUPER_HAXAGON_GAME_HPP
 
 #include <cmath>
-#include <vector>
+#include <deque>
 #include <memory>
 
 #include "Driver/Platform.hpp"
+
+#include "Structs.hpp"
+
 namespace SuperHaxagon {
 	struct Point;
 	struct Color;
 	class Level;
 	class Audio;
 	class State;
+	class PatternActive;
+	class WallActive;
 	class Game {
 	public:
 		explicit Game(Platform& platform);
@@ -33,7 +38,7 @@ namespace SuperHaxagon {
 		int getHexLengthBorder() const {return getScreenDimMin() / 60;}
 		int getHumanPadding() const {return getScreenDimMin() / 48;}
 		int getHumanHeight() const {return getScreenDimMin() / 48;}
-		double getHumanWidth() const {return TAU/30.0;}
+		static double getHumanWidth() {return TAU/30.0;}
 
 		int getScreenDimMax() const {
 			auto size = platform.getScreenDim();
@@ -53,18 +58,41 @@ namespace SuperHaxagon {
 		/**
 		 * Draws the background of the screen (the radiating colors part)
 		 */
-		void drawBackground(const Color& color1, const Color& color2, const Point& focus, double height, double rotation, double sides);
+		void drawBackground(const Color& color1, const Color& color2, const Point& focus, double height, double rotation, double sides) const;
 
 		/**
 		 * Draws a regular polygon at some point focus. Useful for generating
 		 * the regular polygon in the center of the screen.
 		 */
-		void drawRegular(const Color& color, const Point& focus, int height, double rotation, double sides);
+		void drawRegular(const Color& color, const Point& focus, int height, double rotation, double sides) const;
 
 		/**
 		 * Draws the little cursor in the center of the screen controlled by a human.
 		 */
-		void drawHumanCursor(const Color& color, const Point& focus, double cursor, double rotation);
+		void drawHumanCursor(const Color& color, const Point& focus, double cursor, double rotation) const;
+
+		/**
+		 * Completely draws all patterns in a live level. Can also be used to create
+		 * an "Explosion" effect if you use "offset". (for game overs)
+		 */
+		void drawMovingPatterns(const Color& color, const Point& focus, const std::deque<PatternActive>& patterns, double rotation, double sides, double offset) const;
+
+		/**
+		 * Draws a single moving wall based on a live wall, a color, some rotational value, and the total
+		 * amount of sides that appears.
+		 */
+		void drawMovingWall(const Color& color, const Point& focus, const WallActive& wall, double rotation, double sides, double offset) const;
+
+		/**
+		 * Draws a trapezoid using an array of points and a color.
+		 * The array must have 4 points.
+		 */
+		void drawTrap(Color color, const std::array<Point, 4>& points) const;
+
+		/**
+		 * Gets the center of the screen from the platform
+		 */
+		Point getScreenCenter() const;
 
 		/**
 		 * Linear interpolation between two colors

@@ -94,6 +94,12 @@ namespace SuperHaxagon {
 		 */
 		static std::string getBestTime(int score);
 
+		/**
+		 * Gets the current level that the score represents (for example, point)
+		 * if the user is less than 10 seconds into the game)
+		 */
+		static const char* getScoreText(int score);
+
 	private:
 		Platform& platform;
 

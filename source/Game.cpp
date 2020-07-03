@@ -223,6 +223,16 @@ namespace SuperHaxagon {
 		buffer << std::fixed << std::setprecision(3) << scoreInt << std::setprecision(2) << decimalPart;
 		return buffer.str();
 	}
+
+	const char* Game::getScoreText(int score) {
+		if(score < 10 * 60) return "SPACE";
+		if(score < 20 * 60) return "POINT";
+		if(score < 30 * 60) return "LINE";
+		if(score < 40 * 60) return "TRIANGLE";
+		if(score < 50 * 60) return "SQUARE";
+		if(score < 60 * 60) return "PENTAGON";
+		return "HEXAGON";
+	}
 }
 
 

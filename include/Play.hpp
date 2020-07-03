@@ -12,13 +12,16 @@ namespace SuperHaxagon {
 	class Platform;
 	class Play : public State {
 	public:
-		static const int FLIP_FRAMES_MAX = 500;
-		static const int TOTAL_PATTERNS_AT_ONE_TIME = 5;
-		static const int FRAMES_PER_CHANGE_SIDE = 36;
+		static constexpr double DIFFICULTY_MULTIPLIER = 1.1;
+		static constexpr int FLIP_FRAMES_MIN = 120;
+		static constexpr int FLIP_FRAMES_MAX = 500;
+		static constexpr int TOTAL_PATTERNS_AT_ONE_TIME = 5;
+		static constexpr int FRAMES_PER_CHANGE_SIDE = 36;
 
 		Play(Game& game, Level& level);
 		std::unique_ptr<State> update() override;
 		void draw() override;
+
 
 	private:
 		std::deque<PatternActive> patterns;
@@ -27,6 +30,7 @@ namespace SuperHaxagon {
 		Platform& platform;
 		Level& level;
 
+		double multiplier = 1.0; // Current direction and speed of rotation
 		double cursorPos{};
 		double rotation{};
 		int lastSides;
@@ -43,7 +47,6 @@ namespace SuperHaxagon {
 		int nextIndexBG1;
 		int nextIndexBG2;
 		int nextIndexFG;
-
 	};
 }
 

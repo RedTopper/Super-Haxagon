@@ -73,21 +73,20 @@ namespace SuperHaxagon {
 		}
 
 		//rotate level
-		rotation += level.getSpeedRotation();
+		rotation += level.getSpeedRotation() * multiplier;
 		if(rotation >= TAU) rotation -= TAU;
 		if(rotation < 0) rotation  += TAU;
 
 		//flip level if needed
 		flipFrame--;
 		if(flipFrame == 0) {
-			level.speedRotation *= -1.0;
-
-			//reset the timer to somewhere between [FLIP_FRAMES_MIN, FLIP_FRAMES_MAX)
-			flipFrame = FLIP_FRAMES_MIN + rand() % (FLIP_FRAMES_MAX - FLIP_FRAMES_MIN);
+			multiplier *= -1.0;
+			flipFrame = game.getTwister().rand(FLIP_FRAMES_MIN, FLIP_FRAMES_MAX);
 		}
 
 		//button presses
-		ButtonState press = getButton();
+		platform.pollButtons();
+		auto button = platform.getPressed();
 
 		//check collision
 		MovementState collision = collisionLiveLevel(liveLevel, level.speedCursor);
@@ -102,24 +101,24 @@ namespace SuperHaxagon {
 				return GAME_OVER;
 			case DIR_RIGHT:
 				if(collision == CANNOT_MOVE_RIGHT) break;
-				liveLevel.cursorPos -= level.speedCursor;
+				cursorPos -= level.getSpeedCursor();
 				break;
 			case DIR_LEFT:
 				if(collision == CANNOT_MOVE_LEFT) break;
-				liveLevel.cursorPos += level.speedCursor;
+				cursorPos += level.getSpeedCursor();
 				break;
 			default:;
 		}
 
 		//clamp cursor position
-		if(liveLevel.cursorPos >= TAU) liveLevel.cursorPos -= TAU;
-		if(liveLevel.cursorPos < 0) liveLevel.cursorPos  += TAU;
+		if(cursorPos >= TAU) cursorPos -= TAU;
+		if(cursorPos < 0) cursorPos  += TAU;
 
 		//update score
-		char* lastScoreText = getScoreText(liveLevel.score);
-		liveLevel.score++;
-		if(lastScoreText != getScoreText(liveLevel.score)) {
-			level.speedRotation *= DIFFICULTY_MULTIPLYER;
+		auto lastScoreText = Game::getScoreText(score);
+		score++;
+		if(lastScoreText != Game::getScoreText(score)) {
+			multiplier *= DIFFICULTY_MULTIPLIER;
 			audioPlay(&levelUp, ONCE);
 		}
 	}
@@ -127,6 +126,4 @@ namespace SuperHaxagon {
 	void Play::draw() {
 
 	}
-
-
 }

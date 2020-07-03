@@ -2,6 +2,8 @@
 #include "Structs.hpp"
 #include "Level.hpp"
 #include "Game.hpp"
+#include "Quit.hpp"
+#include "Over.hpp"
 
 namespace SuperHaxagon {
 	Play::Play(Game& game, Level& level) : game(game), platform(game.getPlatform()), level(level) {
@@ -26,11 +28,7 @@ namespace SuperHaxagon {
 	}
 
 	std::unique_ptr<State> Play::update() {
-		//current value of sides.
-		double sides;
-
-		//LOGIC
-		//update color frame and clamp
+		// Update color frame and clamp
 		tweenFrame++;
 		if(tweenFrame >= level.getSpeedPulse()) {
 			tweenFrame = 0;
@@ -42,19 +40,20 @@ namespace SuperHaxagon {
 			nextIndexFG = (indexFG + 1 < level.getColorsFG().size() ? indexFG + 1 : 0);
 		}
 
-		//bring walls forward if we are not delaying
-		//otherwise tween from one shape to another.
+		// Bring walls forward if we are not delaying
+		// Otherwise tween from one shape to another.
 		if(delayFrame == 0) {
+			sidesTween = currentSides;
 			for(auto& pattern : patterns) {
 				pattern.advance(level.getSpeedWall());
 			}
 		} else {
 			double percent = (double)(delayFrame) / (double)(FRAMES_PER_CHANGE_SIDE * abs(currentSides - lastSides));
-			sides = Game::linear((double)currentSides, (double)lastSides, percent);
+			sidesTween = Game::linear((double)currentSides, (double)lastSides, percent);
 			delayFrame--;
 		}
 
-		//shift patterns forward
+		// Shift patterns forward
 		if(patterns.front().getFurthestWallDistance() < game.getHexLength()) {
 			lastSides = patterns.front().getSides();
 			patterns.pop_front();
@@ -66,64 +65,82 @@ namespace SuperHaxagon {
 
 			currentSides = patterns.front().getSides();
 
-			//Delay the level if the shifted pattern does  not have the same sides as the last.
+			// Delay the level if the shifted pattern does  not have the same sides as the last.
 			if(lastSides != currentSides) {
 				delayFrame = FRAMES_PER_CHANGE_SIDE * abs(currentSides - lastSides);
 			}
 		}
 
-		//rotate level
+		// Rotate level
 		rotation += level.getSpeedRotation() * multiplier;
 		if(rotation >= TAU) rotation -= TAU;
 		if(rotation < 0) rotation  += TAU;
 
-		//flip level if needed
+		// Flip level if needed
 		flipFrame--;
 		if(flipFrame == 0) {
 			multiplier *= -1.0;
 			flipFrame = game.getTwister().rand(FLIP_FRAMES_MIN, FLIP_FRAMES_MAX);
 		}
 
-		//button presses
+		// Button presses
 		platform.pollButtons();
-		auto button = platform.getPressed();
+		auto down = platform.getDown();
+		auto pressed = platform.getPressed();
 
-		//check collision
-		MovementState collision = collisionLiveLevel(liveLevel, level.speedCursor);
-		if(collision == DEAD) press = BACK; //go back if dead.
-
-		//handle player
-		switch(press) {
-			case QUIT:
-				return PROGRAM_QUIT;
-			case BACK:
-				memcpy(gameOver, &liveLevel, sizeof(LiveLevel)); //copy to game over screen
-				return GAME_OVER;
-			case DIR_RIGHT:
-				if(collision == CANNOT_MOVE_RIGHT) break;
-				cursorPos -= level.getSpeedCursor();
-				break;
-			case DIR_LEFT:
-				if(collision == CANNOT_MOVE_LEFT) break;
-				cursorPos += level.getSpeedCursor();
-				break;
-			default:;
+		// Check collision
+		auto hit = collision();
+		if(down.back || hit == Movement::DEAD) {
+			return std::make_unique<Over>();
 		}
 
-		//clamp cursor position
+		if (down.quit) {
+			return std::make_unique<Quit>();
+		}
+
+		if (pressed.left && hit != Movement::CANNOT_MOVE_LEFT) {
+			cursorPos += level.getSpeedCursor();
+		} else if (pressed.right && hit != Movement::CANNOT_MOVE_RIGHT) {
+			cursorPos -= level.getSpeedCursor();
+		}
+
+		// Clamp cursor position
 		if(cursorPos >= TAU) cursorPos -= TAU;
 		if(cursorPos < 0) cursorPos  += TAU;
 
-		//update score
+		// Update score
 		auto lastScoreText = Game::getScoreText(score);
 		score++;
 		if(lastScoreText != Game::getScoreText(score)) {
 			multiplier *= DIFFICULTY_MULTIPLIER;
-			audioPlay(&levelUp, ONCE);
+			platform.playSFX(game.getSfxLevelUp());
 		}
 	}
 
 	void Play::draw() {
 
+	}
+
+	Movement Play::collision() {
+		auto collision = Movement::CAN_MOVE;
+		auto cursorDistance = game.getHexLength() + game.getHumanPadding() + game.getHumanHeight();
+
+		// For all patterns
+		// TODO: Do I really need to do this?
+		for(const auto& pattern : patterns) {
+
+			// For all walls
+			for(const auto& wall : pattern.getWalls()) {
+				Movement check = wall.collision(cursorDistance, cursorPos, level.getSpeedCursor(), pattern.getSides());
+
+				// Update collision
+				if(collision == Movement::CAN_MOVE) collision = check; //If we can move, try and replace it with something else
+				if(check == Movement::DEAD)  { //If we are ever dead, return it.
+					return Movement::DEAD;
+				}
+			}
+		}
+
+		return collision;
 	}
 }

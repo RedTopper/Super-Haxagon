@@ -16,6 +16,13 @@ namespace SuperHaxagon {
 		int y;
 	};
 
+	enum class Movement {
+		CAN_MOVE,
+		CANNOT_MOVE_LEFT,
+		CANNOT_MOVE_RIGHT,
+		DEAD,
+	};
+
 	static constexpr double TAU = M_PI * 2;
 	static const Color COLOR_SHADOW = {0, 0, 0, 0xC0};
 	static const Color COLOR_TRANSPARENT = {0, 0, 0, 0xA0};

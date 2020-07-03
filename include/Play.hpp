@@ -5,6 +5,7 @@
 
 #include "State.hpp"
 #include "Pattern.hpp"
+#include "Structs.hpp"
 
 namespace SuperHaxagon {
 	class Game;
@@ -22,8 +23,9 @@ namespace SuperHaxagon {
 		std::unique_ptr<State> update() override;
 		void draw() override;
 
-
 	private:
+		Movement collision();
+
 		std::deque<PatternActive> patterns;
 
 		Game& game;
@@ -33,6 +35,7 @@ namespace SuperHaxagon {
 		double multiplier = 1.0; // Current direction and speed of rotation
 		double cursorPos{};
 		double rotation{};
+		double sidesTween{};
 		int lastSides;
 		int currentSides;
 

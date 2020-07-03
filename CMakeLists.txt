@@ -30,4 +30,5 @@ add_executable(SuperHaxagon ${OPTIONS}
         source/Level.cpp
         source/Play.cpp
         source/Pattern.cpp
-        source/Wall.cpp)
+        source/Wall.cpp
+        source/Over.cpp)

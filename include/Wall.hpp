@@ -1,13 +1,16 @@
 #ifndef SUPER_HAXAGON_WALL_HPP
 #define SUPER_HAXAGON_WALL_HPP
 
+#include "Structs.hpp"
+
 namespace SuperHaxagon {
 	class Pattern;
 	class WallActive {
 	public:
 		WallActive(double distance, double height, int side);
 
-		void advance(double speed) {distance -= speed;}
+		void advance(double speed);
+		Movement collision(double cursorHeight, double cursorPos, double cursorStep, int sides) const;
 
 		double getDistance() const {return distance;}
 		double getHeight() const {return height;}

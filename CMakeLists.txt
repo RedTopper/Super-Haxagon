@@ -26,4 +26,5 @@ add_executable(SuperHaxagon ${OPTIONS}
         source/Driver/Player3DS.cpp
         source/Game.cpp
         source/Main.cpp
-        source/Menu.cpp source/Level.cpp include/Level.h include/Structs.h)
+        source/Menu.cpp
+        source/Level.cpp)

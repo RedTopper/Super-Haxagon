@@ -14,10 +14,12 @@ namespace SuperHaxagon {
 		Platform3DS();
 		~Platform3DS();
 
+		bool hasScreen(Screen test) override;
+
 		std::string getPath(const std::string& partial) override;
 		std::string getPathRom(const std::string& partial) override;
-
 		std::unique_ptr<Audio> loadAudio(const std::string& path) override;
+
 		void playSFX(Audio& audio) override;
 		void playBGM(Audio& audio) override;
 		void stopBGM() override;
@@ -26,9 +28,11 @@ namespace SuperHaxagon {
 		Buttons getDown() override;
 		Buttons getPressed() override;
 
-		Point getScreenDim()  override const;
-		Point getShadowOffset() override const;
-		int getRenderDistance() override const;
+		Point getScreenDim() const override;
+		Point getShadowOffset() const override;
+
+		void drawRect(const Color& color, const Point& point, const Point& size) const override;
+		void drawTriangle(const Color& color, const std::array<Point, 3>& points) const override;
 
 	private:
 		static Buttons toButtons(u32);

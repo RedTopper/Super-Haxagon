@@ -23,9 +23,12 @@ namespace SuperHaxagon {
 
 	class Platform {
 	public:
+		/* Some platforms may ignore this */
+		void setScreen(Screen select) { screen = select; }
+		virtual bool hasScreen(Screen test) = 0;
+
 		virtual std::string getPath(const std::string& partial) = 0;
 		virtual std::string getPathRom(const std::string& partial) = 0;
-
 		virtual std::unique_ptr<Audio> loadAudio(const std::string& path) = 0;
 
 		virtual void playSFX(Audio& audio) = 0;
@@ -36,11 +39,8 @@ namespace SuperHaxagon {
 		virtual Buttons getDown() = 0;
 		virtual Buttons getPressed() = 0;
 
-		/* Some platforms may ignore this */
-		void setScreen(Screen select) { screen = select; }
 		virtual Point getScreenDim() const = 0;
 		virtual Point getShadowOffset() const = 0;
-		virtual int getRenderDistance() const = 0;
 
 		virtual void drawRect(const Color& color, const Point& point, const Point& size) const = 0;
 		virtual void drawTriangle(const Color& color, const std::array<Point, 3>& points) const = 0;

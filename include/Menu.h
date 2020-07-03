@@ -8,18 +8,15 @@ namespace SuperHaxagon {
 	class Menu : public State {
 	public:
 		const int FRAMES_PER_TRANSITION = 12;
-		Menu(Platform& driver, Game& game, Audio& bgmMenu, Audio& hexagon, Audio& select, bool showLoadLevels);
+		Menu(Game& game, bool showLoadLevels);
 		std::unique_ptr<State> update() override;
 		void draw() override;
 		void enter() override;
 		void exit() override;
 
 	private:
-		Platform& platform;
 		Game& game;
-		Audio& bgmMenu;
-		Audio& sfxHexagon;
-		Audio& sfxSelect;
+		Platform& platform;
 
 		int showLoadLevels;
 		int transitionFrame = 0;

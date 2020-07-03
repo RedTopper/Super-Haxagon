@@ -2,10 +2,11 @@
 #include "exception"
 
 int main() {
-	SuperHaxagon::Game game;
+	auto platform = SuperHaxagon::getPlatform();
+	SuperHaxagon::Game game(*platform);
 
 	try {
-		return game.run(SuperHaxagon::getPlatform());
+		return game.run();
 	} catch (std::exception& e) {
 		// Do something?
 		return -1;

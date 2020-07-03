@@ -1,11 +1,23 @@
 #include <memory>
+#include <sstream>
+#include <iomanip>
 
 #include "Game.h"
 #include "Menu.h"
 #include "Driver/Platform.h"
 
 namespace SuperHaxagon {
-	int Game::run(Platform& platform) {
+	Game::Game(Platform& platform) : platform(platform) {
+		//audio loading
+		sfxBegin = platform.loadAudio(platform.getPathRom("/sound/begin.wav"));
+		sfxHexagon = platform.loadAudio(platform.getPathRom("/sound/hexagon.wav"));
+		stfOver = platform.loadAudio(platform.getPathRom("/sound/over.wav"));
+		sfxSelect = platform.loadAudio(platform.getPathRom("/sound/select.wav"));
+		sfxLevelUp = platform.loadAudio(platform.getPathRom("/sound/level.wav"));
+		bgmMenu = platform.loadAudio(platform.getPathRom("/bgm/pamgaea.wav"));
+	}
+
+	int Game::run() {
 
 		//pattern loading
 		LoadedState loaded = NOT_LOADED;
@@ -14,20 +26,12 @@ namespace SuperHaxagon {
 		const char *scorePath;
 		data.loaded = 0;
 
-		//audio loading
-		auto sfxBegin = platform.loadAudio(platform.getPathRom("/sound/begin.wav"));
-		auto sfxHexagon = platform.loadAudio(platform.getPathRom("/sound/hexagon.wav"));
-		auto stfOver = platform.loadAudio(platform.getPathRom("/sound/over.wav"));
-		auto sfxSelect = platform.loadAudio(platform.getPathRom("/sound/select.wav"));
-		auto sfxLevelUp = platform.loadAudio(platform.getPathRom("/sound/level.wav"));
-		auto bgmMenu = platform.loadAudio(platform.getPathRom("/bgm/pamgaea.wav"));
-
 		int showGetBGM = 1; //Used to hide the get BGM info after a button press.
 		int showLoadLevels = 0; //Used to show option to load levels if external levels exist.
 		if (access(NAME_SDMC_PROJECT, 0) != -1) showLoadLevels = 1; //Set true if accessible at startup.
 		//Note: will still panic if file is ever removed during runtime when it needs it (by design?)
 
-		state = std::make_unique<Menu>(platform, *this, *bgmMenu, *sfxHexagon, *sfxSelect, showLoadLevels);
+		state = std::make_unique<Menu>(*this, showLoadLevels);
 
 		//level selection and game over
 		int nlevel = 0;
@@ -119,7 +123,7 @@ namespace SuperHaxagon {
 		return 0;
 	}
 
-	void Game::drawBackground(const Platform& platform, const Color& color1, const Color& color2, const Point& focus, double height, double rotation, double sides) {
+	void Game::drawBackground(const Color& color1, const Color& color2, const Point& focus, double height, double rotation, double sides) {
 		int exactSides = std::ceil(sides);
 
 		//solid background.
@@ -154,7 +158,7 @@ namespace SuperHaxagon {
 		}
 	}
 
-	void Game::drawRegular(const Platform& platform, const Color& color, const Point& focus, int height, double rotation, double sides) {
+	void Game::drawRegular(const Color& color, const Point& focus, int height, double rotation, double sides) {
 		int exactSides = std::ceil(sides);
 
 		std::vector<Point> edges;
@@ -182,6 +186,14 @@ namespace SuperHaxagon {
 		}
 	}
 
+	void Game::drawHumanCursor(const Color& color, const Point& focus, double cursor, double rotation) {
+		std::array<Point, 3> triangle{};
+		triangle[0] = calcPoint(focus, cursor + rotation, 0.0, getHexLength() + getHumanPadding() + getHumanHeight());
+		triangle[1] = calcPoint(focus, cursor + rotation, getHumanWidth()/2, getHexLength()  + getHumanPadding());
+		triangle[2] = calcPoint(focus, cursor + rotation, -getHumanWidth()/2, getHexLength()  + getHumanPadding());
+		platform.drawTriangle(color, triangle);
+	}
+
 	Color Game::interpolateColor(const Color& one, const Color& two, double percent) {
 		Color result{};
 		result.r = (int)linear((double)one.r, (double)two.r, percent);
@@ -193,6 +205,21 @@ namespace SuperHaxagon {
 
 	double Game::linear(double start, double end, double percent) {
 		return (end - start) * percent + start;
+	}
+
+	Point Game::calcPoint(const Point& focus, double rotation, double offset, double distance)  {
+		Point point = {0,0};
+		point.x = lround(distance * cos(rotation + offset) + focus.x);
+		point.y = lround(distance * sin(rotation + offset) + focus.y);
+		return point;
+	}
+
+	std::string Game::getBestTime(int score) {
+		std::stringstream buffer;
+		int scoreInt = (int)((double)score/60.0);
+		int decimalPart = (int)(((double)score/60.0 - (double)scoreInt) * 100.0);
+		buffer << std::fixed << std::setprecision(3) << scoreInt << std::setprecision(2) << decimalPart;
+		return buffer.str();
 	}
 }
 

@@ -27,6 +27,10 @@ namespace SuperHaxagon {
 		romfsExit();
 	}
 
+	bool Platform3DS::hasScreen(Screen test) {
+		return test == Screen::TOP || test == Screen::BOTTOM;
+	}
+
 	std::string Platform3DS::getPath(const std::string& partial) {
 		return std::string("sdmc:/3ds/data/haxagon") + partial;
 	}
@@ -85,8 +89,12 @@ namespace SuperHaxagon {
 		return {4, 4};
 	}
 
-	int Platform3DS::getRenderDistance() const {
-		return 320; // Chosen relatively arbitrarily.
+	void Platform3DS::drawRect(const Color& color, const Point& point, const Point& size) const {
+
+	}
+
+	void Platform3DS::drawTriangle(const Color& color, const std::array<Point, 3>& points) const {
+
 	}
 
 	Buttons Platform3DS::toButtons(u32 input) {

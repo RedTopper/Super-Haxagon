@@ -27,4 +27,5 @@ add_executable(SuperHaxagon ${OPTIONS}
         source/Game.cpp
         source/Main.cpp
         source/Menu.cpp
-        source/Level.cpp)
+        source/Level.cpp
+        source/Play.cpp)

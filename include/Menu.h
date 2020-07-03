@@ -8,7 +8,10 @@ namespace SuperHaxagon {
 	class Menu : public State {
 	public:
 		const int FRAMES_PER_TRANSITION = 12;
+
 		Menu(Game& game, bool showLoadLevels);
+		Menu(Menu&) = delete;
+
 		std::unique_ptr<State> update() override;
 		void draw() override;
 		void enter() override;

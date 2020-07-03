@@ -1,3 +1,6 @@
+#include "Quit.h"
+#include "Play.h"
+#include "Load.h"
 #include "Game.h"
 #include "Structs.h"
 #include "Level.h"
@@ -24,11 +27,11 @@ namespace SuperHaxagon {
 		platform.pollButtons();
 		Buttons press = platform.getDown();
 
-		if (press.quit) return; //TODO;
+		if (press.quit) return std::make_unique<Quit>();
 
 		if(!transitionDirection) {
-			if (press.back && showLoadLevels) return; //TODO
-			if (press.select) return; //TODO
+			if (press.back && showLoadLevels) return std::make_unique<Load>(game);
+			if (press.select) return std::make_unique<Play>(game);
 			if (press.right) {
 				transitionDirection = 1;
 				lastLevel = level;

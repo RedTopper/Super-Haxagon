@@ -1,5 +1,5 @@
-#include "Pattern.h"
-#include "Twist.h"
+#include "Pattern.hpp"
+#include "Twist.hpp"
 
 namespace SuperHaxagon {
 	PatternActive::PatternActive(std::vector<WallActive> walls, int sides) : walls(std::move(walls)), sides(sides) {}

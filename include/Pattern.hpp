@@ -1,10 +1,10 @@
-#ifndef SUPER_HAXAGON_PATTERN_H
-#define SUPER_HAXAGON_PATTERN_H
+#ifndef SUPER_HAXAGON_PATTERN_HPP
+#define SUPER_HAXAGON_PATTERN_HPP
 
 #include <vector>
 #include <string>
 
-#include "Wall.h"
+#include "Wall.hpp"
 
 namespace SuperHaxagon {
 	class Twist;
@@ -38,4 +38,4 @@ namespace SuperHaxagon {
 	};
 }
 
-#endif //SUPER_HAXAGON_PATTERN_H
+#endif //SUPER_HAXAGON_PATTERN_HPP

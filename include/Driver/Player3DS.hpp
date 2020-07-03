@@ -1,9 +1,9 @@
-#ifndef SUPER_HAXAGON_PLAYER_3DS_H
-#define SUPER_HAXAGON_PLAYER_3DS_H
+#ifndef SUPER_HAXAGON_PLAYER_3DS_HPP
+#define SUPER_HAXAGON_PLAYER_3DS_HPP
 
 #include <3ds.h>
 
-#include "Player.h"
+#include "Player.hpp"
 
 namespace SuperHaxagon {
 	class Player3DS : public Player {
@@ -33,4 +33,4 @@ namespace SuperHaxagon {
 	};
 }
 
-#endif //SUPER_HAXAGON_PLAYER_3DS_H
+#endif //SUPER_HAXAGON_PLAYER_3DS_HPP

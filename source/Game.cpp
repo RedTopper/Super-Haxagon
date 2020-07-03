@@ -2,16 +2,17 @@
 #include <sstream>
 #include <iomanip>
 
-#include "Game.h"
-#include "Menu.h"
-#include "Driver/Platform.h"
+#include "Driver/Platform.hpp"
+
+#include "Game.hpp"
+#include "Menu.hpp"
 
 namespace SuperHaxagon {
 	Game::Game(Platform& platform) : platform(platform) {
 		//audio loading
 		sfxBegin = platform.loadAudio(platform.getPathRom("/sound/begin.wav"));
 		sfxHexagon = platform.loadAudio(platform.getPathRom("/sound/hexagon.wav"));
-		stfOver = platform.loadAudio(platform.getPathRom("/sound/over.wav"));
+		sfxOver = platform.loadAudio(platform.getPathRom("/sound/over.wav"));
 		sfxSelect = platform.loadAudio(platform.getPathRom("/sound/select.wav"));
 		sfxLevelUp = platform.loadAudio(platform.getPathRom("/sound/level.wav"));
 		bgmMenu = platform.loadAudio(platform.getPathRom("/bgm/pamgaea.wav"));

@@ -1,5 +1,6 @@
-#include "Game.h"
-#include "exception"
+#include <exception>
+
+#include "Game.hpp"
 
 int main() {
 	auto platform = SuperHaxagon::getPlatform();

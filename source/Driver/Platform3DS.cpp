@@ -2,9 +2,9 @@
 #include <string>
 #include <memory>
 
-#include "Driver/Player.h"
-#include "Driver/Audio3DS.h"
-#include "Driver/Platform3DS.h"
+#include "Driver/Player.hpp"
+#include "Driver/Audio3DS.hpp"
+#include "Driver/Platform3DS.hpp"
 
 static const int SAMPLE_RATE = 48000;
 

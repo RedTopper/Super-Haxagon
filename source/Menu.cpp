@@ -1,10 +1,10 @@
-#include "Quit.h"
-#include "Play.h"
-#include "Load.h"
-#include "Game.h"
-#include "Structs.h"
-#include "Level.h"
-#include "Menu.h"
+#include "Quit.hpp"
+#include "Play.hpp"
+#include "Load.hpp"
+#include "Game.hpp"
+#include "Structs.hpp"
+#include "Level.hpp"
+#include "Menu.hpp"
 
 namespace SuperHaxagon {
 	Menu::Menu(Game& game, bool showLoadLevels) :

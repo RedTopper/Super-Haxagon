@@ -1,5 +1,5 @@
-#include "Wall.h"
-#include "Pattern.h"
+#include "Wall.hpp"
+#include "Pattern.hpp"
 
 namespace SuperHaxagon {
 	WallActive::WallActive(double distance, double height, int side) :

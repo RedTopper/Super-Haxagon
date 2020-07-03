@@ -1,10 +1,10 @@
-#ifndef SUPER_HAXAGON_PLAY_H
-#define SUPER_HAXAGON_PLAY_H
+#ifndef SUPER_HAXAGON_PLAY_HPP
+#define SUPER_HAXAGON_PLAY_HPP
 
 #include <deque>
 
-#include "State.h"
-#include "Pattern.h"
+#include "State.hpp"
+#include "Pattern.hpp"
 
 namespace SuperHaxagon {
 	class Game;
@@ -47,4 +47,4 @@ namespace SuperHaxagon {
 	};
 }
 
-#endif //SUPER_HAXAGON_PLAY_H
+#endif //SUPER_HAXAGON_PLAY_HPP

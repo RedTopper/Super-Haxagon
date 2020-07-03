@@ -1,7 +1,7 @@
-#include "Play.h"
-#include "Structs.h"
-#include "Level.h"
-#include "Game.h"
+#include "Play.hpp"
+#include "Structs.hpp"
+#include "Level.hpp"
+#include "Game.hpp"
 
 namespace SuperHaxagon {
 	Play::Play(Game& game, Level& level) : game(game), platform(game.getPlatform()), level(level) {

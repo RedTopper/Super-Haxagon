@@ -1,7 +1,7 @@
 #include <string>
 #include <algorithm>
 
-#include "Driver/PlatformWin.h"
+#include "Driver/PlatformWin.hpp"
 
 namespace SuperHaxagon {
 	std::string PlatformWin::getPath(const std::string& partial) {

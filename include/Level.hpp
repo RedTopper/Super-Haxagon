@@ -1,11 +1,11 @@
-#ifndef SUPER_HAXAGON_LEVEL_H
-#define SUPER_HAXAGON_LEVEL_H
+#ifndef SUPER_HAXAGON_LEVEL_HPP
+#define SUPER_HAXAGON_LEVEL_HPP
 
 #include <string>
 #include <vector>
 
-#include "Structs.h"
-#include "Pattern.h"
+#include "Structs.hpp"
+#include "Pattern.hpp"
 
 namespace SuperHaxagon {
 	class Level {
@@ -49,4 +49,4 @@ namespace SuperHaxagon {
 	};
 }
 
-#endif //SUPER_HAXAGON_LEVEL_H
+#endif //SUPER_HAXAGON_LEVEL_HPP

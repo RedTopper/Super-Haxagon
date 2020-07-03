@@ -1,10 +1,10 @@
-#ifndef SUPER_HAXAGON_AUDIO_3DS_H
-#define SUPER_HAXAGON_AUDIO_3DS_H
+#ifndef SUPER_HAXAGON_AUDIO_3DS_HPP
+#define SUPER_HAXAGON_AUDIO_3DS_HPP
 
 #include <3ds.h>
 #include <memory>
 
-#include "Audio.h"
+#include "Audio.hpp"
 
 namespace SuperHaxagon {
 	class Audio3DS : public Audio {
@@ -26,4 +26,4 @@ namespace SuperHaxagon {
 	};
 }
 
-#endif //SUPER_HAXAGON_AUDIO_3DS_H
+#endif //SUPER_HAXAGON_AUDIO_3DS_HPP

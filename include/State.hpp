@@ -1,5 +1,5 @@
-#ifndef SUPER_HAXAGON_STATE_H
-#define SUPER_HAXAGON_STATE_H
+#ifndef SUPER_HAXAGON_STATE_HPP
+#define SUPER_HAXAGON_STATE_HPP
 
 #include <memory>
 
@@ -12,4 +12,4 @@ namespace SuperHaxagon {
 	};
 }
 
-#endif //SUPER_HAXAGON_STATE_H
+#endif //SUPER_HAXAGON_STATE_HPP

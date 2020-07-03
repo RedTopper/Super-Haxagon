@@ -1,5 +1,5 @@
-#ifndef SUPER_HAXAGON_STRUCTS_H
-#define SUPER_HAXAGON_STRUCTS_H
+#ifndef SUPER_HAXAGON_STRUCTS_HPP
+#define SUPER_HAXAGON_STRUCTS_HPP
 
 #include <cstdint>
 
@@ -24,4 +24,4 @@ namespace SuperHaxagon {
 	static const Color COLOR_BLACK =  {0, 0, 0, 0xFF};
 }
 
-#endif //SUPER_HAXAGON_STRUCTS_H
+#endif //SUPER_HAXAGON_STRUCTS_HPP

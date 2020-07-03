@@ -1,8 +1,8 @@
-#ifndef SUPER_HAXAGON_MENU_H
-#define SUPER_HAXAGON_MENU_H
+#ifndef SUPER_HAXAGON_MENU_HPP
+#define SUPER_HAXAGON_MENU_HPP
 
-#include "Driver/Platform.h"
-#include "State.h"
+#include "Driver/Platform.hpp"
+#include "State.hpp"
 
 namespace SuperHaxagon {
 	class Menu : public State {
@@ -29,4 +29,4 @@ namespace SuperHaxagon {
 	};
 }
 
-#endif //SUPER_HAXAGON_MENU_H
+#endif //SUPER_HAXAGON_MENU_HPP

@@ -1,5 +1,5 @@
-#ifndef SUPER_HAXAGON_AUDIO_H
-#define SUPER_HAXAGON_AUDIO_H
+#ifndef SUPER_HAXAGON_AUDIO_HPP
+#define SUPER_HAXAGON_AUDIO_HPP
 
 namespace SuperHaxagon {
 	class Player;
@@ -9,4 +9,4 @@ namespace SuperHaxagon {
 	};
 }
 
-#endif //SUPER_HAXAGON_AUDIO_H
+#endif //SUPER_HAXAGON_AUDIO_HPP

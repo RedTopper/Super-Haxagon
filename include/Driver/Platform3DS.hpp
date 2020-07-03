@@ -1,7 +1,7 @@
-#ifndef SUPER_HAXAGON_PLATFORM_3DS_H
-#define SUPER_HAXAGON_PLATFORM_3DS_H
+#ifndef SUPER_HAXAGON_PLATFORM_3DS_HPP
+#define SUPER_HAXAGON_PLATFORM_3DS_HPP
 
-#include "Platform.h"
+#include "Platform.hpp"
 
 static const int MAX_TRACKS = 4;
 
@@ -39,4 +39,4 @@ namespace SuperHaxagon {
 	};
 }
 
-#endif //SUPER_HAXAGON_PLATFORM_3DS_H
+#endif //SUPER_HAXAGON_PLATFORM_3DS_HPP

@@ -1,11 +1,11 @@
-#ifndef SUPER_HAXAGON_PLATFORM_H
-#define SUPER_HAXAGON_PLATFORM_H
+#ifndef SUPER_HAXAGON_PLATFORM_HPP
+#define SUPER_HAXAGON_PLATFORM_HPP
 #define _3DS
 
 #include <memory>
 #include <string>
 
-#include "Twist.h"
+#include "Twist.hpp"
 
 namespace SuperHaxagon {
 	struct Buttons {
@@ -71,7 +71,7 @@ namespace SuperHaxagon {
 }
 
 #ifdef _3DS
-#include "Platform3DS.h"
+#include "Platform3DS.hpp"
 #elif __SWITCH__
 #include "PlatformSwitch.h"
 #else
@@ -89,4 +89,4 @@ namespace SuperHaxagon {
 #endif
 	}
 }
-#endif //SUPER_HAXAGON_PLATFORM_H
+#endif //SUPER_HAXAGON_PLATFORM_HPP

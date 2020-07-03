@@ -1,5 +1,5 @@
-#ifndef SUPER_HAXAGON_TWIST_H
-#define SUPER_HAXAGON_TWIST_H
+#ifndef SUPER_HAXAGON_TWIST_HPP
+#define SUPER_HAXAGON_TWIST_HPP
 
 #include <random>
 #include <iostream>
@@ -7,7 +7,7 @@
 #include <functional>
 #include <memory>
 
-#include "Structs.h"
+#include "Structs.hpp"
 
 namespace SuperHaxagon {
 
@@ -124,4 +124,4 @@ namespace SuperHaxagon {
 	};
 }
 
-#endif //SUPER_HAXAGON_TWIST_H
+#endif //SUPER_HAXAGON_TWIST_HPP

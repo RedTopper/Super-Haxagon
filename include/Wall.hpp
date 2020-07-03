@@ -1,5 +1,5 @@
-#ifndef SUPER_HAXAGON_WALL_H
-#define SUPER_HAXAGON_WALL_H
+#ifndef SUPER_HAXAGON_WALL_HPP
+#define SUPER_HAXAGON_WALL_HPP
 
 namespace SuperHaxagon {
 	class Pattern;
@@ -35,4 +35,4 @@ namespace SuperHaxagon {
 	};
 }
 
-#endif //SUPER_HAXAGON_WALL_H
+#endif //SUPER_HAXAGON_WALL_HPP

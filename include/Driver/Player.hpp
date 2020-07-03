@@ -1,5 +1,5 @@
-#ifndef SUPER_HAXAGON_PLAYER_H
-#define SUPER_HAXAGON_PLAYER_H
+#ifndef SUPER_HAXAGON_PLAYER_HPP
+#define SUPER_HAXAGON_PLAYER_HPP
 
 namespace SuperHaxagon {
 	class Player {
@@ -16,4 +16,4 @@ namespace SuperHaxagon {
 	};
 }
 
-#endif //SUPER_HAXAGON_PLAYER_H
+#endif //SUPER_HAXAGON_PLAYER_HPP

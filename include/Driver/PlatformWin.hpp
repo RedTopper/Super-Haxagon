@@ -1,7 +1,7 @@
-#ifndef SUPER_HAXAGON_PLATFORM_WIN_H
-#define SUPER_HAXAGON_PLATFORM_WIN_H
+#ifndef SUPER_HAXAGON_PLATFORM_WIN_HPP
+#define SUPER_HAXAGON_PLATFORM_WIN_HPP
 
-#include "Platform.h"
+#include "Platform.hpp"
 
 namespace SuperHaxagon {
 	class PlatformWin : public Platform {
@@ -16,4 +16,4 @@ namespace SuperHaxagon {
 	};
 }
 
-#endif //SUPER_HAXAGON_PLATFORM_WIN_H
+#endif //SUPER_HAXAGON_PLATFORM_WIN_HPP

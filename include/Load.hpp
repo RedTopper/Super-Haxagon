@@ -1,5 +1,5 @@
-#ifndef SUPER_HAXAGON_LOAD_H
-#define SUPER_HAXAGON_LOAD_H
+#ifndef SUPER_HAXAGON_LOAD_HPP
+#define SUPER_HAXAGON_LOAD_HPP
 
 namespace SuperHaxagon {
 	class State;
@@ -19,4 +19,4 @@ namespace SuperHaxagon {
 	};
 }
 
-#endif //SUPER_HAXAGON_LOAD_H
+#endif //SUPER_HAXAGON_LOAD_HPP

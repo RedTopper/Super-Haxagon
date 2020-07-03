@@ -1,11 +1,11 @@
-#ifndef SUPER_HAXAGON_GAME_H
-#define SUPER_HAXAGON_GAME_H
+#ifndef SUPER_HAXAGON_GAME_HPP
+#define SUPER_HAXAGON_GAME_HPP
 
 #include <cmath>
 #include <vector>
 #include <memory>
 
-#include "Driver/Platform.h"
+#include "Driver/Platform.hpp"
 namespace SuperHaxagon {
 	struct Point;
 	struct Color;
@@ -109,4 +109,4 @@ namespace SuperHaxagon {
 	};
 }
 
-#endif //SUPER_HAXAGON_GAME_H
+#endif //SUPER_HAXAGON_GAME_HPP

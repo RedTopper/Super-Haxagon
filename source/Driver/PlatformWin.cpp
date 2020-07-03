@@ -20,11 +20,11 @@ namespace SuperHaxagon {
 		return std::unique_ptr<Audio>();
 	}
 
-	void PlatformWin::playSFX(Audio* audio) {
+	void PlatformWin::playSFX(Audio& audio) {
 
 	}
 
-	void PlatformWin::playBGM(Audio* audio) {
+	void PlatformWin::playBGM(Audio& audio) {
 
 	}
 

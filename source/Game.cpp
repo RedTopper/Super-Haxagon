@@ -1,28 +1,11 @@
-#include <cstdio>
-#include <stdlib.h>
-#include <string.h>
-#include <time.h>
-#include <unistd.h>
-
-#include "types.h"
-#include "util.h"
-#include "levels.h"
-#include "scores.h"
-#include "sound.h"
-#include "logic.h"
+#include <memory>
 
 #include "Game.h"
+#include "Menu.h"
 #include "Driver/Platform.h"
 
 namespace SuperHaxagon {
-
-	//file locations for levels and scores
-	const char *NAME_ROMFS_PROJECT = "romfs:" FILE_PROJECT;
-	const char *NAME_SDMC_PROJECT = "sdmc:" DIR_3DS DIR_DATA DIR_HAXAGON FILE_PROJECT;
-	const char *NAME_ROMFS_SCORE = "sdmc:" DIR_3DS DIR_DATA DIR_HAXAGON FILE_SCORE_ROMFS;
-	const char *NAME_SDMC_SCORE = "sdmc:" DIR_3DS DIR_DATA DIR_HAXAGON FILE_SCORE_SDMC;
-
-	int Game::run(const std::unique_ptr<Platform>& driver) {
+	int Game::run(Platform& platform) {
 
 		//pattern loading
 		LoadedState loaded = NOT_LOADED;
@@ -32,17 +15,19 @@ namespace SuperHaxagon {
 		data.loaded = 0;
 
 		//audio loading
-		auto begin = driver->loadAudio(driver->getPathRom("/sound/begin.wav"));
-		auto hexagon = driver->loadAudio(driver->getPathRom("/sound/hexagon.wav"));
-		auto over = driver->loadAudio(driver->getPathRom("/sound/over.wav"));
-		auto rotate = driver->loadAudio(driver->getPathRom("/sound/select.wav"));
-		auto levelUp = driver->loadAudio(driver->getPathRom("/sound/level.wav"));
-		auto mainMenu = driver->loadAudio(driver->getPathRom("/bgm/pamgaea.wav"));
+		auto sfxBegin = platform.loadAudio(platform.getPathRom("/sound/begin.wav"));
+		auto sfxHexagon = platform.loadAudio(platform.getPathRom("/sound/hexagon.wav"));
+		auto stfOver = platform.loadAudio(platform.getPathRom("/sound/over.wav"));
+		auto sfxSelect = platform.loadAudio(platform.getPathRom("/sound/select.wav"));
+		auto sfxLevelUp = platform.loadAudio(platform.getPathRom("/sound/level.wav"));
+		auto bgmMenu = platform.loadAudio(platform.getPathRom("/bgm/pamgaea.wav"));
 
 		int showGetBGM = 1; //Used to hide the get BGM info after a button press.
 		int showLoadLevels = 0; //Used to show option to load levels if external levels exist.
 		if (access(NAME_SDMC_PROJECT, 0) != -1) showLoadLevels = 1; //Set true if accessible at startup.
 		//Note: will still panic if file is ever removed during runtime when it needs it (by design?)
+
+		state = std::make_unique<Menu>(platform, *this, *bgmMenu, *sfxHexagon, *sfxSelect, showLoadLevels);
 
 		//level selection and game over
 		int nlevel = 0;
@@ -132,6 +117,82 @@ namespace SuperHaxagon {
 		//close GFX
 
 		return 0;
+	}
+
+	void Game::drawBackground(const Platform& platform, const Color& color1, const Color& color2, const Point& focus, double height, double rotation, double sides) {
+		int exactSides = std::ceil(sides);
+
+		//solid background.
+		Point position = {0,0};
+		Point size = platform.getScreenDim();
+		platform.drawRect(color1, position, size);
+
+		//This draws the main background.
+		std::vector<Point> edges;
+		edges.reserve(exactSides);
+
+		for(int i = 0; i < exactSides; i++) {
+			edges[i].x = lround(height * cos(rotation + (double)i * TAU/sides) + (double)(focus.x));
+			edges[i].y = lround(height * sin(rotation + (double)i * TAU/sides) + (double)(focus.y));
+		}
+
+		std::array<Point, 3> triangle{};
+		triangle[0] = focus;
+
+		//if the sides is odd we need to "make up a color" to put in the gap between the last and first color
+		if(exactSides % 2) {
+			triangle[1] = edges[exactSides - 1];
+			triangle[2] = edges[0];
+			platform.drawTriangle(interpolateColor(color1, color2, 0.5f), triangle);
+		}
+
+		//Draw the rest of the triangles
+		for(int i = 0; i < exactSides - 1; i = i + 2) {
+			triangle[1] = edges[i];
+			triangle[2] = edges[i + 1];
+			platform.drawTriangle(color2, triangle);
+		}
+	}
+
+	void Game::drawRegular(const Platform& platform, const Color& color, const Point& focus, int height, double rotation, double sides) {
+		int exactSides = std::ceil(sides);
+
+		std::vector<Point> edges;
+		edges.reserve(exactSides);
+
+		//calculate the triangle backwards so it overlaps correctly.
+		for(int i = 0; i < exactSides; i++) {
+			edges[i].x = lround(height * cos(rotation + (double)i * TAU/sides) + (double)(focus.x));
+			edges[i].y = lround(height * sin(rotation + (double)i * TAU/sides) + (double)(focus.y));
+		}
+
+		std::array<Point, 3> triangle{};
+		triangle[0] = focus;
+
+		//connect last triangle edge to first
+		triangle[1] = edges[exactSides - 1];
+		triangle[2] = edges[0];
+		platform.drawTriangle(color, triangle);
+
+		//draw rest of regular polygon
+		for(int i = 0; i < exactSides - 1; i++) {
+			triangle[1] = edges[i];
+			triangle[2] = edges[i + 1];
+			platform.drawTriangle(color, triangle);
+		}
+	}
+
+	Color Game::interpolateColor(const Color& one, const Color& two, double percent) {
+		Color result{};
+		result.r = (int)linear((double)one.r, (double)two.r, percent);
+		result.g = (int)linear((double)one.g, (double)two.g, percent);
+		result.b = (int)linear((double)one.b, (double)two.b, percent);
+		result.a = (int)linear((double)one.a, (double)two.a, percent);
+		return result;
+	}
+
+	double Game::linear(double start, double end, double percent) {
+		return (end - start) * percent + start;
 	}
 }
 

@@ -2,7 +2,7 @@
 #include <string>
 #include <memory>
 
-#include <Driver/Audio3DS.h>
+#include "Driver/Audio3DS.h"
 #include "Driver/Platform3DS.h"
 
 static const int SAMPLE_RATE = 48000;
@@ -39,11 +39,12 @@ namespace SuperHaxagon {
 		return std::make_unique<Audio3DS>(path);
 	}
 
-	void Platform3DS::playSFX(Audio* audio) {
+	// Note: If there are no available channels the audio is silently discarded
+	void Platform3DS::playSFX(Audio& audio) {
 		int channel = 1;
 		for (auto& player : sfx) {
 			if (!player || player->isDone()) {
-				player = audio->instantiate();
+				player = audio.instantiate();
 				player->setChannel(channel);
 				player->setLoop(false);
 				player->play();
@@ -53,12 +54,47 @@ namespace SuperHaxagon {
 		}
 	}
 
-	void Platform3DS::playBGM(Audio* audio) {
-		bgm = audio->instantiate();
+	void Platform3DS::playBGM(Audio& audio) {
+		bgm = audio.instantiate();
+		bgm->setChannel(0);
+		bgm->setLoop(true);
 		bgm->play();
 	}
 
 	void Platform3DS::stopBGM() {
+		if (bgm) bgm->stop();
+	}
 
+	void Platform3DS::pollButtons() {
+		hidScanInput();
+	}
+
+	Buttons Platform3DS::getDown() {
+		return toButtons(hidKeysDown());
+	}
+
+	Buttons Platform3DS::getPressed() {
+		return toButtons(hidKeysHeld());
+	}
+
+	Point Platform3DS::getScreenDim() const {
+		return {screen == Screen::TOP ? 400 : 320, 240};
+	}
+
+	Point Platform3DS::getShadowOffset() const {
+		return {4, 4};
+	}
+
+	int Platform3DS::getRenderDistance() const {
+		return 320; // Chosen relatively arbitrarily.
+	}
+
+	Buttons Platform3DS::toButtons(u32 input) {
+		Buttons buttons{};
+		buttons.select = (bool)(input & KEY_A);
+		buttons.back = (bool)(input & KEY_B);
+		buttons.quit = (bool)(input & KEY_START);
+		buttons.left = (bool)(input & (KEY_L | KEY_ZL | KEY_CSTICK_LEFT | KEY_CPAD_LEFT | KEY_DLEFT | KEY_Y));
+		buttons.right = (bool)(input & (KEY_R | KEY_ZR | KEY_CSTICK_RIGHT | KEY_CPAD_RIGHT | KEY_DRIGHT | KEY_X));
 	}
 }

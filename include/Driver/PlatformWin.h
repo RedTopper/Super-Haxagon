@@ -10,8 +10,8 @@ namespace SuperHaxagon {
 		std::string getPathRom(const std::string &partial) override;
 
 		std::unique_ptr<Audio> loadAudio(const std::string &path) override;
-		void playSFX(Audio *audio) override;
-		void playBGM(Audio *audio) override;
+		void playSFX(Audio& audio) override;
+		void playBGM(Audio& audio) override;
 		void stopBGM() override;
 	};
 }

@@ -5,9 +5,10 @@
 
 namespace SuperHaxagon {
 	class State {
-		virtual std::unique_ptr<State> next() = 0;
-		virtual void update() = 0;
+		virtual std::unique_ptr<State> update() = 0;
 		virtual void draw() = 0;
+		virtual void enter() {};
+		virtual void exit() {};
 	};
 }
 

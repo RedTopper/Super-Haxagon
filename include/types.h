@@ -1,6 +1,5 @@
 #pragma once
 
-#define TAU 6.28318530718
 #define SCREEN_TOP_DIAG_FROM_CENTER 320
 #define SCREEN_HEIGHT 240
 #define TOP_WIDTH  400

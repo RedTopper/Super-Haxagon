@@ -5,8 +5,7 @@
 #include <memory>
 #include <string>
 
-#include "Audio.h"
-#include "Structs.h"
+#include "Twist.h"
 
 namespace SuperHaxagon {
 	struct Buttons {
@@ -21,10 +20,12 @@ namespace SuperHaxagon {
 		TOP, BOTTOM
 	};
 
+	struct Point;
+	struct Color;
+	class Audio;
+	class Font;
 	class Platform {
 	public:
-		/* Some platforms may ignore this */
-		void setScreen(Screen select) { screen = select; }
 		virtual bool hasScreen(Screen test) = 0;
 
 		virtual std::string getPath(const std::string& partial) = 0;
@@ -44,6 +45,25 @@ namespace SuperHaxagon {
 
 		virtual void drawRect(const Color& color, const Point& point, const Point& size) const = 0;
 		virtual void drawTriangle(const Color& color, const std::array<Point, 3>& points) const = 0;
+		virtual void drawFont(const Font& font, const Point& point, const std::string& text) const = 0;
+
+		/**
+		 * This is usually a good way to initialize the mt19937 but some platforms have poor access to
+		 * std::random_device, so the driver will leave it up to sub implementations if they want to change it.
+		 */
+		virtual std::unique_ptr<Twist> getTwister() {
+			std::random_device source;
+			std::mt19937::result_type data[std::mt19937::state_size];
+			generate(std::begin(data), std::end(data), ref(source));
+			return std::make_unique<Twist>(
+				std::make_unique<std::seed_seq>(std::begin(data), std::end(data))
+			);
+		};
+
+		/**
+		 * Some platforms may ignore this
+		 */
+		void setScreen(Screen select) {screen = select;}
 
 	protected:
 		Screen screen;

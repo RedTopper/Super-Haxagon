@@ -1,31 +1,28 @@
 #include "Play.h"
+#include "Structs.h"
+#include "Level.h"
+#include "Game.h"
 
 namespace SuperHaxagon {
 	Play::Play(Game& game, Level& level) : game(game), platform(game.getPlatform()), level(level) {
-		delayFrame = 0; //tweening between side switches
-		flipFrame = FLIP_FRAMES_MAX; //amount of frames left until flip
-
-		cursorPos = TAU/4.0 + (level.getSpeedCursor() / 2.0);
-		rotation = 0.0;
-		tweenFrame = 0;
-		indexBG1 = 0;
-		indexBG2 = 0;
-		indexFG = 0;
 		nextIndexBG1 = (level.getColorsBG1().size() > 1 ? 1 : 0);
 		nextIndexBG2 = (level.getColorsBG2().size() > 1 ? 1 : 0);
 		nextIndexFG = (level.getColorsFG().size() > 1 ? 1 : 0);
-		score = 0;
 
 		//fetch some random starting patterns
 		auto distance = (double)game.getRenderDistance();
 		for(int i = 0;  i < TOTAL_PATTERNS_AT_ONE_TIME;  i++) {
-			liveLevel.patterns[i] = getLivePattern(level.patterns, level.numPatterns, distance);
-			distance = getFurthestWallDistance(liveLevel.patterns[i]);
+			int pCount = level.getPatterns().size();
+			int pSelected = game.getTwister().rand(pCount);
+			auto& pattern = level.getPatterns()[pSelected];
+			patterns.emplace_back(pattern.instantiate(game.getTwister(), distance));
+			distance = patterns.back().getFurthestWallDistance();
 		}
 
 		//set up the amount of sides the level should have.
-		int lastSides = liveLevel.patterns[0].sides;
-		int currentSides = liveLevel.patterns[0].sides;
+		lastSides = patterns.front().getSides();
+		currentSides = patterns.front().getSides();
+		cursorPos = TAU/4.0 + (level.getSpeedCursor() / 2.0);
 	}
 
 	std::unique_ptr<State> Play::update() {
@@ -48,34 +45,26 @@ namespace SuperHaxagon {
 		//bring walls forward if we are not delaying
 		//otherwise tween from one shape to another.
 		if(delayFrame == 0) {
-			sides = (double)currentSides;
-			for(int i = 0;  i < TOTAL_PATTERNS_AT_ONE_TIME;  i++) {
-				LivePattern pattern =  liveLevel.patterns[i];
-				for(int iWall = 0; iWall < pattern.numWalls; iWall++) {
-					pattern.walls[iWall].distance -= level.speedWall;
-				}
+			for(auto& pattern : patterns) {
+				pattern.advance(level.getSpeedWall());
 			}
 		} else {
 			double percent = (double)(delayFrame) / (double)(FRAMES_PER_CHANGE_SIDE * abs(currentSides - lastSides));
-			sides = linear((double)currentSides, (double)lastSides, percent);
+			sides = Game::linear((double)currentSides, (double)lastSides, percent);
 			delayFrame--;
 		}
 
 		//shift patterns forward
-		if(getFurthestWallDistance(liveLevel.patterns[0]) < DEF_HEX_FULL_LEN) {
-			lastSides = liveLevel.patterns[0].sides;
+		if(patterns.front().getFurthestWallDistance() < game.getHexLength()) {
+			lastSides = patterns.front().getSides();
+			patterns.pop_front();
 
-			//free
-			freeLivePattern(liveLevel.patterns[0]);
-			liveLevel.patterns[0].numWalls = 0; //just in case?
+			int pCount = level.getPatterns().size();
+			int pSelected = game.getTwister().rand(pCount);
+			auto& pattern = level.getPatterns()[pSelected];
+			patterns.emplace_back(pattern.instantiate(game.getTwister(), patterns.back().getFurthestWallDistance()));
 
-			//shift
-			for(int i = 1; i < TOTAL_PATTERNS_AT_ONE_TIME; i++) liveLevel.patterns[i - 1] = liveLevel.patterns[i];
-
-			//generate a new pattern after the last pattern
-			double distance = getFurthestWallDistance(liveLevel.patterns[TOTAL_PATTERNS_AT_ONE_TIME - 1]);
-			liveLevel.patterns[TOTAL_PATTERNS_AT_ONE_TIME - 1] = getLivePattern(level.patterns, level.numPatterns, distance);
-			currentSides = liveLevel.patterns[0].sides;
+			currentSides = patterns.front().getSides();
 
 			//Delay the level if the shifted pattern does  not have the same sides as the last.
 			if(lastSides != currentSides) {
@@ -84,9 +73,9 @@ namespace SuperHaxagon {
 		}
 
 		//rotate level
-		liveLevel.rotation += level.speedRotation;
-		if(liveLevel.rotation >= TAU) liveLevel.rotation -= TAU;
-		if(liveLevel.rotation < 0) liveLevel.rotation  += TAU;
+		rotation += level.getSpeedRotation();
+		if(rotation >= TAU) rotation -= TAU;
+		if(rotation < 0) rotation  += TAU;
 
 		//flip level if needed
 		flipFrame--;
@@ -138,4 +127,6 @@ namespace SuperHaxagon {
 	void Play::draw() {
 
 	}
+
+
 }

@@ -1,15 +1,18 @@
 #ifndef SUPER_HAXAGON_LEVEL_H
 #define SUPER_HAXAGON_LEVEL_H
 
+#include <string>
 #include <vector>
 
-#include "Game.h"
+#include "Structs.h"
+#include "Pattern.h"
 
 namespace SuperHaxagon {
 	class Level {
 	public:
 		Level(const Level&) = delete;
 
+		const std::vector<Pattern>& getPatterns() const {return patterns;}
 		const std::vector<Color>& getColorsFG() const {return colorsFG;}
 		const std::vector<Color>& getColorsBG1() const {return colorsBG1;}
 		const std::vector<Color>& getColorsBG2() const {return colorsBG2;}
@@ -27,7 +30,7 @@ namespace SuperHaxagon {
 		float getSpeedWall() const {return speedWall;}
 
 	private:
-		std::vector<int> patterns;
+		std::vector<Pattern> patterns;
 		std::vector<Color> colorsFG;
 		std::vector<Color> colorsBG1;
 		std::vector<Color> colorsBG2;

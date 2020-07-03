@@ -15,6 +15,7 @@ namespace SuperHaxagon {
 		sfxSelect = platform.loadAudio(platform.getPathRom("/sound/select.wav"));
 		sfxLevelUp = platform.loadAudio(platform.getPathRom("/sound/level.wav"));
 		bgmMenu = platform.loadAudio(platform.getPathRom("/bgm/pamgaea.wav"));
+		twister = platform.getTwister();
 	}
 
 	int Game::run() {

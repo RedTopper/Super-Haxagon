@@ -1,10 +1,7 @@
 #ifndef SUPER_HAXAGON_PLATFORM_3DS_H
 #define SUPER_HAXAGON_PLATFORM_3DS_H
 
-#include "Structs.h"
 #include "Platform.h"
-#include "Audio.h"
-#include "Player.h"
 
 static const int MAX_TRACKS = 4;
 
@@ -33,6 +30,7 @@ namespace SuperHaxagon {
 
 		void drawRect(const Color& color, const Point& point, const Point& size) const override;
 		void drawTriangle(const Color& color, const std::array<Point, 3>& points) const override;
+		void drawFont(const Font& font, const Point& point, const std::string& text) const override;
 
 	private:
 		static Buttons toButtons(u32);

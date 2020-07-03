@@ -31,7 +31,7 @@ namespace SuperHaxagon {
 
 		if(!transitionDirection) {
 			if (press.back && showLoadLevels) return std::make_unique<Load>(game);
-			if (press.select) return std::make_unique<Play>(game);
+			if (press.select) return std::make_unique<Play>(game, *game.getLevels()[level]);
 			if (press.right) {
 				transitionDirection = 1;
 				lastLevel = level;

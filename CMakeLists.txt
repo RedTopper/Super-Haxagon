@@ -28,4 +28,6 @@ add_executable(SuperHaxagon ${OPTIONS}
         source/Main.cpp
         source/Menu.cpp
         source/Level.cpp
-        source/Play.cpp)
+        source/Play.cpp
+        source/Pattern.cpp
+        source/Wall.cpp)

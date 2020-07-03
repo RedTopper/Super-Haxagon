@@ -8,7 +8,7 @@ namespace SuperHaxagon {
 			channels(channels),
 			bitsPerSample(bitsPerSample),
 			ndspFormat(ndspFormat),
-			controller()
+			buffer()
 	{}
 
 	Player3DS::~Player3DS() {
@@ -23,12 +23,12 @@ namespace SuperHaxagon {
 		ndspChnSetInterp(channel, NDSP_INTERP_LINEAR);
 		ndspChnSetRate(channel, sampleRate);
 		ndspChnSetFormat(channel, ndspFormat);
-		controller.data_vaddr = (void*)data;
-		controller.nsamples = dataSize / bitsPerSample;
-		controller.looping = loop;
-		controller.offset = 0;
+		buffer.data_vaddr = (void*)data;
+		buffer.nsamples = dataSize / bitsPerSample;
+		buffer.looping = loop;
+		buffer.offset = 0;
 		DSP_FlushDataCache(data, dataSize);
-		ndspChnWaveBufAdd(channel, &controller);
+		ndspChnWaveBufAdd(channel, &buffer);
 	}
 
 	void Player3DS::stop() {
@@ -36,6 +36,6 @@ namespace SuperHaxagon {
 	}
 
 	bool Player3DS::isDone() {
-		return controller.status == NDSP_WBUF_DONE;
+		return buffer.status == NDSP_WBUF_DONE;
 	}
 }

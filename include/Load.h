@@ -1,10 +1,10 @@
 #ifndef SUPER_HAXAGON_LOAD_H
 #define SUPER_HAXAGON_LOAD_H
 
-#include "State.h"
-#include "Game.h"
-
 namespace SuperHaxagon {
+	class State;
+	class Game;
+	class Platform;
 	class Load : public State {
 	public:
 		explicit Load(Game& game);

@@ -2,7 +2,7 @@
 #define SUPER_HAXAGON_AUDIO_3DS_H
 
 #include <3ds.h>
-#include <bits/unique_ptr.h>
+#include <memory>
 
 #include "Audio.h"
 

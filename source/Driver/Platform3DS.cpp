@@ -2,6 +2,7 @@
 #include <string>
 #include <memory>
 
+#include "Driver/Player.h"
 #include "Driver/Audio3DS.h"
 #include "Driver/Platform3DS.h"
 
@@ -94,6 +95,10 @@ namespace SuperHaxagon {
 	}
 
 	void Platform3DS::drawTriangle(const Color& color, const std::array<Point, 3>& points) const {
+
+	}
+
+	void Platform3DS::drawFont(const Font& font, const Point& point, const std::string& text) const {
 
 	}
 

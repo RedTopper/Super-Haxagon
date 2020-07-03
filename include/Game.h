@@ -6,30 +6,27 @@
 #include <memory>
 
 #include "Driver/Platform.h"
-#include "State.h"
-#include "Level.h"
-#include "Structs.h"
-
 namespace SuperHaxagon {
+	struct Point;
+	struct Color;
+	class Level;
+	class Audio;
+	class State;
 	class Game {
 	public:
 		explicit Game(Platform& platform);
 		Game(const Game&) = delete;
 
-		/**
-		 * Runs the game
-		 */
-		int run();
-
 		const std::vector<std::unique_ptr<Level>>& getLevels() const {return levels;}
 
 		Platform& getPlatform() const {return platform;}
-		Audio& getSfxBegin() const {return sfxBegin;}
-		Audio& getSfxHexagon() const {return sfxHexagon;}
-		Audio& getSfxOver() const {return sfxOver;}
-		Audio& getSfxSelect() const {return sfxSelect;}
-		Audio& getSfxLevelUp() const {return sfxLevelUp;}
-		Audio& getBgmMenu() const {return sfxBgmMenu;}
+		Twist& getTwister() const {return *twister;}
+		Audio& getSfxBegin() const {return *sfxBegin;}
+		Audio& getSfxHexagon() const {return *sfxHexagon;}
+		Audio& getSfxOver() const {return *sfxOver;}
+		Audio& getSfxSelect() const {return *sfxSelect;}
+		Audio& getSfxLevelUp() const {return *sfxLevelUp;}
+		Audio& getBgmMenu() const {return *bgmMenu;}
 
 		int getRenderDistance() const {return getScreenDimMax();}
 		int getHexLength() const {return getScreenDimMin() / 10;}
@@ -47,6 +44,11 @@ namespace SuperHaxagon {
 			auto size = platform.getScreenDim();
 			return std::min(size.x, size.y);
 		}
+
+		/**
+		 * Runs the game
+		 */
+		int run();
 
 		/**
 		 * Draws the background of the screen (the radiating colors part)
@@ -96,10 +98,11 @@ namespace SuperHaxagon {
 		Platform& platform;
 
 		std::vector<std::unique_ptr<Level>> levels;
+		std::unique_ptr<Twist> twister;
 		std::unique_ptr<State> state;
 		std::unique_ptr<Audio> sfxBegin;
 		std::unique_ptr<Audio> sfxHexagon;
-		std::unique_ptr<Audio> stfOver;
+		std::unique_ptr<Audio> sfxOver;
 		std::unique_ptr<Audio> sfxSelect;
 		std::unique_ptr<Audio> sfxLevelUp;
 		std::unique_ptr<Audio> bgmMenu;

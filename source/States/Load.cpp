@@ -1,6 +1,6 @@
 #include <memory>
 
-#include "Load.hpp"
+#include "States/Load.hpp"
 
 namespace SuperHaxagon {
 	Load::Load(Game& game) : game(game), platform(game.getPlatform()) {

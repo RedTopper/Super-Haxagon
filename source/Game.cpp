@@ -1,11 +1,11 @@
 #include <memory>
 
+#include "States/Menu.hpp"
+#include "Factories/Wall.hpp"
+#include "Factories/Pattern.hpp"
 #include "Driver/Platform.hpp"
 
 #include "Game.hpp"
-#include "Menu.hpp"
-#include "Wall.hpp"
-#include "Pattern.hpp"
 
 namespace SuperHaxagon {
 	Game::Game(Platform& platform) : platform(platform) {

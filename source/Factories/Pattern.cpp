@@ -1,6 +1,7 @@
-#include "Pattern.hpp"
+#include "Factories/Pattern.hpp"
+#include "Factories/Wall.hpp"
+
 #include "Twist.hpp"
-#include "Wall.hpp"
 
 namespace SuperHaxagon {
 	Pattern::Pattern(std::vector<std::unique_ptr<Wall>> walls, int sides) : walls(std::move(walls)), sides(sides) {}

@@ -1,12 +1,13 @@
-#include "Play.hpp"
+#include "Factories/Level.hpp"
+#include "States/Play.hpp"
+#include "States/Quit.hpp"
+#include "States/Over.hpp"
+
 #include "Structs.hpp"
-#include "Level.hpp"
 #include "Game.hpp"
-#include "Quit.hpp"
-#include "Over.hpp"
 
 namespace SuperHaxagon {
-	Play::Play(Game& game, LevelFactory& factory) :
+	Play::Play(Game& game, const LevelFactory& factory) :
 		game(game),
 		platform(game.getPlatform()),
 		factory(factory),
@@ -24,7 +25,7 @@ namespace SuperHaxagon {
 		int cursorDistance = game.getHexLength() + game.getHumanPadding() + game.getHumanHeight();
 		auto hit = level->collision(cursorDistance);
 		if(down.back || hit == Movement::DEAD) {
-			return std::make_unique<Over>();
+			return std::make_unique<Over>(game, factory, std::move(level));
 		}
 
 		if (down.quit) {
@@ -51,6 +52,6 @@ namespace SuperHaxagon {
 	}
 
 	void Play::draw() {
-		level->draw(game);
+		level->draw(game, 0);
 	}
 }

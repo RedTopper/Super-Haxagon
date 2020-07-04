@@ -2,6 +2,7 @@
 #define SUPER_HAXAGON_MENU_HPP
 
 #include "Driver/Platform.hpp"
+
 #include "State.hpp"
 
 namespace SuperHaxagon {

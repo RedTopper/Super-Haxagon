@@ -21,14 +21,19 @@ add_executable(SuperHaxagon ${OPTIONS}
 
         source/Driver/Audio3DS.cpp
         source/Driver/AudioWin.cpp
-        source/Driver/PlatformWin.cpp
         source/Driver/Platform3DS.cpp
+        source/Driver/PlatformWin.cpp
         source/Driver/Player3DS.cpp
+
+        source/States/Load.cpp
+        source/States/Menu.cpp
+        source/States/Over.cpp
+        source/States/Play.cpp
+
+        source/Factories/Level.cpp
+        source/Factories/Pattern.cpp
+        source/Factories/Wall.cpp
+
         source/Game.cpp
         source/Main.cpp
-        source/Menu.cpp
-        source/Level.cpp
-        source/Play.cpp
-        source/Pattern.cpp
-        source/Wall.cpp
-        source/Over.cpp source/Structs.cpp)
+        source/Structs.cpp)

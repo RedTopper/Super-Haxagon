@@ -1,10 +1,11 @@
-#include "Quit.hpp"
-#include "Play.hpp"
-#include "Load.hpp"
+#include "Factories/Level.hpp"
+#include "States/Quit.hpp"
+#include "States/Play.hpp"
+#include "States/Load.hpp"
+#include "States/Menu.hpp"
+
 #include "Game.hpp"
 #include "Structs.hpp"
-#include "Level.hpp"
-#include "Menu.hpp"
 
 namespace SuperHaxagon {
 	Menu::Menu(Game& game, bool showLoadLevels) :
@@ -78,10 +79,10 @@ namespace SuperHaxagon {
 		auto& levelCur = *game.getLevels()[level];
 
 		if(transitionDirection) {
-			FG = Game::interpolateColor(levelPrev.getColorsFG()[0], levelCur.getColorsFG()[0], percentRotated);
-			BG1 = Game::interpolateColor(levelPrev.getColorsBG1()[0], levelCur.getColorsBG2()[0], percentRotated);
-			BG2 = Game::interpolateColor(levelPrev.getColorsBG2()[0], levelCur.getColorsBG1()[0], percentRotated);
-			BG3 = Game::interpolateColor(levelPrev.getColorsBG2()[0], levelCur.getColorsBG2()[0], percentRotated); //Real BG2 transition
+			FG = interpolateColor(levelPrev.getColorsFG()[0], levelCur.getColorsFG()[0], percentRotated);
+			BG1 = interpolateColor(levelPrev.getColorsBG1()[0], levelCur.getColorsBG2()[0], percentRotated);
+			BG2 = interpolateColor(levelPrev.getColorsBG2()[0], levelCur.getColorsBG1()[0], percentRotated);
+			BG3 = interpolateColor(levelPrev.getColorsBG2()[0], levelCur.getColorsBG2()[0], percentRotated); //Real BG2 transition
 		} else {
 			FG = levelCur.getColorsFG()[0];
 			BG1 = levelCur.getColorsBG1()[0];
@@ -90,7 +91,7 @@ namespace SuperHaxagon {
 		}
 
 		Point screen = platform.getScreenDim();
-		Point shadow = platform.getShadowOffset();
+		Point shadow = game.getShadowOffset();
 
 		Point focus = {screen.x/2, screen.y/4};
 		Point offsetFocus = {focus.x + shadow.x, focus.y + shadow.y};
@@ -142,9 +143,9 @@ namespace SuperHaxagon {
 		platform.drawTriangle(COLOR_TRANSPARENT, timeTriangle);
 
 		// Actual text
-		auto scoreTime  = Game::getBestTime(levelCur.getHighScore());
+		auto scoreTime  = getBestTime(levelCur.getHighScore());
 		writeFont(COLOR_WHITE, posTitle, levelCur.getName(), FONT32, ALIGN_LEFT_C);
-		writeFont(COLOR_GREY, posDifficulty, levelCur.getDifficulty().str, FONT16, ALIGN_LEFT_C);
+		writeFont(COLOR_GREY, posDifficulty, levelCur.getDifficulty(), FONT16, ALIGN_LEFT_C);
 		writeFont(COLOR_GREY, posMode, levelCur.getMode(), FONT16, ALIGN_LEFT_C);
 		writeFont(COLOR_GREY, posCreator, levelCur.getCreator(), FONT16, ALIGN_LEFT_C);
 		writeFont(COLOR_WHITE, posTime, scoreTime, FONT16, ALIGN_LEFT_C);

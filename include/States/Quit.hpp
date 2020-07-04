@@ -1,7 +1,7 @@
 #ifndef SUPER_HAXAGON_QUIT_HPP
 #define SUPER_HAXAGON_QUIT_HPP
 
-#include "State.hpp"
+#include "States/State.hpp"
 
 namespace SuperHaxagon {
 	class Quit : public State {

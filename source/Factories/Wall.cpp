@@ -1,6 +1,6 @@
 #include <cmath>
 
-#include "Wall.hpp"
+#include "Factories/Wall.hpp"
 
 namespace SuperHaxagon {
 	Wall::Wall(double distance, double height, int side) :

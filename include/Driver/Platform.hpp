@@ -24,6 +24,7 @@ namespace SuperHaxagon {
 	struct Color;
 	class Audio;
 	class Font;
+
 	class Platform {
 	public:
 		virtual bool hasScreen(Screen test) = 0;

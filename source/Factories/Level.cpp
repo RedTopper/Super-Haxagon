@@ -1,7 +1,8 @@
+#include "Factories/Level.hpp"
+#include "Factories/Pattern.hpp"
+#include "Factories/Wall.hpp"
+
 #include "Twist.hpp"
-#include "Level.hpp"
-#include "Pattern.hpp"
-#include "Wall.hpp"
 #include "Game.hpp"
 
 namespace SuperHaxagon {
@@ -84,7 +85,7 @@ namespace SuperHaxagon {
 		}
 	}
 
-	void Level::draw(Game& game) {
+	void Level::draw(Game& game, double offset) {
 
 		// Calculate colors
 		double percentTween = (double)(tweenFrame) / (double)(factory.getSpeedPulse());
@@ -102,12 +103,12 @@ namespace SuperHaxagon {
 
 		// Draw shadows
 		Point offsetFocus = {center.x + shadow.x, center.y + shadow.y};
-		game.drawMovingPatterns(COLOR_SHADOW, offsetFocus, patterns, rotation, sidesTween, 0.0);
+		game.drawMovingPatterns(COLOR_SHADOW, offsetFocus, patterns, rotation, sidesTween, offset);
 		game.drawRegular(COLOR_SHADOW, offsetFocus, game.getHexLength(), rotation, sidesTween);
 		game.drawHumanCursor(COLOR_SHADOW, offsetFocus, cursorPos, rotation);
 
 		// Draw real thing
-		game.drawMovingPatterns(FG, center, patterns, rotation, sidesTween, 0.0);
+		game.drawMovingPatterns(FG, center, patterns, rotation, sidesTween, offset);
 		game.drawRegular(FG, center, game.getHexLength(), rotation, sidesTween);
 		game.drawRegular(BG2, center, game.getHexLength() - game.getHexLengthBorder(), rotation, sidesTween);
 		game.drawHumanCursor(FG, center, cursorPos, rotation);
@@ -139,6 +140,10 @@ namespace SuperHaxagon {
 		multiplier *= DIFFICULTY_MULTIPLIER;
 	}
 
+	void Level::rotate(double distance) {
+		cursorPos += distance;
+	}
+
 	void Level::left() {
 		cursorPos += factory.getSpeedCursor();
 	}
@@ -152,7 +157,7 @@ namespace SuperHaxagon {
 		if(cursorPos < 0) cursorPos  += TAU;
 	}
 
-	std::unique_ptr<Level> LevelFactory::instantiate(Twist& rng, int renderDistance) {
+	std::unique_ptr<Level> LevelFactory::instantiate(Twist& rng, int renderDistance) const {
 		return std::make_unique<Level>(*this, rng, renderDistance);
 	}
 }

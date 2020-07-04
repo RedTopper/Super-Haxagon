@@ -24,10 +24,11 @@ namespace SuperHaxagon {
 		Level(const LevelFactory& factory, Twist& rng, int renderDistance);
 
 		void update(Twist& rng, int hexLength);
-		void draw(Game& game);
+		void draw(Game& game, double offset);
 		Movement collision(int cursorDistance) const;
 
 		void increaseMultiplier();
+		void rotate(double distance);
 		void left();
 		void right();
 		void clamp();
@@ -61,7 +62,7 @@ namespace SuperHaxagon {
 	public:
 		LevelFactory(const LevelFactory&) = delete;
 
-		std::unique_ptr<Level> instantiate(Twist& rng, int renderDistance);
+		std::unique_ptr<Level> instantiate(Twist& rng, int renderDistance) const;
 
 		const std::vector<std::unique_ptr<PatternFactory>>& getPatterns() const {return patterns;}
 		const std::vector<Color>& getColorsFG() const {return colorsFG;}

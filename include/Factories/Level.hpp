@@ -85,6 +85,8 @@ namespace SuperHaxagon {
 		float getSpeedRotation() const {return speedRotation;}
 		float getSpeedWall() const {return speedWall;}
 
+		bool setHighScore(int score);
+
 	private:
 		std::vector<std::unique_ptr<PatternFactory>> patterns;
 		std::vector<Color> colorsFG;

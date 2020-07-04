@@ -15,14 +15,17 @@ namespace SuperHaxagon {
 
 	class Play : public State {
 	public:
-		Play(Game& game, const LevelFactory& level);
+		static constexpr int PULSE_TIME = 75;
+		static constexpr double PULSE_TIMES = 2.0;
+
+		Play(Game& game, LevelFactory& level);
 		Play(Play&) = delete;
 
 		std::unique_ptr<State> update() override;
 		void draw() override;
 
 	private:
-		const LevelFactory& factory;
+		LevelFactory& factory;
 		std::unique_ptr<Level> level;
 
 		Game& game;

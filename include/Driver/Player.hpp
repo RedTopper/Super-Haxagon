@@ -3,6 +3,10 @@
 
 namespace SuperHaxagon {
 	class Player {
+	public:
+		Player() = default;
+		Player(Player&) = delete;
+
 	private:
 		virtual void setChannel(int channel) = 0;
 		virtual void setLoop(bool loop) = 0;

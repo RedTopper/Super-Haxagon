@@ -8,6 +8,7 @@
 #include "Factories/Pattern.hpp"
 #include "Factories/Level.hpp"
 #include "Driver/Audio.hpp"
+#include "Driver/Font.hpp"
 
 #include "Game.hpp"
 
@@ -21,6 +22,10 @@ namespace SuperHaxagon {
 		sfxSelect = platform.loadAudio(platform.getPathRom("/sound/select.wav"));
 		sfxLevelUp = platform.loadAudio(platform.getPathRom("/sound/level.wav"));
 		bgmMenu = platform.loadAudio(platform.getPathRom("/bgm/pamgaea.wav"));
+
+		small = platform.loadFont(platform.getPathRom("/small.bff"));
+		large = platform.loadFont(platform.getPathRom("/large.bff"));
+
 		twister = platform.getTwister();
 	}
 
@@ -103,7 +108,7 @@ namespace SuperHaxagon {
 		}
 	}
 
-	void Game::drawHumanCursor(const Color& color, const Point& focus, double cursor, double rotation) const {
+	void Game::drawCursor(const Color& color, const Point& focus, double cursor, double rotation) const {
 		std::array<Point, 3> triangle{};
 		triangle[0] = calcPoint(focus, cursor + rotation, 0.0, getHexLength() + getHumanPadding() + getHumanHeight());
 		triangle[1] = calcPoint(focus, cursor + rotation, Game::getHumanWidth()/2, getHexLength()  + getHumanPadding());
@@ -111,15 +116,15 @@ namespace SuperHaxagon {
 		platform.drawTriangle(color, triangle);
 	}
 
-	void Game::drawMovingPatterns(const Color& color, const Point& focus, const std::deque<std::unique_ptr<Pattern>>& patterns, double rotation, double sides, double offset) const {
+	void Game::drawPatterns(const Color& color, const Point& focus, const std::deque<std::unique_ptr<Pattern>>& patterns, double rotation, double sides, double offset) const {
 		for(const auto& pattern : patterns) {
 			for(const auto& wall : pattern->getWalls()) {
-				drawMovingWall(color, focus, *wall, rotation, sides, offset);
+				drawWalls(color, focus, *wall, rotation, sides, offset);
 			}
 		}
 	}
 
-	void Game::drawMovingWall(const Color& color, const Point& focus, const Wall& wall, double rotation, double sides, double offset) const {
+	void Game::drawWalls(const Color& color, const Point& focus, const Wall& wall, double rotation, double sides, double offset) const {
 		double distance = wall.getDistance() + offset;
 		double height = wall.getHeight();
 		if(distance + height < getHexLength()) return; //TOO_CLOSE;
@@ -137,6 +142,16 @@ namespace SuperHaxagon {
 		triangle[1] = points[2];
 		triangle[2] = points[3];
 		platform.drawTriangle(color, triangle);
+	}
+
+	void Game::clearBotAndSwitchScreens() const {
+		// Don't want to clear the screen if there is no bottom screen.
+		if (platform.hasScreen(Screen::BOTTOM)) {
+			platform.setScreen(Screen::BOTTOM);
+			Point position = {0,0};
+			Point size = platform.getScreenDim();
+			platform.drawRect(COLOR_BLACK, position, size);
+		}
 	}
 
 	Point Game::getScreenCenter() const {

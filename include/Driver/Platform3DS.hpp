@@ -22,6 +22,8 @@ namespace SuperHaxagon {
 		std::string getPathRom(const std::string& partial) override;
 		std::unique_ptr<Audio> loadAudio(const std::string& path) override;
 
+		std::unique_ptr<Font> loadFont(const std::string& path) override;
+
 		void playSFX(Audio& audio) override;
 		void playBGM(Audio& audio) override;
 		void stopBGM() override;
@@ -34,7 +36,6 @@ namespace SuperHaxagon {
 
 		void drawRect(const Color& color, const Point& point, const Point& size) const override;
 		void drawTriangle(const Color& color, const std::array<Point, 3>& points) const override;
-		void drawFont(const Font& font, const Point& point, const std::string& text) const override;
 
 		std::unique_ptr<Twist> getTwister() override;
 

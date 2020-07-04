@@ -31,6 +31,10 @@ namespace SuperHaxagon {
 	static const Color COLOR_WHITE =  {0xFF, 0xFF, 0xFF, 0xFF};
 	static const Color COLOR_BLACK =  {0, 0, 0, 0xFF};
 
+	static const Color PULSE_LOW = {0xFF, 0xFF, 0xFF, 0x7F};
+	static const Color PULSE_HIGH = {0xFF, 0xFF, 0xFF, 0xFF};
+
+
 
 	/**
 	 * Linear interpolation between two colors
@@ -50,15 +54,18 @@ namespace SuperHaxagon {
 	Point calcPoint(const Point& focus, double rotation, double offset, double distance);
 
 	/**
-	 * Kind of like getScoreText(int score), this method converts a score
-	 * into a string. The format of this method looks like such:
+	 * Converts score into a string
 	 *
 	 * TTT:%% where  TTT is the current time in seconds, and %% is  the percent
 	 * through the current second.
-	 *
-	 * getBestTime(int score) is the same, but it says BEST: instead of TIME:
 	 */
-	std::string getBestTime(int score);
+	std::string getTime(int score);
+
+	/**
+	 * Will pulse between 0.0 and 1.0 at the speed given (in tenths of a second).
+	 * start is when the pulse should (have) start(ed).
+	 */
+	double getPulse(int frame, int range, int start);
 
 	/**
 	 * Gets the current level that the score represents (for example, point)

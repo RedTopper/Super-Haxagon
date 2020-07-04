@@ -1,3 +1,4 @@
+#include "Driver/Font.hpp"
 #include "Factories/Level.hpp"
 #include "States/Quit.hpp"
 #include "States/Over.hpp"
@@ -8,12 +9,15 @@
 
 namespace SuperHaxagon {
 
-	Over::Over(Game& game,const LevelFactory& factory, std::unique_ptr<Level> level) :
+	Over::Over(Game& game, LevelFactory& factory, std::unique_ptr<Level> level, int score) :
 		game(game),
 		factory(factory),
+		score(score),
 		level(std::move(level)),
 		platform(game.getPlatform())
-	{}
+	{
+		high = factory.setHighScore(score);
+	}
 
 	std::unique_ptr<State> Over::update() {
 		frames++;
@@ -36,39 +40,43 @@ namespace SuperHaxagon {
 				return std::make_unique<Menu>(game, false);
 			}
 		}
+
+		return nullptr;
 	}
 
 	void Over::draw() {
 		level->draw(game, offset);
 
-		Point posGameOver = {BOT_WIDTH / 2, 4};
-		Point posTime = {BOT_WIDTH / 2, 40};
-		Point posBest = {BOT_WIDTH / 2, 56};
-		Point posA = {BOT_WIDTH / 2, 78};
-		Point posB = {BOT_WIDTH / 2, 94};
+		game.clearBotAndSwitchScreens();
 
-		drawBlackBot();
+		const auto& large = game.getFontLarge();
+		const auto& small = game.getFontSmall();
+		int width = platform.getScreenDim().x;
+		int heightLarge = large.getHeight();
+		int heightSmall = small.getHeight();
 
-		char* scoreTime  = getScoreTime(score);
-		writeFont(WHITE, posGameOver, "GAME OVER", FONT32, ALIGN_CENTER_C);
-		writeFont(WHITE, posTime, scoreTime, FONT16, ALIGN_CENTER_C);
-		free(scoreTime);
+		Point posGameOver = {width / 2, 4};
+		Point posTime = {width / 2, posGameOver.y + heightLarge + 4};
+		Point posBest = {width / 2, posTime.y + heightSmall + 2};
+		Point posA = {width / 2, posBest.y + heightSmall * 2 + 2};
+		Point posB = {width / 2, posBest.y + heightSmall + 2};
 
-		if(score > highScore) {
+		auto textScore = std::string("SCORE: ") + getTime(score);
+		large.draw(COLOR_WHITE, posGameOver, Alignment::CENTER,  "GAME OVER");
+		small.draw(COLOR_WHITE, posTime, Alignment::CENTER, textScore);
+
+		if(high) {
 			double percent = getPulse(frames, PULSE_TIME, 0);
 			Color pulse = interpolateColor(PULSE_LOW, PULSE_HIGH, percent);
-			writeFont(pulse, posBest, "NEW RECORD!", FONT16, ALIGN_CENTER_C);
+			small.draw(pulse, posBest, Alignment::CENTER, "NEW RECORD!");
 		} else {
-			char* bestTime = getBestTime(highScore);
-			writeFont(WHITE, posBest, bestTime, FONT16, ALIGN_CENTER_C);
-			free(bestTime);
+			auto textBest = std::string("BEST: ") + getTime(factory.getHighScore());
+			small.draw(COLOR_WHITE, posBest, Alignment::CENTER, textBest);
 		}
 
-		if(showText) {
-			writeFont(WHITE, posA, "PRESS A TO PLAY", FONT16, ALIGN_CENTER_C);
-			writeFont(WHITE, posB, "PRESS B TO QUIT", FONT16, ALIGN_CENTER_C);
+		if(frames >= FRAMES_PER_GAME_OVER) {
+			small.draw(COLOR_WHITE, posA, Alignment::CENTER, "PRESS A TO PLAY");
+			small.draw(COLOR_WHITE, posB, Alignment::CENTER, "PRESS B TO QUIT");
 		}
-
-		drawFramerate(fps);
 	}
 }

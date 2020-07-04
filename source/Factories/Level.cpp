@@ -105,26 +105,25 @@ namespace SuperHaxagon {
 
 		// Draw shadows
 		Point offsetFocus = {center.x + shadow.x, center.y + shadow.y};
-		game.drawMovingPatterns(COLOR_SHADOW, offsetFocus, patterns, rotation, sidesTween, offset);
+		game.drawPatterns(COLOR_SHADOW, offsetFocus, patterns, rotation, sidesTween, offset);
 		game.drawRegular(COLOR_SHADOW, offsetFocus, game.getHexLength(), rotation, sidesTween);
-		game.drawHumanCursor(COLOR_SHADOW, offsetFocus, cursorPos, rotation);
+		game.drawCursor(COLOR_SHADOW, offsetFocus, cursorPos, rotation);
 
 		// Draw real thing
-		game.drawMovingPatterns(FG, center, patterns, rotation, sidesTween, offset);
+		game.drawPatterns(FG, center, patterns, rotation, sidesTween, offset);
 		game.drawRegular(FG, center, game.getHexLength(), rotation, sidesTween);
 		game.drawRegular(BG2, center, game.getHexLength() - game.getHexLengthBorder(), rotation, sidesTween);
-		game.drawHumanCursor(FG, center, cursorPos, rotation);
+		game.drawCursor(FG, center, cursorPos, rotation);
 	}
 
 	Movement Level::collision(int cursorDistance) const {
 		auto collision = Movement::CAN_MOVE;
 
-		// For all patterns
-		// TODO: Do I really need to do this?
+		// For all patterns (technically only need to check front two)
 		for(const auto& pattern : patterns) {
 
 			// For all walls
-			for(const auto& wall : pattern->getWalls()) {
+			for(const auto& wall : patterns.front()->getWalls()) {
 				Movement check = wall->collision(cursorDistance, cursorPos, factory.getSpeedCursor(), pattern->getSides());
 
 				// Update collision
@@ -161,5 +160,14 @@ namespace SuperHaxagon {
 
 	std::unique_ptr<Level> LevelFactory::instantiate(Twist& rng, int renderDistance) const {
 		return std::make_unique<Level>(*this, rng, renderDistance);
+	}
+
+	bool LevelFactory::setHighScore(int score) {
+		if(score > highScore) {
+			highScore = score;
+			return true;
+		}
+
+		return false;
 	}
 }

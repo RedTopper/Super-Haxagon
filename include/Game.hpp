@@ -33,6 +33,9 @@ namespace SuperHaxagon {
 		Audio& getSfxLevelUp() const {return *sfxLevelUp;}
 		Audio& getBgmMenu() const {return *bgmMenu;}
 
+		Font& getFontSmall() const {return *small;}
+		Font& getFontLarge() const {return *large;}
+
 		int getRenderDistance() const {return getScreenDimMax();}
 		int getHexLength() const {return getScreenDimMin() / 10;}
 		int getHexLengthBorder() const {return getScreenDimMin() / 60;}
@@ -69,25 +72,30 @@ namespace SuperHaxagon {
 		/**
 		 * Draws the little cursor in the center of the screen controlled by a human.
 		 */
-		void drawHumanCursor(const Color& color, const Point& focus, double cursor, double rotation) const;
+		void drawCursor(const Color& color, const Point& focus, double cursor, double rotation) const;
 
 		/**
 		 * Completely draws all patterns in a live level. Can also be used to create
 		 * an "Explosion" effect if you use "offset". (for game overs)
 		 */
-		void drawMovingPatterns(const Color& color, const Point& focus, const std::deque<std::unique_ptr<Pattern>>& patterns, double rotation, double sides, double offset) const;
+		void drawPatterns(const Color& color, const Point& focus, const std::deque<std::unique_ptr<Pattern>>& patterns, double rotation, double sides, double offset) const;
 
 		/**
 		 * Draws a single moving wall based on a live wall, a color, some rotational value, and the total
 		 * amount of sides that appears.
 		 */
-		void drawMovingWall(const Color& color, const Point& focus, const Wall& wall, double rotation, double sides, double offset) const;
+		void drawWalls(const Color& color, const Point& focus, const Wall& wall, double rotation, double sides, double offset) const;
 
 		/**
 		 * Draws a trapezoid using an array of points and a color.
 		 * The array must have 4 points.
 		 */
 		void drawTrap(Color color, const std::array<Point, 4>& points) const;
+
+		/**
+		 * Clears the bottom screen, if the platftorm has one.
+		 */
+		void clearBotAndSwitchScreens() const;
 
 		/**
 		 * Gets the center of the screen from the platform
@@ -112,6 +120,9 @@ namespace SuperHaxagon {
 		std::unique_ptr<Audio> sfxSelect;
 		std::unique_ptr<Audio> sfxLevelUp;
 		std::unique_ptr<Audio> bgmMenu;
+
+		std::unique_ptr<Font> small;
+		std::unique_ptr<Font> large;
 	};
 }
 

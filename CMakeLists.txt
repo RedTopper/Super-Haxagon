@@ -29,4 +29,4 @@ add_executable(SuperHaxagon ${OPTIONS}
 
         source/Game.cpp
         source/Main.cpp
-        source/Structs.cpp)
+        source/Structs.cpp source/Driver/Font3DS.cpp)

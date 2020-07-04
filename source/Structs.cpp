@@ -26,12 +26,19 @@ namespace SuperHaxagon {
 		return point;
 	}
 
-	std::string getBestTime(int score) {
+	std::string getTime(int score) {
 		std::stringstream buffer;
 		int scoreInt = (int)((double)score/60.0);
 		int decimalPart = (int)(((double)score/60.0 - (double)scoreInt) * 100.0);
 		buffer << std::fixed << std::setprecision(3) << scoreInt << std::setprecision(2) << decimalPart;
 		return buffer.str();
+	}
+
+	double getPulse(int frame, int range, int start) {
+		frame -= start;
+		// Alternate algorithm:
+		//double percent = sin((double)frame * <speed>) / 2.0 + 0.5;
+		return fabs(((double)(frame % range * 2) - (double)range) / (double)range);
 	}
 
 	const char* getScoreText(int score) {

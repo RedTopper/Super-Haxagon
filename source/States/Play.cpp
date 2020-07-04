@@ -1,3 +1,4 @@
+#include "Driver/Font.hpp"
 #include "Factories/Level.hpp"
 #include "States/Play.hpp"
 #include "States/Quit.hpp"
@@ -7,7 +8,8 @@
 #include "Game.hpp"
 
 namespace SuperHaxagon {
-	Play::Play(Game& game, const LevelFactory& factory) :
+
+	Play::Play(Game& game, LevelFactory& factory) :
 		game(game),
 		platform(game.getPlatform()),
 		factory(factory),
@@ -15,7 +17,6 @@ namespace SuperHaxagon {
 	{}
 
 	std::unique_ptr<State> Play::update() {
-
 		// Button presses
 		platform.pollButtons();
 		auto down = platform.getDown();
@@ -25,7 +26,7 @@ namespace SuperHaxagon {
 		int cursorDistance = game.getHexLength() + game.getHumanPadding() + game.getHumanHeight();
 		auto hit = level->collision(cursorDistance);
 		if(down.back || hit == Movement::DEAD) {
-			return std::make_unique<Over>(game, factory, std::move(level));
+			return std::make_unique<Over>(game, factory, std::move(level), score);
 		}
 
 		if (down.quit) {
@@ -49,33 +50,39 @@ namespace SuperHaxagon {
 			level->increaseMultiplier();
 			platform.playSFX(game.getSfxLevelUp());
 		}
+
+		return nullptr;
 	}
 
 	void Play::draw() {
 		level->draw(game, 0);
 
+		game.clearBotAndSwitchScreens();
+
+		int width = platform.getScreenDim().x;
+
+		const auto& large = game.getFontLarge();
+		const auto& small = game.getFontSmall();
 		Point posLevelUp = {4,4};
-		Point posScore = {BOT_WIDTH - 4, 4};
-		Point posBest = {BOT_WIDTH - 4, 20};
+		Point posScore = { width - 4, 4};
+		Point posBest = {width - 4, posScore.y + small.getHeight()};
 
-		drawBlackBot();
+		auto textScore = std::string("TIME: ") + getTime(score);
 
-		char* scoreTime = getScoreTime(liveLevel.score);
-		writeFont(WHITE, posScore, scoreTime, FONT16, ALIGN_RIGHT_C);
-		writeFont(WHITE, posLevelUp, getScoreText(liveLevel.score), FONT16, ALIGN_LEFT_C);
-		free(scoreTime);
+		small.draw(COLOR_WHITE, posScore, Alignment::RIGHT, textScore);
+		small.draw(COLOR_WHITE, posLevelUp, Alignment::LEFT, getScoreText(score));
 
-		if(level.highScore > 0 && liveLevel.score > level.highScore) {
-			Color textColor = WHITE;
-			if (liveLevel.score - level.highScore <= PULSE_TIMES * PULSE_TIME) {
-				double percent = getPulse(liveLevel.score, PULSE_TIME, level.highScore);
+		if(factory.getHighScore() > 0 && score > factory.getHighScore()) {
+			Color textColor = COLOR_WHITE;
+			if (score - factory.getHighScore() <= PULSE_TIMES * PULSE_TIME) {
+				double percent = getPulse(score, PULSE_TIME, factory.getHighScore());
 				textColor = interpolateColor(PULSE_LOW, PULSE_HIGH, percent);
 			}
-			writeFont(textColor, posBest, "NEW RECORD!", FONT16, ALIGN_RIGHT_C);
+
+			small.draw(textColor, posBest, Alignment::RIGHT,  "NEW RECORD!");
 		} else {
-			char* bestTime = getBestTime(level.highScore);
-			writeFont(WHITE, posBest, bestTime, FONT16, ALIGN_RIGHT_C);
-			free(bestTime);
+			auto textBest = std::string("BEST: ") + getTime(factory.getHighScore());
+			small.draw(COLOR_WHITE, posBest, Alignment::RIGHT, textBest);
 		}
 	}
 }

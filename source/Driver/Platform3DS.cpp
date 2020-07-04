@@ -2,8 +2,9 @@
 #include <string>
 #include <memory>
 
-#include "Driver/Player.hpp"
 #include "Driver/Audio3DS.hpp"
+#include "Driver/Player.hpp"
+#include "Driver/Font3DS.hpp"
 #include "Driver/Platform3DS.hpp"
 
 static const int SAMPLE_RATE = 48000;
@@ -15,11 +16,7 @@ namespace SuperHaxagon {
 		gfxInitDefault();
 
 		// Setup NDSP
-		ndspChnReset(0);
 		ndspSetOutputMode(NDSP_OUTPUT_STEREO);
-		ndspChnSetInterp(0, NDSP_INTERP_POLYPHASE);
-		ndspChnSetRate(0, SAMPLE_RATE);
-		ndspChnSetFormat(0, NDSP_FORMAT_STEREO_PCM16);
 	}
 
 	Platform3DS::~Platform3DS() {
@@ -46,6 +43,10 @@ namespace SuperHaxagon {
 
 	std::unique_ptr<Audio> Platform3DS::loadAudio(const std::string& path) {
 		return std::make_unique<Audio3DS>(path);
+	}
+
+	std::unique_ptr<Font> Platform3DS::loadFont(const std::string& path) {
+		return std::make_unique<Font3DS>(path);
 	}
 
 	// Note: If there are no available channels the audio is silently discarded
@@ -95,10 +96,6 @@ namespace SuperHaxagon {
 	}
 
 	void Platform3DS::drawTriangle(const Color& color, const std::array<Point, 3>& points) const {
-
-	}
-
-	void Platform3DS::drawFont(const Font& font, const Point& point, const std::string& text) const {
 
 	}
 

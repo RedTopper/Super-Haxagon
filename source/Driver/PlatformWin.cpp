@@ -33,7 +33,7 @@ namespace SuperHaxagon {
 
 	}
 
-	std::unique_ptr<Twist> Platform3DS::getTwister() {
+	std::unique_ptr<Twist> PlatformWin::getTwister() {
 		std::random_device source;
 		std::mt19937::result_type data[std::mt19937::state_size];
 		generate(std::begin(data), std::end(data), ref(source));

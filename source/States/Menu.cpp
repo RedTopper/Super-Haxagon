@@ -103,12 +103,12 @@ namespace SuperHaxagon {
 
 		// Shadows
 		game.drawRegular(COLOR_SHADOW, offsetFocus, game.getHexLength(), rotation, 6.0);
-		game.drawHumanCursor(COLOR_SHADOW, offsetFocus, TAU/4.0, 0);
+		game.drawCursor(COLOR_SHADOW, offsetFocus, TAU / 4.0, 0);
 
 		// Geometry
 		game.drawRegular(FG, focus, game.getHexLength(), rotation, 6.0);
 		game.drawRegular(BG3, focus, game.getHexLength() - game.getHexLengthBorder(), rotation, 6.0);
-		game.drawHumanCursor(FG, focus, TAU/4.0, 0); //Draw cursor fixed quarter circle, no movement.
+		game.drawCursor(FG, focus, TAU / 4.0, 0); //Draw cursor fixed quarter circle, no movement.
 
 		// Top rectangle and triangle
 		int TRIANGLE_WIDTH = 70;
@@ -152,14 +152,7 @@ namespace SuperHaxagon {
 		writeFont(COLOR_GREY, posCreator, levelCur.getCreator(), FONT16, ALIGN_LEFT_C);
 		writeFont(COLOR_WHITE, posTime, scoreTime, FONT16, ALIGN_LEFT_C);
 
-		// Don't want to clear the screen if there is no bottom screen.
-		if (platform.hasScreen(Screen::BOTTOM)) {
-			platform.setScreen(Screen::BOTTOM);
-			Point position = {0,0};
-			Point size = platform.getScreenDim();
-			platform.drawRect(COLOR_WHITE, position, size);
-		}
-
+		game.clearBotAndSwitchScreens();
 
 		Point posButton = {4, 4};
 		Point posLocation = {210, 4};

@@ -8,32 +8,32 @@
 
 namespace SuperHaxagon {
 	class Twist;
-	class PatternActive {
+	class Pattern {
 	public:
-		PatternActive(std::vector<WallActive> walls, int sides);
+		Pattern(std::vector<Wall> walls, int sides);
 
-		const std::vector<WallActive>& getWalls() const {return walls;}
+		const std::vector<Wall>& getWalls() const {return walls;}
 		int getSides() const {return sides;}
 
 		double getFurthestWallDistance() const;
 		void advance(double speed);
 
 	private:
-		std::vector<WallActive> walls;
+		std::vector<Wall> walls;
 		int sides;
 	};
 
-	class Pattern {
+	class PatternFactory {
 	public:
-		PatternActive instantiate(Twist& rng, double distance) const;
+		Pattern instantiate(Twist& rng, double distance) const;
 
-		const std::vector<Wall>& getWalls() const {return walls;}
+		const std::vector<WallFactory>& getWalls() const {return walls;}
 		const std::string& getName() const {return name;}
 		int getSides() const {return sides;}
 
 	private:
 		std::string name;
-		std::vector<Wall> walls;
+		std::vector<WallFactory> walls;
 		int sides;
 	};
 }

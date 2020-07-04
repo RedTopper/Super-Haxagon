@@ -9,7 +9,7 @@
 
 namespace SuperHaxagon {
 	class Game;
-	class Level;
+	class LevelFactory;
 	class Platform;
 	class Play : public State {
 	public:
@@ -19,7 +19,7 @@ namespace SuperHaxagon {
 		static constexpr int TOTAL_PATTERNS_AT_ONE_TIME = 5;
 		static constexpr int FRAMES_PER_CHANGE_SIDE = 36;
 
-		Play(Game& game, Level& level);
+		Play(Game& game, LevelFactory& level);
 		std::unique_ptr<State> update() override;
 		void draw() override;
 
@@ -27,11 +27,11 @@ namespace SuperHaxagon {
 		Movement collision() const;
 		Point getShadowOffset() const;
 
-		std::deque<PatternActive> patterns;
+		std::deque<Pattern> patterns;
 
 		Game& game;
 		Platform& platform;
-		Level& level;
+		LevelFactory& level;
 
 		double multiplier = 1.0; // Current direction and speed of rotation
 		double cursorPos{};

@@ -39,7 +39,7 @@ namespace SuperHaxagon {
 		//level selection and game over
 		int nlevel = 0;
 		int nLastLevel = -1;
-		Level level = EMPTY_LEVEL;
+		LevelFactory level = EMPTY_LEVEL;
 		LiveLevel gameOver = EMPTY_LIVE_LEVEL;
 
 		//Controller
@@ -197,7 +197,7 @@ namespace SuperHaxagon {
 		platform.drawTriangle(color, triangle);
 	}
 
-	void Game::drawMovingPatterns(const Color& color, const Point& focus, const std::deque<PatternActive>& patterns, double rotation, double sides, double offset) const {
+	void Game::drawMovingPatterns(const Color& color, const Point& focus, const std::deque<Pattern>& patterns, double rotation, double sides, double offset) const {
 		for(const auto& pattern : patterns) {
 			for(const auto& wall : pattern.getWalls()) {
 				drawMovingWall(color, focus, wall, rotation, sides, offset);
@@ -205,7 +205,7 @@ namespace SuperHaxagon {
 		}
 	}
 
-	void Game::drawMovingWall(const Color& color, const Point& focus, const WallActive& wall, double rotation, double sides, double offset) const {
+	void Game::drawMovingWall(const Color& color, const Point& focus, const Wall& wall, double rotation, double sides, double offset) const {
 		double distance = wall.getDistance() + offset;
 		double height = wall.getHeight();
 		if(distance + height < getHexLength()) return; //TOO_CLOSE;

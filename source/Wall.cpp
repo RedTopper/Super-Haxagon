@@ -4,17 +4,17 @@
 #include "Pattern.hpp"
 
 namespace SuperHaxagon {
-	WallActive::WallActive(double distance, double height, int side) :
+	Wall::Wall(double distance, double height, int side) :
 		distance(distance),
 		height(height),
 		side(side)
 	{}
 
-	void WallActive::advance(double speed) {
+	void Wall::advance(double speed) {
 		distance -= speed;
 	}
 
-	Movement WallActive::collision(double cursorHeight, double cursorPos, double cursorStep, int sides) const {
+	Movement Wall::collision(double cursorHeight, double cursorPos, double cursorStep, int sides) const {
 
 		//Check if we are between the wall vertically
 		if(cursorHeight < distance || cursorHeight > distance + height) {
@@ -51,7 +51,7 @@ namespace SuperHaxagon {
 		return Movement::CAN_MOVE;
 	}
 
-	std::array<Point, 4> WallActive::calcPoints(const Point& focus, double rotation, double sides, double hexLength) const {
+	std::array<Point, 4> Wall::calcPoints(const Point& focus, double rotation, double sides, double hexLength) const {
 		std::array<Point, 4> quad{};
 		double tHeight = height;
 		double tDistance = distance;
@@ -66,7 +66,7 @@ namespace SuperHaxagon {
 		quad[3] = calcPoint(focus, rotation, -WALL_OVERFLOW, tDistance, sides, side);
 	}
 
-	Point WallActive::calcPoint(const Point& focus, double rotation, double overflow, double distance, double sides, int side) {
+	Point Wall::calcPoint(const Point& focus, double rotation, double overflow, double distance, double sides, int side) {
 		Point point = {0,0};
 		double width = (double)side * TAU/sides + overflow;
 		if(width > TAU + WALL_OVERFLOW) width = TAU + WALL_OVERFLOW;
@@ -76,13 +76,13 @@ namespace SuperHaxagon {
 	}
 
 
-	Wall::Wall(short distance, short height, short side) :
+	WallFactory::WallFactory(short distance, short height, short side) :
 		distance(distance),
 		height(height),
 		side(side)
 	{}
 
-	WallActive Wall::instantiate(const Pattern& pattern, double offsetDistance, int offsetSide) const {
+	Wall WallFactory::instantiate(const PatternFactory& pattern, double offsetDistance, int offsetSide) const {
 		int newSide = side + offsetSide;
 		newSide = newSide > pattern.getSides() ? newSide - pattern.getSides() : newSide;
 		double newDistance = distance + offsetDistance;

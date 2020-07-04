@@ -12,17 +12,17 @@
 namespace SuperHaxagon {
 	struct Point;
 	struct Color;
-	class Level;
+	class LevelFactory;
 	class Audio;
 	class State;
-	class PatternActive;
-	class WallActive;
+	class Pattern;
+	class Wall;
 	class Game {
 	public:
 		explicit Game(Platform& platform);
 		Game(const Game&) = delete;
 
-		const std::vector<std::unique_ptr<Level>>& getLevels() const {return levels;}
+		const std::vector<std::unique_ptr<LevelFactory>>& getLevels() const {return levels;}
 
 		Platform& getPlatform() const {return platform;}
 		Twist& getTwister() const {return *twister;}
@@ -75,13 +75,13 @@ namespace SuperHaxagon {
 		 * Completely draws all patterns in a live level. Can also be used to create
 		 * an "Explosion" effect if you use "offset". (for game overs)
 		 */
-		void drawMovingPatterns(const Color& color, const Point& focus, const std::deque<PatternActive>& patterns, double rotation, double sides, double offset) const;
+		void drawMovingPatterns(const Color& color, const Point& focus, const std::deque<Pattern>& patterns, double rotation, double sides, double offset) const;
 
 		/**
 		 * Draws a single moving wall based on a live wall, a color, some rotational value, and the total
 		 * amount of sides that appears.
 		 */
-		void drawMovingWall(const Color& color, const Point& focus, const WallActive& wall, double rotation, double sides, double offset) const;
+		void drawMovingWall(const Color& color, const Point& focus, const Wall& wall, double rotation, double sides, double offset) const;
 
 		/**
 		 * Draws a trapezoid using an array of points and a color.
@@ -131,7 +131,7 @@ namespace SuperHaxagon {
 	private:
 		Platform& platform;
 
-		std::vector<std::unique_ptr<Level>> levels;
+		std::vector<std::unique_ptr<LevelFactory>> levels;
 		std::unique_ptr<Twist> twister;
 		std::unique_ptr<State> state;
 		std::unique_ptr<Audio> sfxBegin;

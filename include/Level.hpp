@@ -3,16 +3,49 @@
 
 #include <string>
 #include <vector>
+#include <deque>
 
 #include "Structs.hpp"
 #include "Pattern.hpp"
 
 namespace SuperHaxagon {
+	class Game;
 	class Level {
 	public:
-		Level(const Level&) = delete;
+		static constexpr int TOTAL_PATTERNS_AT_ONE_TIME = 5;
+		static constexpr int FLIP_FRAMES_MIN = 120;
+		static constexpr int FLIP_FRAMES_MAX = 500;
 
-		const std::vector<Pattern>& getPatterns() const {return patterns;}
+		Level();
+
+	private:
+		std::deque<Pattern> patterns;
+
+		double multiplier = 1.0; // Current direction and speed of rotation
+		double cursorPos{};
+		double rotation{};
+		double sidesTween{};
+		int lastSides;
+		int currentSides;
+
+		int delayFrame{}; //tweening between side switches
+		int tweenFrame{}; //tweening colors
+		int flipFrame = FLIP_FRAMES_MAX; //amount of frames left until flip
+
+		int score{};
+		int indexBG1{};
+		int indexBG2{};
+		int indexFG{};
+		int nextIndexBG1;
+		int nextIndexBG2;
+		int nextIndexFG;
+	};
+
+	class LevelFactory {
+	public:
+		LevelFactory(const LevelFactory&) = delete;
+
+		const std::vector<PatternFactory>& getPatterns() const {return patterns;}
 		const std::vector<Color>& getColorsFG() const {return colorsFG;}
 		const std::vector<Color>& getColorsBG1() const {return colorsBG1;}
 		const std::vector<Color>& getColorsBG2() const {return colorsBG2;}
@@ -30,7 +63,7 @@ namespace SuperHaxagon {
 		float getSpeedWall() const {return speedWall;}
 
 	private:
-		std::vector<Pattern> patterns;
+		std::vector<PatternFactory> patterns;
 		std::vector<Color> colorsFG;
 		std::vector<Color> colorsBG1;
 		std::vector<Color> colorsBG2;

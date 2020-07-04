@@ -6,7 +6,7 @@
 #include "Over.hpp"
 
 namespace SuperHaxagon {
-	Play::Play(Game& game, Level& level) : game(game), platform(game.getPlatform()), level(level) {
+	Play::Play(Game& game, LevelFactory& level) : game(game), platform(game.getPlatform()), level(level) {
 		nextIndexBG1 = (level.getColorsBG1().size() > 1 ? 1 : 0);
 		nextIndexBG2 = (level.getColorsBG2().size() > 1 ? 1 : 0);
 		nextIndexFG = (level.getColorsFG().size() > 1 ? 1 : 0);
@@ -143,7 +143,6 @@ namespace SuperHaxagon {
 		game.drawRegular(FG, center, game.getHexLength(), rotation, sidesTween);
 		game.drawRegular(BG2, center, game.getHexLength() - game.getHexLengthBorder(), rotation, sidesTween);
 		game.drawHumanCursor(FG, center, cursorPos, rotation);
-
 	}
 
 	Point Play::getShadowOffset() const {

@@ -6,15 +6,15 @@
 #include "Structs.hpp"
 
 namespace SuperHaxagon {
-	class Pattern;
-	class WallActive {
+	class PatternFactory;
+	class Wall {
 	public:
 
 		//Overflow so you don't get glitched lines between hexagons.
 		//This is really just some arbitrary number so yeah...
 		static constexpr double WALL_OVERFLOW = TAU/900.0;
 
-		WallActive(double distance, double height, int side);
+		Wall(double distance, double height, int side);
 
 		void advance(double speed);
 		Movement collision(double cursorHeight, double cursorPos, double cursorStep, int sides) const;
@@ -31,11 +31,11 @@ namespace SuperHaxagon {
 		int side;
 	};
 
-	class Wall {
+	class WallFactory {
 	public:
-		Wall(short distance, short height, short side);
+		WallFactory(short distance, short height, short side);
 
-		WallActive instantiate(const Pattern& pattern, double distance, int offset) const;
+		Wall instantiate(const PatternFactory& pattern, double distance, int offset) const;
 		short getDistance() const {return distance;}
 		short getHeight() const {return height;}
 		short getSide() const {return side;}

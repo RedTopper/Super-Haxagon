@@ -51,7 +51,12 @@ namespace SuperHaxagon {
 		return "HEXAGON";
 	}
 
-	bool readCompare(std::ifstream& file, std::string str) {
-
+	bool readCompare(std::ifstream& file, const std::string& str) {
+		return false;
 	}
+
+	int readSize(std::ifstream& file) {
+		return 0;
+	}
+
 }

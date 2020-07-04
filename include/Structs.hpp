@@ -77,7 +77,12 @@ namespace SuperHaxagon {
 	 * Compares a fixed length string to an expected string in a file.
 	 * (useful for checking both headers and footers)
 	 */
-	bool readCompare(std::ifstream& file, std::string str);
+	bool readCompare(std::ifstream& file, const std::string& str);
+
+	/**
+	 * Reads an integer from a file advancing its internal pointer
+	 */
+	int readSize(std::ifstream& file);
 }
 
 #endif //SUPER_HAXAGON_STRUCTS_HPP

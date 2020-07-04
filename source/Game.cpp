@@ -31,11 +31,16 @@ namespace SuperHaxagon {
 
 	Game::~Game() = default;
 
+	void Game::addLevel(std::unique_ptr<LevelFactory> level) {
+		levels.emplace_back(std::move(level));
+	}
+
 	int Game::run() {
 		state = std::make_unique<Load>(*this);
 		state->enter();
 		while(platform.loop() && !dynamic_cast<Quit*>(state.get())) {
 			auto next = state->update();
+			state->draw();
 			if (next) {
 				state->exit();
 				state = std::move(next);

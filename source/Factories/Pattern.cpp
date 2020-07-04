@@ -22,6 +22,12 @@ namespace SuperHaxagon {
 		}
 	}
 
+	PatternFactory::PatternFactory(std::ifstream& file) {
+
+	}
+
+	PatternFactory::~PatternFactory() = default;
+
 	std::unique_ptr<Pattern> PatternFactory::instantiate(Twist& rng, double distance) const {
 		int offset = rng.rand(sides);
 		std::vector<std::unique_ptr<Wall>> active;

@@ -69,7 +69,7 @@ namespace SuperHaxagon {
 
 	class LevelFactory {
 	public:
-		explicit LevelFactory(Location location);
+		LevelFactory(std::ifstream& file, std::vector<std::shared_ptr<PatternFactory>>& patterns, Location location);
 		LevelFactory(const LevelFactory&) = delete;
 
 		std::unique_ptr<Level> instantiate(Twist& rng, int renderDistance) const;

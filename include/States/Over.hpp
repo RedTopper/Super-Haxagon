@@ -22,6 +22,7 @@ namespace SuperHaxagon {
 
 		std::unique_ptr<State> update() override;
 		void draw() override;
+		void enter() override;
 
 	private:
 		Game& game;

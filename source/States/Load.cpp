@@ -17,6 +17,7 @@ namespace SuperHaxagon {
 	}
 
 	void Load::load(std::ifstream& file, const std::string& path, Location location) {
+		std::vector<std::shared_ptr<PatternFactory>> patterns;
 
 		//header
 		if(!readCompare(file, PROJECT_HEADER))
@@ -26,8 +27,9 @@ namespace SuperHaxagon {
 		if (numPatterns > 300 || numPatterns < 1)
 			throw error(path, "Amount of patterns is less than 1 or greater than 300!");
 
+		patterns.reserve(numPatterns);
 		for (int i = 0; i < numPatterns; i++) {
-			game.addPattern(std::make_unique<PatternFactory>());
+			patterns.emplace_back(std::make_shared<PatternFactory>(file));
 		}
 
 		int numLevels = readSize(file);
@@ -35,7 +37,7 @@ namespace SuperHaxagon {
 			throw error(path, "Amount of levels is less than 1 or greater than 300!");
 
 		for (int i = 0; i < numPatterns; i++) {
-			game.addLevel(std::make_unique<LevelFactory>(location));
+			game.addLevel(std::make_unique<LevelFactory>(file, patterns, location));
 		}
 
 		if(!readCompare(file, PROJECT_FOOTER))
@@ -55,6 +57,10 @@ namespace SuperHaxagon {
 			std::ifstream file(path, std::ios::in | std::ios::binary);
 			if (!file) continue;
 			load(file, path, loc);
+		}
+
+		if (game.getLevels().empty()) {
+			throw error("Unknown", "No levels loaded!");
 		}
 	}
 

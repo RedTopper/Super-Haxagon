@@ -19,6 +19,10 @@ namespace SuperHaxagon {
 		high = factory.setHighScore(score);
 	}
 
+	void Over::enter() {
+		platform.playSFX(game.getSfxOver());
+	}
+
 	std::unique_ptr<State> Over::update() {
 		frames++;
 		level->rotate(GAME_OVER_ROT_SPEED);

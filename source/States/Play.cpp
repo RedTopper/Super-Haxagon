@@ -16,6 +16,10 @@ namespace SuperHaxagon {
 		level(factory.instantiate(game.getTwister(), game.getRenderDistance()))
 	{}
 
+	void Play::enter() {
+		platform.playSFX(game.getSfxBegin());
+	}
+
 	std::unique_ptr<State> Play::update() {
 		// Button presses
 		platform.pollButtons();

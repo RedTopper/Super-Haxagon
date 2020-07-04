@@ -27,14 +27,17 @@ namespace SuperHaxagon {
 
 	class PatternFactory {
 	public:
+		explicit PatternFactory(std::ifstream& file);
+		~PatternFactory();
+
 		std::unique_ptr<Pattern> instantiate(Twist& rng, double distance) const;
 
 		std::string getName() const {return name;}
 
 	private:
 		std::vector<std::unique_ptr<WallFactory>> walls;
-		std::string name;
-		int sides;
+		std::string name  = "";
+		int sides = 0;
 	};
 }
 

@@ -158,7 +158,7 @@ namespace SuperHaxagon {
 		if(cursorPos < 0) cursorPos  += TAU;
 	}
 
-	LevelFactory::LevelFactory(Location location) :
+	LevelFactory::LevelFactory(std::ifstream& file, std::vector<std::shared_ptr<PatternFactory>>& patterns, Location location) :
 		location(location)
 	{}
 

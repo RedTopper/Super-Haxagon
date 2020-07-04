@@ -6,7 +6,6 @@
 #include "State.hpp"
 #include "Structs.hpp"
 
-
 namespace SuperHaxagon {
 	class Game;
 	class Level;
@@ -23,6 +22,7 @@ namespace SuperHaxagon {
 
 		std::unique_ptr<State> update() override;
 		void draw() override;
+		void enter() override;
 
 	private:
 		LevelFactory& factory;

@@ -2,8 +2,6 @@
 
 #include "Game.hpp"
 
-
-
 #ifdef _3DS
 #include "Driver/Platform3DS.hpp"
 #elif __SWITCH__
@@ -37,7 +35,7 @@ int main() {
 	try {
 		return game.run();
 	} catch (std::exception& e) {
-		// Do something?
+		std::cout << e.what();
 		return -1;
 	}
 }

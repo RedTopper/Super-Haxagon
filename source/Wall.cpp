@@ -1,7 +1,6 @@
 #include <cmath>
 
 #include "Wall.hpp"
-#include "Pattern.hpp"
 
 namespace SuperHaxagon {
 	Wall::Wall(double distance, double height, int side) :
@@ -16,7 +15,7 @@ namespace SuperHaxagon {
 
 	Movement Wall::collision(double cursorHeight, double cursorPos, double cursorStep, int sides) const {
 
-		//Check if we are between the wall vertically
+		// Check if we are between the wall vertically
 		if(cursorHeight < distance || cursorHeight > distance + height) {
 			return Movement::CAN_MOVE;
 		}
@@ -24,9 +23,9 @@ namespace SuperHaxagon {
 		double leftRotStep = cursorPos + cursorStep;
 		double rightRotStep = cursorPos - cursorStep;
 
-		//If the cursor wrapped and the range we need to calculate overflows beyond TAU we also need to check the other equivalent regions:
-		//exactly one TAU ago and the next TAU.
-		//This is particularly usefull when the cursor's next step is beyond a TAU or below zero, OR a wall resides along "the seam"
+		// If the cursor wrapped and the range we need to calculate overflows beyond TAU we also need to check the other equivalent regions:
+		// exactly one TAU ago and the next TAU.
+		// This is particularly usefull when the cursor's next step is beyond a TAU or below zero, OR a wall resides along "the seam"
 		double leftSideRads = ((double)(side) + 1.0) * TAU/(double)(sides);
 		double leftSideRadsNextTau = leftSideRads + TAU;
 		double leftSideRadsLastTau = leftSideRads - TAU;
@@ -64,6 +63,7 @@ namespace SuperHaxagon {
 		quad[1] = calcPoint(focus, rotation, WALL_OVERFLOW, tDistance + tHeight, sides, side + 1);
 		quad[2] = calcPoint(focus, rotation, -WALL_OVERFLOW, tDistance + tHeight, sides, side);
 		quad[3] = calcPoint(focus, rotation, -WALL_OVERFLOW, tDistance, sides, side);
+		return quad;
 	}
 
 	Point Wall::calcPoint(const Point& focus, double rotation, double overflow, double distance, double sides, int side) {
@@ -82,11 +82,11 @@ namespace SuperHaxagon {
 		side(side)
 	{}
 
-	Wall WallFactory::instantiate(const PatternFactory& pattern, double offsetDistance, int offsetSide) const {
+	std::unique_ptr<Wall> WallFactory::instantiate(double offsetDistance, int offsetSide, int sides) const {
 		int newSide = side + offsetSide;
-		newSide = newSide > pattern.getSides() ? newSide - pattern.getSides() : newSide;
+		newSide = newSide > sides ? newSide - sides : newSide;
 		double newDistance = distance + offsetDistance;
 		double newHeight = height;
-		return {newDistance, newHeight, newSide};
+		return std::make_unique<Wall>(newDistance, newHeight, newSide);
 	}
 }

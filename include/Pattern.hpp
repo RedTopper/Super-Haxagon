@@ -3,37 +3,37 @@
 
 #include <vector>
 #include <string>
-
-#include "Wall.hpp"
+#include <memory>
 
 namespace SuperHaxagon {
 	class Twist;
+	class Wall;
+	class WallFactory;
+
 	class Pattern {
 	public:
-		Pattern(std::vector<Wall> walls, int sides);
+		Pattern(std::vector<std::unique_ptr<Wall>> walls, int sides);
 
-		const std::vector<Wall>& getWalls() const {return walls;}
+		const std::vector<std::unique_ptr<Wall>>& getWalls() const {return walls;}
 		int getSides() const {return sides;}
 
 		double getFurthestWallDistance() const;
 		void advance(double speed);
 
 	private:
-		std::vector<Wall> walls;
+		std::vector<std::unique_ptr<Wall>> walls;
 		int sides;
 	};
 
 	class PatternFactory {
 	public:
-		Pattern instantiate(Twist& rng, double distance) const;
+		std::unique_ptr<Pattern> instantiate(Twist& rng, double distance) const;
 
-		const std::vector<WallFactory>& getWalls() const {return walls;}
-		const std::string& getName() const {return name;}
-		int getSides() const {return sides;}
+		std::string getName() const {return name;}
 
 	private:
+		std::vector<std::unique_ptr<WallFactory>> walls;
 		std::string name;
-		std::vector<WallFactory> walls;
 		int sides;
 	};
 }

@@ -1,25 +1,43 @@
 #ifndef SUPER_HAXAGON_LEVEL_HPP
 #define SUPER_HAXAGON_LEVEL_HPP
 
+#include <memory>
 #include <string>
 #include <vector>
 #include <deque>
 
 #include "Structs.hpp"
-#include "Pattern.hpp"
 
 namespace SuperHaxagon {
 	class Game;
+	class LevelFactory;
+	class Pattern;
+	class PatternFactory;
+	class Twist;
+
 	class Level {
 	public:
-		static constexpr int TOTAL_PATTERNS_AT_ONE_TIME = 5;
+		static constexpr double DIFFICULTY_MULTIPLIER = 1.1;
 		static constexpr int FLIP_FRAMES_MIN = 120;
 		static constexpr int FLIP_FRAMES_MAX = 500;
+		static constexpr int TOTAL_PATTERNS_AT_ONE_TIME = 5;
+		static constexpr int FRAMES_PER_CHANGE_SIDE = 36;
 
-		Level();
+		Level(const LevelFactory& factory, Twist& rng, int renderDistance);
+
+		void update(Twist& rng, int hexLength);
+		Movement collision() const;
+
+		void increaseMultiplier();
+		void left();
+		void right();
+		void clamp();
+
 
 	private:
-		std::deque<Pattern> patterns;
+		const LevelFactory& factory;
+
+		std::deque<std::unique_ptr<Pattern>> patterns;
 
 		double multiplier = 1.0; // Current direction and speed of rotation
 		double cursorPos{};
@@ -28,11 +46,10 @@ namespace SuperHaxagon {
 		int lastSides;
 		int currentSides;
 
-		int delayFrame{}; //tweening between side switches
-		int tweenFrame{}; //tweening colors
-		int flipFrame = FLIP_FRAMES_MAX; //amount of frames left until flip
+		int delayFrame{}; // Tween between side switches
+		int tweenFrame{}; // Tween colors
+		int flipFrame = FLIP_FRAMES_MAX; // Amount of frames left until flip
 
-		int score{};
 		int indexBG1{};
 		int indexBG2{};
 		int indexFG{};
@@ -45,7 +62,9 @@ namespace SuperHaxagon {
 	public:
 		LevelFactory(const LevelFactory&) = delete;
 
-		const std::vector<PatternFactory>& getPatterns() const {return patterns;}
+		std::unique_ptr<Level> instantiate(Twist& rng, int renderDistance);
+
+		const std::vector<std::unique_ptr<PatternFactory>>& getPatterns() const {return patterns;}
 		const std::vector<Color>& getColorsFG() const {return colorsFG;}
 		const std::vector<Color>& getColorsBG1() const {return colorsBG1;}
 		const std::vector<Color>& getColorsBG2() const {return colorsBG2;}
@@ -63,7 +82,7 @@ namespace SuperHaxagon {
 		float getSpeedWall() const {return speedWall;}
 
 	private:
-		std::vector<PatternFactory> patterns;
+		std::vector<std::unique_ptr<PatternFactory>> patterns;
 		std::vector<Color> colorsFG;
 		std::vector<Color> colorsBG1;
 		std::vector<Color> colorsBG2;

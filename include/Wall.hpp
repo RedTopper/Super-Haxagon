@@ -1,12 +1,14 @@
 #ifndef SUPER_HAXAGON_WALL_HPP
 #define SUPER_HAXAGON_WALL_HPP
 
+#include <memory>
 #include <array>
 
 #include "Structs.hpp"
 
 namespace SuperHaxagon {
 	class PatternFactory;
+
 	class Wall {
 	public:
 
@@ -35,10 +37,7 @@ namespace SuperHaxagon {
 	public:
 		WallFactory(short distance, short height, short side);
 
-		Wall instantiate(const PatternFactory& pattern, double distance, int offset) const;
-		short getDistance() const {return distance;}
-		short getHeight() const {return height;}
-		short getSide() const {return side;}
+		std::unique_ptr<Wall> instantiate(double offsetDistance, int offsetSide, int sides) const;
 
 	private:
 		short distance;

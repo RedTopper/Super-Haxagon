@@ -9,11 +9,22 @@ namespace SuperHaxagon {
 
 	class Load : public State {
 	public:
+		const char* UNLOADED = "ERROR";
+		const char* PROJECT_HEADER = "HAX1.1";
+		const char* PROJECT_FOOTER = "ENDHAX";
+		const char* LEVEL_HEADER = "LEV2.1";
+		const char* LEVEL_FOOTER = "ENDLEV";
+		const char* PATTERN_HEADER = "PTN1.1";
+		const char* PATTERN_FOOTER = "ENDPTN";
+
 		explicit Load(Game& game);
 		Load(Load&) = delete;
 
+		void load(std::ifstream& file, const std::string& path, Location location);
+
 		std::unique_ptr<State> update() override;
-		void draw() override;
+		void enter() override;
+		void draw() override {};
 
 	private:
 		Game& game;

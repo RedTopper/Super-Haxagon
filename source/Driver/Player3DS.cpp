@@ -1,3 +1,4 @@
+#ifdef _3DS
 #include "Driver/Player3DS.hpp"
 
 namespace SuperHaxagon {
@@ -39,3 +40,5 @@ namespace SuperHaxagon {
 		return buffer.status == NDSP_WBUF_DONE;
 	}
 }
+
+#endif

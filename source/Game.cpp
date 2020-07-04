@@ -33,6 +33,7 @@ namespace SuperHaxagon {
 
 	int Game::run() {
 		state = std::make_unique<Load>(*this);
+		state->enter();
 		while(platform.loop() && !dynamic_cast<Quit*>(state.get())) {
 			auto next = state->update();
 			if (next) {

@@ -1,6 +1,8 @@
 #ifndef SUPER_HAXAGON_AUDIO_HPP
 #define SUPER_HAXAGON_AUDIO_HPP
 
+#include <memory>
+
 namespace SuperHaxagon {
 	class Player;
 	class Audio {

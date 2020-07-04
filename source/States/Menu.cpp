@@ -2,17 +2,15 @@
 #include "Factories/Level.hpp"
 #include "States/Quit.hpp"
 #include "States/Play.hpp"
-#include "States/Load.hpp"
 #include "States/Menu.hpp"
 
 #include "Game.hpp"
 #include "Structs.hpp"
 
 namespace SuperHaxagon {
-	Menu::Menu(Game& game, bool showLoadLevels) :
+	Menu::Menu(Game& game) :
 		game(game),
-		platform(game.getPlatform()),
-		showLoadLevels(showLoadLevels)
+		platform(game.getPlatform())
 	{}
 
 	Menu::~Menu() = default;
@@ -34,7 +32,6 @@ namespace SuperHaxagon {
 		if (press.quit) return std::make_unique<Quit>();
 
 		if(!transitionDirection) {
-			if (press.back && showLoadLevels) return std::make_unique<Load>(game);
 			if (press.select) return std::make_unique<Play>(game, *game.getLevels()[level]);
 			if (press.right) {
 				transitionDirection = 1;
@@ -161,9 +158,7 @@ namespace SuperHaxagon {
 		game.clearBotAndSwitchScreens();
 
 		Point posLocation = {4, 4};
-		if(showLoadLevels){
-			if(levelCur.getLocation() == Location::EXTERNAL) small.draw(COLOR_WHITE, posLocation, Alignment::LEFT, "EXTERNAL");
-			if(levelCur.getLocation() == Location::INTERNAL) small.draw(COLOR_WHITE, posLocation, Alignment::LEFT, "INTERNAL");
-		}
+		if(levelCur.getLocation() == Location::EXTERNAL) small.draw(COLOR_WHITE, posLocation, Alignment::LEFT, "EXTERNAL");
+		if(levelCur.getLocation() == Location::INTERNAL) small.draw(COLOR_WHITE, posLocation, Alignment::LEFT, "INTERNAL");
 	}
 }

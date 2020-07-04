@@ -2,12 +2,16 @@
 
 #include "Game.hpp"
 
+
+
 #ifdef _3DS
 #include "Driver/Platform3DS.hpp"
 #elif __SWITCH__
-#include "Driver/PlatformSwitch.h"
+#include "Driver/PlatformSwitch.hpp"
 #elif _WIN32
-#include "Driver/PlatformWin.h"
+#include "Driver/PlatformWin.hpp"
+int main();
+int WinMain() {return main();}
 #else
 #error "Target platform is not supported by driver."
 #endif
@@ -19,7 +23,7 @@ namespace SuperHaxagon {
 #elif __SWITCH__
 		return std::make_unique<PlatformSwitch>();
 #elif _WIN32
-		return std::make_unique<PlatformWin>()
+		return std::make_unique<PlatformWin>();
 #else
 		returnn nullptr;
 #endif

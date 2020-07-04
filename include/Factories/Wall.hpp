@@ -7,8 +7,6 @@
 #include "Structs.hpp"
 
 namespace SuperHaxagon {
-	class PatternFactory;
-
 	class Wall {
 	public:
 

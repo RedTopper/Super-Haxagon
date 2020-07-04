@@ -1,3 +1,4 @@
+#ifdef _3DS
 #include <string>
 #include <fstream>
 
@@ -61,3 +62,4 @@ namespace SuperHaxagon {
 	}
 }
 
+#endif

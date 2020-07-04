@@ -1,3 +1,4 @@
+#ifdef _3DS
 #include "Driver/Font3DS.hpp"
 
 namespace SuperHaxagon {
@@ -13,3 +14,5 @@ namespace SuperHaxagon {
 
 	}
 }
+
+#endif

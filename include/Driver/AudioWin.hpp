@@ -5,7 +5,8 @@
 
 namespace SuperHaxagon {
 	class AudioWin : public Audio {
-
+	public:
+		~AudioWin();
 	};
 }
 

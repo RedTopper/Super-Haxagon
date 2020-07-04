@@ -1,3 +1,4 @@
+#ifdef _3DS
 #include <3ds.h>
 #include <string>
 #include <memory>
@@ -117,3 +118,5 @@ namespace SuperHaxagon {
 		return buttons;
 	}
 }
+
+#endif

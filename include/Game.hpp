@@ -23,6 +23,10 @@ namespace SuperHaxagon {
 		~Game();
 
 		const std::vector<std::unique_ptr<LevelFactory>>& getLevels() const {return levels;}
+		void addLevel(std::unique_ptr<LevelFactory> level) {levels.push_back(level);}
+
+		const std::vector<std::unique_ptr<PatternFactory>>& getPatterns() const {return patterns;}
+		void addPattern(std::unique_ptr<PatternFactory> pattern) {patterns.push_back(pattern);}
 
 		Platform& getPlatform() const {return platform;}
 		Twist& getTwister() const {return *twister;}
@@ -111,6 +115,8 @@ namespace SuperHaxagon {
 		Platform& platform;
 
 		std::vector<std::unique_ptr<LevelFactory>> levels;
+		std::vector<std::unique_ptr<PatternFactory>> patterns;
+
 		std::unique_ptr<Twist> twister;
 		std::unique_ptr<State> state;
 

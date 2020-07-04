@@ -1,8 +1,10 @@
 #ifdef _WIN32
-#include "AudioWin.hpp"
+#include "Driver/AudioWin.hpp"
 
 namespace SuperHaxagon {
+	AudioWin::~AudioWin() {
 
+	}
 }
 
 #endif

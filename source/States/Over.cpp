@@ -37,7 +37,7 @@ namespace SuperHaxagon {
 			}
 
 			if (press.back) {
-				return std::make_unique<Menu>(game, false);
+				return std::make_unique<Menu>(game);
 			}
 		}
 

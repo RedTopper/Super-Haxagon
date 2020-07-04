@@ -50,4 +50,8 @@ namespace SuperHaxagon {
 		if(score < 60 * 60) return "PENTAGON";
 		return "HEXAGON";
 	}
+
+	bool readCompare(std::ifstream& file, std::string str) {
+
+	}
 }

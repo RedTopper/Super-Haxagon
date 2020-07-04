@@ -6,11 +6,13 @@
 #include "State.hpp"
 
 namespace SuperHaxagon {
+	class Game;
+
 	class Menu : public State {
 	public:
 		const int FRAMES_PER_TRANSITION = 12;
 
-		Menu(Game& game, bool showLoadLevels);
+		explicit Menu(Game& game);
 		Menu(Menu&) = delete;
 		~Menu();
 
@@ -23,7 +25,6 @@ namespace SuperHaxagon {
 		Game& game;
 		Platform& platform;
 
-		int showLoadLevels;
 		int transitionFrame = 0;
 		int transitionDirection = 0;
 		int lastLevel = 0;

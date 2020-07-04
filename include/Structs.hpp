@@ -72,6 +72,12 @@ namespace SuperHaxagon {
 	 * if the user is less than 10 seconds into the game)
 	 */
 	const char* getScoreText(int score);
+
+	/**
+	 * Compares a fixed length string to an expected string in a file.
+	 * (useful for checking both headers and footers)
+	 */
+	bool readCompare(std::ifstream& file, std::string str);
 }
 
 #endif //SUPER_HAXAGON_STRUCTS_HPP

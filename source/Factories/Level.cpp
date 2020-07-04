@@ -158,6 +158,10 @@ namespace SuperHaxagon {
 		if(cursorPos < 0) cursorPos  += TAU;
 	}
 
+	LevelFactory::LevelFactory(Location location) :
+		location(location)
+	{}
+
 	std::unique_ptr<Level> LevelFactory::instantiate(Twist& rng, int renderDistance) const {
 		return std::make_unique<Level>(*this, rng, renderDistance);
 	}

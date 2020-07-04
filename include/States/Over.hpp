@@ -24,10 +24,10 @@ namespace SuperHaxagon {
 		void draw() override;
 
 	private:
-		LevelFactory& factory;
-		std::unique_ptr<Level> level;
 		Game& game;
 		Platform& platform;
+		LevelFactory& factory;
+		std::unique_ptr<Level> level;
 
 		bool high = false;
 		int frames = 0;

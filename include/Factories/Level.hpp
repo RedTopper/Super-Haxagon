@@ -9,6 +9,11 @@
 #include "Structs.hpp"
 
 namespace SuperHaxagon {
+	enum class Location {
+		INTERNAL,
+		EXTERNAL
+	};
+
 	class Game;
 	class LevelFactory;
 	class Pattern;
@@ -64,6 +69,7 @@ namespace SuperHaxagon {
 
 	class LevelFactory {
 	public:
+		explicit LevelFactory(Location location);
 		LevelFactory(const LevelFactory&) = delete;
 
 		std::unique_ptr<Level> instantiate(Twist& rng, int renderDistance) const;
@@ -79,6 +85,7 @@ namespace SuperHaxagon {
 		const std::string& getCreator() const {return creator;}
 		const std::string& getMusic() const {return music;}
 
+		Location getLocation() const {return location;}
 		int getHighScore() const {return highScore;}
 		int getSpeedPulse() const {return speedPulse;}
 		float getSpeedCursor() const {return speedCursor;}
@@ -98,6 +105,8 @@ namespace SuperHaxagon {
 		std::string mode;
 		std::string creator;
 		std::string music;
+
+		Location location = Location::INTERNAL;
 
 		int highScore;
 		int speedPulse;

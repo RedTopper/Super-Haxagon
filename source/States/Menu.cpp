@@ -1,3 +1,4 @@
+#include "Driver/Font.hpp"
 #include "Factories/Level.hpp"
 #include "States/Quit.hpp"
 #include "States/Play.hpp"
@@ -121,6 +122,7 @@ namespace SuperHaxagon {
 		Point posCreator = {4, posMode.y + 16 + 1};
 		Point posTime = {4, screen.y - 18};
 
+		// Triangle positions
 		Point infoPos = {0, 0};
 		Point infoSize = {screen.x - TRIANGLE_WIDTH - GAP_FROM_RIGHT_SIDE, posCreator.y + 16 + 3};
 		std::array<Point, 3> infoTriangle = {
@@ -144,26 +146,24 @@ namespace SuperHaxagon {
 		platform.drawRect(COLOR_TRANSPARENT, timePos, timeSize);
 		platform.drawTriangle(COLOR_TRANSPARENT, timeTriangle);
 
+		auto& large = game.getFontLarge();
+		auto& small = game.getFontSmall();
+
 		// Actual text
-		auto scoreTime  = getBestTime(levelCur.getHighScore());
-		writeFont(COLOR_WHITE, posTitle, levelCur.getName(), FONT32, ALIGN_LEFT_C);
-		writeFont(COLOR_GREY, posDifficulty, levelCur.getDifficulty(), FONT16, ALIGN_LEFT_C);
-		writeFont(COLOR_GREY, posMode, levelCur.getMode(), FONT16, ALIGN_LEFT_C);
-		writeFont(COLOR_GREY, posCreator, levelCur.getCreator(), FONT16, ALIGN_LEFT_C);
-		writeFont(COLOR_WHITE, posTime, scoreTime, FONT16, ALIGN_LEFT_C);
+		auto scoreTime = std::string("BEST: ") + getTime(levelCur.getHighScore());
+
+		large.draw(COLOR_WHITE, posTitle, Alignment::LEFT, levelCur.getName());
+		small.draw(COLOR_GREY, posDifficulty, Alignment::LEFT, levelCur.getDifficulty());
+		small.draw(COLOR_GREY, posMode, Alignment::LEFT, levelCur.getMode());
+		small.draw(COLOR_GREY, posCreator, Alignment::LEFT, levelCur.getCreator());
+		small.draw(COLOR_WHITE, posTime, Alignment::LEFT, scoreTime);
 
 		game.clearBotAndSwitchScreens();
 
-		Point posButton = {4, 4};
-		Point posLocation = {210, 4};
-		Point posLevels = {4, posLocation.y + 16 + 1};
+		Point posLocation = {4, 4};
 		if(showLoadLevels){
-			writeFont(WHITE, posButton, "PRESS B TO LOAD", FONT16, ALIGN_LEFT_C);
-			if(loaded == ROMFS) writeFont(WHITE, posLocation, "EXTERNAL", FONT16, ALIGN_LEFT_C);
-			if(loaded == SDMC) writeFont(WHITE, posLocation, "INTERNAL", FONT16, ALIGN_LEFT_C);
-			writeFont(WHITE, posLevels, "LEVELS", FONT16, ALIGN_LEFT_C);
+			if(levelCur.getLocation() == Location::EXTERNAL) small.draw(COLOR_WHITE, posLocation, Alignment::LEFT, "EXTERNAL");
+			if(levelCur.getLocation() == Location::INTERNAL) small.draw(COLOR_WHITE, posLocation, Alignment::LEFT, "INTERNAL");
 		}
-
-		drawFramerate(fps);
 	}
 }

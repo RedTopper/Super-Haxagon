@@ -11,10 +11,10 @@ namespace SuperHaxagon {
 
 	Over::Over(Game& game, LevelFactory& factory, std::unique_ptr<Level> level, int score) :
 		game(game),
+		platform(game.getPlatform()),
 		factory(factory),
-		score(score),
 		level(std::move(level)),
-		platform(game.getPlatform())
+		score(score)
 	{
 		high = factory.setHighScore(score);
 	}

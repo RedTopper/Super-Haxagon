@@ -1,16 +1,21 @@
 #ifndef SUPER_HAXAGON_PLATFORM_3DS_HPP
 #define SUPER_HAXAGON_PLATFORM_3DS_HPP
 
+#include <3ds.h>
+
 #include "Platform.hpp"
 
 static const int MAX_TRACKS = 4;
 
 namespace SuperHaxagon {
+	class Player;
+
 	class Platform3DS : public Platform {
 	public:
 		Platform3DS();
 		~Platform3DS();
 
+		bool loop() override;
 		bool hasScreen(Screen test) override;
 
 		std::string getPath(const std::string& partial) override;
@@ -31,8 +36,10 @@ namespace SuperHaxagon {
 		void drawTriangle(const Color& color, const std::array<Point, 3>& points) const override;
 		void drawFont(const Font& font, const Point& point, const std::string& text) const override;
 
+		std::unique_ptr<Twist> getTwister() override;
+
 	private:
-		static Buttons toButtons(u32);
+		static Buttons toButtons(u32 input);
 		std::unique_ptr<Player> sfx[MAX_TRACKS];
 		std::unique_ptr<Player> bgm;
 	};

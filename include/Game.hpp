@@ -20,6 +20,7 @@ namespace SuperHaxagon {
 	public:
 		explicit Game(Platform& platform);
 		Game(const Game&) = delete;
+		~Game();
 
 		const std::vector<std::unique_ptr<LevelFactory>>& getLevels() const {return levels;}
 
@@ -104,6 +105,7 @@ namespace SuperHaxagon {
 		std::vector<std::unique_ptr<LevelFactory>> levels;
 		std::unique_ptr<Twist> twister;
 		std::unique_ptr<State> state;
+
 		std::unique_ptr<Audio> sfxBegin;
 		std::unique_ptr<Audio> sfxHexagon;
 		std::unique_ptr<Audio> sfxOver;

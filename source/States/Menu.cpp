@@ -14,6 +14,8 @@ namespace SuperHaxagon {
 		showLoadLevels(showLoadLevels)
 	{}
 
+	Menu::~Menu() = default;
+
 	void Menu::enter() {
 		platform.stopBGM();
 		platform.playBGM(game.getBgmMenu());

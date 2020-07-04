@@ -12,6 +12,7 @@ namespace SuperHaxagon {
 
 		Menu(Game& game, bool showLoadLevels);
 		Menu(Menu&) = delete;
+		~Menu();
 
 		std::unique_ptr<State> update() override;
 		void draw() override;

@@ -8,6 +8,7 @@ namespace SuperHaxagon {
 	public:
 		Quit() = default;
 		Quit(Quit&) = delete;
+
 		std::unique_ptr<State> update() override {return nullptr;}
 		void draw() override {}
 	};

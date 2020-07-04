@@ -3,6 +3,8 @@ project(Super_Haxagon)
 
 set(CMAKE_CXX_STANDARD 14)
 
+add_compile_definitions(_3DS)
+
 include_directories(include)
 include_directories(include/Driver)
 include_directories(C:/msys64/opt/devkitpro/libctru/include)
@@ -10,15 +12,6 @@ include_directories(C:/msys64/opt/devkitpro/portlibs/3ds/include/ogg)
 include_directories(C:/msys64/opt/devkitpro/portlibs/3ds/include/opus)
 
 add_executable(SuperHaxagon ${OPTIONS}
-        source/draw.c
-        source/font.cpp
-        source/levels.c
-        source/logic.c
-        source/scores.c
-        source/sound.c
-        source/types.c
-        source/util.c
-
         source/Driver/Audio3DS.cpp
         source/Driver/AudioWin.cpp
         source/Driver/Platform3DS.cpp

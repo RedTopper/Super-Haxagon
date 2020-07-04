@@ -6,6 +6,8 @@
 #include <vector>
 #include <deque>
 
+#include "Structs.hpp"
+
 namespace SuperHaxagon {
 	class Game;
 	class LevelFactory;
@@ -22,6 +24,8 @@ namespace SuperHaxagon {
 		static constexpr int FRAMES_PER_CHANGE_SIDE = 36;
 
 		Level(const LevelFactory& factory, Twist& rng, int renderDistance);
+		Level(Level&) = delete;
+		~Level();
 
 		void update(Twist& rng, int hexLength);
 		void draw(Game& game, double offset);

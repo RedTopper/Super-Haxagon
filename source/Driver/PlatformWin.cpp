@@ -1,3 +1,4 @@
+#ifdef _WIN32
 #include <string>
 #include <algorithm>
 
@@ -31,4 +32,14 @@ namespace SuperHaxagon {
 	void PlatformWin::stopBGM() {
 
 	}
+
+	std::unique_ptr<Twist> Platform3DS::getTwister() {
+		std::random_device source;
+		std::mt19937::result_type data[std::mt19937::state_size];
+		generate(std::begin(data), std::end(data), ref(source));
+		return std::make_unique<Twist>(
+				std::make_unique<std::seed_seq>(std::begin(data), std::end(data))
+		);
+	}
 }
+#endif

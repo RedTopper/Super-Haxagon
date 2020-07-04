@@ -64,7 +64,7 @@ namespace SuperHaxagon {
 		 * @return a random int
 		 */
 		int rand(int min, int max) {
-			return std::uniform_int_distribution<>(min, max)(mt);
+			return std::uniform_int_distribution<>(min, max)(*mt);
 		}
 
 		/**
@@ -74,7 +74,7 @@ namespace SuperHaxagon {
 		 * @return a random double
 		 */
 		double rand(double min, double max) {
-			return std::uniform_real_distribution<>(min, max)(mt);
+			return std::uniform_real_distribution<>(min, max)(*mt);
 		}
 
 		/**
@@ -96,7 +96,7 @@ namespace SuperHaxagon {
 		 * @return a random int
 		 */
 		int geom(double probability) {
-			return std::geometric_distribution<>(probability)(mt);
+			return std::geometric_distribution<>(probability)(*mt);
 		}
 
 		/**

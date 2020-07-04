@@ -28,6 +28,8 @@ namespace SuperHaxagon {
 		cursorPos = TAU/4.0 + (factory.getSpeedCursor() / 2.0);
 	}
 
+	Level::~Level() = default;
+
 	void Level::update(Twist& rng, int hexLength) {
 		// Update color frame and clamp
 		tweenFrame++;
@@ -36,9 +38,9 @@ namespace SuperHaxagon {
 			indexBG1 = nextIndexBG1;
 			indexBG2 = nextIndexBG2;
 			indexFG = nextIndexFG;
-			nextIndexBG1 = (indexBG1 + 1 < factory.getColorsBG1().size() ? indexBG1 + 1 : 0);
-			nextIndexBG2 = (indexBG2 + 1 < factory.getColorsBG2().size() ? indexBG2 + 1 : 0);
-			nextIndexFG = (indexFG + 1 < factory.getColorsFG().size() ? indexFG + 1 : 0);
+			nextIndexBG1 = (indexBG1 + 1 < (int)factory.getColorsBG1().size() ? indexBG1 + 1 : 0);
+			nextIndexBG2 = (indexBG2 + 1 < (int)factory.getColorsBG2().size() ? indexBG2 + 1 : 0);
+			nextIndexFG = (indexFG + 1 < (int)factory.getColorsFG().size() ? indexFG + 1 : 0);
 		}
 
 		// Bring walls forward if we are not delaying

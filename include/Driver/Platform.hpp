@@ -1,6 +1,5 @@
 #ifndef SUPER_HAXAGON_PLATFORM_HPP
 #define SUPER_HAXAGON_PLATFORM_HPP
-#define _3DS
 
 #include <memory>
 #include <string>
@@ -27,6 +26,7 @@ namespace SuperHaxagon {
 
 	class Platform {
 	public:
+		virtual bool loop() = 0;
 		virtual bool hasScreen(Screen test) = 0;
 
 		virtual std::string getPath(const std::string& partial) = 0;
@@ -47,46 +47,12 @@ namespace SuperHaxagon {
 		virtual void drawTriangle(const Color& color, const std::array<Point, 3>& points) const = 0;
 		virtual void drawFont(const Font& font, const Point& point, const std::string& text) const = 0;
 
-		/**
-		 * This is usually a good way to initialize the mt19937 but some platforms have poor access to
-		 * std::random_device, so the driver will leave it up to sub implementations if they want to change it.
-		 */
-		virtual std::unique_ptr<Twist> getTwister() {
-			std::random_device source;
-			std::mt19937::result_type data[std::mt19937::state_size];
-			generate(std::begin(data), std::end(data), ref(source));
-			return std::make_unique<Twist>(
-				std::make_unique<std::seed_seq>(std::begin(data), std::end(data))
-			);
-		};
-
-		/**
-		 * Some platforms may ignore this
-		 */
+		virtual std::unique_ptr<Twist> getTwister() = 0;
 		void setScreen(Screen select) {screen = select;}
 
 	protected:
-		Screen screen;
+		Screen screen = Screen::TOP;
 	};
 }
 
-#ifdef _3DS
-#include "Platform3DS.hpp"
-#elif __SWITCH__
-#include "PlatformSwitch.h"
-#else
-#include "PlatformWin.h"
-#endif
-
-namespace SuperHaxagon {
-	static std::unique_ptr<Platform> getPlatform() {
-#ifdef _3DS
-		return std::make_unique<Platform3DS>();
-#elif __SWITCH__
-		return std::make_unique<PlatformSwitch>();
-#else
-		return std::make_unique<PlatformWin>();
-#endif
-	}
-}
 #endif //SUPER_HAXAGON_PLATFORM_HPP

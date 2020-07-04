@@ -3,8 +3,6 @@
 
 #include <deque>
 
-#include "Factories/Pattern.hpp"
-
 #include "State.hpp"
 #include "Structs.hpp"
 
@@ -18,6 +16,7 @@ namespace SuperHaxagon {
 	class Play : public State {
 	public:
 		Play(Game& game, const LevelFactory& level);
+		Play(Play&) = delete;
 
 		std::unique_ptr<State> update() override;
 		void draw() override;

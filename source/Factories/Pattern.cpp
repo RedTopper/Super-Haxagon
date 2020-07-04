@@ -4,6 +4,7 @@
 #include "Twist.hpp"
 
 namespace SuperHaxagon {
+
 	Pattern::Pattern(std::vector<std::unique_ptr<Wall>> walls, int sides) : walls(std::move(walls)), sides(sides) {}
 
 	double Pattern::getFurthestWallDistance() const {
@@ -28,6 +29,6 @@ namespace SuperHaxagon {
 			active.emplace_back(wall->instantiate(distance, offset, sides));
 		}
 
-		return std::make_unique<Pattern>(active, sides);
+		return std::make_unique<Pattern>(std::move(active), sides);
 	}
 }

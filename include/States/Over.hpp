@@ -17,6 +17,7 @@ namespace SuperHaxagon {
 		static constexpr int FRAMES_PER_GAME_OVER = 60;
 
 		Over(Game& game, const LevelFactory& factory, std::unique_ptr<Level> level);
+		Over(Over&) = delete;
 
 		std::unique_ptr<State> update() override;
 		void draw() override;

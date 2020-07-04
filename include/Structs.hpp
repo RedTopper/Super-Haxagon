@@ -1,6 +1,7 @@
 #ifndef SUPER_HAXAGON_STRUCTS_HPP
 #define SUPER_HAXAGON_STRUCTS_HPP
 
+#include <cmath>
 #include <cstdint>
 
 namespace SuperHaxagon {
@@ -34,19 +35,19 @@ namespace SuperHaxagon {
 	/**
 	 * Linear interpolation between two colors
 	 */
-	static Color interpolateColor(const Color& one, const Color& two, double percent);
+	Color interpolateColor(const Color& one, const Color& two, double percent);
 
 	/**
 	 * Linear interpolation between two doubles
 	 */
-	static double linear(double start, double end, double percent);
+	double linear(double start, double end, double percent);
 
 	/**
 	 * Calculates a point (either for a wall or a general point) based on the running level's rotation, some offset
 	 * so it renders correctly, some distance the point should be from the center, the side the point
 	 * should be rendered on, based on a total number of sides the shape has.
 	 */
-	static Point calcPoint(const Point& focus, double rotation, double offset, double distance);
+	Point calcPoint(const Point& focus, double rotation, double offset, double distance);
 
 	/**
 	 * Kind of like getScoreText(int score), this method converts a score
@@ -57,13 +58,13 @@ namespace SuperHaxagon {
 	 *
 	 * getBestTime(int score) is the same, but it says BEST: instead of TIME:
 	 */
-	static std::string getBestTime(int score);
+	std::string getBestTime(int score);
 
 	/**
 	 * Gets the current level that the score represents (for example, point)
 	 * if the user is less than 10 seconds into the game)
 	 */
-	static const char* getScoreText(int score);
+	const char* getScoreText(int score);
 }
 
 #endif //SUPER_HAXAGON_STRUCTS_HPP

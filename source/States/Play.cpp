@@ -53,5 +53,29 @@ namespace SuperHaxagon {
 
 	void Play::draw() {
 		level->draw(game, 0);
+
+		Point posLevelUp = {4,4};
+		Point posScore = {BOT_WIDTH - 4, 4};
+		Point posBest = {BOT_WIDTH - 4, 20};
+
+		drawBlackBot();
+
+		char* scoreTime = getScoreTime(liveLevel.score);
+		writeFont(WHITE, posScore, scoreTime, FONT16, ALIGN_RIGHT_C);
+		writeFont(WHITE, posLevelUp, getScoreText(liveLevel.score), FONT16, ALIGN_LEFT_C);
+		free(scoreTime);
+
+		if(level.highScore > 0 && liveLevel.score > level.highScore) {
+			Color textColor = WHITE;
+			if (liveLevel.score - level.highScore <= PULSE_TIMES * PULSE_TIME) {
+				double percent = getPulse(liveLevel.score, PULSE_TIME, level.highScore);
+				textColor = interpolateColor(PULSE_LOW, PULSE_HIGH, percent);
+			}
+			writeFont(textColor, posBest, "NEW RECORD!", FONT16, ALIGN_RIGHT_C);
+		} else {
+			char* bestTime = getBestTime(level.highScore);
+			writeFont(WHITE, posBest, bestTime, FONT16, ALIGN_RIGHT_C);
+			free(bestTime);
+		}
 	}
 }

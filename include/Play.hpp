@@ -16,6 +16,7 @@ namespace SuperHaxagon {
 	class Play : public State {
 	public:
 		Play(Game& game, LevelFactory& level);
+
 		std::unique_ptr<State> update() override;
 		void draw() override;
 

@@ -6,8 +6,6 @@
 #include <vector>
 #include <deque>
 
-#include "Structs.hpp"
-
 namespace SuperHaxagon {
 	class Game;
 	class LevelFactory;
@@ -26,7 +24,8 @@ namespace SuperHaxagon {
 		Level(const LevelFactory& factory, Twist& rng, int renderDistance);
 
 		void update(Twist& rng, int hexLength);
-		Movement collision() const;
+		void draw(Game& game);
+		Movement collision(int cursorDistance) const;
 
 		void increaseMultiplier();
 		void left();
@@ -43,8 +42,8 @@ namespace SuperHaxagon {
 		double cursorPos{};
 		double rotation{};
 		double sidesTween{};
-		int lastSides;
-		int currentSides;
+		int lastSides{};
+		int currentSides{};
 
 		int delayFrame{}; // Tween between side switches
 		int tweenFrame{}; // Tween colors
@@ -53,9 +52,9 @@ namespace SuperHaxagon {
 		int indexBG1{};
 		int indexBG2{};
 		int indexFG{};
-		int nextIndexBG1;
-		int nextIndexBG2;
-		int nextIndexFG;
+		int nextIndexBG1{};
+		int nextIndexBG2{};
+		int nextIndexFG{};
 	};
 
 	class LevelFactory {

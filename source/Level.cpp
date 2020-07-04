@@ -1,8 +1,11 @@
-#include "Level.hpp"
 #include "Twist.hpp"
+#include "Level.hpp"
 #include "Pattern.hpp"
+#include "Wall.hpp"
+#include "Game.hpp"
 
 namespace SuperHaxagon {
+
 	Level::Level(const LevelFactory& factory, Twist& rng, int renderDistance) : factory(factory) {
 		nextIndexBG1 = (factory.getColorsBG1().size() > 1 ? 1 : 0);
 		nextIndexBG2 = (factory.getColorsBG2().size() > 1 ? 1 : 0);
@@ -81,17 +84,45 @@ namespace SuperHaxagon {
 		}
 	}
 
-	Movement Level::collision() const {
+	void Level::draw(Game& game) {
+
+		// Calculate colors
+		double percentTween = (double)(tweenFrame) / (double)(factory.getSpeedPulse());
+		Color FG = interpolateColor(factory.getColorsFG()[indexFG], factory.getColorsFG()[nextIndexFG], percentTween);
+		Color BG1 = interpolateColor(factory.getColorsBG1()[indexBG1], factory.getColorsBG1()[nextIndexBG1], percentTween);
+		Color BG2 = interpolateColor(factory.getColorsBG2()[indexBG2], factory.getColorsBG2()[nextIndexBG2], percentTween);
+
+		// Fix for triangle levels
+		int diagonal = (sidesTween >= 3 && sidesTween < 4 ? game.getRenderDistance() * 2 : game.getRenderDistance());
+
+		Point center = game.getScreenCenter();
+		Point shadow = game.getShadowOffset();
+
+		game.drawBackground(BG1, BG2, center, diagonal, rotation, sidesTween);
+
+		// Draw shadows
+		Point offsetFocus = {center.x + shadow.x, center.y + shadow.y};
+		game.drawMovingPatterns(COLOR_SHADOW, offsetFocus, patterns, rotation, sidesTween, 0.0);
+		game.drawRegular(COLOR_SHADOW, offsetFocus, game.getHexLength(), rotation, sidesTween);
+		game.drawHumanCursor(COLOR_SHADOW, offsetFocus, cursorPos, rotation);
+
+		// Draw real thing
+		game.drawMovingPatterns(FG, center, patterns, rotation, sidesTween, 0.0);
+		game.drawRegular(FG, center, game.getHexLength(), rotation, sidesTween);
+		game.drawRegular(BG2, center, game.getHexLength() - game.getHexLengthBorder(), rotation, sidesTween);
+		game.drawHumanCursor(FG, center, cursorPos, rotation);
+	}
+
+	Movement Level::collision(int cursorDistance) const {
 		auto collision = Movement::CAN_MOVE;
-		auto cursorDistance = game.getHexLength() + game.getHumanPadding() + game.getHumanHeight();
 
 		// For all patterns
 		// TODO: Do I really need to do this?
 		for(const auto& pattern : patterns) {
 
 			// For all walls
-			for(const auto& wall : pattern.getWalls()) {
-				Movement check = wall.collision(cursorDistance, cursorPos, level.getSpeedCursor(), pattern.getSides());
+			for(const auto& wall : pattern->getWalls()) {
+				Movement check = wall->collision(cursorDistance, cursorPos, factory.getSpeedCursor(), pattern->getSides());
 
 				// Update collision
 				if(collision == Movement::CAN_MOVE) collision = check; //If we can move, try and replace it with something else

@@ -196,9 +196,9 @@ namespace SuperHaxagon {
 		platform.drawTriangle(color, triangle);
 	}
 
-	void Game::drawMovingPatterns(const Color& color, const Point& focus, const std::deque<Pattern>& patterns, double rotation, double sides, double offset) const {
+	void Game::drawMovingPatterns(const Color& color, const Point& focus, const std::deque<std::unique_ptr<Pattern>>& patterns, double rotation, double sides, double offset) const {
 		for(const auto& pattern : patterns) {
-			for(const auto& wall : pattern.getWalls()) {
+			for(const auto& wall : pattern->getWalls()) {
 				drawMovingWall(color, focus, *wall, rotation, sides, offset);
 			}
 		}

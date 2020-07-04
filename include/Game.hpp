@@ -7,8 +7,6 @@
 
 #include "Driver/Platform.hpp"
 
-#include "Structs.hpp"
-
 namespace SuperHaxagon {
 	struct Point;
 	struct Color;
@@ -17,6 +15,7 @@ namespace SuperHaxagon {
 	class State;
 	class Pattern;
 	class Wall;
+
 	class Game {
 	public:
 		explicit Game(Platform& platform);
@@ -75,7 +74,7 @@ namespace SuperHaxagon {
 		 * Completely draws all patterns in a live level. Can also be used to create
 		 * an "Explosion" effect if you use "offset". (for game overs)
 		 */
-		void drawMovingPatterns(const Color& color, const Point& focus, const std::deque<Pattern>& patterns, double rotation, double sides, double offset) const;
+		void drawMovingPatterns(const Color& color, const Point& focus, const std::deque<std::unique_ptr<Pattern>>& patterns, double rotation, double sides, double offset) const;
 
 		/**
 		 * Draws a single moving wall based on a live wall, a color, some rotational value, and the total

@@ -33,14 +33,16 @@ namespace SuperHaxagon {
 
 	class WallFactory {
 	public:
-		WallFactory(short distance, short height, short side);
+		static constexpr int MIN_WALL_HEIGHT = 4;
+
+		WallFactory(std::ifstream& file, int maxSides);
 
 		std::unique_ptr<Wall> instantiate(double offsetDistance, int offsetSide, int sides) const;
 
 	private:
-		short distance;
-		short height;
-		short side;
+		uint16_t distance = 0;
+		uint16_t height = 0;
+		uint16_t side = 0;
 	};
 }
 

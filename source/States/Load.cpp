@@ -10,38 +10,33 @@
 #include "Game.hpp"
 
 namespace SuperHaxagon {
-	Load::Load(Game& game) : game(game), platform(game.getPlatform()) {}
+	const char* Load::PROJECT_HEADER = "HAX1.1";
+	const char* Load::PROJECT_FOOTER = "ENDHAX";
+	const char* Load::LEVEL_HEADER = "LEV2.1";
+	const char* Load::LEVEL_FOOTER = "ENDLEV";
 
-	std::runtime_error error(const std::string& path, const std::string& message) {
-		return std::runtime_error("[file] '" + path + "': " + message);
-	}
+	Load::Load(Game& game) : game(game), platform(game.getPlatform()) {}
 
 	void Load::load(std::ifstream& file, const std::string& path, Location location) {
 		std::vector<std::shared_ptr<PatternFactory>> patterns;
 
 		//header
 		if(!readCompare(file, PROJECT_HEADER))
-			throw error(path, "File header invalid!");
+			throw malformed("load", "File header invalid!");
 
-		int numPatterns = readSize(file);
-		if (numPatterns > 300 || numPatterns < 1)
-			throw error(path, "Amount of patterns is less than 1 or greater than 300!");
-
+		int numPatterns = read32(file, 1, 300, "Number of patterns");
 		patterns.reserve(numPatterns);
 		for (int i = 0; i < numPatterns; i++) {
 			patterns.emplace_back(std::make_shared<PatternFactory>(file));
 		}
 
-		int numLevels = readSize(file);
-		if (numLevels > 300 || numLevels < 1)
-			throw error(path, "Amount of levels is less than 1 or greater than 300!");
-
-		for (int i = 0; i < numPatterns; i++) {
+		int numLevels = read32(file, 1, 300, "Number of levels");
+		for (int i = 0; i < numLevels; i++) {
 			game.addLevel(std::make_unique<LevelFactory>(file, patterns, location));
 		}
 
 		if(!readCompare(file, PROJECT_FOOTER))
-			throw error(path, "File footer invalid!");
+			throw malformed("load", "File footer invalid!");
 	}
 
 	void Load::enter() {
@@ -60,7 +55,7 @@ namespace SuperHaxagon {
 		}
 
 		if (game.getLevels().empty()) {
-			throw error("Unknown", "No levels loaded!");
+			throw malformed("Unknown", "No levels loaded!");
 		}
 	}
 

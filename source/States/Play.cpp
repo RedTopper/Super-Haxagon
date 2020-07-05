@@ -21,6 +21,8 @@ namespace SuperHaxagon {
 	}
 
 	std::unique_ptr<State> Play::update() {
+		level->update(game.getTwister(), game.getHexLength(), game.getRenderDistance());
+
 		// Button presses
 		platform.pollButtons();
 		auto down = platform.getDown();

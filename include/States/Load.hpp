@@ -10,13 +10,10 @@ namespace SuperHaxagon {
 
 	class Load : public State {
 	public:
-		const char* UNLOADED = "ERROR";
-		const char* PROJECT_HEADER = "HAX1.1";
-		const char* PROJECT_FOOTER = "ENDHAX";
-		const char* LEVEL_HEADER = "LEV2.1";
-		const char* LEVEL_FOOTER = "ENDLEV";
-		const char* PATTERN_HEADER = "PTN1.1";
-		const char* PATTERN_FOOTER = "ENDPTN";
+		static const char* PROJECT_HEADER;
+		static const char* PROJECT_FOOTER;
+		static const char* LEVEL_HEADER;
+		static const char* LEVEL_FOOTER;
 
 		explicit Load(Game& game);
 		Load(Load&) = delete;

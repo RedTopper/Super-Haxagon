@@ -20,13 +20,13 @@ namespace SuperHaxagon {
 
 		//file sizes and metadata
 		file.seekg(40);
-		file >> dataSize;
+		file.read(reinterpret_cast<char*>(&dataSize), sizeof(dataSize));
 		file.seekg(22);
-		file >> channels;
+		file.read(reinterpret_cast<char*>(&channels), sizeof(channels));
 		file.seekg(24);
-		file >> sampleRate;
+		file.read(reinterpret_cast<char*>(&sampleRate), sizeof(sampleRate));
 		file.seekg(34);
-		file >> bitsPerSample;
+		file.read(reinterpret_cast<char*>(&bitsPerSample), sizeof(bitsPerSample));
 
 		//check header
 		if(dataSize == 0 || !(channels == 1 || channels == 2) || !(bitsPerSample == 8 || bitsPerSample == 16)) return;

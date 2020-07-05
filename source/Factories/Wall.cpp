@@ -76,11 +76,15 @@ namespace SuperHaxagon {
 	}
 
 
-	WallFactory::WallFactory(short distance, short height, short side) :
-		distance(distance),
-		height(height),
-		side(side)
-	{}
+	WallFactory::WallFactory(std::ifstream& file, int maxSide) {
+		distance = read16(file);
+		height = read16(file);
+		side = read16(file);
+
+		if(height < MIN_WALL_HEIGHT) height = MIN_WALL_HEIGHT;
+		if(side < 0) side = 0;
+		if(side >= maxSide) side = maxSide - 1;
+	}
 
 	std::unique_ptr<Wall> WallFactory::instantiate(double offsetDistance, int offsetSide, int sides) const {
 		int newSide = side + offsetSide;

@@ -3,6 +3,8 @@
 
 #include <cmath>
 #include <cstdint>
+#include <stdexcept>
+#include <fstream>
 
 namespace SuperHaxagon {
 	struct Color {
@@ -74,6 +76,11 @@ namespace SuperHaxagon {
 	const char* getScoreText(int score);
 
 	/**
+	 * Creates an exception with
+	 */
+	std::runtime_error malformed(const std::string& where, const std::string& message);
+
+	/**
 	 * Compares a fixed length string to an expected string in a file.
 	 * (useful for checking both headers and footers)
 	 */
@@ -82,7 +89,17 @@ namespace SuperHaxagon {
 	/**
 	 * Reads an integer from a file advancing its internal pointer
 	 */
-	int readSize(std::ifstream& file);
+	uint32_t read32(std::ifstream& file, int min, int max, const std::string& noun);
+
+	/**
+	 * Reads a short from a file advancing its internal pointer
+	 */
+	uint16_t read16(std::ifstream& file);
+
+	/**
+	 * Reads a string from the binary file
+	 */
+	std::string readString(std::ifstream& file, const std::string& noun);
 }
 
 #endif //SUPER_HAXAGON_STRUCTS_HPP

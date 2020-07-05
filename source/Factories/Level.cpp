@@ -14,13 +14,13 @@ namespace SuperHaxagon {
 
 		//fetch some random starting patterns
 		auto distance = (double)renderDistance;
-		for(int i = 0;  i < TOTAL_PATTERNS_AT_ONE_TIME;  i++) {
+		do {
 			int pCount = factory.getPatterns().size();
 			int pSelected = rng.rand(pCount);
 			auto& pattern = factory.getPatterns()[pSelected];
 			patterns.emplace_back(pattern->instantiate(rng, distance));
 			distance = patterns.back()->getFurthestWallDistance();
-		}
+		} while (patterns.back()->getFurthestWallDistance() < renderDistance);
 
 		//set up the amount of sides the level should have.
 		lastSides = patterns.front()->getSides();
@@ -30,7 +30,7 @@ namespace SuperHaxagon {
 
 	Level::~Level() = default;
 
-	void Level::update(Twist& rng, int hexLength) {
+	void Level::update(Twist& rng, int hexLength, int renderDistance) {
 		// Update color frame and clamp
 		tweenFrame++;
 		if(tweenFrame >= factory.getSpeedPulse()) {
@@ -60,18 +60,20 @@ namespace SuperHaxagon {
 		if(patterns.front()->getFurthestWallDistance() < hexLength) {
 			lastSides = patterns.front()->getSides();
 			patterns.pop_front();
-
-			int pCount = factory.getPatterns().size();
-			int pSelected = rng.rand(pCount);
-			auto& pattern = factory.getPatterns()[pSelected];
-			patterns.emplace_back(pattern->instantiate(rng, patterns.back()->getFurthestWallDistance()));
-
 			currentSides = patterns.front()->getSides();
 
 			// Delay the level if the shifted pattern does  not have the same sides as the last.
 			if(lastSides != currentSides) {
 				delayFrame = FRAMES_PER_CHANGE_SIDE * abs(currentSides - lastSides);
 			}
+		}
+
+		// Create new pattern if needed
+		if (patterns.back()->getFurthestWallDistance() < renderDistance) {
+			int pCount = factory.getPatterns().size();
+			int pSelected = rng.rand(pCount);
+			auto& pattern = factory.getPatterns()[pSelected];
+			patterns.emplace_back(pattern->instantiate(rng, patterns.back()->getFurthestWallDistance()));
 		}
 
 		// Rotate level

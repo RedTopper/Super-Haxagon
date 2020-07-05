@@ -27,6 +27,10 @@ namespace SuperHaxagon {
 
 	class PatternFactory {
 	public:
+		static const char* PATTERN_HEADER;
+		static const char* PATTERN_FOOTER;
+		static constexpr int MIN_PATTERN_SIDES = 3;
+
 		explicit PatternFactory(std::ifstream& file);
 		~PatternFactory();
 

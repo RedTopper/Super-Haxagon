@@ -4,6 +4,8 @@
 #include "Twist.hpp"
 
 namespace SuperHaxagon {
+	const char* PatternFactory::PATTERN_HEADER = "PTN1.1";
+	const char* PatternFactory::PATTERN_FOOTER = "ENDPTN";
 
 	Pattern::Pattern(std::vector<std::unique_ptr<Wall>> walls, int sides) : walls(std::move(walls)), sides(sides) {}
 
@@ -23,7 +25,20 @@ namespace SuperHaxagon {
 	}
 
 	PatternFactory::PatternFactory(std::ifstream& file) {
+		name = readString(file, "Pattern name");
 
+		if (!readCompare(file, PATTERN_HEADER))
+			throw malformed("pattern", name + " pattern header invalid!");
+
+		// This might be able to be increased later
+		sides = read32(file, 0, 256, name + " pattern sides");
+		if(sides < MIN_PATTERN_SIDES) sides = MIN_PATTERN_SIDES;
+
+		int numWalls = read32(file, 1, 1000, name + " pattern walls");
+		for(int i = 0; i < numWalls; i++) walls.emplace_back(std::make_unique<WallFactory>(file, sides));
+
+		if (!readCompare(file, PATTERN_FOOTER))
+			throw malformed("pattern", name + " pattern footer invalid!");
 	}
 
 	PatternFactory::~PatternFactory() = default;

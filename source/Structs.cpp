@@ -51,12 +51,36 @@ namespace SuperHaxagon {
 		return "HEXAGON";
 	}
 
+	std::runtime_error malformed(const std::string& where, const std::string& message) {
+		return std::runtime_error("[malformed] '" + where + "': " + message);
+	}
+
 	bool readCompare(std::ifstream& file, const std::string& str) {
-		return false;
+		char read[str.length() + 1];
+		file.read(read, str.length());
+		read[str.length()] = '\0';
+		return read == str;
 	}
 
-	int readSize(std::ifstream& file) {
-		return 0;
+	uint32_t read32(std::ifstream& file, int min, int max, const std::string& noun) {
+		uint32_t num;
+		file.read(reinterpret_cast<char*>(&num), sizeof(num));
+		if (num < min) throw malformed("int", noun + " is too small!");
+		if (num > max) throw malformed("int", noun + " is too large!");
+		return num;
 	}
 
+	uint16_t read16(std::ifstream& file) {
+		uint16_t num;
+		file.read(reinterpret_cast<char*>(&num), sizeof(num));
+		return num;
+	}
+
+	std::string readString(std::ifstream& file, const std::string& noun) {
+		int length = read32(file, 1, 300, noun + " string");
+		char read[length + 1];
+		file.read(read, length);
+		read[length] = '\0';
+		return std::string(read);
+	}
 }

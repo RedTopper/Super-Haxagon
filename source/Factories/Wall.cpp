@@ -82,7 +82,6 @@ namespace SuperHaxagon {
 		side = read16(file);
 
 		if(height < MIN_WALL_HEIGHT) height = MIN_WALL_HEIGHT;
-		if(side < 0) side = 0;
 		if(side >= maxSide) side = maxSide - 1;
 	}
 

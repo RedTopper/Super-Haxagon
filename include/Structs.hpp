@@ -89,12 +89,22 @@ namespace SuperHaxagon {
 	/**
 	 * Reads an integer from a file advancing its internal pointer
 	 */
-	uint32_t read32(std::ifstream& file, int min, int max, const std::string& noun);
+	uint32_t read32(std::ifstream& file, uint32_t min, uint32_t max, const std::string& noun);
 
 	/**
 	 * Reads a short from a file advancing its internal pointer
 	 */
 	uint16_t read16(std::ifstream& file);
+
+	/**
+	 * Read a float from a file advancing its internal pointer
+	 */
+	float readFloat(std::ifstream& file);
+
+	/**
+	 * Reads a color from a file advancing its internal pointer
+	 */
+	Color readColor(std::ifstream& file);
 
 	/**
 	 * Reads a string from the binary file

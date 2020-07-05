@@ -62,7 +62,7 @@ namespace SuperHaxagon {
 		return read == str;
 	}
 
-	uint32_t read32(std::ifstream& file, int min, int max, const std::string& noun) {
+	uint32_t read32(std::ifstream& file, uint32_t min, uint32_t max, const std::string& noun) {
 		uint32_t num;
 		file.read(reinterpret_cast<char*>(&num), sizeof(num));
 		if (num < min) throw malformed("int", noun + " is too small!");
@@ -74,6 +74,21 @@ namespace SuperHaxagon {
 		uint16_t num;
 		file.read(reinterpret_cast<char*>(&num), sizeof(num));
 		return num;
+	}
+
+	float readFloat(std::ifstream& file) {
+		float num;
+		file.read(reinterpret_cast<char*>(&num), sizeof(num));
+		return num;
+	}
+
+	Color readColor(std::ifstream& file) {
+		Color color{};
+		file.read(reinterpret_cast<char*>(&color.r), sizeof(color.r));
+		file.read(reinterpret_cast<char*>(&color.g), sizeof(color.g));
+		file.read(reinterpret_cast<char*>(&color.b), sizeof(color.b));
+		color.a = 0xFF;
+		return color;
 	}
 
 	std::string readString(std::ifstream& file, const std::string& noun) {

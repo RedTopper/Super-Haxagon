@@ -6,7 +6,6 @@
 #include "States/Menu.hpp"
 #include "Factories/Wall.hpp"
 #include "Factories/Pattern.hpp"
-#include "Factories/Level.hpp"
 #include "Driver/Audio.hpp"
 #include "Driver/Font.hpp"
 
@@ -31,10 +30,6 @@ namespace SuperHaxagon {
 
 	Game::~Game() = default;
 
-	void Game::addLevel(std::unique_ptr<LevelFactory> level) {
-		levels.emplace_back(std::move(level));
-	}
-
 	int Game::run() {
 		state = std::make_unique<Load>(*this);
 		state->enter();
@@ -49,6 +44,10 @@ namespace SuperHaxagon {
 		}
 
 		return 0;
+	}
+
+	void Game::addLevel(std::unique_ptr<LevelFactory> level) {
+		levels.emplace_back(std::move(level));
 	}
 
 	void Game::drawBackground(const Color& color1, const Color& color2, const Point& focus, double height, double rotation, double sides) const {

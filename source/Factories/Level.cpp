@@ -6,6 +6,8 @@
 #include "Game.hpp"
 
 namespace SuperHaxagon {
+	const char* LevelFactory::LEVEL_HEADER = "LEV2.1";
+	const char* LevelFactory::LEVEL_FOOTER = "ENDLEV";
 
 	Level::Level(const LevelFactory& factory, Twist& rng, int renderDistance) : factory(factory) {
 		nextIndexBG1 = (factory.getColorsBG1().size() > 1 ? 1 : 0);
@@ -160,9 +162,57 @@ namespace SuperHaxagon {
 		if(cursorPos < 0) cursorPos  += TAU;
 	}
 
-	LevelFactory::LevelFactory(std::ifstream& file, std::vector<std::shared_ptr<PatternFactory>>& patterns, Location location) :
-		location(location)
-	{}
+	LevelFactory::LevelFactory(std::ifstream& file, std::vector<std::shared_ptr<PatternFactory>>& shared, Location loc) {
+		location = loc;
+
+		if (!readCompare(file, LEVEL_HEADER))
+			throw malformed("level", "level header invalid!");
+
+		name = readString(file, "level name");
+		difficulty = "DIFF: " + readString(file, name + " level difficulty");
+		mode = "MODE: " + readString(file, name + " level mode");
+		creator = "CREATOR: " + readString(file, name + " level creator");
+		music = "/" + readString(file, name + " level music");
+
+		int numColorsBG1 = read32(file, 1, 512, "level background 1");
+		colorsBG1.reserve(numColorsBG1);
+		for (int i = 0; i < numColorsBG1; i++) colorsBG1.emplace_back(readColor(file));
+
+		int numColorsBG2 = read32(file, 1, 512, "level background 2");
+		colorsBG2.reserve(numColorsBG2);
+		for (int i = 0; i < numColorsBG2; i++) colorsBG2.emplace_back(readColor(file));
+
+		int numColorsFG = read32(file, 1, 512, "level foreground");
+		colorsFG.reserve(numColorsFG);
+		for (int i = 0; i < numColorsFG; i++) colorsFG.emplace_back(readColor(file));
+
+		speedWall = readFloat(file);
+		speedRotation = readFloat(file);
+		speedCursor = readFloat(file);
+
+		speedPulse = read32(file, 4, 8192, "level pulse");
+
+		int numPatterns = read32(file, 1, 512, "level pattern count");
+		shared.reserve(numPatterns);
+
+		for (int i = 0; i < numPatterns; i++) {
+			bool found = false;
+			std::string search = readString(file, "level pattern name match");
+			for (const auto& pattern : shared) {
+				if (pattern->getName() == search) {
+					patterns.push_back(pattern);
+					found = true;
+					break;
+				}
+			}
+
+			if (!found)
+				throw malformed("level", "could not find pattern " + search + " for " + name);
+		}
+
+		if (!readCompare(file, LEVEL_FOOTER))
+			throw malformed("level", "level footer invalid!");
+	}
 
 	std::unique_ptr<Level> LevelFactory::instantiate(Twist& rng, int renderDistance) const {
 		return std::make_unique<Level>(*this, rng, renderDistance);

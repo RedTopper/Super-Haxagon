@@ -12,8 +12,6 @@ namespace SuperHaxagon {
 	public:
 		static const char* PROJECT_HEADER;
 		static const char* PROJECT_FOOTER;
-		static const char* LEVEL_HEADER;
-		static const char* LEVEL_FOOTER;
 
 		explicit Load(Game& game);
 		Load(Load&) = delete;

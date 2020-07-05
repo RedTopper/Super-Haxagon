@@ -25,7 +25,7 @@ namespace SuperHaxagon {
 	}
 
 	PatternFactory::PatternFactory(std::ifstream& file) {
-		name = readString(file, "Pattern name");
+		name = readString(file, "pattern name");
 
 		if (!readCompare(file, PATTERN_HEADER))
 			throw malformed("pattern", name + " pattern header invalid!");

@@ -68,12 +68,15 @@ namespace SuperHaxagon {
 
 	class LevelFactory {
 	public:
-		LevelFactory(std::ifstream& file, std::vector<std::shared_ptr<PatternFactory>>& patterns, Location location);
+		static const char* LEVEL_HEADER;
+		static const char* LEVEL_FOOTER;
+
+		LevelFactory(std::ifstream& file, std::vector<std::shared_ptr<PatternFactory>>& shared, Location location);
 		LevelFactory(const LevelFactory&) = delete;
 
 		std::unique_ptr<Level> instantiate(Twist& rng, int renderDistance) const;
 
-		const std::vector<std::unique_ptr<PatternFactory>>& getPatterns() const {return patterns;}
+		const std::vector<std::shared_ptr<PatternFactory>>& getPatterns() const {return patterns;}
 		const std::vector<Color>& getColorsFG() const {return colorsFG;}
 		const std::vector<Color>& getColorsBG1() const {return colorsBG1;}
 		const std::vector<Color>& getColorsBG2() const {return colorsBG2;}
@@ -94,7 +97,7 @@ namespace SuperHaxagon {
 		bool setHighScore(int score);
 
 	private:
-		std::vector<std::unique_ptr<PatternFactory>> patterns;
+		std::vector<std::shared_ptr<PatternFactory>> patterns;
 		std::vector<Color> colorsFG;
 		std::vector<Color> colorsBG1;
 		std::vector<Color> colorsBG2;

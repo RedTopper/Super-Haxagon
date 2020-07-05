@@ -23,7 +23,6 @@ namespace SuperHaxagon {
 		~Game();
 
 		const std::vector<std::unique_ptr<LevelFactory>>& getLevels() const {return levels;}
-		void addLevel(std::unique_ptr<LevelFactory> level);
 
 		Platform& getPlatform() const {return platform;}
 		Twist& getTwister() const {return *twister;}
@@ -58,6 +57,11 @@ namespace SuperHaxagon {
 		 * Runs the game
 		 */
 		int run();
+
+		/**
+		 * Loads a level into the game
+		 */
+		void addLevel(std::unique_ptr<LevelFactory> level);
 
 		/**
 		 * Draws the background of the screen (the radiating colors part)

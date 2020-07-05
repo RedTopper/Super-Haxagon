@@ -25,11 +25,10 @@ namespace SuperHaxagon {
 		void enter() override;
 
 	private:
-		LevelFactory& factory;
-		std::unique_ptr<Level> level;
-
 		Game& game;
 		Platform& platform;
+		LevelFactory& factory;
+		std::unique_ptr<Level> level;
 
 		int score{};
 	};

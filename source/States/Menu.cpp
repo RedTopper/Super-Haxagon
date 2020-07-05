@@ -47,8 +47,8 @@ namespace SuperHaxagon {
 			}
 		}
 
-		if(level >=  game.getLevels().size()) level = 0;
-		if(level < 0) level = game.getLevels().size() - 1;
+		if(level >=  (int)game.getLevels().size()) level = 0;
+		if(level < 0) level = (int)game.getLevels().size() - 1;
 		if(transitionDirection) transitionFrame++;
 		if(transitionFrame >= FRAMES_PER_TRANSITION) {
 			transitionFrame = 0;

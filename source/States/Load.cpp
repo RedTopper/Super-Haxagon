@@ -12,8 +12,6 @@
 namespace SuperHaxagon {
 	const char* Load::PROJECT_HEADER = "HAX1.1";
 	const char* Load::PROJECT_FOOTER = "ENDHAX";
-	const char* Load::LEVEL_HEADER = "LEV2.1";
-	const char* Load::LEVEL_FOOTER = "ENDLEV";
 
 	Load::Load(Game& game) : game(game), platform(game.getPlatform()) {}
 
@@ -22,21 +20,21 @@ namespace SuperHaxagon {
 
 		//header
 		if(!readCompare(file, PROJECT_HEADER))
-			throw malformed("load", "File header invalid!");
+			throw malformed("load", "file header invalid!");
 
-		int numPatterns = read32(file, 1, 300, "Number of patterns");
+		int numPatterns = read32(file, 1, 300, "number of patterns");
 		patterns.reserve(numPatterns);
 		for (int i = 0; i < numPatterns; i++) {
 			patterns.emplace_back(std::make_shared<PatternFactory>(file));
 		}
 
-		int numLevels = read32(file, 1, 300, "Number of levels");
+		int numLevels = read32(file, 1, 300, "number of levels");
 		for (int i = 0; i < numLevels; i++) {
 			game.addLevel(std::make_unique<LevelFactory>(file, patterns, location));
 		}
 
 		if(!readCompare(file, PROJECT_FOOTER))
-			throw malformed("load", "File footer invalid!");
+			throw malformed("load", "file footer invalid!");
 	}
 
 	void Load::enter() {

@@ -3,16 +3,14 @@
 #include <algorithm>
 #include <SDL2/SDL.h>
 
-#include "Driver/Audio.hpp"
-#include "Driver/Font.hpp"
+#include "Driver/AudioWin.hpp"
+#include "Driver/FontWin.hpp"
 #include "Driver/PlatformWin.hpp"
+#include "Driver/AudioWin.hpp"
 
 namespace SuperHaxagon {
 	PlatformWin::PlatformWin() {
-		#pragma clang diagnostic push
-		#pragma ide diagnostic ignored "hicpp-signed-bitwise"
 		window = SDL_CreateWindow("Super Haxagon", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 640, 480, SDL_WINDOW_OPENGL);
-		#pragma clang diagnostic pop
 
 		if (window == nullptr) {
 			SDL_Log("Could not create a window: %s", SDL_GetError());
@@ -60,11 +58,11 @@ namespace SuperHaxagon {
 	}
 
 	std::unique_ptr<Audio> PlatformWin::loadAudio(const std::string& path) {
-		return std::unique_ptr<Audio>();
+		return std::make_unique<AudioWin>(path);
 	}
 
 	std::unique_ptr<Font> PlatformWin::loadFont(const std::string& path) {
-		return std::unique_ptr<Font>();
+		return std::make_unique<FontWin>(path);
 	}
 
 	void PlatformWin::playSFX(Audio& audio) {

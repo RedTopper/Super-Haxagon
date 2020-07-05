@@ -3,6 +3,7 @@ NAME := Super Haxagon
 BUILD_DIR := build
 OUTPUT_DIR := output
 INCLUDE_DIRS := include
+SOURCE_DIRS := source/Core source/Factories source/States
 
 VERSION_PARTS := $(subst ., ,$(shell git describe --tags --abbrev=0))
 VERSION_MAJOR := $(word 1, $(VERSION_PARTS))
@@ -21,7 +22,7 @@ endif
 # 3DS CONFIGURATION #
 
 ifeq ($(TARGET),3DS)
-    SOURCE_DIRS := source/Core source/Factories source/States source/Driver3DS
+    SOURCE_DIRS += source/Driver3DS
 
     LIBRARY_DIRS += $(DEVKITPRO)/libctru
     $(info $$LIBRARY_DIRS is [${LIBRARY_DIRS}])
@@ -38,12 +39,20 @@ endif
 # Switch CONFIGURATION #
 
 ifeq ($(TARGET),SWITCH)
-    SOURCE_DIRS := source/Core source/Factories source/States source/DriverSwitch
+    SOURCE_DIRS += source/DriverSwitch
 
     LIBRARY_DIRS += $(DEVKITPRO)/libnx
     LIBRARIES += nx
 
     ICON := resource/icon-switch.jpg
+endif
+
+# Windows CONFIGURATION #
+
+ifeq ($(TARGET),WIN64)
+    SOURCE_DIRS += source/DriverWin
+    LIBRARY_DIRS += /mingw64 /mingw64/lib
+    LIBRARIES += mingw32 SDL2main SDL2 m dinput8 dxguid dxerr8 user32 gdi32 winmm imm32 ole32 oleaut32 shell32 version uuid setupapi
 endif
 
 # INTERNAL #

@@ -2,28 +2,28 @@
 
 #include "Core/Game.hpp"
 
-#ifdef _3DS
-#include "Driver3DS//Platform3DS.hpp"
-#elif __SWITCH__
+#if defined _3DS
+#include "Driver3DS/Platform3DS.hpp"
+#elif defined __SWITCH__
 #include "DriverSwitch/PlatformSwitch.hpp"
-#elif _WIN32
+#elif defined _WIN64 || defined __CYGWIN__
+#define SDL_MAIN_HANDLED
+#include <SDL2/SDL.h>
 #include "DriverWin/PlatformWin.hpp"
-int main();
-int WinMain() {return main();}
 #else
-#error "Target platform is not supported by driver."
+#error "Target platform is not supported by any driver."
 #endif
 
 namespace SuperHaxagon {
 	std::unique_ptr<Platform> getPlatform() {
-#ifdef _3DS
+#if defined _3DS
 		return std::make_unique<Platform3DS>();
-#elif __SWITCH__
+#elif defined __SWITCH__
 		return std::make_unique<PlatformSwitch>();
-#elif _WIN32
+#elif defined _WIN64 || defined __CYGWIN__
 		return std::make_unique<PlatformWin>();
 #else
-		returnn nullptr;
+		return nullptr;
 #endif
 	}
 }

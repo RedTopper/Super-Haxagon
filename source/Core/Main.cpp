@@ -7,8 +7,6 @@
 #elif defined __SWITCH__
 #include "DriverSwitch/PlatformSwitch.hpp"
 #elif defined _WIN64 || defined __CYGWIN__
-#define SDL_MAIN_HANDLED
-#include <SDL2/SDL.h>
 #include "DriverWin/PlatformWin.hpp"
 #else
 #error "Target platform is not supported by any driver."
@@ -28,7 +26,7 @@ namespace SuperHaxagon {
 	}
 }
 
-int main() {
+int main(int argv, char** args) {
 	auto platform = SuperHaxagon::getPlatform();
 	SuperHaxagon::Game game(*platform);
 

@@ -98,7 +98,7 @@ namespace SuperHaxagon {
 		void drawTrap(Color color, const std::array<Point, 4>& points) const;
 
 		/**
-		 * Clears the bottom screen, if the platftorm has one.
+		 * Clears the bottom screen, if the platform has one.
 		 */
 		void clearBotAndSwitchScreens() const;
 

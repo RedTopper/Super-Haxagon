@@ -1,9 +1,8 @@
+#include "Core/Twist.hpp"
+#include "Core/Game.hpp"
 #include "Factories/Level.hpp"
 #include "Factories/Pattern.hpp"
 #include "Factories/Wall.hpp"
-
-#include "Twist.hpp"
-#include "Game.hpp"
 
 namespace SuperHaxagon {
 	const char* LevelFactory::LEVEL_HEADER = "LEV2.1";

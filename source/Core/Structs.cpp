@@ -3,7 +3,7 @@
 #include <sstream>
 #include <iomanip>
 
-#include "Structs.hpp"
+#include "Core/Structs.hpp"
 
 namespace SuperHaxagon {
 	Color interpolateColor(const Color& one, const Color& two, double percent) {

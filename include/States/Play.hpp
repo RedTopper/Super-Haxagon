@@ -4,7 +4,7 @@
 #include <deque>
 
 #include "State.hpp"
-#include "Structs.hpp"
+#include "Core/Structs.hpp"
 
 namespace SuperHaxagon {
 	class Game;

@@ -1,19 +1,16 @@
-#ifndef SUPER_HAXAGON_PLATFORM_3DS_HPP
-#define SUPER_HAXAGON_PLATFORM_3DS_HPP
+#ifndef SUPER_HAXAGON_PLATFORM_WIN_HPP
+#define SUPER_HAXAGON_PLATFORM_WIN_HPP
 
-#include <3ds.h>
+#include <SDL2/SDL.h>
 
-#include "Platform.hpp"
-
-static const int MAX_TRACKS = 4;
+#include "Driver/Platform.hpp"
 
 namespace SuperHaxagon {
-	class Player;
 
-	class Platform3DS : public Platform {
+	class PlatformWin : public Platform {
 	public:
-		Platform3DS();
-		~Platform3DS();
+		PlatformWin();
+		~PlatformWin();
 
 		bool loop() override;
 		bool hasScreen(Screen test) override;
@@ -40,10 +37,12 @@ namespace SuperHaxagon {
 		std::unique_ptr<Twist> getTwister() override;
 
 	private:
-		static Buttons toButtons(u32 input);
-		std::unique_ptr<Player> sfx[MAX_TRACKS];
-		std::unique_ptr<Player> bgm;
+		SDL_Window* window;
+		SDL_Renderer* renderer;
+		SDL_Event event{};
+
+		bool loaded = false;
 	};
 }
 
-#endif //SUPER_HAXAGON_PLATFORM_3DS_HPP
+#endif //SUPER_HAXAGON_PLATFORM_WIN_HPP

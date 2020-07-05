@@ -1,5 +1,4 @@
-#ifdef _WIN32
-#include "Driver/FontWin.hpp"
+#include "DriverWin/FontWin.hpp"
 
 namespace SuperHaxagon {
 	FontWin::FontWin(const std::string& path) {
@@ -14,5 +13,3 @@ namespace SuperHaxagon {
 
 	}
 }
-
-#endif

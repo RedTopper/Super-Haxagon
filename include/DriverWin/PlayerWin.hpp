@@ -1,7 +1,7 @@
 #ifndef SUPER_HAXAGON_PLAYER_WIN_HPP
 #define SUPER_HAXAGON_PLAYER_WIN_HPP
 
-#include "Player.hpp"
+#include "Driver/Player.hpp"
 
 namespace SuperHaxagon {
 	class PlayerWin : public Player {

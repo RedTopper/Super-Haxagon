@@ -1,12 +1,10 @@
-#ifdef _WIN32
 #include <string>
 #include <algorithm>
 #include <SDL2/SDL.h>
 
-#include "Driver/AudioWin.hpp"
-#include "Driver/FontWin.hpp"
-#include "Driver/PlatformWin.hpp"
-#include "Driver/AudioWin.hpp"
+#include "DriverWin/AudioWin.hpp"
+#include "DriverWin/FontWin.hpp"
+#include "DriverWin/PlatformWin.hpp"
 
 namespace SuperHaxagon {
 	PlatformWin::PlatformWin() {
@@ -110,5 +108,3 @@ namespace SuperHaxagon {
 		);
 	}
 }
-
-#endif

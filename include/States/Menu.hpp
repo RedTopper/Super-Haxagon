@@ -1,9 +1,8 @@
 #ifndef SUPER_HAXAGON_MENU_HPP
 #define SUPER_HAXAGON_MENU_HPP
 
-#include "Driver/Platform.hpp"
-
 #include "State.hpp"
+#include "Driver/Platform.hpp"
 
 namespace SuperHaxagon {
 	class Game;

@@ -6,7 +6,7 @@
 #include <vector>
 #include <deque>
 
-#include "Structs.hpp"
+#include "Core/Structs.hpp"
 
 namespace SuperHaxagon {
 	enum class Location {
@@ -40,7 +40,6 @@ namespace SuperHaxagon {
 		void left();
 		void right();
 		void clamp();
-
 
 	private:
 		const LevelFactory& factory;
@@ -110,7 +109,7 @@ namespace SuperHaxagon {
 
 		Location location = Location::INTERNAL;
 
-		int highScore;
+		int highScore = 0;
 		int speedPulse;
 		float speedWall;
 		float speedRotation;

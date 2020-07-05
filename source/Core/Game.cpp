@@ -1,15 +1,13 @@
 #include <memory>
 
+#include "Core/Game.hpp"
+#include "Driver/Audio.hpp"
+#include "Driver/Font.hpp"
+#include "Factories/Wall.hpp"
+#include "Factories/Pattern.hpp"
 #include "States/State.hpp"
 #include "States/Quit.hpp"
 #include "States/Load.hpp"
-#include "States/Menu.hpp"
-#include "Factories/Wall.hpp"
-#include "Factories/Pattern.hpp"
-#include "Driver/Audio.hpp"
-#include "Driver/Font.hpp"
-
-#include "Game.hpp"
 
 namespace SuperHaxagon {
 

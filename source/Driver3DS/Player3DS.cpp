@@ -1,5 +1,4 @@
-#ifdef _3DS
-#include "Driver/Player3DS.hpp"
+#include "Driver3DS/Player3DS.hpp"
 
 namespace SuperHaxagon {
 	Player3DS::Player3DS(u8* data, u32 sampleRate, u32 dataSize, u16 channels, u16 bitsPerSample, u16 ndspFormat) :
@@ -40,5 +39,3 @@ namespace SuperHaxagon {
 		return buffer.status == NDSP_WBUF_DONE;
 	}
 }
-
-#endif

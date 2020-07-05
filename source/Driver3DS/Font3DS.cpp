@@ -1,5 +1,4 @@
-#ifdef _3DS
-#include "Driver/Font3DS.hpp"
+#include "Driver3DS/Font3DS.hpp"
 
 namespace SuperHaxagon {
 	Font3DS::Font3DS(const std::string& path) {
@@ -14,5 +13,3 @@ namespace SuperHaxagon {
 
 	}
 }
-
-#endif

@@ -1,5 +1,4 @@
-#ifdef _WIN32
-#include "Driver/PlayerWin.hpp"
+#include "DriverWin/PlayerWin.hpp"
 
 namespace SuperHaxagon {
 	PlayerWin::PlayerWin() = default;
@@ -25,5 +24,3 @@ namespace SuperHaxagon {
 		return false;
 	}
 }
-
-#endif

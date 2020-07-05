@@ -1,12 +1,11 @@
-#ifdef _3DS
 #include <3ds.h>
 #include <string>
 #include <memory>
 
-#include "Driver/Audio3DS.hpp"
-#include "Driver/Player.hpp"
-#include "Driver/Font3DS.hpp"
-#include "Driver/Platform3DS.hpp"
+#include "Driver3DS/Player3DS.hpp"
+#include "Driver3DS/Audio3DS.hpp"
+#include "Driver3DS/Font3DS.hpp"
+#include "Driver3DS/Platform3DS.hpp"
 
 static const int SAMPLE_RATE = 48000;
 
@@ -118,5 +117,3 @@ namespace SuperHaxagon {
 		return buttons;
 	}
 }
-
-#endif

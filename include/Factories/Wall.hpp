@@ -4,7 +4,7 @@
 #include <memory>
 #include <array>
 
-#include "Structs.hpp"
+#include "Core/Structs.hpp"
 
 namespace SuperHaxagon {
 	class Wall {

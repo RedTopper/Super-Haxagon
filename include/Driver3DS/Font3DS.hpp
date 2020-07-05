@@ -1,7 +1,7 @@
 #ifndef SUPER_HAXAGON_FONT_3DS_HPP
 #define SUPER_HAXAGON_FONT_3DS_HPP
 
-#include "Font.hpp"
+#include "Driver/Font.hpp"
 
 namespace SuperHaxagon {
 	class Font3DS : public Font {

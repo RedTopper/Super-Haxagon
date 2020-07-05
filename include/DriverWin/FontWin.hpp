@@ -1,7 +1,7 @@
 #ifndef SUPER_HAXAGON_FONT_WIN_HPP
 #define SUPER_HAXAGON_FONT_WIN_HPP
 
-#include "Font.hpp"
+#include "Driver/Font.hpp"
 
 namespace SuperHaxagon {
 	class FontWin : public Font {

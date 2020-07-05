@@ -3,7 +3,7 @@
 
 #include <3ds.h>
 
-#include "Player.hpp"
+#include "Driver/Player.hpp"
 
 namespace SuperHaxagon {
 	class Player3DS : public Player {

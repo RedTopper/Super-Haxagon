@@ -4,7 +4,7 @@
 #include <3ds.h>
 #include <memory>
 
-#include "Audio.hpp"
+#include "Driver/Audio.hpp"
 
 namespace SuperHaxagon {
 	class Audio3DS : public Audio {

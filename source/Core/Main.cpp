@@ -1,13 +1,13 @@
 #include <exception>
 
-#include "Game.hpp"
+#include "Core/Game.hpp"
 
 #ifdef _3DS
-#include "Driver/Platform3DS.hpp"
+#include "Driver3DS//Platform3DS.hpp"
 #elif __SWITCH__
-#include "Driver/PlatformSwitch.hpp"
+#include "DriverSwitch/PlatformSwitch.hpp"
 #elif _WIN32
-#include "Driver/PlatformWin.hpp"
+#include "DriverWin/PlatformWin.hpp"
 int main();
 int WinMain() {return main();}
 #else

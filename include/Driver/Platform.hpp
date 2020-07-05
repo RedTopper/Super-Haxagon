@@ -4,7 +4,7 @@
 #include <memory>
 #include <string>
 
-#include "Twist.hpp"
+#include "Core/Twist.hpp"
 
 namespace SuperHaxagon {
 	struct Buttons {

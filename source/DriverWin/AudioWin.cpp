@@ -1,6 +1,5 @@
-#ifdef _WIN32
-#include "Driver/AudioWin.hpp"
-#include "Driver/PlayerWin.hpp"
+#include "DriverWin/AudioWin.hpp"
+#include "DriverWin/PlayerWin.hpp"
 
 namespace SuperHaxagon {
 	AudioWin::AudioWin(const std::string& path) {};
@@ -10,5 +9,3 @@ namespace SuperHaxagon {
 		return std::make_unique<PlayerWin>();
 	}
 }
-
-#endif

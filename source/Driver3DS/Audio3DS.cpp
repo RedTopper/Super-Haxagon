@@ -1,9 +1,8 @@
-#ifdef _3DS
 #include <string>
 #include <fstream>
 
-#include "Driver/Audio3DS.hpp"
-#include "Driver/Player3DS.hpp"
+#include "Driver3DS/Audio3DS.hpp"
+#include "Driver3DS/Player3DS.hpp"
 
 namespace SuperHaxagon {
 	Audio3DS::Audio3DS(const std::string& path) {
@@ -61,5 +60,3 @@ namespace SuperHaxagon {
 		return std::make_unique<Player3DS>(data, sampleRate, dataSize, channels, bitsPerSample, ndspFormat);
 	}
 }
-
-#endif

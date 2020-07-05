@@ -65,7 +65,6 @@ namespace SuperHaxagon {
 
 		int width = platform.getScreenDim().x;
 
-		const auto& large = game.getFontLarge();
 		const auto& small = game.getFontSmall();
 		Point posLevelUp = {4,4};
 		Point posScore = { width - 4, 4};

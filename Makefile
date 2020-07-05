@@ -1,11 +1,8 @@
-TARGET := WIN64 3DS SWITCH
-
 NAME := Super Haxagon
 
 BUILD_DIR := build
 OUTPUT_DIR := output
 INCLUDE_DIRS := include
-SOURCE_DIRS := source
 
 VERSION_PARTS := $(subst ., ,$(shell git describe --tags --abbrev=0))
 VERSION_MAJOR := $(word 1, $(VERSION_PARTS))
@@ -17,9 +14,15 @@ DESCRIPTION := A Super Hexagon Clone
 
 BUILD_FLAGS_CXX := -std=gnu++14
 
+ifndef TARGET
+$(error State target platform with one of 'make TARGET:=[3DS SWITCH WIN64]')
+endif
+
 # 3DS CONFIGURATION #
 
 ifeq ($(TARGET),3DS)
+    SOURCE_DIRS := source/Core source/Factories source/States source/Driver3DS
+
     LIBRARY_DIRS += $(DEVKITPRO)/libctru
     $(info $$LIBRARY_DIRS is [${LIBRARY_DIRS}])
     LIBRARIES += ctru
@@ -35,6 +38,8 @@ endif
 # Switch CONFIGURATION #
 
 ifeq ($(TARGET),SWITCH)
+    SOURCE_DIRS := source/Core source/Factories source/States source/DriverSwitch
+
     LIBRARY_DIRS += $(DEVKITPRO)/libnx
     LIBRARIES += nx
 

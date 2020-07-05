@@ -12,6 +12,11 @@
 #error "Target platform is not supported by any driver."
 #endif
 
+#ifdef _WIN64
+int main(int argv, char** args);
+int WinMain() {return main(0, nullptr);}
+#endif
+
 namespace SuperHaxagon {
 	std::unique_ptr<Platform> getPlatform() {
 #if defined _3DS
@@ -26,7 +31,7 @@ namespace SuperHaxagon {
 	}
 }
 
-int main(int argv, char** args) {
+int main(int, char**) {
 	auto platform = SuperHaxagon::getPlatform();
 	SuperHaxagon::Game game(*platform);
 

@@ -1,41 +1,21 @@
 #include <string>
 #include <algorithm>
-#include <SDL2/SDL.h>
 
 #include "DriverWin/AudioWin.hpp"
 #include "DriverWin/FontWin.hpp"
 #include "DriverWin/PlatformWin.hpp"
 
 namespace SuperHaxagon {
-	PlatformWin::PlatformWin() {
-		window = SDL_CreateWindow("Super Haxagon", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 640, 480, SDL_WINDOW_OPENGL);
-
-		if (window == nullptr) {
-			SDL_Log("Could not create a window: %s", SDL_GetError());
-			return;
-		}
-
-		renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-		if (renderer == nullptr) {
-			SDL_DestroyWindow(window);
-			SDL_Log("Could not create a renderer: %s", SDL_GetError());
-			return;
-		}
-
+	PlatformWin::PlatformWin() :
+		window(sf::VideoMode(200, 200), "SFML works!") {
 		loaded = true;
 	}
 
 	PlatformWin::~PlatformWin() {
-		SDL_DestroyRenderer(renderer);
-		SDL_DestroyWindow(window);
-		SDL_Quit();
+		// TODO
 	}
 
 	bool PlatformWin::loop() {
-		if (SDL_PollEvent(&event) && event.type == SDL_QUIT) {
-			loaded = false;
-		}
-
 		return loaded;
 	}
 

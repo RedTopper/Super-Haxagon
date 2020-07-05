@@ -52,8 +52,8 @@ endif
 ifeq ($(TARGET),WIN64)
     SOURCE_DIRS += source/DriverWin
 
-    LIBRARY_DIRS += /mingw64 /mingw64/lib
-    LIBRARIES += mingw32 SDL2main SDL2 m dinput8 dxguid dxerr8 user32 gdi32 winmm imm32 ole32 oleaut32 shell32 version uuid setupapi
+    LIBRARY_DIRS += /mingw64 /mingw64/lib ./libraries/SFML
+    LIBRARIES += sfml-graphics-s sfml-window-s sfml-system-s winmm gdi32 opengl32 freetype
 
     BUILD_FLAGS := -mwindows 
 endif

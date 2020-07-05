@@ -1,12 +1,11 @@
 #ifndef SUPER_HAXAGON_PLATFORM_WIN_HPP
 #define SUPER_HAXAGON_PLATFORM_WIN_HPP
-
-#include <SDL2/SDL.h>
+#define SFML_STATIC
+#include <SFML/Graphics.hpp>
 
 #include "Driver/Platform.hpp"
 
 namespace SuperHaxagon {
-
 	class PlatformWin : public Platform {
 	public:
 		PlatformWin();
@@ -37,11 +36,9 @@ namespace SuperHaxagon {
 		std::unique_ptr<Twist> getTwister() override;
 
 	private:
-		SDL_Window* window;
-		SDL_Renderer* renderer;
-		SDL_Event event{};
-
 		bool loaded = false;
+
+		sf::RenderWindow window;
 	};
 }
 

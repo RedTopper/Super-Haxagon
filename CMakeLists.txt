@@ -16,11 +16,11 @@ set(PLAT WINDOWS)
 include_directories(C:/msys64/opt/devkitpro/libctru/include)
 include_directories(C:/msys64/opt/devkitpro/portlibs/3ds/include/ogg)
 include_directories(C:/msys64/opt/devkitpro/portlibs/3ds/include/opus)
+include_directories(libraries/SFML/include)
 include_directories(include)
 
 if(PLAT STREQUAL "WINDOWS")
-    find_package(SDL2 CONFIG REQUIRED)
-    include_directories(${SDL2_INCLUDE_DIRS})
+    link_directories(libraries/SFML/lib)
 
     add_executable(SuperHaxagon ${OPTIONS}
             source/DriverWin/AudioWin.cpp
@@ -41,7 +41,7 @@ if(PLAT STREQUAL "WINDOWS")
             source/Core/Main.cpp
             source/Core/Structs.cpp)
 
-    target_link_libraries(SuperHaxagon SDL2main SDL2)
+    target_link_libraries(SuperHaxagon sfml-graphics-s sfml-window-s sfml-system-s winmm gdi32 opengl32 freetype)
 
 elseif(PLAT STREQUAL "3DS")
     add_compile_definitions(_3DS)

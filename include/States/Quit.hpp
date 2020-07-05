@@ -10,7 +10,8 @@ namespace SuperHaxagon {
 		Quit(Quit&) = delete;
 
 		std::unique_ptr<State> update() override {return nullptr;}
-		void draw() override {}
+		void drawTop() override {}
+		void drawBot() override {}
 	};
 }
 

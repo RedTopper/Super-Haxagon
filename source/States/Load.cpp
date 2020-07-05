@@ -14,7 +14,7 @@ namespace SuperHaxagon {
 
 	Load::Load(Game& game) : game(game), platform(game.getPlatform()) {}
 
-	void Load::load(std::ifstream& file, const std::string& path, Location location) {
+	void Load::load(std::ifstream& file, Location location) {
 		std::vector<std::shared_ptr<PatternFactory>> patterns;
 
 		//header
@@ -48,7 +48,7 @@ namespace SuperHaxagon {
 			Location loc = location.first;
 			std::ifstream file(path, std::ios::in | std::ios::binary);
 			if (!file) continue;
-			load(file, path, loc);
+			load(file, loc);
 		}
 
 		if (game.getLevels().empty()) {

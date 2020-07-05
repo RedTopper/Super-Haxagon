@@ -47,11 +47,11 @@ namespace SuperHaxagon {
 		return nullptr;
 	}
 
-	void Over::draw() {
+	void Over::drawTop() {
 		level->draw(game, offset);
+	}
 
-		game.clearBotAndSwitchScreens();
-
+	void Over::drawBot() {
 		const auto& large = game.getFontLarge();
 		const auto& small = game.getFontSmall();
 		int width = platform.getScreenDim().x;

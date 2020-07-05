@@ -15,10 +15,6 @@ namespace SuperHaxagon {
 		bool right : 1;
 	};
 
-	enum class Screen {
-		TOP, BOTTOM
-	};
-
 	struct Point;
 	struct Color;
 	class Audio;
@@ -30,7 +26,7 @@ namespace SuperHaxagon {
 		Platform(Platform&) = delete;
 
 		virtual bool loop() = 0;
-		virtual bool hasScreen(Screen test) = 0;
+		virtual bool canUpdate() = 0;
 
 		virtual std::string getPath(const std::string& partial) = 0;
 		virtual std::string getPathRom(const std::string& partial) = 0;
@@ -44,17 +40,15 @@ namespace SuperHaxagon {
 		virtual void pollButtons() = 0;
 		virtual Buttons getDown() = 0;
 		virtual Buttons getPressed() = 0;
-
 		virtual Point getScreenDim() const = 0;
 
+		virtual void screenBegin() = 0;
+		virtual void screenSwap() = 0;
+		virtual void screenFinalize() = 0;
 		virtual void drawRect(const Color& color, const Point& point, const Point& size) const = 0;
 		virtual void drawTriangle(const Color& color, const std::array<Point, 3>& points) const = 0;
 
 		virtual std::unique_ptr<Twist> getTwister() = 0;
-		void setScreen(Screen select) {screen = select;}
-
-	protected:
-		Screen screen = Screen::TOP;
 	};
 }
 

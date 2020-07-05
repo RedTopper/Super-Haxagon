@@ -16,7 +16,8 @@ namespace SuperHaxagon {
 		~Menu();
 
 		std::unique_ptr<State> update() override;
-		void draw() override;
+		void drawTop() override;
+		void drawBot() override;;
 		void enter() override;
 		void exit() override;
 

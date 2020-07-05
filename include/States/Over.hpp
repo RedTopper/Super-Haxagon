@@ -21,7 +21,8 @@ namespace SuperHaxagon {
 		Over(Over&) = delete;
 
 		std::unique_ptr<State> update() override;
-		void draw() override;
+		void drawTop() override;
+		void drawBot() override;
 		void enter() override;
 
 	private:

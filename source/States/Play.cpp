@@ -58,11 +58,11 @@ namespace SuperHaxagon {
 		return nullptr;
 	}
 
-	void Play::draw() {
+	void Play::drawTop() {
 		level->draw(game, 0);
+	}
 
-		game.clearBotAndSwitchScreens();
-
+	void Play::drawBot() {
 		int width = platform.getScreenDim().x;
 
 		const auto& small = game.getFontSmall();

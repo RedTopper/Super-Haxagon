@@ -7,7 +7,8 @@ namespace SuperHaxagon {
 	class State {
 	public:
 		virtual std::unique_ptr<State> update() = 0;
-		virtual void draw() = 0;
+		virtual void drawTop() = 0;
+		virtual void drawBot() = 0;
 		virtual void enter() {};
 		virtual void exit() {};
 	};

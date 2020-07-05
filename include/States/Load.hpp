@@ -16,11 +16,12 @@ namespace SuperHaxagon {
 		explicit Load(Game& game);
 		Load(Load&) = delete;
 
-		void load(std::ifstream& file, const std::string& path, Location location);
+		void load(std::ifstream& file, Location location);
 
 		std::unique_ptr<State> update() override;
 		void enter() override;
-		void draw() override {};
+		void drawTop() override {};
+		void drawBot() override {};
 
 	private:
 		Game& game;

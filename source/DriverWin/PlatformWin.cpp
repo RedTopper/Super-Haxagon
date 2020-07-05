@@ -7,20 +7,31 @@
 
 namespace SuperHaxagon {
 	PlatformWin::PlatformWin() :
-		window(sf::VideoMode(200, 200), "SFML works!") {
+		window(
+			sf::VideoMode(
+				(int)(sf::VideoMode::getDesktopMode().width * 0.75),
+				(int)(sf::VideoMode::getDesktopMode().height * 0.75)
+			),
+			"Super Haxagon",
+			sf::Style::Default
+		) {
+
+		window.setVerticalSyncEnabled(true);
 		loaded = true;
 	}
 
-	PlatformWin::~PlatformWin() {
-		// TODO
-	}
+	PlatformWin::~PlatformWin() = default;
 
 	bool PlatformWin::loop() {
-		return loaded;
+		sf::Event event{};
+		while (window.pollEvent(event)) {
+			if (event.type == sf::Event::Closed) window.close();
+		}
+		return loaded && window.isOpen();
 	}
 
-	bool PlatformWin::hasScreen(Screen test) {
-		return test == Screen::TOP;
+	bool PlatformWin::canUpdate() {
+		return false;
 	}
 
 	std::string PlatformWin::getPath(const std::string& partial) {
@@ -68,7 +79,22 @@ namespace SuperHaxagon {
 	}
 
 	Point PlatformWin::getScreenDim() const {
-		return {};
+		Point point{};
+		point.x = window.getSize().x;
+		point.y = window.getSize().y;
+		return point;
+	}
+
+	void PlatformWin::screenBegin() {
+
+	}
+
+	void PlatformWin::screenSwap() {
+
+	}
+
+	void PlatformWin::screenFinalize() {
+
 	}
 
 	void PlatformWin::drawRect(const Color& color, const Point& point, const Point& size) const {

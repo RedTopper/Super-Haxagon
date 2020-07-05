@@ -29,10 +29,6 @@ namespace SuperHaxagon {
 		return aptMainLoop();
 	}
 
-	bool Platform3DS::hasScreen(Screen test) {
-		return test == Screen::TOP || test == Screen::BOTTOM;
-	}
-
 	std::string Platform3DS::getPath(const std::string& partial) {
 		return std::string("sdmc:/3ds/data/haxagon") + partial;
 	}

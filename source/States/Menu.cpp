@@ -56,9 +56,7 @@ namespace SuperHaxagon {
 		return nullptr;
 	}
 
-	void Menu::draw() {
-		platform.setScreen(Screen::TOP);
-
+	void Menu::drawTop() {
 		double percentRotated = (double)(transitionFrame) / (double)FRAMES_PER_TRANSITION;
 		double rotation = percentRotated * TAU/6.0;
 
@@ -150,13 +148,12 @@ namespace SuperHaxagon {
 		large.draw(COLOR_WHITE, posTitle, Alignment::LEFT, levelCur.getName());
 		small.draw(COLOR_GREY, posDifficulty, Alignment::LEFT, levelCur.getDifficulty());
 		small.draw(COLOR_GREY, posMode, Alignment::LEFT, levelCur.getMode());
-		small.draw(COLOR_GREY, posCreator, Alignment::LEFT, levelCur.getCreator());
+
+		if (levelCur.getLocation() == Location::EXTERNAL)
+			small.draw(COLOR_GREY, posCreator, Alignment::LEFT, levelCur.getCreator());
+
 		small.draw(COLOR_WHITE, posTime, Alignment::LEFT, scoreTime);
-
-		game.clearBotAndSwitchScreens();
-
-		Point posLocation = {4, 4};
-		if(levelCur.getLocation() == Location::EXTERNAL) small.draw(COLOR_WHITE, posLocation, Alignment::LEFT, "EXTERNAL");
-		if(levelCur.getLocation() == Location::INTERNAL) small.draw(COLOR_WHITE, posLocation, Alignment::LEFT, "INTERNAL");
 	}
+
+	void Menu::drawBot() {}
 }

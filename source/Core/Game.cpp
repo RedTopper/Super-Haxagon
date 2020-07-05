@@ -32,8 +32,13 @@ namespace SuperHaxagon {
 		state = std::make_unique<Load>(*this);
 		state->enter();
 		while(platform.loop() && !dynamic_cast<Quit*>(state.get())) {
-			auto next = state->update();
-			state->draw();
+			std::unique_ptr<State> next;
+			if (platform.canUpdate()) next = state->update();
+			platform.screenBegin();
+			state->drawTop();
+			platform.screenSwap();
+			state->drawBot();
+			platform.screenFinalize();
 			if (next) {
 				state->exit();
 				state = std::move(next);
@@ -145,16 +150,6 @@ namespace SuperHaxagon {
 		triangle[1] = points[2];
 		triangle[2] = points[3];
 		platform.drawTriangle(color, triangle);
-	}
-
-	void Game::clearBotAndSwitchScreens() const {
-		// Don't want to clear the screen if there is no bottom screen.
-		if (platform.hasScreen(Screen::BOTTOM)) {
-			platform.setScreen(Screen::BOTTOM);
-			Point position = {0,0};
-			Point size = platform.getScreenDim();
-			platform.drawRect(COLOR_BLACK, position, size);
-		}
 	}
 
 	Point Game::getScreenCenter() const {

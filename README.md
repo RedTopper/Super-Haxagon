@@ -1,6 +1,6 @@
 <p align="center"><img style="text-align:center" src="./media/rendersmall.png" alt="Banner Render" title="Banner Render"/></p>
 
-# ![Icon](./resource/icon3ds.png "Icon") Super-Haxagon
+# ![Icon](./resource/icon-3ds.png "Icon") Super-Haxagon
 
 Super Haxagon is a [Super Hexagon](http://superhexagon.com/) clone for the 3DS. It runs full speed on the old 3DS, new 3DS, and in [citra-emu/citra](https://github.com/citra-emu/citra). You'll need ctrulib, citro3d, and sf2dlib to build this application.
 When downloading the source, make sure to clone with `--recursive` to grab all of the included dependencies. Finally, remember

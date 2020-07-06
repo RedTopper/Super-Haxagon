@@ -19,7 +19,9 @@ namespace SuperHaxagon {
 		Font(Font&) = delete;
 		virtual ~Font() = default;
 
-		virtual int getHeight() const = 0;
+		virtual void setScale(double scale) = 0;
+		virtual double getHeight() const = 0;
+		virtual double getWidth(const std::string& text) const = 0;
 		virtual void draw(const Color& color, const Point& position, Alignment alignment, std::string text) const = 0;
 	};
 }

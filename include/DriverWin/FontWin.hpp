@@ -12,17 +12,20 @@ namespace SuperHaxagon {
 
 	class FontWin : public Font {
 	public:
-		FontWin(PlatformWin& platform, const std::string& path, int size);
+		FontWin(PlatformWin& platform, const std::string& path, double size);
 		~FontWin() override;
 
-		int getHeight() const override;
+		void setScale(double scale) override;
+		double getHeight() const override;
+		double getWidth(const std::string& text) const override;
 		void draw(const Color& color, const Point& position, Alignment alignment, std::string text) const override;
 
 	private:
 		PlatformWin& platform;
 		sf::Font font;
 		bool loaded = false;
-		int size;
+		double scale;
+		double size;
 	};
 }
 

@@ -105,20 +105,41 @@ namespace SuperHaxagon {
 		game.drawRegular(BG3, focus, SCALE_HEX_LENGTH * scale - SCALE_HEX_BORDER * scale, rotation, 6.0);
 		game.drawCursor(FG, focus, TAU / 4.0, 0, scale); //Draw cursor fixed quarter circle, no movement.
 
-		// Top rectangle and triangle
-		int TRIANGLE_WIDTH = 70;
-		int GAP_FROM_RIGHT_SIDE = 20;
+		// Top triangle and spacing constants
+		double altScale = ((scale - 1) / 2 + 1);
+		double TRIANGLE_WIDTH = 70 * altScale;
+		double TRIANGLE_WIDTH_SCORE = 24 * altScale;
+		double PAD = 4;
+
+		auto& large = game.getFontLarge();
+		auto& small = game.getFontSmall();
+
+		// Actual text
+		auto scoreTime = "BEST: " + getTime(levelCur.getHighScore());
+		auto diff = "DIFF: " + levelCur.getDifficulty();
+		auto mode = "MODE: " + levelCur.getMode();
+		auto auth = "AUTH: " + levelCur.getCreator();
+		auto renderCreator = levelCur.getLocation() == Location::EXTERNAL;
+		large.setScale(scale);
+		small.setScale(scale);
 
 		// Text positions
-		Point posTitle = {4, 2};
-		Point posDifficulty = {4, posTitle.y + 32 + 1};
-		Point posMode = {4, posDifficulty.y + 16 + 1};
-		Point posCreator = {4, posMode.y + 16 + 1};
-		Point posTime = {4, screen.y - 18};
+		Point posTitle = {PAD, PAD};
+		Point posDifficulty = {PAD, posTitle.y + large.getHeight() + PAD};
+		Point posMode = {PAD, posDifficulty.y + small.getHeight() + PAD};
+		Point posCreator = {PAD, posMode.y + (renderCreator ? small.getHeight() + PAD : 0)};
+		Point posTime = {PAD, screen.y - small.getHeight() - PAD};
 
 		// Triangle positions
 		Point infoPos = {0, 0};
-		Point infoSize = {screen.x - TRIANGLE_WIDTH - GAP_FROM_RIGHT_SIDE, posCreator.y + 16 + 3};
+		Point infoSize = {std::max({
+			large.getWidth(levelCur.getName()),
+			small.getWidth(diff),
+			small.getWidth(mode),
+			small.getWidth(auth),
+		}) + PAD, posCreator.y + small.getHeight() + PAD};
+
+		// It looks like the original game had triangles flipped....
 		std::array<Point, 3> infoTriangle = {
 			Point{infoSize.x, platform.getScreenDim().y - infoSize.y},
 			Point{infoSize.x, platform.getScreenDim().y},
@@ -129,29 +150,23 @@ namespace SuperHaxagon {
 		platform.drawTriangle(COLOR_TRANSPARENT, infoTriangle);
 
 		// Score block with triangle
-		Point timePos = {0, posTime.y - 3};
-		Point timeSize = {10/*chars?*/ * 16 + 4, 16 + 7};
+		Point timePos = {0, posTime.y - PAD};
+		Point timeSize = {small.getWidth(scoreTime) + PAD * 2, small.getHeight() + PAD * 2};
 		std::array<Point, 3> timeTriangle = {
-			Point{timeSize.x, timeSize.y - 3},
-			Point{timeSize.x, - 1},    //why does this have to be -1?
-			Point{timeSize.x + 18, -1} //I mean, it works...
+			Point{timeSize.x, timeSize.y},
+			Point{timeSize.x, 0},
+			Point{timeSize.x + TRIANGLE_WIDTH_SCORE, 0}
 		};
 
 		platform.drawRect(COLOR_TRANSPARENT, timePos, timeSize);
 		platform.drawTriangle(COLOR_TRANSPARENT, timeTriangle);
 
-		auto& large = game.getFontLarge();
-		auto& small = game.getFontSmall();
-
-		// Actual text
-		auto scoreTime = std::string("BEST: ") + getTime(levelCur.getHighScore());
-
 		large.draw(COLOR_WHITE, posTitle, Alignment::LEFT, levelCur.getName());
-		small.draw(COLOR_GREY, posDifficulty, Alignment::LEFT, levelCur.getDifficulty());
-		small.draw(COLOR_GREY, posMode, Alignment::LEFT, levelCur.getMode());
+		small.draw(COLOR_GREY, posDifficulty, Alignment::LEFT, diff);
+		small.draw(COLOR_GREY, posMode, Alignment::LEFT, mode);
 
-		if (levelCur.getLocation() == Location::EXTERNAL)
-			small.draw(COLOR_GREY, posCreator, Alignment::LEFT, levelCur.getCreator());
+		if (renderCreator)
+			small.draw(COLOR_GREY, posCreator, Alignment::LEFT, auth);
 
 		small.draw(COLOR_WHITE, posTime, Alignment::LEFT, scoreTime);
 	}

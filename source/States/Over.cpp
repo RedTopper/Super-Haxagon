@@ -45,7 +45,7 @@ namespace SuperHaxagon {
 			scores.write(reinterpret_cast<char*>(&highSc), sizeof(highSc));
 		}
 
-		scores << Load::SCORE_FOOTER;
+		scores.write(Load::SCORE_FOOTER, strlen(Load::SCORE_FOOTER));
 	}
 
 	std::unique_ptr<State> Over::update(double dilation) {
@@ -82,8 +82,8 @@ namespace SuperHaxagon {
 		const auto& large = game.getFontLarge();
 		const auto& small = game.getFontSmall();
 		double width = platform.getScreenDim().x;
-		int heightLarge = large.getHeight();
-		int heightSmall = small.getHeight();
+		double heightLarge = large.getHeight();
+		double heightSmall = small.getHeight();
 
 		Point posGameOver = {width / 2, 4};
 		Point posTime = {width / 2, posGameOver.y + heightLarge + 4};

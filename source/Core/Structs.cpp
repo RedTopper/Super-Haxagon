@@ -107,4 +107,10 @@ namespace SuperHaxagon {
 		delete[] read;
 		return ret;
 	}
+
+	void writeString(std::ofstream& file, const std::string& str) {
+		uint32_t len = str.length();
+		file.write(reinterpret_cast<char*>(&len), sizeof(len));
+		file.write(str.c_str(), str.length());
+	}
 }

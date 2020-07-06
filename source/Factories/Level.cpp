@@ -173,9 +173,9 @@ namespace SuperHaxagon {
 			throw malformed("level", "level header invalid!");
 
 		name = readString(file, "level name");
-		difficulty = "DIFF: " + readString(file, name + " level difficulty");
-		mode = "MODE: " + readString(file, name + " level mode");
-		creator = "CREATOR: " + readString(file, name + " level creator");
+		difficulty = readString(file, name + " level difficulty");
+		mode = readString(file, name + " level mode");
+		creator = readString(file, name + " level creator");
 		music = "/" + readString(file, name + " level music");
 
 		int numColorsBG1 = read32(file, 1, 512, "level background 1");

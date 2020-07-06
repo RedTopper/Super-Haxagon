@@ -1,3 +1,5 @@
+#include <cstring>
+
 #include "Core/Game.hpp"
 #include "Driver/Font.hpp"
 #include "Factories/Level.hpp"
@@ -5,6 +7,7 @@
 #include "States/Over.hpp"
 #include "States/Play.hpp"
 #include "States/Menu.hpp"
+#include "States/Load.hpp"
 
 namespace SuperHaxagon {
 
@@ -21,6 +24,28 @@ namespace SuperHaxagon {
 
 	void Over::enter() {
 		platform.playSFX(game.getSfxOver());
+
+		std::ofstream scores(platform.getPath("/scores.db"), std::ios::out | std::ios::binary);
+
+		if (!scores) {
+			std::cout << "cannot open score db for write" << std::endl;
+			return;
+		}
+
+		scores.write(Load::SCORE_HEADER, strlen(Load::SCORE_HEADER));
+		uint32_t levels = game.getLevels().size();
+		scores.write(reinterpret_cast<char*>(&levels), sizeof(levels));
+
+		for (const auto& lev : game.getLevels()) {
+			writeString(scores, lev->getName());
+			writeString(scores, lev->getDifficulty());
+			writeString(scores, lev->getMode());
+			writeString(scores, lev->getCreator());
+			uint32_t highSc = lev->getHighScore();
+			scores.write(reinterpret_cast<char*>(&highSc), sizeof(highSc));
+		}
+
+		scores << Load::SCORE_FOOTER;
 	}
 
 	std::unique_ptr<State> Over::update(double dilation) {

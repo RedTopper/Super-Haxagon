@@ -116,6 +116,11 @@ namespace SuperHaxagon {
 	 * Reads a string from the binary file
 	 */
 	std::string readString(std::ifstream& file, const std::string& noun);
+
+	/**
+	 * Writes a string with a length to a binary file
+	 */
+	void writeString(std::ofstream& file, const std::string& str);
 }
 
 #endif //SUPER_HAXAGON_STRUCTS_HPP

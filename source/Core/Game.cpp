@@ -90,7 +90,7 @@ namespace SuperHaxagon {
 		}
 	}
 
-	void Game::drawRegular(const Color& color, const Point& focus, int height, double rotation, double sides) const {
+	void Game::drawRegular(const Color& color, const Point& focus, double height, double rotation, double sides) const {
 		int exactSides = std::ceil(sides);
 
 		std::vector<Point> edges;

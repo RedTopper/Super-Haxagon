@@ -57,8 +57,8 @@ namespace SuperHaxagon {
 		std::array<Point, 4> quad{};
 		double tHeight = height;
 		double tDistance = distance + offset;
-		if(distance < hexLength - 2.0) {//so the distance is never negative as it enters.
-			tHeight -= hexLength - 2.0 - distance;
+		if(tDistance < hexLength - 2.0) {//so the distance is never negative as it enters.
+			tHeight -= hexLength - 2.0 - tDistance;
 			tDistance = hexLength - 2.0; //Should never be 0!!!
 		}
 

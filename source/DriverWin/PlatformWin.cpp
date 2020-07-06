@@ -118,7 +118,7 @@ namespace SuperHaxagon {
 	}
 
 	void PlatformWin::drawTriangle(const Color& color, const std::array<Point, 3>& points) {
-		int height = getScreenDim().y;
+		double height = getScreenDim().y;
 		sf::ConvexShape convex;
 		convex.setPointCount(3);
 		convex.setPoint(0, sf::Vector2f(points[0].x, height - points[0].y));

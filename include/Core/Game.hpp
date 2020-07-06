@@ -72,7 +72,7 @@ namespace SuperHaxagon {
 		 * Draws a regular polygon at some point focus. Useful for generating
 		 * the regular polygon in the center of the screen.
 		 */
-		void drawRegular(const Color& color, const Point& focus, int height, double rotation, double sides) const;
+		void drawRegular(const Color& color, const Point& focus, double height, double rotation, double sides) const;
 
 		/**
 		 * Draws the little cursor in the center of the screen controlled by a human.

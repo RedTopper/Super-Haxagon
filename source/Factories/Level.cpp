@@ -99,7 +99,7 @@ namespace SuperHaxagon {
 		Color BG2 = interpolateColor(factory.getColorsBG2()[indexBG2], factory.getColorsBG2()[nextIndexBG2], percentTween);
 
 		// Fix for triangle levels
-		double diagonal = SCALE_BASE_DISTANCE * scale * (sidesTween >= 3 && sidesTween < 4 ?  2 : 1);
+		double diagonal = sidesTween >= 3 && sidesTween < 4 ?  2 : 1;
 
 		Point center = game.getScreenCenter();
 		Point shadow = game.getShadowOffset();

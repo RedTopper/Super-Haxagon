@@ -75,8 +75,8 @@ namespace SuperHaxagon {
 		Point point = {0,0};
 		double width = (double)side * TAU/sides + overflow;
 		if(width > TAU + WALL_OVERFLOW) width = TAU + WALL_OVERFLOW;
-		point.x = lround(distance * std::cos(rotation + width) + (double)(focus.x));
-		point.y = lround(distance * std::sin(rotation + width) + (double)(focus.y));
+		point.x = distance * std::cos(rotation + width) + (double)(focus.x);
+		point.y = distance * std::sin(rotation + width) + (double)(focus.y);
 		return point;
 	}
 

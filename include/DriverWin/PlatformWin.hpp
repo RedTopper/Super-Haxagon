@@ -4,10 +4,13 @@
 
 #include <SFML/Graphics.hpp>
 #include <SFML/Graphics/RenderTarget.hpp>
+#include <deque>
 
 #include "Driver/Platform.hpp"
 
 namespace SuperHaxagon {
+	class Player;
+
 	class PlatformWin : public Platform {
 	public:
 		PlatformWin();
@@ -42,6 +45,8 @@ namespace SuperHaxagon {
 		double delta = 0.0;
 		sf::Clock clock;
 		std::unique_ptr<sf::RenderWindow> window;
+		std::deque<std::unique_ptr<Player>> sfx;
+		std::unique_ptr<Player> bgm;
 	};
 }
 

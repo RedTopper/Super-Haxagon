@@ -59,7 +59,7 @@ namespace SuperHaxagon {
 		/**
 		 * Draws the background of the screen (the radiating colors part)
 		 */
-		void drawBackground(const Color& color1, const Color& color2, const Point& focus, double height, double rotation, double sides) const;
+		void drawBackground(const Color& color1, const Color& color2, const Point& focus, double multiplier, double rotation, double sides) const;
 
 		/**
 		 * Draws a regular polygon at some point focus. Useful for generating

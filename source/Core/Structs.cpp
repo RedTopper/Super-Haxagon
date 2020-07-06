@@ -21,8 +21,8 @@ namespace SuperHaxagon {
 
 	Point calcPoint(const Point& focus, double rotation, double offset, double distance) {
 		Point point = {0,0};
-		point.x = lround(distance * cos(rotation + offset) + focus.x);
-		point.y = lround(distance * sin(rotation + offset) + focus.y);
+		point.x = distance * cos(rotation + offset) + focus.x;
+		point.y = distance * sin(rotation + offset) + focus.y;
 		return point;
 	}
 
@@ -61,10 +61,12 @@ namespace SuperHaxagon {
 	}
 
 	bool readCompare(std::ifstream& file, const std::string& str) {
-		char read[str.length() + 1];
+		char* read = new char[str.length() + 1];
 		file.read(read, str.length());
 		read[str.length()] = '\0';
-		return read == str;
+		bool same = read == str;
+		delete[] read;
+		return same;
 	}
 
 	uint32_t read32(std::ifstream& file, uint32_t min, uint32_t max, const std::string& noun) {
@@ -98,9 +100,11 @@ namespace SuperHaxagon {
 
 	std::string readString(std::ifstream& file, const std::string& noun) {
 		int length = read32(file, 1, 300, noun + " string");
-		char read[length + 1];
+		char* read = new char[length + 1];
 		file.read(read, length);
 		read[length] = '\0';
-		return std::string(read);
+		auto ret = std::string(read);
+		delete[] read;
+		return ret;
 	}
 }

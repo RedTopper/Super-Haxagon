@@ -19,7 +19,8 @@ namespace SuperHaxagon {
 	}
 
 	std::unique_ptr<State> Play::update(double dilation) {
-		level->update(game.getTwister(), SCALE_HEX_LENGTH, SCALE_BASE_DISTANCE, dilation);
+		double maxRenderDistance = SCALE_BASE_DISTANCE * (game.getScreenDimMax() / 240);
+		level->update(game.getTwister(), SCALE_HEX_LENGTH, maxRenderDistance, dilation);
 
 		// Button presses
 		auto pressed = platform.getPressed();

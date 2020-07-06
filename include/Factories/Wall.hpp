@@ -12,7 +12,7 @@ namespace SuperHaxagon {
 
 		//Overflow so you don't get glitched lines between hexagons.
 		//This is really just some arbitrary number so yeah...
-		static constexpr double WALL_OVERFLOW = TAU/900.0;
+		static constexpr double WALL_OVERFLOW = TAU/1200.0;
 
 		Wall(double distance, double height, int side);
 

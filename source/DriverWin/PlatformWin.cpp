@@ -2,19 +2,20 @@
 #include <algorithm>
 
 #include "DriverWin/PlatformWin.hpp"
+#include "DriverWin/PlayerWin.hpp"
 #include "DriverWin/AudioWin.hpp"
 #include "DriverWin/FontWin.hpp"
 
 namespace SuperHaxagon {
-	PlatformWin::PlatformWin() : clock() {
+	PlatformWin::PlatformWin() : clock(), bgm(nullptr) {
 		clock.restart();
 
 		sf::ContextSettings settings;
 		settings.antialiasingLevel = 8;
 
 		sf::VideoMode video(
-			400,//(int)(sf::VideoMode::getDesktopMode().width * 0.75),
-			240//(int)(sf::VideoMode::getDesktopMode().height * 0.75)
+			(int)(sf::VideoMode::getDesktopMode().width * 0.75),
+			(int)(sf::VideoMode::getDesktopMode().height * 0.75)
 		);
 
 		window = std::make_unique<sf::RenderWindow>(video, "Super Haxagon", sf::Style::Default, settings);
@@ -68,15 +69,31 @@ namespace SuperHaxagon {
 	}
 
 	void PlatformWin::playSFX(Audio& audio) {
+		for (auto it = sfx.begin(); it != sfx.end();) {
+			auto& playing = *it;
+			if (playing->isDone()) {
+				it = sfx.erase(it);
+			} else {
+				it++;
+			}
+		}
 
+		auto player = audio.instantiate();
+		player->setLoop(false);
+		player->play();
+		sfx.emplace_back(std::move(player));
 	}
 
 	void PlatformWin::playBGM(Audio& audio) {
-
+		if (bgm) bgm->stop();
+		bgm = audio.instantiate();
+		bgm->setChannel(0);
+		bgm->setLoop(true);
+		bgm->play();
 	}
 
 	void PlatformWin::stopBGM() {
-
+		if (bgm) bgm->stop();
 	}
 
 	Buttons PlatformWin::getPressed() {
@@ -97,7 +114,7 @@ namespace SuperHaxagon {
 	}
 
 	void PlatformWin::screenBegin() {
-		window->clear(sf::Color::White);
+		window->clear(sf::Color::Black);
 	}
 
 	void PlatformWin::screenSwap() {
@@ -112,7 +129,7 @@ namespace SuperHaxagon {
 		sf::RectangleShape rectangle(sf::Vector2f(size.x, size.y));
 		sf::Color sfColor{color.r, color.g, color.b, color.a};
 		rectangle.setFillColor(sfColor);
-		rectangle.setPosition((float)point.x, (float)point.y);
+		rectangle.setPosition((float)round(point.x), (float)round(point.y));
 		window->draw(rectangle);
 	}
 
@@ -120,9 +137,9 @@ namespace SuperHaxagon {
 		double height = getScreenDim().y;
 		sf::ConvexShape convex;
 		convex.setPointCount(3);
-		convex.setPoint(0, sf::Vector2f(points[0].x, height - points[0].y));
-		convex.setPoint(1, sf::Vector2f(points[1].x, height - points[1].y));
-		convex.setPoint(2, sf::Vector2f(points[2].x, height - points[2].y));
+		convex.setPoint(0, sf::Vector2f((float)round(points[0].x), (float)round(height - points[0].y)));
+		convex.setPoint(1, sf::Vector2f((float)round(points[1].x), (float)round(height - points[1].y)));
+		convex.setPoint(2, sf::Vector2f((float)round(points[2].x), (float)round(height - points[2].y)));
 		sf::Color sfColor{color.r, color.g, color.b, color.a};
 		convex.setFillColor(sfColor);
 		convex.setPosition(0, 0);

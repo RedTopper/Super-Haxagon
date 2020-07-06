@@ -2,6 +2,8 @@
 #define SUPER_HAXAGON_AUDIO_WIN_HPP
 #define SFML_STATIC
 
+#include <SFML/Audio/SoundBuffer.hpp>
+
 #include "Driver/Audio.hpp"
 
 namespace SuperHaxagon {
@@ -11,6 +13,10 @@ namespace SuperHaxagon {
 		~AudioWin();
 
 		std::unique_ptr<Player> instantiate() override;
+
+	private:
+		sf::SoundBuffer buffer;
+		bool loaded = false;
 	};
 }
 

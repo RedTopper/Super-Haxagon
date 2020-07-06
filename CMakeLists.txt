@@ -41,7 +41,9 @@ if(PLAT STREQUAL "WINDOWS")
             source/Core/Main.cpp
             source/Core/Structs.cpp)
 
-    target_link_libraries(SuperHaxagon sfml-graphics-s sfml-window-s sfml-system-s winmm gdi32 opengl32 freetype)
+    target_link_libraries(SuperHaxagon
+            sfml-graphics-s sfml-window-s sfml-audio-s sfml-system-s
+            winmm openal32 gdi32 opengl32 freetype flac vorbisenc vorbisfile vorbis ogg)
 
 elseif(PLAT STREQUAL "3DS")
     add_compile_definitions(_3DS)

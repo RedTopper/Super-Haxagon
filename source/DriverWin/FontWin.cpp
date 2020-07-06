@@ -3,7 +3,7 @@
 
 namespace SuperHaxagon {
 	FontWin::FontWin(PlatformWin& platform, const std::string& path, int size) : platform(platform), size(size) {
-		font.loadFromFile(path + ".ttf");
+		loaded = font.loadFromFile(path + ".ttf");
 	}
 
 	int FontWin::getHeight() const {
@@ -11,6 +11,7 @@ namespace SuperHaxagon {
 	}
 
 	void FontWin::draw(const Color& color, const Point& position, Alignment alignment, std::string text) const {
+		if (!loaded) return;
 		sf::Text sfText;
 		sf::Vector2f sfPosition;
 		sfPosition.y = position.y;

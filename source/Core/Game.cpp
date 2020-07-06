@@ -58,7 +58,9 @@ namespace SuperHaxagon {
 		levels.emplace_back(std::move(level));
 	}
 
-	void Game::drawBackground(const Color& color1, const Color& color2, const Point& focus, double height, double rotation, double sides) const {
+	void Game::drawBackground(const Color& color1, const Color& color2, const Point& focus, double multiplier, double rotation, double sides) const {
+		// The game used to be based off a 3DS which has a bottom screen of 240px
+		double maxRenderDistance = SCALE_BASE_DISTANCE * (getScreenDimMax() / 240);
 		int exactSides = std::ceil(sides);
 
 		//solid background.
@@ -71,8 +73,8 @@ namespace SuperHaxagon {
 		edges.reserve(exactSides);
 
 		for(int i = 0; i < exactSides; i++) {
-			edges[i].x = lround(height * cos(rotation + (double)i * TAU/sides) + (double)(focus.x));
-			edges[i].y = lround(height * sin(rotation + (double)i * TAU/sides) + (double)(focus.y));
+			edges[i].x = multiplier * maxRenderDistance * cos(rotation + (double)i * TAU / sides) + (double)(focus.x);
+			edges[i].y = multiplier * maxRenderDistance * sin(rotation + (double)i * TAU / sides) + (double)(focus.y);
 		}
 
 		std::array<Point, 3> triangle{};
@@ -101,8 +103,8 @@ namespace SuperHaxagon {
 
 		// Calculate the triangle backwards so it overlaps correctly.
 		for(int i = 0; i < exactSides; i++) {
-			edges[i].x = lround(height * cos(rotation + (double)i * TAU/sides) + (double)(focus.x));
-			edges[i].y = lround(height * sin(rotation + (double)i * TAU/sides) + (double)(focus.y));
+			edges[i].x = height * cos(rotation + (double)i * TAU/sides) + (double)(focus.x);
+			edges[i].y = height * sin(rotation + (double)i * TAU/sides) + (double)(focus.y);
 		}
 
 		std::array<Point, 3> triangle{};
@@ -140,7 +142,6 @@ namespace SuperHaxagon {
 	void Game::drawWalls(const Color& color, const Point& focus, const Wall& wall, double rotation, double sides, double offset, double scale) const {
 		double distance = wall.getDistance() + offset;
 		if(distance + wall.getHeight() < SCALE_HEX_LENGTH) return; //TOO_CLOSE;
-		if(distance > SCALE_BASE_DISTANCE) return; //TOO_FAR;
 		if(wall.getSide() >= sides) return; //NOT_IN_RANGE
 		drawTrap(color, wall.calcPoints(focus, rotation, sides, offset, scale));
 	}

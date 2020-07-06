@@ -20,6 +20,7 @@ namespace SuperHaxagon {
 	private:
 		PlatformWin& platform;
 		sf::Font font;
+		bool loaded = false;
 		int size;
 	};
 }

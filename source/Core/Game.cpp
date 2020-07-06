@@ -34,16 +34,18 @@ namespace SuperHaxagon {
 		while(platform.loop() && !dynamic_cast<Quit*>(state.get())) {
 			std::unique_ptr<State> next;
 			if (platform.canUpdate()) next = state->update();
+			if (next) {
+				state->exit();
+				state = std::move(next);
+				state->enter();
+				state->update();
+			}
+
 			platform.screenBegin();
 			state->drawTop();
 			platform.screenSwap();
 			state->drawBot();
 			platform.screenFinalize();
-			if (next) {
-				state->exit();
-				state = std::move(next);
-				state->enter();
-			}
 		}
 
 		return 0;
@@ -134,11 +136,10 @@ namespace SuperHaxagon {
 
 	void Game::drawWalls(const Color& color, const Point& focus, const Wall& wall, double rotation, double sides, double offset) const {
 		double distance = wall.getDistance() + offset;
-		double height = wall.getHeight();
-		if(distance + height < getHexLength()) return; //TOO_CLOSE;
+		if(distance + wall.getHeight() < getHexLength()) return; //TOO_CLOSE;
 		if(distance > getRenderDistance()) return; //TOO_FAR;
 		if(wall.getSide() >= sides) return; //NOT_IN_RANGE
-		drawTrap(color, wall.calcPoints(focus, rotation, sides, getHexLength()));
+		drawTrap(color, wall.calcPoints(focus, rotation, sides, getHexLength(), offset));
 	}
 
 	void Game::drawTrap(Color color, const std::array<Point, 4>& points) const {
@@ -158,8 +159,8 @@ namespace SuperHaxagon {
 	}
 
 	Point Game::getShadowOffset() const {
-		int min = getScreenDimMin();
-		return {min/60, min/60};
+		double min = getScreenDimMin();
+		return {min/60, -min/60};
 	}
 }
 

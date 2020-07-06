@@ -2,6 +2,7 @@
 #define SUPER_HAXAGON_PLATFORM_WIN_HPP
 #define SFML_STATIC
 #include <SFML/Graphics.hpp>
+#include <SFML/Graphics/RenderTarget.hpp>
 
 #include "Driver/Platform.hpp"
 
@@ -23,23 +24,22 @@ namespace SuperHaxagon {
 		void playBGM(Audio& audio) override;
 		void stopBGM() override;
 
-		void pollButtons() override;
-		Buttons getDown() override;
 		Buttons getPressed() override;
 		Point getScreenDim() const override;
 
 		void screenBegin() override;
 		void screenSwap() override;
 		void screenFinalize() override;
-		void drawRect(const Color& color, const Point& point, const Point& size) const override;
-		void drawTriangle(const Color& color, const std::array<Point, 3>& points) const override;
+		void drawRect(const Color& color, const Point& point, const Point& size) override;
+		void drawTriangle(const Color& color, const std::array<Point, 3>& points) override;
 
 		std::unique_ptr<Twist> getTwister() override;
 
 	private:
 		bool loaded = false;
+		sf::Clock clock;
+		std::unique_ptr<sf::RenderWindow> window;
 
-		sf::RenderWindow window;
 	};
 }
 

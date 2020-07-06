@@ -36,19 +36,19 @@ namespace SuperHaxagon {
 		Font& getFontSmall() const {return *small;}
 		Font& getFontLarge() const {return *large;}
 
-		int getRenderDistance() const {return getScreenDimMax();}
-		int getHexLength() const {return getScreenDimMin() / 10;}
-		int getHexLengthBorder() const {return getScreenDimMin() / 60;}
-		int getHumanPadding() const {return getScreenDimMin() / 48;}
-		int getHumanHeight() const {return getScreenDimMin() / 48;}
+		double getRenderDistance() const {return getScreenDimMax();}
+		double getHexLength() const {return getScreenDimMin() / 10;}
+		double getHexLengthBorder() const {return getScreenDimMin() / 60;}
+		double getHumanPadding() const {return getScreenDimMin() / 48;}
+		double getHumanHeight() const {return getScreenDimMin() / 48;}
 		static double getHumanWidth() {return TAU/30.0;}
 
-		int getScreenDimMax() const {
+		double getScreenDimMax() const {
 			auto size = platform.getScreenDim();
 			return std::max(size.x, size.y);
 		}
 
-		int getScreenDimMin() const {
+		double getScreenDimMin() const {
 			auto size = platform.getScreenDim();
 			return std::min(size.x, size.y);
 		}

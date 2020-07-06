@@ -37,23 +37,26 @@ namespace SuperHaxagon {
 		if(cursorPos >= rightSideRads && cursorPos <= leftSideRads) {
 			return Movement::DEAD;
 		}
+
 		if((leftRotStep > rightSideRads && leftRotStep < leftSideRads) ||
 		   (leftRotStep > rightSideRadsNextTau && leftRotStep < leftSideRadsNextTau) ||
 		   (leftRotStep > rightSideRadsLastTau && leftRotStep < leftSideRadsLastTau))  {
 			return Movement::CANNOT_MOVE_LEFT;
 		}
+
 		if((rightRotStep < leftSideRads && rightRotStep > rightSideRads) ||
 		   (rightRotStep < leftSideRadsNextTau && rightRotStep > rightSideRadsNextTau) ||
 		   (rightRotStep < leftSideRadsLastTau && rightRotStep > rightSideRadsLastTau)) {
 			return Movement::CANNOT_MOVE_RIGHT;
 		}
+
 		return Movement::CAN_MOVE;
 	}
 
-	std::array<Point, 4> Wall::calcPoints(const Point& focus, double rotation, double sides, double hexLength) const {
+	std::array<Point, 4> Wall::calcPoints(const Point& focus, double rotation, double sides, double hexLength, double offset) const {
 		std::array<Point, 4> quad{};
 		double tHeight = height;
-		double tDistance = distance;
+		double tDistance = distance + offset;
 		if(distance < hexLength - 2.0) {//so the distance is never negative as it enters.
 			tHeight -= hexLength - 2.0 - distance;
 			tDistance = hexLength - 2.0; //Should never be 0!!!
@@ -87,7 +90,7 @@ namespace SuperHaxagon {
 
 	std::unique_ptr<Wall> WallFactory::instantiate(double offsetDistance, int offsetSide, int sides) const {
 		int newSide = side + offsetSide;
-		newSide = newSide > sides ? newSide - sides : newSide;
+		newSide = newSide >= sides ? newSide - sides : newSide;
 		double newDistance = distance + offsetDistance;
 		double newHeight = height;
 		return std::make_unique<Wall>(newDistance, newHeight, newSide);

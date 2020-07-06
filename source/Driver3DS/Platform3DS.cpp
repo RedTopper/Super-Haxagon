@@ -71,20 +71,19 @@ namespace SuperHaxagon {
 		if (bgm) bgm->stop();
 	}
 
-	void Platform3DS::pollButtons() {
-		hidScanInput();
-	}
-
-	Buttons Platform3DS::getDown() {
-		return toButtons(hidKeysDown());
-	}
-
 	Buttons Platform3DS::getPressed() {
-		return toButtons(hidKeysHeld());
+		auto input = hidKeysDown();
+		Buttons buttons{};
+		buttons.select = (bool)(input & KEY_A);
+		buttons.back = (bool)(input & KEY_B);
+		buttons.quit = (bool)(input & KEY_START);
+		buttons.left = (bool)(input & (KEY_L | KEY_ZL | KEY_CSTICK_LEFT | KEY_CPAD_LEFT | KEY_DLEFT | KEY_Y));
+		buttons.right = (bool)(input & (KEY_R | KEY_ZR | KEY_CSTICK_RIGHT | KEY_CPAD_RIGHT | KEY_DRIGHT | KEY_X));
+		return buttons;
 	}
 
 	Point Platform3DS::getScreenDim() const {
-		return {screen == Screen::TOP ? 400 : 320, 240};
+		return {400, 240}; //TODO Update
 	}
 
 	void Platform3DS::drawRect(const Color& color, const Point& point, const Point& size) const {
@@ -101,15 +100,5 @@ namespace SuperHaxagon {
 		return std::make_unique<Twist>(
 				std::unique_ptr<std::seed_seq>(a)
 		);
-	}
-
-	Buttons Platform3DS::toButtons(u32 input) {
-		Buttons buttons{};
-		buttons.select = (bool)(input & KEY_A);
-		buttons.back = (bool)(input & KEY_B);
-		buttons.quit = (bool)(input & KEY_START);
-		buttons.left = (bool)(input & (KEY_L | KEY_ZL | KEY_CSTICK_LEFT | KEY_CPAD_LEFT | KEY_DLEFT | KEY_Y));
-		buttons.right = (bool)(input & (KEY_R | KEY_ZR | KEY_CSTICK_RIGHT | KEY_CPAD_RIGHT | KEY_DRIGHT | KEY_X));
-		return buttons;
 	}
 }

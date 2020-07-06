@@ -27,7 +27,7 @@ namespace SuperHaxagon {
 		level->rotate(GAME_OVER_ROT_SPEED);
 		level->clamp();
 
-		auto press = platform.getDown();
+		auto press = platform.getPressed();
 		if(press.quit) return std::make_unique<Quit>();
 
 		if(frames <= FRAMES_PER_GAME_OVER) {
@@ -54,7 +54,7 @@ namespace SuperHaxagon {
 	void Over::drawBot() {
 		const auto& large = game.getFontLarge();
 		const auto& small = game.getFontSmall();
-		int width = platform.getScreenDim().x;
+		double width = platform.getScreenDim().x;
 		int heightLarge = large.getHeight();
 		int heightSmall = small.getHeight();
 

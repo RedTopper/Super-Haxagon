@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.10)
 project(Super_Haxagon)
 
 set(CMAKE_CXX_STANDARD 14)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -pedantic")
 
 # Note:
 # If the platform is anything but windows, it won't compile.

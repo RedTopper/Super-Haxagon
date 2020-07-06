@@ -6,17 +6,19 @@
 #include "DriverWin/PlatformWin.hpp"
 
 namespace SuperHaxagon {
-	PlatformWin::PlatformWin() :
-		window(
-			sf::VideoMode(
-				(int)(sf::VideoMode::getDesktopMode().width * 0.75),
-				(int)(sf::VideoMode::getDesktopMode().height * 0.75)
-			),
-			"Super Haxagon",
-			sf::Style::Default
-		) {
+	PlatformWin::PlatformWin() : clock() {
+		clock.restart();
 
-		window.setVerticalSyncEnabled(true);
+		sf::ContextSettings settings;
+		settings.antialiasingLevel = 8;
+
+		sf::VideoMode video(
+			400,//(int)(sf::VideoMode::getDesktopMode().width * 0.75),
+			240//(int)(sf::VideoMode::getDesktopMode().height * 0.75)
+		);
+
+		window = std::make_unique<sf::RenderWindow>(video, "Super Haxagon", sf::Style::Default, settings);
+		window->setVerticalSyncEnabled(true);
 		loaded = true;
 	}
 
@@ -24,13 +26,25 @@ namespace SuperHaxagon {
 
 	bool PlatformWin::loop() {
 		sf::Event event{};
-		while (window.pollEvent(event)) {
-			if (event.type == sf::Event::Closed) window.close();
+		while (window->pollEvent(event)) {
+			if (event.type == sf::Event::Closed) {
+				window->close();
+			}
+
+			if (event.type == sf::Event::Resized) {
+				sf::FloatRect visibleArea(0, 0, event.size.width, event.size.height);
+				window->setView(sf::View(visibleArea));
+			}
 		}
-		return loaded && window.isOpen();
+		return loaded && window->isOpen();
 	}
 
 	bool PlatformWin::canUpdate() {
+		if (clock.getElapsedTime().asMicroseconds() > 16000) {
+			clock.restart();
+			return true;
+		}
+
 		return false;
 	}
 
@@ -66,43 +80,54 @@ namespace SuperHaxagon {
 
 	}
 
-	void PlatformWin::pollButtons() {
-
-	}
-
-	Buttons PlatformWin::getDown() {
-		return {};
-	}
-
 	Buttons PlatformWin::getPressed() {
-		return {};
+		Buttons buttons{};
+		buttons.select = sf::Keyboard::isKeyPressed(sf::Keyboard::Enter);
+		buttons.back = sf::Keyboard::isKeyPressed(sf::Keyboard::Escape);
+		buttons.quit = sf::Keyboard::isKeyPressed(sf::Keyboard::Delete);
+		buttons.left = sf::Keyboard::isKeyPressed(sf::Keyboard::Left) | sf::Keyboard::isKeyPressed(sf::Keyboard::A);
+		buttons.right = sf::Keyboard::isKeyPressed(sf::Keyboard::Right) | sf::Keyboard::isKeyPressed(sf::Keyboard::D);
+		return buttons;
 	}
 
 	Point PlatformWin::getScreenDim() const {
 		Point point{};
-		point.x = window.getSize().x;
-		point.y = window.getSize().y;
+		point.x = window->getSize().x;
+		point.y = window->getSize().y;
 		return point;
 	}
 
 	void PlatformWin::screenBegin() {
-
+		window->clear(sf::Color::White);
 	}
 
 	void PlatformWin::screenSwap() {
-
+		// Do nothing, since there is no second screen on a PC
 	}
 
 	void PlatformWin::screenFinalize() {
-
+		window->display();
 	}
 
-	void PlatformWin::drawRect(const Color& color, const Point& point, const Point& size) const {
-
+	void PlatformWin::drawRect(const Color& color, const Point& point, const Point& size) {
+		sf::RectangleShape rectangle(sf::Vector2f(size.x, size.y));
+		sf::Color sfColor{color.r, color.g, color.b, color.a};
+		rectangle.setFillColor(sfColor);
+		rectangle.setPosition((float)point.x, (float)point.y);
+		window->draw(rectangle);
 	}
 
-	void PlatformWin::drawTriangle(const Color& color, const std::array<Point, 3>& points) const {
-
+	void PlatformWin::drawTriangle(const Color& color, const std::array<Point, 3>& points) {
+		int height = getScreenDim().y;
+		sf::ConvexShape convex;
+		convex.setPointCount(3);
+		convex.setPoint(0, sf::Vector2f(points[0].x, height - points[0].y));
+		convex.setPoint(1, sf::Vector2f(points[1].x, height - points[1].y));
+		convex.setPoint(2, sf::Vector2f(points[2].x, height - points[2].y));
+		sf::Color sfColor{color.r, color.g, color.b, color.a};
+		convex.setFillColor(sfColor);
+		convex.setPosition(0, 0);
+		window->draw(convex);
 	}
 
 	std::unique_ptr<Twist> PlatformWin::getTwister() {

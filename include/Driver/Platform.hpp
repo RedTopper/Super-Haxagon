@@ -37,16 +37,14 @@ namespace SuperHaxagon {
 		virtual void playBGM(Audio& audio) = 0;
 		virtual void stopBGM() = 0;
 
-		virtual void pollButtons() = 0;
-		virtual Buttons getDown() = 0;
 		virtual Buttons getPressed() = 0;
 		virtual Point getScreenDim() const = 0;
 
 		virtual void screenBegin() = 0;
 		virtual void screenSwap() = 0;
 		virtual void screenFinalize() = 0;
-		virtual void drawRect(const Color& color, const Point& point, const Point& size) const = 0;
-		virtual void drawTriangle(const Color& color, const std::array<Point, 3>& points) const = 0;
+		virtual void drawRect(const Color& color, const Point& point, const Point& size) = 0;
+		virtual void drawTriangle(const Color& color, const std::array<Point, 3>& points) = 0;
 
 		virtual std::unique_ptr<Twist> getTwister() = 0;
 	};

@@ -18,7 +18,7 @@ namespace SuperHaxagon {
 
 		void advance(double speed);
 		Movement collision(double cursorHeight, double cursorPos, double cursorStep, int sides) const;
-		std::array<Point, 4> calcPoints(const Point& focus, double rotation, double sides, double hexLength) const;
+		std::array<Point, 4> calcPoints(const Point& focus, double rotation, double sides, double hexLength, double offset) const;
 		static Point calcPoint(const Point& focus, double rotation, double overflow, double distance, double sides, int side);
 
 		double getDistance() const {return distance;}

@@ -43,7 +43,7 @@ namespace SuperHaxagon {
 	PatternFactory::~PatternFactory() = default;
 
 	std::unique_ptr<Pattern> PatternFactory::instantiate(Twist& rng, double distance) const {
-		int offset = rng.rand(sides);
+		int offset = rng.rand(sides - 1);
 		std::vector<std::unique_ptr<Wall>> active;
 		for(const auto& wall : walls) {
 			active.emplace_back(wall->instantiate(distance, offset, sides));

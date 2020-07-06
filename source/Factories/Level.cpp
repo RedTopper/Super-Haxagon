@@ -17,7 +17,7 @@ namespace SuperHaxagon {
 		auto distance = (double)renderDistance;
 		do {
 			int pCount = factory.getPatterns().size();
-			int pSelected = rng.rand(pCount);
+			int pSelected = rng.rand(pCount - 1);
 			auto& pattern = factory.getPatterns()[pSelected];
 			patterns.emplace_back(pattern->instantiate(rng, distance));
 			distance = patterns.back()->getFurthestWallDistance();
@@ -70,9 +70,9 @@ namespace SuperHaxagon {
 		}
 
 		// Create new pattern if needed
-		if (patterns.back()->getFurthestWallDistance() < renderDistance) {
+		if (patterns.size() < 2 || patterns.back()->getFurthestWallDistance() < renderDistance) {
 			int pCount = factory.getPatterns().size();
-			int pSelected = rng.rand(pCount);
+			int pSelected = rng.rand(pCount - 1);
 			auto& pattern = factory.getPatterns()[pSelected];
 			patterns.emplace_back(pattern->instantiate(rng, patterns.back()->getFurthestWallDistance()));
 		}
@@ -126,7 +126,7 @@ namespace SuperHaxagon {
 		for(const auto& pattern : patterns) {
 
 			// For all walls
-			for(const auto& wall : patterns.front()->getWalls()) {
+			for(const auto& wall : pattern->getWalls()) {
 				Movement check = wall->collision(cursorDistance, cursorPos, factory.getSpeedCursor(), pattern->getSides());
 
 				// Update collision
@@ -145,7 +145,7 @@ namespace SuperHaxagon {
 	}
 
 	void Level::rotate(double distance) {
-		cursorPos += distance;
+		rotation += distance;
 	}
 
 	void Level::left() {
@@ -188,7 +188,6 @@ namespace SuperHaxagon {
 		speedWall = readFloat(file);
 		speedRotation = readFloat(file);
 		speedCursor = readFloat(file);
-
 		speedPulse = read32(file, 4, 8192, "level pulse");
 
 		int numPatterns = read32(file, 1, 512, "level pattern count");

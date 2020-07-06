@@ -22,18 +22,16 @@ namespace SuperHaxagon {
 		level->update(game.getTwister(), game.getHexLength(), game.getRenderDistance());
 
 		// Button presses
-		platform.pollButtons();
-		auto down = platform.getDown();
 		auto pressed = platform.getPressed();
 
 		// Check collision
 		int cursorDistance = game.getHexLength() + game.getHumanPadding() + game.getHumanHeight();
 		auto hit = level->collision(cursorDistance);
-		if(down.back || hit == Movement::DEAD) {
+		if(pressed.back || hit == Movement::DEAD) {
 			return std::make_unique<Over>(game, factory, std::move(level), score);
 		}
 
-		if (down.quit) {
+		if (pressed.quit) {
 			return std::make_unique<Quit>();
 		}
 
@@ -63,7 +61,7 @@ namespace SuperHaxagon {
 	}
 
 	void Play::drawBot() {
-		int width = platform.getScreenDim().x;
+		double width = platform.getScreenDim().x;
 
 		const auto& small = game.getFontSmall();
 		Point posLevelUp = {4,4};

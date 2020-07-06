@@ -26,8 +26,6 @@ namespace SuperHaxagon {
 		void playBGM(Audio& audio) override;
 		void stopBGM() override;
 
-		void pollButtons() override;
-		Buttons getDown() override;
 		Buttons getPressed() override;
 		Point getScreenDim() const override;
 
@@ -37,7 +35,6 @@ namespace SuperHaxagon {
 		std::unique_ptr<Twist> getTwister() override;
 
 	private:
-		static Buttons toButtons(u32 input);
 		std::unique_ptr<Player> sfx[MAX_TRACKS];
 		std::unique_ptr<Player> bgm;
 	};

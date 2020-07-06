@@ -34,7 +34,7 @@ namespace SuperHaxagon {
 		bool high = false;
 		int frames = 0;
 		int score = 0;
-		double offset = 0;
+		double offset = 1.0;
 	};
 }
 

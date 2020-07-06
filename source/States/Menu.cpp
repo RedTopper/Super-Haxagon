@@ -24,8 +24,7 @@ namespace SuperHaxagon {
 	}
 
 	std::unique_ptr<State> Menu::update() {
-		platform.pollButtons();
-		Buttons press = platform.getDown();
+		Buttons press = platform.getPressed();
 
 		if (press.quit) return std::make_unique<Quit>();
 
@@ -119,9 +118,9 @@ namespace SuperHaxagon {
 		Point infoPos = {0, 0};
 		Point infoSize = {screen.x - TRIANGLE_WIDTH - GAP_FROM_RIGHT_SIDE, posCreator.y + 16 + 3};
 		std::array<Point, 3> infoTriangle = {
-			Point{infoSize.x, platform.getScreenDim().y - 1 - infoSize.y},
-			Point{infoSize.x, platform.getScreenDim().y - 1},
-			Point{infoSize.x + TRIANGLE_WIDTH,  platform.getScreenDim().y - 1}
+			Point{infoSize.x, platform.getScreenDim().y - infoSize.y},
+			Point{infoSize.x, platform.getScreenDim().y},
+			Point{infoSize.x + TRIANGLE_WIDTH,  platform.getScreenDim().y}
 		};
 
 		platform.drawRect(COLOR_TRANSPARENT, infoPos, infoSize);

@@ -12,12 +12,15 @@ namespace SuperHaxagon {
 	public:
 		static const char* PROJECT_HEADER;
 		static const char* PROJECT_FOOTER;
+		static const char* SCORE_HEADER;
+		static const char* SCORE_FOOTER;
 
 		explicit Load(Game& game);
 		Load(Load&) = delete;
-		~Load();
+		~Load() override;
 
-		void load(std::ifstream& file, Location location);
+		void loadLevel(std::ifstream& file, Location location);
+		void loadScores(std::ifstream& file);
 
 		std::unique_ptr<State> update(double dilation) override;
 		void enter() override;

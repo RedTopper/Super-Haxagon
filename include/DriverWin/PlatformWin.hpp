@@ -2,6 +2,7 @@
 #define SUPER_HAXAGON_PLATFORM_WIN_HPP
 #define SFML_STATIC
 
+#include <SFML/System.hpp>
 #include <SFML/Graphics.hpp>
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <deque>

@@ -1,4 +1,5 @@
 #include <string>
+#include <ctime>
 #include <algorithm>
 
 #include "DriverWin/PlatformWin.hpp"
@@ -26,6 +27,8 @@ namespace SuperHaxagon {
 	PlatformWin::~PlatformWin() = default;
 
 	bool PlatformWin::loop() {
+		sf::Time throttle = sf::milliseconds(1);
+		sf::sleep(throttle);
 		delta = clock.getElapsedTime().asSeconds();
 		clock.restart();
 		sf::Event event{};
@@ -148,11 +151,20 @@ namespace SuperHaxagon {
 	}
 
 	std::unique_ptr<Twist> PlatformWin::getTwister() {
-		std::random_device source;
-		std::mt19937::result_type data[std::mt19937::state_size];
-		generate(std::begin(data), std::end(data), ref(source));
-		return std::make_unique<Twist>(
-				std::make_unique<std::seed_seq>(std::begin(data), std::end(data))
-		);
+		try {
+			std::random_device source;
+			if (source.entropy() == 0) throw std::runtime_error("entropy too low, seeding with time");
+			std::mt19937::result_type data[std::mt19937::state_size];
+			generate(std::begin(data), std::end(data), ref(source));
+			return std::make_unique<Twist>(
+					std::make_unique<std::seed_seq>(std::begin(data), std::end(data))
+			);
+		} catch (std::runtime_error& e) {
+			std::cout << e.what() << std::endl;
+			auto a = new std::seed_seq{time(nullptr)};
+			return std::make_unique<Twist>(
+					std::unique_ptr<std::seed_seq>(a)
+			);
+		}
 	}
 }

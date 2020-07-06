@@ -20,6 +20,8 @@ include_directories(libraries/SFML/include)
 include_directories(include)
 
 if(PLAT STREQUAL "WINDOWS")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mwindows")
+
     link_directories(libraries/SFML/lib)
 
     add_executable(SuperHaxagon ${OPTIONS}

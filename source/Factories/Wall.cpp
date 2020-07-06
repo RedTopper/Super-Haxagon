@@ -53,15 +53,17 @@ namespace SuperHaxagon {
 		return Movement::CAN_MOVE;
 	}
 
-	std::array<Point, 4> Wall::calcPoints(const Point& focus, double rotation, double sides, double hexLength, double offset) const {
+	std::array<Point, 4> Wall::calcPoints(const Point& focus, double rotation, double sides, double offset, double scale) const {
 		std::array<Point, 4> quad{};
 		double tHeight = height;
 		double tDistance = distance + offset;
-		if(tDistance < hexLength - 2.0) {//so the distance is never negative as it enters.
-			tHeight -= hexLength - 2.0 - tDistance;
-			tDistance = hexLength - 2.0; //Should never be 0!!!
+		if(tDistance < SCALE_HEX_LENGTH - 2.0) {//so the distance is never negative as it enters.
+			tHeight -= SCALE_HEX_LENGTH - 2.0 - tDistance;
+			tDistance = SCALE_HEX_LENGTH - 2.0; //Should never be 0!!!
 		}
 
+		tDistance *= scale;
+		tHeight *= scale;
 		quad[0] = calcPoint(focus, rotation, WALL_OVERFLOW, tDistance, sides, side + 1);
 		quad[1] = calcPoint(focus, rotation, WALL_OVERFLOW, tDistance + tHeight, sides, side + 1);
 		quad[2] = calcPoint(focus, rotation, -WALL_OVERFLOW, tDistance + tHeight, sides, side);

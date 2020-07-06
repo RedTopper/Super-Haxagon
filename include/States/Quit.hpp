@@ -9,9 +9,9 @@ namespace SuperHaxagon {
 		Quit() = default;
 		Quit(Quit&) = delete;
 
-		std::unique_ptr<State> update(double dilation) override {return nullptr;}
-		void drawTop() override {}
-		void drawBot() override {}
+		std::unique_ptr<State> update(double) override {return nullptr;}
+		void drawTop(double) override {}
+		void drawBot(double) override {}
 	};
 }
 

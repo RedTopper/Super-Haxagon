@@ -27,6 +27,14 @@ namespace SuperHaxagon {
 	};
 
 	static constexpr double TAU = M_PI * 2;
+
+	static constexpr double SCALE_BASE_DISTANCE = 300.0;
+	static constexpr double SCALE_HEX_LENGTH = 24.0;
+	static constexpr double SCALE_HEX_BORDER = 4.0;
+	static constexpr double SCALE_HUMAN_PADDING = 5.0;
+	static constexpr double SCALE_HUMAN_HEIGHT = 5.0;
+	static constexpr double HUMAN_WIDTH_RAD = TAU/30.0;
+
 	static const Color COLOR_SHADOW = {0, 0, 0, 0xC0};
 	static const Color COLOR_TRANSPARENT = {0, 0, 0, 0xA0};
 	static const Color COLOR_GREY = {0xA0, 0xA0, 0xA0, 0xFF};
@@ -35,8 +43,6 @@ namespace SuperHaxagon {
 
 	static const Color PULSE_LOW = {0xFF, 0xFF, 0xFF, 0x7F};
 	static const Color PULSE_HIGH = {0xFF, 0xFF, 0xFF, 0xFF};
-
-
 
 	/**
 	 * Linear interpolation between two colors

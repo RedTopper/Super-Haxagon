@@ -20,8 +20,8 @@ namespace SuperHaxagon {
 
 		std::unique_ptr<State> update(double dilation) override;
 		void enter() override;
-		void drawTop() override {};
-		void drawBot() override {};
+		void drawTop(double) override {};
+		void drawBot(double) override {};
 
 	private:
 		Game& game;

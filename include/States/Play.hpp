@@ -21,8 +21,8 @@ namespace SuperHaxagon {
 		Play(Play&) = delete;
 
 		std::unique_ptr<State> update(double dilation) override;
-		void drawTop() override;
-		void drawBot() override;
+		void drawTop(double scale) override;
+		void drawBot(double scale) override;
 		void enter() override;
 
 	private:

@@ -11,7 +11,7 @@ namespace SuperHaxagon {
 		game(game),
 		platform(game.getPlatform()),
 		factory(factory),
-		level(factory.instantiate(game.getTwister(), game.getRenderDistance()))
+		level(factory.instantiate(game.getTwister(), SCALE_BASE_DISTANCE))
 	{}
 
 	void Play::enter() {
@@ -19,13 +19,13 @@ namespace SuperHaxagon {
 	}
 
 	std::unique_ptr<State> Play::update(double dilation) {
-		level->update(game.getTwister(), game.getHexLength(), game.getRenderDistance(), dilation);
+		level->update(game.getTwister(), SCALE_HEX_LENGTH, SCALE_BASE_DISTANCE, dilation);
 
 		// Button presses
 		auto pressed = platform.getPressed();
 
 		// Check collision
-		double cursorDistance = game.getHexLength() + game.getHumanPadding() + game.getHumanHeight();
+		double cursorDistance = SCALE_HEX_LENGTH + SCALE_HUMAN_PADDING + SCALE_HUMAN_HEIGHT;
 		auto hit = level->collision(cursorDistance, dilation);
 		if(pressed.back || hit == Movement::DEAD) {
 			return std::make_unique<Over>(game, factory, std::move(level), score);
@@ -56,11 +56,11 @@ namespace SuperHaxagon {
 		return nullptr;
 	}
 
-	void Play::drawTop() {
-		level->draw(game, 0);
+	void Play::drawTop(double scale) {
+		level->draw(game, scale, 0);
 	}
 
-	void Play::drawBot() {
+	void Play::drawBot(double) {
 		double width = platform.getScreenDim().x;
 
 		const auto& small = game.getFontSmall();
@@ -68,10 +68,10 @@ namespace SuperHaxagon {
 		Point posScore = { width - 4, 4};
 		Point posBest = {width - 4, posScore.y + small.getHeight()};
 
-		auto textScore = std::string("TIME: ") + getTime(score);
+		auto textScore = std::string("TIME: ") + getTime((int)score);
 
 		small.draw(COLOR_WHITE, posScore, Alignment::RIGHT, textScore);
-		small.draw(COLOR_WHITE, posLevelUp, Alignment::LEFT, getScoreText(score));
+		small.draw(COLOR_WHITE, posLevelUp, Alignment::LEFT, getScoreText((int)score));
 
 		if(factory.getHighScore() > 0 && score > factory.getHighScore()) {
 			Color textColor = COLOR_WHITE;

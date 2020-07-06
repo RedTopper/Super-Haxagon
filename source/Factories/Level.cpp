@@ -8,20 +8,20 @@ namespace SuperHaxagon {
 	const char* LevelFactory::LEVEL_HEADER = "LEV2.1";
 	const char* LevelFactory::LEVEL_FOOTER = "ENDLEV";
 
-	Level::Level(const LevelFactory& factory, Twist& rng, int renderDistance) : factory(factory) {
+	Level::Level(const LevelFactory& factory, Twist& rng, double patternDistCreate) : factory(factory) {
 		nextIndexBG1 = (factory.getColorsBG1().size() > 1 ? 1 : 0);
 		nextIndexBG2 = (factory.getColorsBG2().size() > 1 ? 1 : 0);
 		nextIndexFG = (factory.getColorsFG().size() > 1 ? 1 : 0);
 
 		//fetch some random starting patterns
-		auto distance = (double)renderDistance;
+		auto distance = (double)patternDistCreate;
 		do {
 			int pCount = factory.getPatterns().size();
 			int pSelected = rng.rand(pCount - 1);
 			auto& pattern = factory.getPatterns()[pSelected];
 			patterns.emplace_back(pattern->instantiate(rng, distance));
 			distance = patterns.back()->getFurthestWallDistance();
-		} while (patterns.back()->getFurthestWallDistance() < renderDistance);
+		} while (patterns.back()->getFurthestWallDistance() < patternDistCreate);
 
 		//set up the amount of sides the level should have.
 		lastSides = patterns.front()->getSides();
@@ -31,7 +31,7 @@ namespace SuperHaxagon {
 
 	Level::~Level() = default;
 
-	void Level::update(Twist& rng, double hexLength, double renderDistance, double dilation) {
+	void Level::update(Twist& rng, double patternDistDelete, double patternDistCreate, double dilation) {
 		// Update color frame and clamp
 		tweenFrame += dilation;
 		if(tweenFrame >= factory.getSpeedPulse()) {
@@ -58,7 +58,7 @@ namespace SuperHaxagon {
 		}
 
 		// Shift patterns forward
-		if(patterns.front()->getFurthestWallDistance() < hexLength) {
+		if(patterns.front()->getFurthestWallDistance() < patternDistDelete) {
 			lastSides = patterns.front()->getSides();
 			patterns.pop_front();
 			currentSides = patterns.front()->getSides();
@@ -70,7 +70,7 @@ namespace SuperHaxagon {
 		}
 
 		// Create new pattern if needed
-		if (patterns.size() < 2 || patterns.back()->getFurthestWallDistance() < renderDistance) {
+		if (patterns.size() < 2 || patterns.back()->getFurthestWallDistance() < patternDistCreate) {
 			int pCount = factory.getPatterns().size();
 			int pSelected = rng.rand(pCount - 1);
 			auto& pattern = factory.getPatterns()[pSelected];
@@ -90,7 +90,7 @@ namespace SuperHaxagon {
 		}
 	}
 
-	void Level::draw(Game& game, double offset) {
+	void Level::draw(Game& game, double scale, double offset) {
 
 		// Calculate colors
 		double percentTween = (double)(tweenFrame) / (double)(factory.getSpeedPulse());
@@ -99,7 +99,7 @@ namespace SuperHaxagon {
 		Color BG2 = interpolateColor(factory.getColorsBG2()[indexBG2], factory.getColorsBG2()[nextIndexBG2], percentTween);
 
 		// Fix for triangle levels
-		double diagonal = (sidesTween >= 3 && sidesTween < 4 ? game.getRenderDistance() * 2 : game.getRenderDistance());
+		double diagonal = SCALE_BASE_DISTANCE * scale * (sidesTween >= 3 && sidesTween < 4 ?  2 : 1);
 
 		Point center = game.getScreenCenter();
 		Point shadow = game.getShadowOffset();
@@ -108,15 +108,15 @@ namespace SuperHaxagon {
 
 		// Draw shadows
 		Point offsetFocus = {center.x + shadow.x, center.y + shadow.y};
-		game.drawPatterns(COLOR_SHADOW, offsetFocus, patterns, rotation, sidesTween, offset);
-		game.drawRegular(COLOR_SHADOW, offsetFocus, game.getHexLength(), rotation, sidesTween);
-		game.drawCursor(COLOR_SHADOW, offsetFocus, cursorPos, rotation);
+		game.drawPatterns(COLOR_SHADOW, offsetFocus, patterns, rotation, sidesTween, offset, scale);
+		game.drawRegular(COLOR_SHADOW, offsetFocus, SCALE_HEX_LENGTH * scale, rotation, sidesTween);
+		game.drawCursor(COLOR_SHADOW, offsetFocus, cursorPos, rotation, scale);
 
 		// Draw real thing
-		game.drawPatterns(FG, center, patterns, rotation, sidesTween, offset);
-		game.drawRegular(FG, center, game.getHexLength(), rotation, sidesTween);
-		game.drawRegular(BG2, center, game.getHexLength() - game.getHexLengthBorder(), rotation, sidesTween);
-		game.drawCursor(FG, center, cursorPos, rotation);
+		game.drawPatterns(FG, center, patterns, rotation, sidesTween, offset, scale);
+		game.drawRegular(FG, center, SCALE_HEX_LENGTH * scale, rotation, sidesTween);
+		game.drawRegular(BG2, center, (SCALE_HEX_LENGTH - SCALE_HEX_BORDER) * scale, rotation, sidesTween);
+		game.drawCursor(FG, center, cursorPos, rotation, scale);
 	}
 
 	Movement Level::collision(double cursorDistance, double dilation) const {
@@ -144,8 +144,12 @@ namespace SuperHaxagon {
 		multiplier *= DIFFICULTY_MULTIPLIER;
 	}
 
+	void Level::clearPatterns() {
+		patterns.clear();
+	}
+
 	void Level::rotate(double distance, double dilation) {
-		rotation += distance;
+		rotation += distance * dilation;
 	}
 
 	void Level::left(double dilation) {

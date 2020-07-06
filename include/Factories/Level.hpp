@@ -24,22 +24,24 @@ namespace SuperHaxagon {
 	public:
 		static constexpr double DIFFICULTY_MULTIPLIER = 1.1;
 		static constexpr int FLIP_FRAMES_MIN = 120;
-		static constexpr int FLIP_FRAMES_MAX = 500;
+		static constexpr int FLIP_FRAMES_MAX = 600;
 		static constexpr int FRAMES_PER_CHANGE_SIDE = 36;
 
-		Level(const LevelFactory& factory, Twist& rng, int renderDistance);
+		Level(const LevelFactory& factory, Twist& rng, double patternDistCreate);
 		Level(Level&) = delete;
 		~Level();
 
-		void update(Twist& rng, double hexLength, double renderDistance, double dilation);
-		void draw(Game& game, double offset);
+		void update(Twist& rng, double patternDistDelete, double patternDistCreate, double dilation);
+		void draw(Game& game, double scale, double offset);
 		Movement collision(double cursorDistance, double dilation) const;
 
 		void increaseMultiplier();
+		void clearPatterns();
 		void rotate(double distance, double dilation);
 		void left(double dilation);
 		void right(double dilation);
 		void clamp();
+
 
 	private:
 		const LevelFactory& factory;

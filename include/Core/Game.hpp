@@ -36,13 +36,6 @@ namespace SuperHaxagon {
 		Font& getFontSmall() const {return *small;}
 		Font& getFontLarge() const {return *large;}
 
-		double getRenderDistance() const {return getScreenDimMax();}
-		double getHexLength() const {return getScreenDimMin() / 10;}
-		double getHexLengthBorder() const {return getScreenDimMin() / 60;}
-		double getHumanPadding() const {return getScreenDimMin() / 48;}
-		double getHumanHeight() const {return getScreenDimMin() / 48;}
-		static double getHumanWidth() {return TAU/30.0;}
-
 		double getScreenDimMax() const {
 			auto size = platform.getScreenDim();
 			return std::max(size.x, size.y);
@@ -77,19 +70,21 @@ namespace SuperHaxagon {
 		/**
 		 * Draws the little cursor in the center of the screen controlled by a human.
 		 */
-		void drawCursor(const Color& color, const Point& focus, double cursor, double rotation) const;
+		void drawCursor(const Color& color, const Point& focus, double cursor, double rotation, double scale) const;
 
 		/**
 		 * Completely draws all patterns in a live level. Can also be used to create
 		 * an "Explosion" effect if you use "offset". (for game overs)
 		 */
-		void drawPatterns(const Color& color, const Point& focus, const std::deque<std::unique_ptr<Pattern>>& patterns, double rotation, double sides, double offset) const;
+		void
+		drawPatterns(const Color& color, const Point& focus, const std::deque<std::unique_ptr<Pattern>>& patterns, double rotation, double sides, double offset,
+		             double scale) const;
 
 		/**
 		 * Draws a single moving wall based on a live wall, a color, some rotational value, and the total
 		 * amount of sides that appears.
 		 */
-		void drawWalls(const Color& color, const Point& focus, const Wall& wall, double rotation, double sides, double offset) const;
+		void drawWalls(const Color& color, const Point& focus, const Wall& wall, double rotation, double sides, double offset, double scale) const;
 
 		/**
 		 * Draws a trapezoid using an array of points and a color.

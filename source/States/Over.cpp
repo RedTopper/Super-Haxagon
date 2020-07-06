@@ -24,7 +24,7 @@ namespace SuperHaxagon {
 
 	std::unique_ptr<State> Over::update(double dilation) {
 		frames += dilation;
-		level->rotate(GAME_OVER_ROT_SPEED * dilation, 0);
+		level->rotate(GAME_OVER_ROT_SPEED, dilation);
 		level->clamp();
 
 		auto press = platform.getPressed();
@@ -35,6 +35,7 @@ namespace SuperHaxagon {
 		}
 
 		if(frames >= FRAMES_PER_GAME_OVER) {
+			level->clearPatterns();
 			if (press.select) {
 				return std::make_unique<Play>(game, factory);
 			}
@@ -47,11 +48,11 @@ namespace SuperHaxagon {
 		return nullptr;
 	}
 
-	void Over::drawTop() {
-		level->draw(game, offset);
+	void Over::drawTop(double scale) {
+		level->draw(game, scale, offset);
 	}
 
-	void Over::drawBot() {
+	void Over::drawBot(double) {
 		const auto& large = game.getFontLarge();
 		const auto& small = game.getFontSmall();
 		double width = platform.getScreenDim().x;

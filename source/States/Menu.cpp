@@ -55,7 +55,7 @@ namespace SuperHaxagon {
 		return nullptr;
 	}
 
-	void Menu::drawTop() {
+	void Menu::drawTop(double scale) {
 		double percentRotated = (double)(transitionFrame) / (double)FRAMES_PER_TRANSITION;
 		double rotation = percentRotated * TAU/6.0;
 
@@ -92,16 +92,16 @@ namespace SuperHaxagon {
 		Point offsetFocus = {focus.x + shadow.x, focus.y + shadow.y};
 
 		// Home screen always has 6 sides.
-		game.drawBackground(BG1, BG2, focus, game.getRenderDistance(), rotation, 6.0);
+		game.drawBackground(BG1, BG2, focus, SCALE_BASE_DISTANCE * scale * 2.0, rotation, 6.0);
 
 		// Shadows
-		game.drawRegular(COLOR_SHADOW, offsetFocus, game.getHexLength(), rotation, 6.0);
-		game.drawCursor(COLOR_SHADOW, offsetFocus, TAU / 4.0, 0);
+		game.drawRegular(COLOR_SHADOW, offsetFocus, SCALE_HEX_LENGTH * scale, rotation, 6.0);
+		game.drawCursor(COLOR_SHADOW, offsetFocus, TAU / 4.0, 0, scale);
 
 		// Geometry
-		game.drawRegular(FG, focus, game.getHexLength(), rotation, 6.0);
-		game.drawRegular(BG3, focus, game.getHexLength() - game.getHexLengthBorder(), rotation, 6.0);
-		game.drawCursor(FG, focus, TAU / 4.0, 0); //Draw cursor fixed quarter circle, no movement.
+		game.drawRegular(FG, focus,SCALE_HEX_LENGTH * scale, rotation, 6.0);
+		game.drawRegular(BG3, focus, SCALE_HEX_LENGTH * scale - SCALE_HEX_BORDER * scale, rotation, 6.0);
+		game.drawCursor(FG, focus, TAU / 4.0, 0, scale); //Draw cursor fixed quarter circle, no movement.
 
 		// Top rectangle and triangle
 		int TRIANGLE_WIDTH = 70;
@@ -154,5 +154,5 @@ namespace SuperHaxagon {
 		small.draw(COLOR_WHITE, posTime, Alignment::LEFT, scoreTime);
 	}
 
-	void Menu::drawBot() {}
+	void Menu::drawBot(double) {}
 }

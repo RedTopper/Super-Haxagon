@@ -32,18 +32,22 @@ namespace SuperHaxagon {
 		state = std::make_unique<Load>(*this);
 		state->enter();
 		while(platform.loop() && !dynamic_cast<Quit*>(state.get())) {
+			// The original game was built with a 3DS in mind, so when
+			// drawing we have to scale the game to however many times larger the viewport is.
+			double scale = getScreenDimMin() / 240.0;
+
 			std::unique_ptr<State> next = state->update(platform.getDilation());
 			if (next) {
 				state->exit();
 				state = std::move(next);
 				state->enter();
-				state->update(0);
+				state->update(platform.getDilation());
 			}
 
 			platform.screenBegin();
-			state->drawTop();
+			state->drawTop(scale);
 			platform.screenSwap();
-			state->drawBot();
+			state->drawBot(scale);
 			platform.screenFinalize();
 		}
 
@@ -117,28 +121,28 @@ namespace SuperHaxagon {
 		}
 	}
 
-	void Game::drawCursor(const Color& color, const Point& focus, double cursor, double rotation) const {
+	void Game::drawCursor(const Color& color, const Point& focus, double cursor, double rotation, double scale) const {
 		std::array<Point, 3> triangle{};
-		triangle[0] = calcPoint(focus, cursor + rotation, 0.0, getHexLength() + getHumanPadding() + getHumanHeight());
-		triangle[1] = calcPoint(focus, cursor + rotation, Game::getHumanWidth()/2, getHexLength()  + getHumanPadding());
-		triangle[2] = calcPoint(focus, cursor + rotation, -Game::getHumanWidth()/2, getHexLength()  + getHumanPadding());
+		triangle[0] = calcPoint(focus, cursor + rotation, 0.0, (SCALE_HEX_LENGTH + SCALE_HUMAN_PADDING + SCALE_HUMAN_HEIGHT) * scale);
+		triangle[1] = calcPoint(focus, cursor + rotation, HUMAN_WIDTH_RAD/2, (SCALE_HEX_LENGTH + SCALE_HUMAN_PADDING) * scale);
+		triangle[2] = calcPoint(focus, cursor + rotation, -HUMAN_WIDTH_RAD/2, (SCALE_HEX_LENGTH + SCALE_HUMAN_PADDING) * scale);
 		platform.drawTriangle(color, triangle);
 	}
 
-	void Game::drawPatterns(const Color& color, const Point& focus, const std::deque<std::unique_ptr<Pattern>>& patterns, double rotation, double sides, double offset) const {
+	void Game::drawPatterns(const Color& color, const Point& focus, const std::deque<std::unique_ptr<Pattern>>& patterns, double rotation, double sides, double offset, double scale) const {
 		for(const auto& pattern : patterns) {
 			for(const auto& wall : pattern->getWalls()) {
-				drawWalls(color, focus, *wall, rotation, sides, offset);
+				drawWalls(color, focus, *wall, rotation, sides, offset, scale);
 			}
 		}
 	}
 
-	void Game::drawWalls(const Color& color, const Point& focus, const Wall& wall, double rotation, double sides, double offset) const {
+	void Game::drawWalls(const Color& color, const Point& focus, const Wall& wall, double rotation, double sides, double offset, double scale) const {
 		double distance = wall.getDistance() + offset;
-		if(distance + wall.getHeight() < getHexLength()) return; //TOO_CLOSE;
-		if(distance > getRenderDistance()) return; //TOO_FAR;
+		if(distance + wall.getHeight() < SCALE_HEX_LENGTH) return; //TOO_CLOSE;
+		if(distance > SCALE_BASE_DISTANCE) return; //TOO_FAR;
 		if(wall.getSide() >= sides) return; //NOT_IN_RANGE
-		drawTrap(color, wall.calcPoints(focus, rotation, sides, getHexLength(), offset));
+		drawTrap(color, wall.calcPoints(focus, rotation, sides, offset, scale));
 	}
 
 	void Game::drawTrap(Color color, const std::array<Point, 4>& points) const {

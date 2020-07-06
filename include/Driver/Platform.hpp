@@ -24,6 +24,7 @@ namespace SuperHaxagon {
 	public:
 		Platform() = default;
 		Platform(Platform&) = delete;
+		virtual ~Platform() = default;
 
 		virtual bool loop() = 0;
 		virtual double getDilation() = 0;

@@ -5,7 +5,9 @@ namespace SuperHaxagon {
 		if (loaded) sound.setBuffer(buffer);
 	}
 
-	PlayerWin::~PlayerWin() = default;
+	PlayerWin::~PlayerWin() {
+		PlayerWin::stop();
+	}
 
 	void PlayerWin::setLoop(bool _loop) {
 		loop = _loop;

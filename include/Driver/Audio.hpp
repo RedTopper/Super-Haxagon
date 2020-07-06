@@ -9,6 +9,7 @@ namespace SuperHaxagon {
 	public:
 		Audio() = default;
 		Audio(Audio&) = delete;
+		virtual ~Audio() = default;
 
 		virtual std::unique_ptr<Player> instantiate() = 0;
 	};

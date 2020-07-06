@@ -13,6 +13,7 @@ namespace SuperHaxagon {
 	class FontWin : public Font {
 	public:
 		FontWin(PlatformWin& platform, const std::string& path, int size);
+		~FontWin() override;
 
 		int getHeight() const override;
 		void draw(const Color& color, const Point& position, Alignment alignment, std::string text) const override;

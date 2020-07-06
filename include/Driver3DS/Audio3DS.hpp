@@ -10,7 +10,7 @@ namespace SuperHaxagon {
 	class Audio3DS : public Audio {
 	public:
 		explicit Audio3DS(const std::string& path);
-		~Audio3DS();
+		~Audio3DS() override;
 
 		std::unique_ptr<Player> instantiate() override;
 

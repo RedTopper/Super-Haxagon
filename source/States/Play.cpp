@@ -1,5 +1,6 @@
 #include "Core/Game.hpp"
 #include "Driver/Font.hpp"
+#include "Driver/Audio.hpp"
 #include "Factories/Level.hpp"
 #include "States/Play.hpp"
 #include "States/Quit.hpp"
@@ -14,8 +15,19 @@ namespace SuperHaxagon {
 		level(factory.instantiate(game.getTwister(), SCALE_BASE_DISTANCE))
 	{}
 
+	Play::~Play() {
+		std::cout << "dead" << std::endl;
+	}
+
+
 	void Play::enter() {
+		bgm = platform.loadAudio(platform.getPath(factory.getMusic()));
 		platform.playSFX(game.getSfxBegin());
+		platform.playBGM(*bgm);
+	}
+
+	void Play::exit() {
+		platform.stopBGM();
 	}
 
 	std::unique_ptr<State> Play::update(double dilation) {

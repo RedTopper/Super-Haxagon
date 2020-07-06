@@ -61,7 +61,6 @@ namespace SuperHaxagon {
 	}
 
 	void Platform3DS::playBGM(Audio& audio) {
-		if (bgm) bgm->stop();
 		bgm = audio.instantiate();
 		bgm->setChannel(0);
 		bgm->setLoop(true);
@@ -70,6 +69,7 @@ namespace SuperHaxagon {
 
 	void Platform3DS::stopBGM() {
 		if (bgm) bgm->stop();
+		bgm = nullptr;
 	}
 
 	Buttons Platform3DS::getPressed() {

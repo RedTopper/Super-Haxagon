@@ -85,7 +85,6 @@ namespace SuperHaxagon {
 	}
 
 	void PlatformWin::playBGM(Audio& audio) {
-		if (bgm) bgm->stop();
 		bgm = audio.instantiate();
 		bgm->setChannel(0);
 		bgm->setLoop(true);

@@ -11,7 +11,7 @@ namespace SuperHaxagon {
 	class PlayerWin : public Player {
 	public:
 		PlayerWin(sf::SoundBuffer& buffer, bool loaded);
-		~PlayerWin();
+		~PlayerWin() override;
 
 		void setChannel(int) override {};
 		void setLoop(bool loop) override;

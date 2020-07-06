@@ -19,6 +19,7 @@ namespace SuperHaxagon {
 
 		Over(Game& game, LevelFactory& factory, std::unique_ptr<Level> level, int score);
 		Over(Over&) = delete;
+		~Over() override;
 
 		std::unique_ptr<State> update(double dilation) override;
 		void drawTop(double scale) override;

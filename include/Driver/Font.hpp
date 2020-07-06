@@ -17,6 +17,7 @@ namespace SuperHaxagon {
 	public:
 		Font() = default;
 		Font(Font&) = delete;
+		virtual ~Font() = default;
 
 		virtual int getHeight() const = 0;
 		virtual void draw(const Color& color, const Point& position, Alignment alignment, std::string text) const = 0;

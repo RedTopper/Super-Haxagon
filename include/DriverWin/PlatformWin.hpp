@@ -14,7 +14,7 @@ namespace SuperHaxagon {
 	class PlatformWin : public Platform {
 	public:
 		PlatformWin();
-		~PlatformWin();
+		~PlatformWin() override;
 
 		bool loop() override;
 		double getDilation() override;

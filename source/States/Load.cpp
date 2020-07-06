@@ -13,6 +13,7 @@ namespace SuperHaxagon {
 	const char* Load::PROJECT_FOOTER = "ENDHAX";
 
 	Load::Load(Game& game) : game(game), platform(game.getPlatform()) {}
+	Load::~Load() = default;
 
 	void Load::load(std::ifstream& file, Location location) {
 		std::vector<std::shared_ptr<PatternFactory>> patterns;

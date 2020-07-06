@@ -6,6 +6,8 @@ namespace SuperHaxagon {
 		loaded = font.loadFromFile(path + ".ttf");
 	}
 
+	FontWin::~FontWin() = default;
+
 	int FontWin::getHeight() const {
 		return size;
 	}

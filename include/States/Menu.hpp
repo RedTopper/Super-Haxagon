@@ -13,7 +13,7 @@ namespace SuperHaxagon {
 
 		explicit Menu(Game& game);
 		Menu(Menu&) = delete;
-		~Menu();
+		~Menu() override;
 
 		std::unique_ptr<State> update(double dilation) override;
 		void drawTop(double scale) override;

@@ -13,10 +13,11 @@ namespace SuperHaxagon {
 		platform(game.getPlatform()),
 		factory(factory),
 		level(std::move(level)),
-		score(score)
-	{
+		score(score) {
 		high = factory.setHighScore(score);
 	}
+
+	Over::~Over() = default;
 
 	void Over::enter() {
 		platform.playSFX(game.getSfxOver());

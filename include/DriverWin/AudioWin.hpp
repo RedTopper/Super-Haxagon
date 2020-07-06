@@ -10,7 +10,7 @@ namespace SuperHaxagon {
 	class AudioWin : public Audio {
 	public:
 		explicit AudioWin(const std::string& path);
-		~AudioWin();
+		~AudioWin() override;
 
 		std::unique_ptr<Player> instantiate() override;
 

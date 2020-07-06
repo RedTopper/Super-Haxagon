@@ -15,6 +15,7 @@ namespace SuperHaxagon {
 
 		explicit Load(Game& game);
 		Load(Load&) = delete;
+		~Load();
 
 		void load(std::ifstream& file, Location location);
 

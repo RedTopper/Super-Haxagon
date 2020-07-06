@@ -6,6 +6,7 @@ namespace SuperHaxagon {
 	public:
 		Player() = default;
 		Player(Player&) = delete;
+		virtual ~Player() = default;
 
 	private:
 		virtual void setChannel(int channel) = 0;

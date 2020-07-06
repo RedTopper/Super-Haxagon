@@ -9,7 +9,7 @@ namespace SuperHaxagon {
 	class Player3DS : public Player {
 	public:
 		Player3DS(u8* data, u32 sampleRate, u32 dataSize, u16 channels, u16 bitsPerSample, u16 ndspFormat);
-		~Player3DS();
+		~Player3DS() override;
 
 		void setChannel(int _channel) override { channel = _channel; }
 		void setLoop(bool _loop) override { loop = _loop; }

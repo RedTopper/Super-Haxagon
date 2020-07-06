@@ -13,7 +13,7 @@ namespace SuperHaxagon {
 	class Platform3DS : public Platform {
 	public:
 		Platform3DS();
-		~Platform3DS();
+		~Platform3DS() override;
 
 		bool loop() override;
 

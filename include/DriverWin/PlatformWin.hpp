@@ -5,6 +5,8 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <deque>
+#include <Driver/Audio.hpp>
+
 
 #include "Driver/Platform.hpp"
 
@@ -21,7 +23,7 @@ namespace SuperHaxagon {
 
 		std::string getPath(const std::string& partial) override;
 		std::string getPathRom(const std::string& partial) override;
-		std::unique_ptr<Audio> loadAudio(const std::string& path) override;
+		std::unique_ptr<Audio> loadAudio(const std::string& path, Stream stream) override;
 		std::unique_ptr<Font> loadFont(const std::string& path, int size) override;
 
 		void playSFX(Audio& audio) override;

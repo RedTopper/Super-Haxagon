@@ -1,31 +1,29 @@
 #include "DriverWin/PlayerWin.hpp"
 
 namespace SuperHaxagon {
-	PlayerWin::PlayerWin(sf::SoundBuffer& buffer, bool loaded) : loaded(loaded) {
-		if (loaded) sound.setBuffer(buffer);
-	}
+	PlayerWin::PlayerWin(std::unique_ptr<sf::SoundSource> source) : source(std::move(source)) {}
 
 	PlayerWin::~PlayerWin() {
 		PlayerWin::stop();
 	}
 
-	void PlayerWin::setLoop(bool _loop) {
-		loop = _loop;
+	void PlayerWin::setLoop(bool loop) {
+		if (auto sound = dynamic_cast<sf::Sound*>(source.get())) {
+			sound->setLoop(loop);
+		} else if (auto music = dynamic_cast<sf::Music*>(source.get())) {
+			music->setLoop(loop);
+		}
 	}
 
 	void PlayerWin::play() {
-		if (!loaded) return;
-		sound.setLoop(loop);
-		sound.play();
+		source->play();
 	}
 
 	void PlayerWin::stop() {
-		if (!loaded) return;
-		sound.stop();
+		source->stop();
 	}
 
 	bool PlayerWin::isDone() {
-		if (!loaded) return true;
-		return sound.getStatus() == sf::SoundSource::Stopped;
+		return source->getStatus() == sf::SoundSource::Stopped;
 	}
 }

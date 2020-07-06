@@ -1,3 +1,4 @@
+#include <Driver/Audio.hpp>
 #include "Core/Game.hpp"
 #include "Driver/Font.hpp"
 #include "Factories/Level.hpp"
@@ -14,9 +15,9 @@ namespace SuperHaxagon {
 	Menu::~Menu() = default;
 
 	void Menu::enter() {
-		platform.stopBGM();
-		platform.playBGM(game.getBgmMenu());
+		bgm = platform.loadAudio(platform.getPathRom("/bgm/pamgaea"), SuperHaxagon::Stream::INDIRECT);
 		platform.playSFX(game.getSfxHexagon());
+		platform.playBGM(*bgm);
 	}
 
 	void Menu::exit() {

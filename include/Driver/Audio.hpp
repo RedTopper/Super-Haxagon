@@ -4,7 +4,14 @@
 #include <memory>
 
 namespace SuperHaxagon {
+	enum class Stream {
+		NONE,
+		DIRECT,
+		INDIRECT
+	};
+	
 	class Player;
+	
 	class Audio {
 	public:
 		Audio() = default;

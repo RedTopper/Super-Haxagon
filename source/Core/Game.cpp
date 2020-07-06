@@ -13,12 +13,11 @@ namespace SuperHaxagon {
 
 	Game::Game(Platform& platform) : platform(platform) {
 		// Audio loading
-		sfxBegin = platform.loadAudio(platform.getPathRom("/sound/begin.wav"));
-		sfxHexagon = platform.loadAudio(platform.getPathRom("/sound/hexagon.wav"));
-		sfxOver = platform.loadAudio(platform.getPathRom("/sound/over.wav"));
-		sfxSelect = platform.loadAudio(platform.getPathRom("/sound/select.wav"));
-		sfxLevelUp = platform.loadAudio(platform.getPathRom("/sound/level.wav"));
-		bgmMenu = platform.loadAudio(platform.getPathRom("/bgm/pamgaea.wav"));
+		sfxBegin = platform.loadAudio(platform.getPathRom("/sound/begin"), Stream::DIRECT);
+		sfxHexagon = platform.loadAudio(platform.getPathRom("/sound/hexagon"), Stream::DIRECT);
+		sfxOver = platform.loadAudio(platform.getPathRom("/sound/over"), Stream::DIRECT);
+		sfxSelect = platform.loadAudio(platform.getPathRom("/sound/select"), Stream::DIRECT);
+		sfxLevelUp = platform.loadAudio(platform.getPathRom("/sound/level"), Stream::DIRECT);
 
 		small = platform.loadFont(platform.getPathRom("/bump-it-up"), 16);
 		large = platform.loadFont(platform.getPathRom("/bump-it-up"), 32);

@@ -3,20 +3,24 @@
 #define SFML_STATIC
 
 #include <SFML/Audio/SoundBuffer.hpp>
+#include <SFML/Audio/Sound.hpp>
+#include <SFML/Audio/Music.hpp>
 
 #include "Driver/Audio.hpp"
 
 namespace SuperHaxagon {
 	class AudioWin : public Audio {
 	public:
-		explicit AudioWin(const std::string& path);
+		AudioWin(const std::string& path, Stream stream);
 		~AudioWin() override;
 
 		std::unique_ptr<Player> instantiate() override;
 
 	private:
-		sf::SoundBuffer buffer;
-		bool loaded = false;
+		Stream stream = Stream::NONE;
+
+		std::unique_ptr<sf::SoundBuffer> buffer;
+		std::unique_ptr<sf::Music> music;
 	};
 }
 

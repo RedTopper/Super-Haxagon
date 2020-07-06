@@ -49,7 +49,7 @@ namespace SuperHaxagon {
 		if(delayFrame <= 0) {
 			sidesTween = currentSides;
 			for(auto& pattern : patterns) {
-				pattern->advance(factory.getSpeedWall() * dilation);
+				pattern->advance(factory.getSpeedWall() * dilation * multiplierWalls);
 			}
 		} else {
 			double percent = (double)(delayFrame) / (double)(FRAMES_PER_CHANGE_SIDE * abs(currentSides - lastSides));
@@ -78,14 +78,14 @@ namespace SuperHaxagon {
 		}
 
 		// Rotate level
-		rotation += factory.getSpeedRotation() * multiplier * dilation;
+		rotation += factory.getSpeedRotation() * multiplierRot * dilation;
 		if(rotation >= TAU) rotation -= TAU;
 		if(rotation < 0) rotation  += TAU;
 
 		// Flip level if needed
 		flipFrame -= dilation;
 		if(flipFrame <= 0) {
-			multiplier *= -1.0;
+			multiplierRot *= -1.0;
 			flipFrame = rng.rand(FLIP_FRAMES_MIN, FLIP_FRAMES_MAX);
 		}
 	}
@@ -141,7 +141,8 @@ namespace SuperHaxagon {
 	}
 
 	void Level::increaseMultiplier() {
-		multiplier *= DIFFICULTY_MULTIPLIER;
+		multiplierRot *= DIFFICULTY_MULTIPLIER_ROT;
+		multiplierWalls *= DIFFICULTY_MULTIPLIER_WALLS;
 	}
 
 	void Level::clearPatterns() {

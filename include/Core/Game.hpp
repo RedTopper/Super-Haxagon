@@ -31,7 +31,6 @@ namespace SuperHaxagon {
 		Audio& getSfxOver() const {return *sfxOver;}
 		Audio& getSfxSelect() const {return *sfxSelect;}
 		Audio& getSfxLevelUp() const {return *sfxLevelUp;}
-		Audio& getBgmMenu() const {return *bgmMenu;}
 
 		Font& getFontSmall() const {return *small;}
 		Font& getFontLarge() const {return *large;}
@@ -115,7 +114,6 @@ namespace SuperHaxagon {
 		std::unique_ptr<Audio> sfxOver;
 		std::unique_ptr<Audio> sfxSelect;
 		std::unique_ptr<Audio> sfxLevelUp;
-		std::unique_ptr<Audio> bgmMenu;
 
 		std::unique_ptr<Font> small;
 		std::unique_ptr<Font> large;

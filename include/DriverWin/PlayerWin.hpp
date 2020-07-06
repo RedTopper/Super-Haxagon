@@ -2,15 +2,17 @@
 #define SUPER_HAXAGON_PLAYER_WIN_HPP
 #define SFML_STATIC
 
-#include <SFML/Audio/SoundBuffer.hpp>
+#include <memory>
+#include <SFML/Audio/SoundSource.hpp>
 #include <SFML/Audio/Sound.hpp>
+#include <SFML/Audio/Music.hpp>
 
 #include "Driver/Player.hpp"
 
 namespace SuperHaxagon {
 	class PlayerWin : public Player {
 	public:
-		PlayerWin(sf::SoundBuffer& buffer, bool loaded);
+		explicit PlayerWin(std::unique_ptr<sf::SoundSource> source);
 		~PlayerWin() override;
 
 		void setChannel(int) override {};
@@ -21,9 +23,8 @@ namespace SuperHaxagon {
 		bool isDone() override;
 
 	private:
-		sf::Sound sound;
+		std::unique_ptr<sf::SoundSource> source;
 		bool loaded = false;
-		bool loop = false;
 	};
 }
 

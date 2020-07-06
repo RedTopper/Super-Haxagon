@@ -25,6 +25,8 @@ namespace SuperHaxagon {
 		Game& game;
 		Platform& platform;
 
+		std::unique_ptr<Audio> bgm;
+
 		double transitionFrame = 0;
 		int transitionDirection = 0;
 		int lastLevel = 0;

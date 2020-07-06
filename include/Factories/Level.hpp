@@ -22,7 +22,8 @@ namespace SuperHaxagon {
 
 	class Level {
 	public:
-		static constexpr double DIFFICULTY_MULTIPLIER = 1.1;
+		static constexpr double DIFFICULTY_MULTIPLIER_WALLS = 1.05;
+		static constexpr double DIFFICULTY_MULTIPLIER_ROT = 1.1;
 		static constexpr int FLIP_FRAMES_MIN = 120;
 		static constexpr int FLIP_FRAMES_MAX = 600;
 		static constexpr int FRAMES_PER_CHANGE_SIDE = 36;
@@ -48,7 +49,8 @@ namespace SuperHaxagon {
 
 		std::deque<std::unique_ptr<Pattern>> patterns;
 
-		double multiplier = 1.0; // Current direction and speed of rotation
+		double multiplierRot = 1.0; // Current direction and speed of rotation
+		double multiplierWalls = 1.0; // Current speed of the walls flying at you
 		double cursorPos{};
 		double rotation{};
 		double sidesTween{};

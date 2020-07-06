@@ -60,8 +60,8 @@ namespace SuperHaxagon {
 		return path;
 	}
 
-	std::unique_ptr<Audio> PlatformWin::loadAudio(const std::string& path) {
-		return std::make_unique<AudioWin>(path);
+	std::unique_ptr<Audio> PlatformWin::loadAudio(const std::string& path, Stream stream) {
+		return std::make_unique<AudioWin>(path, stream);
 	}
 
 	std::unique_ptr<Font> PlatformWin::loadFont(const std::string& path, int size) {
@@ -79,6 +79,7 @@ namespace SuperHaxagon {
 		}
 
 		auto player = audio.instantiate();
+		if (!player) return;
 		player->setLoop(false);
 		player->play();
 		sfx.emplace_back(std::move(player));
@@ -86,6 +87,7 @@ namespace SuperHaxagon {
 
 	void PlatformWin::playBGM(Audio& audio) {
 		bgm = audio.instantiate();
+		if (!bgm) return;
 		bgm->setChannel(0);
 		bgm->setLoop(true);
 		bgm->play();

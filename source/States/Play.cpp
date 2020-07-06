@@ -15,13 +15,17 @@ namespace SuperHaxagon {
 		level(factory.instantiate(game.getTwister(), SCALE_BASE_DISTANCE))
 	{}
 
-	Play::~Play() {
-		std::cout << "dead" << std::endl;
-	}
-
+	Play::~Play() = default;
 
 	void Play::enter() {
-		bgm = platform.loadAudio(platform.getPath(factory.getMusic()));
+		std::string path;
+		if (factory.getLocation() == Location::INTERNAL) {
+			path = platform.getPathRom("/bgm" + factory.getMusic());
+		} else if (factory.getLocation() == Location::EXTERNAL) {
+			path = platform.getPath("/bgm" + factory.getMusic());
+		}
+
+		bgm = platform.loadAudio(path, Stream::INDIRECT);
 		platform.playSFX(game.getSfxBegin());
 		platform.playBGM(*bgm);
 	}

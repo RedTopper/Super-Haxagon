@@ -37,7 +37,7 @@ namespace SuperHaxagon {
 		return std::string("romfs:") + partial;
 	}
 
-	std::unique_ptr<Audio> Platform3DS::loadAudio(const std::string& path) {
+	std::unique_ptr<Audio> Platform3DS::loadAudio(const std::string& path, Stream stream) {
 		return std::make_unique<Audio3DS>(path);
 	}
 

@@ -67,7 +67,7 @@ namespace SuperHaxagon {
 	 * Will pulse between 0.0 and 1.0 at the speed given (in tenths of a second).
 	 * start is when the pulse should (have) start(ed).
 	 */
-	double getPulse(int frame, int range, int start);
+	double getPulse(double frame, double range, double start);
 
 	/**
 	 * Gets the current level that the score represents (for example, point)

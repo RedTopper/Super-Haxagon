@@ -13,14 +13,14 @@ namespace SuperHaxagon {
 	class Over : public State {
 	public:
 		static constexpr double GAME_OVER_ROT_SPEED = TAU/240.0;
-		static constexpr double GAME_OVER_ACCELERATION_RATE = 1.1;
+		static constexpr double GAME_OVER_ACCELERATION_RATE = 0.1;
 		static constexpr int FRAMES_PER_GAME_OVER = 60;
 		static constexpr int PULSE_TIME = 75;
 
 		Over(Game& game, LevelFactory& factory, std::unique_ptr<Level> level, int score);
 		Over(Over&) = delete;
 
-		std::unique_ptr<State> update() override;
+		std::unique_ptr<State> update(double dilation) override;
 		void drawTop() override;
 		void drawBot() override;
 		void enter() override;
@@ -32,8 +32,8 @@ namespace SuperHaxagon {
 		std::unique_ptr<Level> level;
 
 		bool high = false;
-		int frames = 0;
 		int score = 0;
+		double frames = 0;
 		double offset = 1.0;
 	};
 }

@@ -31,14 +31,14 @@ namespace SuperHaxagon {
 		Level(Level&) = delete;
 		~Level();
 
-		void update(Twist& rng, int hexLength, int renderDistance);
+		void update(Twist& rng, double hexLength, double renderDistance, double dilation);
 		void draw(Game& game, double offset);
-		Movement collision(int cursorDistance) const;
+		Movement collision(double cursorDistance, double dilation) const;
 
 		void increaseMultiplier();
-		void rotate(double distance);
-		void left();
-		void right();
+		void rotate(double distance, double dilation);
+		void left(double dilation);
+		void right(double dilation);
 		void clamp();
 
 	private:
@@ -53,9 +53,9 @@ namespace SuperHaxagon {
 		int lastSides{};
 		int currentSides{};
 
-		int delayFrame{}; // Tween between side switches
-		int tweenFrame{}; // Tween colors
-		int flipFrame = FLIP_FRAMES_MAX; // Amount of frames left until flip
+		double delayFrame{}; // Tween between side switches
+		double tweenFrame{}; // Tween colors
+		double flipFrame = FLIP_FRAMES_MAX; // Amount of frames left until flip
 
 		int indexBG1{};
 		int indexBG2{};
@@ -73,7 +73,7 @@ namespace SuperHaxagon {
 		LevelFactory(std::ifstream& file, std::vector<std::shared_ptr<PatternFactory>>& shared, Location location);
 		LevelFactory(const LevelFactory&) = delete;
 
-		std::unique_ptr<Level> instantiate(Twist& rng, int renderDistance) const;
+		std::unique_ptr<Level> instantiate(Twist& rng, double renderDistance) const;
 
 		const std::vector<std::shared_ptr<PatternFactory>>& getPatterns() const {return patterns;}
 		const std::vector<Color>& getColorsFG() const {return colorsFG;}

@@ -39,11 +39,11 @@ namespace SuperHaxagon {
 		return buffer.str();
 	}
 
-	double getPulse(int frame, int range, int start) {
+	double getPulse(double frame, double range, double start) {
 		frame -= start;
 		// Alternate algorithm:
 		//double percent = sin((double)frame * <speed>) / 2.0 + 0.5;
-		return fabs(((double)(frame % range * 2) - (double)range) / (double)range);
+		return fabs(((frame - floor(frame / (range * 2)) * range * 2) - range) / range);
 	}
 
 	const char* getScoreText(int score) {

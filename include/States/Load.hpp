@@ -18,7 +18,7 @@ namespace SuperHaxagon {
 
 		void load(std::ifstream& file, Location location);
 
-		std::unique_ptr<State> update() override;
+		std::unique_ptr<State> update(double dilation) override;
 		void enter() override;
 		void drawTop() override {};
 		void drawBot() override {};

@@ -18,15 +18,15 @@ namespace SuperHaxagon {
 		platform.playSFX(game.getSfxBegin());
 	}
 
-	std::unique_ptr<State> Play::update() {
-		level->update(game.getTwister(), game.getHexLength(), game.getRenderDistance());
+	std::unique_ptr<State> Play::update(double dilation) {
+		level->update(game.getTwister(), game.getHexLength(), game.getRenderDistance(), dilation);
 
 		// Button presses
 		auto pressed = platform.getPressed();
 
 		// Check collision
-		int cursorDistance = game.getHexLength() + game.getHumanPadding() + game.getHumanHeight();
-		auto hit = level->collision(cursorDistance);
+		double cursorDistance = game.getHexLength() + game.getHumanPadding() + game.getHumanHeight();
+		auto hit = level->collision(cursorDistance, dilation);
 		if(pressed.back || hit == Movement::DEAD) {
 			return std::make_unique<Over>(game, factory, std::move(level), score);
 		}
@@ -36,19 +36,19 @@ namespace SuperHaxagon {
 		}
 
 		if (pressed.left && hit != Movement::CANNOT_MOVE_LEFT) {
-			level->left();
+			level->left(dilation);
 		} else if (pressed.right && hit != Movement::CANNOT_MOVE_RIGHT) {
-			level->right();
+			level->right(dilation);
 		}
 
 		// Make sure the cursor doesn't extend too far
 		level->clamp();
 
 		// Update score
-		auto lastScoreText = getScoreText(score);
-		score++;
+		auto lastScoreText = getScoreText((int)score);
+		score += dilation;
 
-		if(lastScoreText != getScoreText(score)) {
+		if(lastScoreText != getScoreText((int)score)) {
 			level->increaseMultiplier();
 			platform.playSFX(game.getSfxLevelUp());
 		}

@@ -22,16 +22,16 @@ namespace SuperHaxagon {
 		platform.playSFX(game.getSfxOver());
 	}
 
-	std::unique_ptr<State> Over::update() {
-		frames++;
-		level->rotate(GAME_OVER_ROT_SPEED);
+	std::unique_ptr<State> Over::update(double dilation) {
+		frames += dilation;
+		level->rotate(GAME_OVER_ROT_SPEED * dilation, 0);
 		level->clamp();
 
 		auto press = platform.getPressed();
 		if(press.quit) return std::make_unique<Quit>();
 
 		if(frames <= FRAMES_PER_GAME_OVER) {
-			offset *= GAME_OVER_ACCELERATION_RATE;
+			offset *= GAME_OVER_ACCELERATION_RATE * dilation + 1.0;
 		}
 
 		if(frames >= FRAMES_PER_GAME_OVER) {

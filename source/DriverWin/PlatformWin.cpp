@@ -25,6 +25,8 @@ namespace SuperHaxagon {
 	PlatformWin::~PlatformWin() = default;
 
 	bool PlatformWin::loop() {
+		delta = clock.getElapsedTime().asSeconds();
+		clock.restart();
 		sf::Event event{};
 		while (window->pollEvent(event)) {
 			if (event.type == sf::Event::Closed) {
@@ -39,13 +41,10 @@ namespace SuperHaxagon {
 		return loaded && window->isOpen();
 	}
 
-	bool PlatformWin::canUpdate() {
-		if (clock.getElapsedTime().asMicroseconds() > 15000) {
-			clock.restart();
-			return true;
-		}
-
-		return false;
+	double PlatformWin::getDilation() {
+		// The game was originally designed with 60FPS in mind
+		double dilation = delta / (1.0 / 60.0);
+		return dilation > 4.0 ? 4.0 : (dilation < 0.001 ? 0.05 : dilation);
 	}
 
 	std::string PlatformWin::getPath(const std::string& partial) {

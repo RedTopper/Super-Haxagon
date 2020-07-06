@@ -23,7 +23,7 @@ namespace SuperHaxagon {
 		platform.stopBGM();
 	}
 
-	std::unique_ptr<State> Menu::update() {
+	std::unique_ptr<State> Menu::update(double dilation) {
 		Buttons press = platform.getPressed();
 
 		if (press.quit) return std::make_unique<Quit>();
@@ -46,7 +46,7 @@ namespace SuperHaxagon {
 
 		if(level >=  (int)game.getLevels().size()) level = 0;
 		if(level < 0) level = (int)game.getLevels().size() - 1;
-		if(transitionDirection) transitionFrame++;
+		if(transitionDirection) transitionFrame += dilation;
 		if(transitionFrame >= FRAMES_PER_TRANSITION) {
 			transitionFrame = 0;
 			transitionDirection = 0;

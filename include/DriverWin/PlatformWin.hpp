@@ -14,7 +14,7 @@ namespace SuperHaxagon {
 		~PlatformWin();
 
 		bool loop() override;
-		bool canUpdate() override;
+		double getDilation() override;
 
 		std::string getPath(const std::string& partial) override;
 		std::string getPathRom(const std::string& partial) override;
@@ -39,6 +39,7 @@ namespace SuperHaxagon {
 
 	private:
 		bool loaded = false;
+		double delta = 0.0;
 		sf::Clock clock;
 		std::unique_ptr<sf::RenderWindow> window;
 	};

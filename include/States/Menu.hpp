@@ -15,7 +15,7 @@ namespace SuperHaxagon {
 		Menu(Menu&) = delete;
 		~Menu();
 
-		std::unique_ptr<State> update() override;
+		std::unique_ptr<State> update(double dilation) override;
 		void drawTop() override;
 		void drawBot() override;
 		void enter() override;
@@ -25,7 +25,7 @@ namespace SuperHaxagon {
 		Game& game;
 		Platform& platform;
 
-		int transitionFrame = 0;
+		double transitionFrame = 0;
 		int transitionDirection = 0;
 		int lastLevel = 0;
 		int level = 0;

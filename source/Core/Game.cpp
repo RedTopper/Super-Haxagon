@@ -32,13 +32,12 @@ namespace SuperHaxagon {
 		state = std::make_unique<Load>(*this);
 		state->enter();
 		while(platform.loop() && !dynamic_cast<Quit*>(state.get())) {
-			std::unique_ptr<State> next;
-			if (platform.canUpdate()) next = state->update();
+			std::unique_ptr<State> next = state->update(platform.getDilation());
 			if (next) {
 				state->exit();
 				state = std::move(next);
 				state->enter();
-				state->update();
+				state->update(0);
 			}
 
 			platform.screenBegin();

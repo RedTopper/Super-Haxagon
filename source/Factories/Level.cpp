@@ -31,9 +31,9 @@ namespace SuperHaxagon {
 
 	Level::~Level() = default;
 
-	void Level::update(Twist& rng, int hexLength, int renderDistance) {
+	void Level::update(Twist& rng, double hexLength, double renderDistance, double dilation) {
 		// Update color frame and clamp
-		tweenFrame++;
+		tweenFrame += dilation;
 		if(tweenFrame >= factory.getSpeedPulse()) {
 			tweenFrame = 0;
 			indexBG1 = nextIndexBG1;
@@ -46,15 +46,15 @@ namespace SuperHaxagon {
 
 		// Bring walls forward if we are not delaying
 		// Otherwise tween from one shape to another.
-		if(delayFrame == 0) {
+		if(delayFrame <= 0) {
 			sidesTween = currentSides;
 			for(auto& pattern : patterns) {
-				pattern->advance(factory.getSpeedWall());
+				pattern->advance(factory.getSpeedWall() * dilation);
 			}
 		} else {
 			double percent = (double)(delayFrame) / (double)(FRAMES_PER_CHANGE_SIDE * abs(currentSides - lastSides));
 			sidesTween = linear((double)currentSides, (double)lastSides, percent);
-			delayFrame--;
+			delayFrame -= dilation;
 		}
 
 		// Shift patterns forward
@@ -78,13 +78,13 @@ namespace SuperHaxagon {
 		}
 
 		// Rotate level
-		rotation += factory.getSpeedRotation() * multiplier;
+		rotation += factory.getSpeedRotation() * multiplier * dilation;
 		if(rotation >= TAU) rotation -= TAU;
 		if(rotation < 0) rotation  += TAU;
 
 		// Flip level if needed
-		flipFrame--;
-		if(flipFrame == 0) {
+		flipFrame -= dilation;
+		if(flipFrame <= 0) {
 			multiplier *= -1.0;
 			flipFrame = rng.rand(FLIP_FRAMES_MIN, FLIP_FRAMES_MAX);
 		}
@@ -119,7 +119,7 @@ namespace SuperHaxagon {
 		game.drawCursor(FG, center, cursorPos, rotation);
 	}
 
-	Movement Level::collision(int cursorDistance) const {
+	Movement Level::collision(double cursorDistance, double dilation) const {
 		auto collision = Movement::CAN_MOVE;
 
 		// For all patterns (technically only need to check front two)
@@ -127,7 +127,7 @@ namespace SuperHaxagon {
 
 			// For all walls
 			for(const auto& wall : pattern->getWalls()) {
-				Movement check = wall->collision(cursorDistance, cursorPos, factory.getSpeedCursor(), pattern->getSides());
+				Movement check = wall->collision(cursorDistance, cursorPos, factory.getSpeedCursor() * dilation, pattern->getSides());
 
 				// Update collision
 				if(collision == Movement::CAN_MOVE) collision = check; //If we can move, try and replace it with something else
@@ -144,16 +144,16 @@ namespace SuperHaxagon {
 		multiplier *= DIFFICULTY_MULTIPLIER;
 	}
 
-	void Level::rotate(double distance) {
+	void Level::rotate(double distance, double dilation) {
 		rotation += distance;
 	}
 
-	void Level::left() {
-		cursorPos += factory.getSpeedCursor();
+	void Level::left(double dilation) {
+		cursorPos += factory.getSpeedCursor() * dilation;
 	}
 
-	void Level::right() {
-		cursorPos -= factory.getSpeedCursor();
+	void Level::right(double dilation) {
+		cursorPos -= factory.getSpeedCursor() * dilation;
 	}
 
 	void Level::clamp() {
@@ -212,7 +212,7 @@ namespace SuperHaxagon {
 			throw malformed("level", "level footer invalid!");
 	}
 
-	std::unique_ptr<Level> LevelFactory::instantiate(Twist& rng, int renderDistance) const {
+	std::unique_ptr<Level> LevelFactory::instantiate(Twist& rng, double renderDistance) const {
 		return std::make_unique<Level>(*this, rng, renderDistance);
 	}
 

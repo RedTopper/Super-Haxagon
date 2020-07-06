@@ -20,7 +20,7 @@ namespace SuperHaxagon {
 		Play(Game& game, LevelFactory& level);
 		Play(Play&) = delete;
 
-		std::unique_ptr<State> update() override;
+		std::unique_ptr<State> update(double dilation) override;
 		void drawTop() override;
 		void drawBot() override;
 		void enter() override;
@@ -31,7 +31,7 @@ namespace SuperHaxagon {
 		LevelFactory& factory;
 		std::unique_ptr<Level> level;
 
-		int score{};
+		double score = 0;
 	};
 }
 

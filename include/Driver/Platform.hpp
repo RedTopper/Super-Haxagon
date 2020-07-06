@@ -26,7 +26,7 @@ namespace SuperHaxagon {
 		Platform(Platform&) = delete;
 
 		virtual bool loop() = 0;
-		virtual bool canUpdate() = 0;
+		virtual double getDilation() = 0;
 
 		virtual std::string getPath(const std::string& partial) = 0;
 		virtual std::string getPathRom(const std::string& partial) = 0;

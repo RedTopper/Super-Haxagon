@@ -56,7 +56,7 @@ namespace SuperHaxagon {
 		}
 	}
 
-	std::unique_ptr<State> Load::update() {
+	std::unique_ptr<State> Load::update(double dilation) {
 		return std::make_unique<Menu>(game);
 	}
 }

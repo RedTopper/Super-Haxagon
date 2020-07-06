@@ -1,9 +1,9 @@
 #include <string>
 #include <algorithm>
 
+#include "DriverWin/PlatformWin.hpp"
 #include "DriverWin/AudioWin.hpp"
 #include "DriverWin/FontWin.hpp"
-#include "DriverWin/PlatformWin.hpp"
 
 namespace SuperHaxagon {
 	PlatformWin::PlatformWin() : clock() {
@@ -40,7 +40,7 @@ namespace SuperHaxagon {
 	}
 
 	bool PlatformWin::canUpdate() {
-		if (clock.getElapsedTime().asMicroseconds() > 16000) {
+		if (clock.getElapsedTime().asMicroseconds() > 15000) {
 			clock.restart();
 			return true;
 		}
@@ -64,8 +64,8 @@ namespace SuperHaxagon {
 		return std::make_unique<AudioWin>(path);
 	}
 
-	std::unique_ptr<Font> PlatformWin::loadFont(const std::string& path) {
-		return std::make_unique<FontWin>(path);
+	std::unique_ptr<Font> PlatformWin::loadFont(const std::string& path, int size) {
+		return std::make_unique<FontWin>(*this, path, size);
 	}
 
 	void PlatformWin::playSFX(Audio& audio) {

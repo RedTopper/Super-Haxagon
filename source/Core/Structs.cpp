@@ -30,7 +30,12 @@ namespace SuperHaxagon {
 		std::stringstream buffer;
 		int scoreInt = (int)((double)score/60.0);
 		int decimalPart = (int)(((double)score/60.0 - (double)scoreInt) * 100.0);
-		buffer << std::fixed << std::setprecision(3) << scoreInt << std::setprecision(2) << decimalPart;
+		buffer << std::fixed << std::setfill('0')
+			<< std::setprecision(3) << std::setw(3)
+			<< scoreInt
+			<< ":"
+			<< std::setprecision(2) << std::setw(2)
+			<< decimalPart;
 		return buffer.str();
 	}
 

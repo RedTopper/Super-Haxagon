@@ -20,8 +20,8 @@ namespace SuperHaxagon {
 		sfxLevelUp = platform.loadAudio(platform.getPathRom("/sound/level.wav"));
 		bgmMenu = platform.loadAudio(platform.getPathRom("/bgm/pamgaea.wav"));
 
-		small = platform.loadFont(platform.getPathRom("/small.bff"));
-		large = platform.loadFont(platform.getPathRom("/large.bff"));
+		small = platform.loadFont(platform.getPathRom("/bump-it-up"), 16);
+		large = platform.loadFont(platform.getPathRom("/bump-it-up"), 32);
 
 		twister = platform.getTwister();
 	}

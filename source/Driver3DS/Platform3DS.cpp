@@ -41,7 +41,7 @@ namespace SuperHaxagon {
 		return std::make_unique<Audio3DS>(path);
 	}
 
-	std::unique_ptr<Font> Platform3DS::loadFont(const std::string& path) {
+	std::unique_ptr<Font> Platform3DS::loadFont(const std::string& path, int size) {
 		return std::make_unique<Font3DS>(path);
 	}
 

@@ -31,7 +31,7 @@ namespace SuperHaxagon {
 		virtual std::string getPath(const std::string& partial) = 0;
 		virtual std::string getPathRom(const std::string& partial) = 0;
 		virtual std::unique_ptr<Audio> loadAudio(const std::string& path) = 0;
-		virtual std::unique_ptr<Font> loadFont(const std::string& path) = 0;
+		virtual std::unique_ptr<Font> loadFont(const std::string& path, int size) = 0;
 
 		virtual void playSFX(Audio& audio) = 0;
 		virtual void playBGM(Audio& audio) = 0;

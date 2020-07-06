@@ -1,5 +1,6 @@
 #ifndef SUPER_HAXAGON_AUDIO_WIN_HPP
 #define SUPER_HAXAGON_AUDIO_WIN_HPP
+#define SFML_STATIC
 
 #include "Driver/Audio.hpp"
 

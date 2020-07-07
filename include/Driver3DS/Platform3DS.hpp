@@ -2,8 +2,9 @@
 #define SUPER_HAXAGON_PLATFORM_3DS_HPP
 
 #include <3ds.h>
-#include <Driver/Audio.hpp>
+#include <citro2d.h>
 
+#include "Driver/Audio.hpp"
 #include "Driver/Platform.hpp"
 
 static const int MAX_TRACKS = 4;
@@ -42,6 +43,12 @@ namespace SuperHaxagon {
 	private:
 		std::unique_ptr<Player> sfx[MAX_TRACKS];
 		std::unique_ptr<Player> bgm;
+
+		C3D_RenderTarget* top;
+		C3D_RenderTarget* bot;
+		C2D_TextBuf buff;
+
+		bool drawingOnTop = true;
 	};
 }
 

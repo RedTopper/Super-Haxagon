@@ -85,7 +85,6 @@ namespace SuperHaxagon {
 		small.setScale(scale);
 
 		double PAD_TEXT = 3 * scale;
-		double PAD_REAL = 8 * scale;
 		double MARGIN = 20 * scale;
 		double width = platform.getScreenDim().x;
 		double height = platform.getScreenDim().y;
@@ -97,11 +96,6 @@ namespace SuperHaxagon {
 		Point posBest = {width / 2, posTime.y + heightSmall + PAD_TEXT};
 		Point posB = {width / 2, height - MARGIN - heightSmall};
 		Point posA = {width / 2, posB.y - heightSmall - PAD_TEXT};
-
-		double bkgWidth = large.getWidth("GAME OVER");
-		Point bkgPos = {posGameOver.x - bkgWidth/2 - PAD_REAL, posGameOver.y - PAD_REAL};
-		Point bkgSize = {bkgWidth + PAD_REAL * 2, posBest.y + heightSmall + PAD_REAL * 2 - MARGIN};
-		platform.drawRect(COLOR_TRANSPARENT, bkgPos, bkgSize);
 
 		auto textScore = std::string("SCORE: ") + getTime(score);
 		large.draw(COLOR_WHITE, posGameOver, Alignment::CENTER,  "GAME OVER");

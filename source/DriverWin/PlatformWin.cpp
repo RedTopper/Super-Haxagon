@@ -48,7 +48,7 @@ namespace SuperHaxagon {
 	double PlatformWin::getDilation() {
 		// The game was originally designed with 60FPS in mind
 		double dilation = delta / (1.0 / 60.0);
-		return dilation > 4.0 ? 4.0 : (dilation < 0.001 ? 0.05 : dilation);
+		return dilation > 4.0 ? 4.0 : (dilation < 0.05 ? 0.05 : dilation);
 	}
 
 	std::string PlatformWin::getPath(const std::string& partial) {

@@ -26,7 +26,7 @@ namespace SuperHaxagon {
 		u16 bitsPerSample;
 		u16 ndspFormat;
 
-		ndspWaveBuf buffer;
+		ndspWaveBuf buffer{};
 
 		int channel = 0;
 		bool loop = false;

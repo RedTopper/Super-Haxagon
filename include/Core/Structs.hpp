@@ -80,7 +80,7 @@ namespace SuperHaxagon {
 	 * Gets the current level that the score represents (for example, point)
 	 * if the user is less than 10 seconds into the game)
 	 */
-	const char* getScoreText(int score);
+	const char* getScoreText(int score, bool reduced);
 
 	/**
 	 * Creates an exception with

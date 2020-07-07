@@ -62,10 +62,10 @@ namespace SuperHaxagon {
 		level->clamp();
 
 		// Update score
-		auto lastScoreText = getScoreText((int)score);
+		auto lastScoreText = getScoreText((int) score, false);
 		score += dilation;
 
-		if(lastScoreText != getScoreText((int)score)) {
+		if(lastScoreText != getScoreText((int) score, false)) {
 			level->increaseMultiplier();
 			platform.playSFX(game.getSfxLevelUp());
 		}
@@ -95,7 +95,8 @@ namespace SuperHaxagon {
 		small.setScale(scale);
 
 		// Draw the top left POINT/LINE thing
-		auto levelUp = getScoreText((int)score);
+		// Note, 400 is kind of arbitrary. Perhaps it's needed to update this later.
+		auto levelUp = getScoreText((int) score, platform.getScreenDim().x <= 400);
 		Point levelUpPosText = {PAD, PAD};
 		Point levelUpBkgPos = {0, 0};
 		Point LevelUpBkgSize = {

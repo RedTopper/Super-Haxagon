@@ -26,7 +26,7 @@ namespace SuperHaxagon {
 		return sfText.getLocalBounds().width;
 	}
 
-	void FontWin::draw(const Color& color, const Point& position, Alignment alignment, std::string text) const {
+	void FontWin::draw(const Color& color, const Point& position, Alignment alignment, const std::string& str) const {
 		if (!loaded) return;
 		sf::Text sfText;
 		sf::Vector2f sfPosition;
@@ -34,7 +34,7 @@ namespace SuperHaxagon {
 		sfText.setFont(font);
 		sfText.setCharacterSize((int)(size * scale));
 		sfText.setFillColor({color.r, color.g, color.b, color.a});
-		sfText.setString(text);
+		sfText.setString(str);
 
 		float width = sfText.getLocalBounds().width;
 		if (alignment == Alignment::LEFT) sfPosition.x = position.x;

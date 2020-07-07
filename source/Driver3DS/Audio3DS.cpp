@@ -9,7 +9,7 @@ namespace SuperHaxagon {
 		loaded = false;
 
 		//open file
-		std::ifstream file(path, std::ios::in | std::ios::binary);
+		std::ifstream file(path + ".wav", std::ios::in | std::ios::binary);
 		if(!file) return;
 
 		//check signature

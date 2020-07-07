@@ -18,7 +18,7 @@ namespace SuperHaxagon {
 		void setScale(double scale) override;
 		double getHeight() const override;
 		double getWidth(const std::string& text) const override;
-		void draw(const Color& color, const Point& position, Alignment alignment, std::string text) const override;
+		void draw(const Color& color, const Point& position, Alignment alignment, const std::string& text) const override;
 
 	private:
 		PlatformWin& platform;

@@ -46,14 +46,24 @@ namespace SuperHaxagon {
 		return fabs(((frame - floor(frame / (range * 2)) * range * 2) - range) / range);
 	}
 
-	const char* getScoreText(int score) {
-		if(score < 10 * 60) return "SPACE";
-		if(score < 20 * 60) return "POINT";
-		if(score < 30 * 60) return "LINE";
-		if(score < 40 * 60) return "TRIANGLE";
-		if(score < 50 * 60) return "SQUARE";
-		if(score < 60 * 60) return "PENTAGON";
-		return "HEXAGON";
+	const char* getScoreText(int score, bool reduced) {
+		if (reduced) {
+			if (score < 10 * 60) return "SPACE";
+			if (score < 20 * 60) return "POINT";
+			if (score < 30 * 60) return "LINE";
+			if (score < 40 * 60) return "TRI";
+			if (score < 50 * 60) return "QUAD";
+			if (score < 60 * 60) return "PENTA";
+			return "HEXA";
+		} else {
+			if (score < 10 * 60) return "SPACE";
+			if (score < 20 * 60) return "POINT";
+			if (score < 30 * 60) return "LINE";
+			if (score < 40 * 60) return "TRIANGLE";
+			if (score < 50 * 60) return "SQUARE";
+			if (score < 60 * 60) return "PENTAGON";
+			return "HEXAGON";
+		}
 	}
 
 	std::runtime_error malformed(const std::string& where, const std::string& message) {

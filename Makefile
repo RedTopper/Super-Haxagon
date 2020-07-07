@@ -26,10 +26,11 @@ ifeq ($(TARGET),3DS)
 
     LIBRARY_DIRS += $(DEVKITPRO)/libctru
     $(info $$LIBRARY_DIRS is [${LIBRARY_DIRS}])
-    LIBRARIES += ctru
+    LIBRARIES += citro2d citro3d ctru m
 
     PRODUCT_CODE := CTR-P-HAXA
     UNIQUE_ID := 0x099AA
+    ROMFS_DIR := romfs
 
     BANNER_AUDIO := resource/audio.wav
     BANNER_IMAGE := resource/banner.cgfx
@@ -52,7 +53,7 @@ endif
 ifeq ($(TARGET),WIN64)
     SOURCE_DIRS += source/DriverWin
 
-    LIBRARY_DIRS += /mingw64 /mingw64/lib ./libraries/SFML
+    LIBRARY_DIRS += ./libraries/SFML /mingw64 /mingw64/lib
     LIBRARIES += sfml-graphics-s sfml-window-s sfml-audio-s sfml-system-s winmm openal32 gdi32 opengl32 freetype flac vorbisenc vorbisfile vorbis ogg
 
     BUILD_FLAGS := -mwindows 

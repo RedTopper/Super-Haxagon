@@ -15,8 +15,8 @@ namespace SuperHaxagon {
 		settings.antialiasingLevel = 8;
 
 		sf::VideoMode video(
-			(int)(sf::VideoMode::getDesktopMode().width * 0.75),
-			(int)(sf::VideoMode::getDesktopMode().height * 0.75)
+			400,//(int)(sf::VideoMode::getDesktopMode().width * 0.75),
+			240//(int)(sf::VideoMode::getDesktopMode().height * 0.75)
 		);
 
 		window = std::make_unique<sf::RenderWindow>(video, "Super Haxagon", sf::Style::Default, settings);
@@ -133,7 +133,7 @@ namespace SuperHaxagon {
 		sf::RectangleShape rectangle(sf::Vector2f(size.x, size.y));
 		sf::Color sfColor{color.r, color.g, color.b, color.a};
 		rectangle.setFillColor(sfColor);
-		rectangle.setPosition((float)round(point.x), (float)round(point.y));
+		rectangle.setPosition((float)(point.x), (float)(point.y));
 		window->draw(rectangle);
 	}
 
@@ -141,9 +141,9 @@ namespace SuperHaxagon {
 		double height = getScreenDim().y;
 		sf::ConvexShape convex;
 		convex.setPointCount(3);
-		convex.setPoint(0, sf::Vector2f((float)round(points[0].x), (float)round(height - points[0].y)));
-		convex.setPoint(1, sf::Vector2f((float)round(points[1].x), (float)round(height - points[1].y)));
-		convex.setPoint(2, sf::Vector2f((float)round(points[2].x), (float)round(height - points[2].y)));
+		convex.setPoint(0, sf::Vector2f((float)points[0].x, (float)(height - points[0].y)));
+		convex.setPoint(1, sf::Vector2f((float)points[1].x, (float)(height - points[1].y)));
+		convex.setPoint(2, sf::Vector2f((float)points[2].x, (float)(height - points[2].y)));
 		sf::Color sfColor{color.r, color.g, color.b, color.a};
 		convex.setFillColor(sfColor);
 		convex.setPosition(0, 0);

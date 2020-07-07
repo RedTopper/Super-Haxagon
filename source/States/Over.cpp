@@ -78,18 +78,30 @@ namespace SuperHaxagon {
 		level->draw(game, scale, offset);
 	}
 
-	void Over::drawBot(double) {
-		const auto& large = game.getFontLarge();
-		const auto& small = game.getFontSmall();
+	void Over::drawBot(double scale) {
+		auto& large = game.getFontLarge();
+		auto& small = game.getFontSmall();
+		large.setScale(scale);
+		small.setScale(scale);
+
+		double PAD_TEXT = 3 * scale;
+		double PAD_REAL = 8 * scale;
+		double MARGIN = 20 * scale;
 		double width = platform.getScreenDim().x;
+		double height = platform.getScreenDim().y;
 		double heightLarge = large.getHeight();
 		double heightSmall = small.getHeight();
 
-		Point posGameOver = {width / 2, 4};
-		Point posTime = {width / 2, posGameOver.y + heightLarge + 4};
-		Point posBest = {width / 2, posTime.y + heightSmall + 2};
-		Point posA = {width / 2, posBest.y + heightSmall * 2 + 2};
-		Point posB = {width / 2, posBest.y + heightSmall + 2};
+		Point posGameOver = {width / 2, MARGIN};
+		Point posTime = {width / 2, posGameOver.y + heightLarge + PAD_TEXT};
+		Point posBest = {width / 2, posTime.y + heightSmall + PAD_TEXT};
+		Point posB = {width / 2, height - MARGIN - heightSmall};
+		Point posA = {width / 2, posB.y - heightSmall - PAD_TEXT};
+
+		double bkgWidth = large.getWidth("GAME OVER");
+		Point bkgPos = {posGameOver.x - bkgWidth/2 - PAD_REAL, posGameOver.y - PAD_REAL};
+		Point bkgSize = {bkgWidth + PAD_REAL * 2, posBest.y + heightSmall + PAD_REAL * 2 - MARGIN};
+		platform.drawRect(COLOR_TRANSPARENT, bkgPos, bkgSize);
 
 		auto textScore = std::string("SCORE: ") + getTime(score);
 		large.draw(COLOR_WHITE, posGameOver, Alignment::CENTER,  "GAME OVER");
@@ -105,8 +117,8 @@ namespace SuperHaxagon {
 		}
 
 		if(frames >= FRAMES_PER_GAME_OVER) {
-			small.draw(COLOR_WHITE, posA, Alignment::CENTER, "PRESS A TO PLAY");
-			small.draw(COLOR_WHITE, posB, Alignment::CENTER, "PRESS B TO QUIT");
+			small.draw(COLOR_WHITE, posA, Alignment::CENTER, "PRESS (SEL) TO PLAY");
+			small.draw(COLOR_WHITE, posB, Alignment::CENTER, "PRESS (ESC) TO QUIT");
 		}
 	}
 }

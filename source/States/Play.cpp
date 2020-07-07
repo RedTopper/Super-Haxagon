@@ -90,7 +90,7 @@ namespace SuperHaxagon {
 		}
 
 		double width = platform.getScreenDim().x;
-		double PAD = 6;
+		double PAD = 3 * scale;
 
 		small.setScale(scale);
 
@@ -138,9 +138,9 @@ namespace SuperHaxagon {
 		}
 
 		std::array<Point, 3> scoreBkgTri = {
-				Point{scoreBkgPos.x, platform.getScreenDim().y - scoreBkgSize.y},
-				Point{scoreBkgPos.x, platform.getScreenDim().y},
-				Point{scoreBkgPos.x - scoreBkgSize.y/2, platform.getScreenDim().y}
+			Point{scoreBkgPos.x, platform.getScreenDim().y - scoreBkgSize.y},
+			Point{scoreBkgPos.x, platform.getScreenDim().y},
+			Point{scoreBkgPos.x - scoreBkgSize.y/2, platform.getScreenDim().y}
 		};
 
 		platform.drawTriangle(COLOR_TRANSPARENT, scoreBkgTri);

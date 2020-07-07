@@ -109,7 +109,7 @@ namespace SuperHaxagon {
 		auto& small = game.getFontSmall();
 
 		// Padding for text
-		double PAD = 4;
+		double PAD = 3 * scale;
 
 		// Actual text
 		auto scoreTime = "BEST: " + getTime(levelCur.getHighScore());

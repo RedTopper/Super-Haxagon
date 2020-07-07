@@ -9,7 +9,9 @@ namespace SuperHaxagon {
 		explicit Font3DS(const std::string& path);
 		~Font3DS() override;
 
-		int getHeight() const override;
+		void setScale(double scale) override;
+		double getHeight() const override;
+		double getWidth(const std::string& text) const override;
 		void draw(const Color& color, const Point& position, Alignment alignment, std::string text) const override;
 	};
 }

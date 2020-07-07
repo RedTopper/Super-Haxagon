@@ -17,6 +17,7 @@ namespace SuperHaxagon {
 		~Platform3DS() override;
 
 		bool loop() override;
+		double getDilation() override;
 
 		std::string getPath(const std::string& partial) override;
 		std::string getPathRom(const std::string& partial) override;
@@ -30,8 +31,11 @@ namespace SuperHaxagon {
 		Buttons getPressed() override;
 		Point getScreenDim() const override;
 
-		void drawRect(const Color& color, const Point& point, const Point& size) const override;
-		void drawTriangle(const Color& color, const std::array<Point, 3>& points) const override;
+		void screenBegin() override;
+		void screenSwap() override;
+		void screenFinalize() override;
+		void drawRect(const Color& color, const Point& point, const Point& size) override;
+		void drawTriangle(const Color& color, const std::array<Point, 3>& points) override;
 
 		std::unique_ptr<Twist> getTwister() override;
 

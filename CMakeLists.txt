@@ -9,7 +9,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -pedantic")
 # The extra platforms are simply to get code completion working
 # in CLion. In the future it may be possible to build 3DS and
 # Switch directly through CMake.
-set(PLAT WINDOWS)
+set(PLAT 3DS)
 
 # These will probably need to be changed if compiling on a different
 # machine, sorry

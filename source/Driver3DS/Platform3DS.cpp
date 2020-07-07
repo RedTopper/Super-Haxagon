@@ -29,6 +29,10 @@ namespace SuperHaxagon {
 		return aptMainLoop();
 	}
 
+	double Platform3DS::getDilation() {
+		return 0;
+	}
+
 	std::string Platform3DS::getPath(const std::string& partial) {
 		return std::string("sdmc:/3ds/data/haxagon") + partial;
 	}
@@ -87,11 +91,23 @@ namespace SuperHaxagon {
 		return {400, 240}; //TODO Update
 	}
 
-	void Platform3DS::drawRect(const Color& color, const Point& point, const Point& size) const {
+	void Platform3DS::screenBegin() {
 
 	}
 
-	void Platform3DS::drawTriangle(const Color& color, const std::array<Point, 3>& points) const {
+	void Platform3DS::screenSwap() {
+
+	}
+
+	void Platform3DS::screenFinalize() {
+
+	}
+
+	void Platform3DS::drawRect(const Color& color, const Point& point, const Point& size) {
+
+	}
+
+	void Platform3DS::drawTriangle(const Color& color, const std::array<Point, 3>& points) {
 
 	}
 

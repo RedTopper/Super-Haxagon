@@ -1,5 +1,6 @@
 #include <memory>
 #include <fstream>
+#include <climits>
 
 #include "Core/Game.hpp"
 #include "Factories/Level.hpp"

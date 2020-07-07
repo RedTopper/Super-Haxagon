@@ -15,8 +15,8 @@ namespace SuperHaxagon {
 		settings.antialiasingLevel = 8;
 
 		sf::VideoMode video(
-			400,//(int)(sf::VideoMode::getDesktopMode().width * 0.75),
-			240//(int)(sf::VideoMode::getDesktopMode().height * 0.75)
+			(int)(sf::VideoMode::getDesktopMode().width * 0.75),
+			(int)(sf::VideoMode::getDesktopMode().height * 0.75)
 		);
 
 		window = std::make_unique<sf::RenderWindow>(video, "Super Haxagon", sf::Style::Default, settings);

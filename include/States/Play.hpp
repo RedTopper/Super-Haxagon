@@ -35,6 +35,8 @@ namespace SuperHaxagon {
 		std::unique_ptr<Level> level;
 		std::unique_ptr<Audio> bgm;
 
+		double scalePrev = 0;
+		double scoreWidth = 0;
 		double score = 0;
 	};
 }

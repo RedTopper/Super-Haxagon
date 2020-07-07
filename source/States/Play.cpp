@@ -77,30 +77,93 @@ namespace SuperHaxagon {
 		level->draw(game, scale, 0);
 	}
 
-	void Play::drawBot(double) {
+	void Play::drawBot(double scale) {
+		auto& small = game.getFontSmall();
+
+		// Makes it so the score text doesn't freak out
+		// if getWidth returns slightly different values
+		// each frame
+		if (scalePrev != scale) {
+			scalePrev = scale;
+			small.setScale(scale);
+			scoreWidth = small.getWidth("TIME: " + getTime(0));
+		}
+
 		double width = platform.getScreenDim().x;
+		double PAD = 6;
 
-		const auto& small = game.getFontSmall();
-		Point posLevelUp = {4,4};
-		Point posScore = { width - 4, 4};
-		Point posBest = {width - 4, posScore.y + small.getHeight()};
+		small.setScale(scale);
 
-		auto textScore = std::string("TIME: ") + getTime((int)score);
+		// Draw the top left POINT/LINE thing
+		auto levelUp = getScoreText((int)score);
+		Point levelUpPosText = {PAD, PAD};
+		Point levelUpBkgPos = {0, 0};
+		Point LevelUpBkgSize = {
+			levelUpPosText.x + small.getWidth(levelUp) + PAD,
+			levelUpPosText.y + small.getHeight() + PAD
+		};
 
-		small.draw(COLOR_WHITE, posScore, Alignment::RIGHT, textScore);
-		small.draw(COLOR_WHITE, posLevelUp, Alignment::LEFT, getScoreText((int)score));
+		std::array<Point, 3> levelUpBkgTri = {
+			Point{LevelUpBkgSize.x, platform.getScreenDim().y - LevelUpBkgSize.y},
+			Point{LevelUpBkgSize.x, platform.getScreenDim().y},
+			Point{LevelUpBkgSize.x + LevelUpBkgSize.y/2, platform.getScreenDim().y}
+		};
 
-		if(factory.getHighScore() > 0 && score > factory.getHighScore()) {
+		platform.drawRect(COLOR_TRANSPARENT, levelUpBkgPos, LevelUpBkgSize);
+		platform.drawTriangle(COLOR_TRANSPARENT, levelUpBkgTri);
+		small.draw(COLOR_WHITE, levelUpPosText, Alignment::LEFT, levelUp);
+
+		// Draw the current score
+		auto textScore = "TIME: " + getTime((int)score);
+		Point scorePosText = { width - PAD - scoreWidth, PAD};
+		Point scoreBkgPos = {scorePosText.x - PAD, 0};
+		Point scoreBkgSize = {
+			width - scoreBkgPos.x,
+			scorePosText.y + small.getHeight() + PAD
+		};
+
+		// Before we draw the score, compute the best time graph.
+		bool drawBar = false;
+		bool drawHigh = false;
+		double originalY = scoreBkgSize.y;
+		double HEIGHT_BAR = 2 * scale;
+		if (factory.getHighScore() > 0) {
+			if (score < factory.getHighScore()) {
+				scoreBkgSize.y += HEIGHT_BAR + PAD;
+				drawBar = true;
+			} else {
+				scoreBkgSize.y += small.getHeight() + PAD;
+				drawHigh = true;
+			}
+		}
+
+		std::array<Point, 3> scoreBkgTri = {
+				Point{scoreBkgPos.x, platform.getScreenDim().y - scoreBkgSize.y},
+				Point{scoreBkgPos.x, platform.getScreenDim().y},
+				Point{scoreBkgPos.x - scoreBkgSize.y/2, platform.getScreenDim().y}
+		};
+
+		platform.drawTriangle(COLOR_TRANSPARENT, scoreBkgTri);
+		platform.drawRect(COLOR_TRANSPARENT, scoreBkgPos, scoreBkgSize);
+		small.draw(COLOR_WHITE, scorePosText, Alignment::LEFT, textScore);
+
+		if (drawBar) {
+			Point barPos = {scorePosText.x, originalY};
+			Point barWidth = {scoreWidth, HEIGHT_BAR};
+			Point barWidthScore = {scoreWidth * (score / factory.getHighScore()), HEIGHT_BAR};
+			platform.drawRect(COLOR_BLACK, barPos, barWidth);
+			platform.drawRect(COLOR_WHITE, barPos, barWidthScore);
+		}
+
+		if (drawHigh) {
 			Color textColor = COLOR_WHITE;
+			Point posBest = {width - PAD, originalY};
 			if (score - factory.getHighScore() <= PULSE_TIMES * PULSE_TIME) {
 				double percent = getPulse(score, PULSE_TIME, factory.getHighScore());
 				textColor = interpolateColor(PULSE_LOW, PULSE_HIGH, percent);
 			}
 
 			small.draw(textColor, posBest, Alignment::RIGHT,  "NEW RECORD!");
-		} else {
-			auto textBest = std::string("BEST: ") + getTime(factory.getHighScore());
-			small.draw(COLOR_WHITE, posBest, Alignment::RIGHT, textBest);
 		}
 	}
 }

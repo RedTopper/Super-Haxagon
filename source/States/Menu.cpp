@@ -105,14 +105,11 @@ namespace SuperHaxagon {
 		game.drawRegular(BG3, focus, SCALE_HEX_LENGTH * scale - SCALE_HEX_BORDER * scale, rotation, 6.0);
 		game.drawCursor(FG, focus, TAU / 4.0, 0, scale); //Draw cursor fixed quarter circle, no movement.
 
-		// Top triangle and spacing constants
-		double altScale = ((scale - 1) / 2 + 1);
-		double TRIANGLE_WIDTH = 70 * altScale;
-		double TRIANGLE_WIDTH_SCORE = 24 * altScale;
-		double PAD = 4;
-
 		auto& large = game.getFontLarge();
 		auto& small = game.getFontSmall();
+
+		// Padding for text
+		double PAD = 4;
 
 		// Actual text
 		auto scoreTime = "BEST: " + getTime(levelCur.getHighScore());
@@ -143,7 +140,7 @@ namespace SuperHaxagon {
 		std::array<Point, 3> infoTriangle = {
 			Point{infoSize.x, platform.getScreenDim().y - infoSize.y},
 			Point{infoSize.x, platform.getScreenDim().y},
-			Point{infoSize.x + TRIANGLE_WIDTH,  platform.getScreenDim().y}
+			Point{infoSize.x + infoSize.y/2,  platform.getScreenDim().y}
 		};
 
 		platform.drawRect(COLOR_TRANSPARENT, infoPos, infoSize);
@@ -155,7 +152,7 @@ namespace SuperHaxagon {
 		std::array<Point, 3> timeTriangle = {
 			Point{timeSize.x, timeSize.y},
 			Point{timeSize.x, 0},
-			Point{timeSize.x + TRIANGLE_WIDTH_SCORE, 0}
+			Point{timeSize.x + timeSize.y/2, 0}
 		};
 
 		platform.drawRect(COLOR_TRANSPARENT, timePos, timeSize);

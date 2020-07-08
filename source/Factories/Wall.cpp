@@ -3,35 +3,35 @@
 #include "Factories/Wall.hpp"
 
 namespace SuperHaxagon {
-	Wall::Wall(double distance, double height, int side) :
-		distance(distance),
-		height(height),
-		side(side)
+	Wall::Wall(const double distance, const double height, const int side) :
+		_distance(distance),
+		_height(height),
+		_side(side)
 	{}
 
-	void Wall::advance(double speed) {
-		distance -= speed;
+	void Wall::advance(const double speed) {
+		_distance -= speed;
 	}
 
-	Movement Wall::collision(double cursorHeight, double cursorPos, double cursorStep, int sides) const {
+	Movement Wall::collision(const double cursorHeight, const double cursorPos, const double cursorStep, const int sides) const {
 
 		// Check if we are between the wall vertically
-		if(cursorHeight < distance || cursorHeight > distance + height) {
+		if(cursorHeight < _distance || cursorHeight > _distance + _height) {
 			return Movement::CAN_MOVE;
 		}
 
-		double leftRotStep = cursorPos + cursorStep;
-		double rightRotStep = cursorPos - cursorStep;
+		const auto leftRotStep = cursorPos + cursorStep;
+		const auto rightRotStep = cursorPos - cursorStep;
 
 		// If the cursor wrapped and the range we need to calculate overflows beyond TAU we also need to check the other equivalent regions:
 		// exactly one TAU ago and the next TAU.
 		// This is particularly useful when the cursor's next step is beyond a TAU or below zero, OR a wall resides along "the seam"
-		double leftSideRads = ((double)(side) + 1.0) * TAU/(double)(sides);
-		double leftSideRadsNextTau = leftSideRads + TAU;
-		double leftSideRadsLastTau = leftSideRads - TAU;
-		double rightSideRads = (double)(side) * TAU/(double)(sides);
-		double rightSideRadsNextTau = rightSideRads + TAU;
-		double rightSideRadsLastTau = rightSideRads - TAU;
+		const auto leftSideRads = (_side + 1.0) * TAU/sides;
+		const auto leftSideRadsNextTau = leftSideRads + TAU;
+		const auto leftSideRadsLastTau = leftSideRads - TAU;
+		const auto rightSideRads = _side * TAU/sides;
+		const auto rightSideRadsNextTau = rightSideRads + TAU;
+		const auto rightSideRadsLastTau = rightSideRads - TAU;
 
 		//Check if we are between the wall horizontally.
 		if(cursorPos >= rightSideRads && cursorPos <= leftSideRads) {
@@ -53,10 +53,10 @@ namespace SuperHaxagon {
 		return Movement::CAN_MOVE;
 	}
 
-	std::array<Point, 4> Wall::calcPoints(const Point& focus, double rotation, double sides, double offset, double scale) const {
+	std::array<Point, 4> Wall::calcPoints(const Point& focus, const double rotation, const double sides, const double offset, const double scale) const {
 		std::array<Point, 4> quad{};
-		double tHeight = height;
-		double tDistance = distance + offset;
+		auto tHeight = _height;
+		auto tDistance = _distance + offset;
 		if(tDistance < SCALE_HEX_LENGTH - 2.0) {//so the distance is never negative as it enters.
 			tHeight -= SCALE_HEX_LENGTH - 2.0 - tDistance;
 			tDistance = SCALE_HEX_LENGTH - 2.0; //Should never be 0!!!
@@ -64,37 +64,37 @@ namespace SuperHaxagon {
 
 		tDistance *= scale;
 		tHeight *= scale;
-		quad[0] = calcPoint(focus, rotation, WALL_OVERFLOW, tDistance, sides, side + 1);
-		quad[1] = calcPoint(focus, rotation, WALL_OVERFLOW, tDistance + tHeight, sides, side + 1);
-		quad[2] = calcPoint(focus, rotation, -WALL_OVERFLOW, tDistance + tHeight, sides, side);
-		quad[3] = calcPoint(focus, rotation, -WALL_OVERFLOW, tDistance, sides, side);
+		quad[0] = calcPoint(focus, rotation, WALL_OVERFLOW, tDistance, sides, _side + 1);
+		quad[1] = calcPoint(focus, rotation, WALL_OVERFLOW, tDistance + tHeight, sides, _side + 1);
+		quad[2] = calcPoint(focus, rotation, -WALL_OVERFLOW, tDistance + tHeight, sides, _side);
+		quad[3] = calcPoint(focus, rotation, -WALL_OVERFLOW, tDistance, sides, _side);
 		return quad;
 	}
 
-	Point Wall::calcPoint(const Point& focus, double rotation, double overflow, double distance, double sides, int side) {
+	Point Wall::calcPoint(const Point& focus, const double rotation, const double overflow, const double distance, const double sides, const int side) {
 		Point point = {0,0};
-		double width = (double)side * TAU/sides + overflow;
+		auto width = side * TAU/sides + overflow;
 		if(width > TAU + WALL_OVERFLOW) width = TAU + WALL_OVERFLOW;
-		point.x = distance * std::cos(rotation + width) + (double)(focus.x);
-		point.y = distance * std::sin(rotation + width) + (double)(focus.y);
+		point.x = distance * std::cos(rotation + width) + focus.x;
+		point.y = distance * std::sin(rotation + width) + focus.y;
 		return point;
 	}
 
 
-	WallFactory::WallFactory(std::ifstream& file, int maxSide) {
-		distance = read16(file);
-		height = read16(file);
-		side = read16(file);
+	WallFactory::WallFactory(std::ifstream& file, const int maxSides) {
+		_distance = read16(file);
+		_height = read16(file);
+		_side = read16(file);
 
-		if(height < MIN_WALL_HEIGHT) height = MIN_WALL_HEIGHT;
-		if(side >= maxSide) side = maxSide - 1;
+		if(_height < MIN_WALL_HEIGHT) _height = MIN_WALL_HEIGHT;
+		if(_side >= maxSides) _side = maxSides - 1;
 	}
 
-	std::unique_ptr<Wall> WallFactory::instantiate(double offsetDistance, int offsetSide, int sides) const {
-		int newSide = side + offsetSide;
+	std::unique_ptr<Wall> WallFactory::instantiate(const double offsetDistance, const int offsetSide, const int sides) const {
+		auto newSide = _side + offsetSide;
 		newSide = newSide >= sides ? newSide - sides : newSide;
-		double newDistance = distance + offsetDistance;
-		double newHeight = height;
+		auto newDistance = _distance + offsetDistance;
+		double newHeight = _height;
 		return std::make_unique<Wall>(newDistance, newHeight, newSide);
 	}
 }

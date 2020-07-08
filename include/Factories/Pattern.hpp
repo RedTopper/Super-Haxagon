@@ -14,15 +14,15 @@ namespace SuperHaxagon {
 	public:
 		Pattern(std::vector<std::unique_ptr<Wall>> walls, int sides);
 
-		const std::vector<std::unique_ptr<Wall>>& getWalls() const {return walls;}
-		int getSides() const {return sides;}
+		const std::vector<std::unique_ptr<Wall>>& getWalls() const {return _walls;}
+		int getSides() const {return _sides;}
 
 		double getFurthestWallDistance() const;
 		void advance(double speed);
 
 	private:
-		std::vector<std::unique_ptr<Wall>> walls;
-		int sides;
+		std::vector<std::unique_ptr<Wall>> _walls;
+		int _sides;
 	};
 
 	class PatternFactory {
@@ -36,12 +36,12 @@ namespace SuperHaxagon {
 
 		std::unique_ptr<Pattern> instantiate(Twist& rng, double distance) const;
 
-		std::string getName() const {return name;}
+		std::string getName() const {return _name;}
 
 	private:
-		std::vector<std::unique_ptr<WallFactory>> walls;
-		std::string name  = "";
-		int sides = 0;
+		std::vector<std::unique_ptr<WallFactory>> _walls;
+		std::string _name  = "";
+		int _sides = 0;
 	};
 }
 

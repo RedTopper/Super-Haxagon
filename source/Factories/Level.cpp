@@ -8,126 +8,127 @@ namespace SuperHaxagon {
 	const char* LevelFactory::LEVEL_HEADER = "LEV2.1";
 	const char* LevelFactory::LEVEL_FOOTER = "ENDLEV";
 
-	Level::Level(const LevelFactory& factory, Twist& rng, double patternDistCreate) : factory(factory) {
-		nextIndexBG1 = (factory.getColorsBG1().size() > 1 ? 1 : 0);
-		nextIndexBG2 = (factory.getColorsBG2().size() > 1 ? 1 : 0);
-		nextIndexFG = (factory.getColorsFG().size() > 1 ? 1 : 0);
+	Level::Level(const LevelFactory& factory, Twist& rng, const double patternDistCreate) : _factory(factory) {
+		_nextIndexBg1 = (factory.getColorsBG1().size() > 1 ? 1 : 0);
+		_nextIndexBg2 = (factory.getColorsBG2().size() > 1 ? 1 : 0);
+		_nextIndexFg = (factory.getColorsFG().size() > 1 ? 1 : 0);
 
 		//fetch some random starting patterns
-		auto distance = (double)patternDistCreate;
+		auto distance = patternDistCreate;
 		do {
-			int pCount = factory.getPatterns().size();
-			int pSelected = rng.rand(pCount - 1);
-			auto& pattern = factory.getPatterns()[pSelected];
-			patterns.emplace_back(pattern->instantiate(rng, distance));
-			distance = patterns.back()->getFurthestWallDistance();
-		} while (patterns.back()->getFurthestWallDistance() < patternDistCreate);
+			const auto pCount = static_cast<int>(factory.getPatterns().size());
+			const auto pSelected = rng.rand(pCount - 1);
+			const auto& pattern = factory.getPatterns()[pSelected];
+			_patterns.emplace_back(pattern->instantiate(rng, distance));
+			distance = _patterns.back()->getFurthestWallDistance();
+		} while (_patterns.back()->getFurthestWallDistance() < patternDistCreate);
 
 		//set up the amount of sides the level should have.
-		lastSides = patterns.front()->getSides();
-		currentSides = patterns.front()->getSides();
-		cursorPos = TAU/4.0 + (factory.getSpeedCursor() / 2.0);
+		_lastSides = _patterns.front()->getSides();
+		_currentSides = _patterns.front()->getSides();
+		_cursorPos = TAU/4.0 + (factory.getSpeedCursor() / 2.0);
 	}
 
 	Level::~Level() = default;
 
-	void Level::update(Twist& rng, double patternDistDelete, double patternDistCreate, double dilation) {
+	void Level::update(Twist& rng, const double patternDistDelete, const double patternDistCreate, const double dilation) {
 		// Update color frame and clamp
-		tweenFrame += dilation;
-		if(tweenFrame >= factory.getSpeedPulse()) {
-			tweenFrame = 0;
-			indexBG1 = nextIndexBG1;
-			indexBG2 = nextIndexBG2;
-			indexFG = nextIndexFG;
-			nextIndexBG1 = (indexBG1 + 1 < (int)factory.getColorsBG1().size() ? indexBG1 + 1 : 0);
-			nextIndexBG2 = (indexBG2 + 1 < (int)factory.getColorsBG2().size() ? indexBG2 + 1 : 0);
-			nextIndexFG = (indexFG + 1 < (int)factory.getColorsFG().size() ? indexFG + 1 : 0);
+		_tweenFrame += dilation;
+		if(_tweenFrame >= _factory.getSpeedPulse()) {
+			_tweenFrame = 0;
+			_indexBg1 = _nextIndexBg1;
+			_indexBg2 = _nextIndexBg2;
+			_indexFg = _nextIndexFg;
+			_nextIndexBg1 = _indexBg1 + 1 < static_cast<int>(_factory.getColorsBG1().size()) ? _indexBg1 + 1 : 0;
+			_nextIndexBg2 = _indexBg2 + 1 < static_cast<int>(_factory.getColorsBG2().size()) ? _indexBg2 + 1 : 0;
+			_nextIndexFg = _indexFg + 1 < static_cast<int>(_factory.getColorsFG().size()) ? _indexFg + 1 : 0;
 		}
 
 		// Bring walls forward if we are not delaying
 		// Otherwise tween from one shape to another.
-		if(delayFrame <= 0) {
-			sidesTween = currentSides;
-			for(auto& pattern : patterns) {
-				pattern->advance(factory.getSpeedWall() * dilation * multiplierWalls);
+		if(_delayFrame <= 0) {
+			_sidesTween = _currentSides;
+			for(auto& pattern : _patterns) {
+				pattern->advance(_factory.getSpeedWall() * dilation * _multiplierWalls);
 			}
 		} else {
-			double percent = (double)(delayFrame) / (double)(FRAMES_PER_CHANGE_SIDE * abs(currentSides - lastSides));
-			sidesTween = linear((double)currentSides, (double)lastSides, percent);
-			delayFrame -= dilation;
+			const auto percent = _delayFrame / FRAMES_PER_CHANGE_SIDE * abs(_currentSides - _lastSides);
+			_sidesTween = linear(_currentSides, _lastSides, percent);
+			_delayFrame -= dilation;
 		}
 
 		// Shift patterns forward
-		if(patterns.front()->getFurthestWallDistance() < patternDistDelete) {
-			lastSides = patterns.front()->getSides();
-			patterns.pop_front();
-			currentSides = patterns.front()->getSides();
+		if(_patterns.front()->getFurthestWallDistance() < patternDistDelete) {
+			_lastSides = _patterns.front()->getSides();
+			_patterns.pop_front();
+			_currentSides = _patterns.front()->getSides();
 
 			// Delay the level if the shifted pattern does  not have the same sides as the last.
-			if(lastSides != currentSides) {
-				delayFrame = FRAMES_PER_CHANGE_SIDE * abs(currentSides - lastSides);
+			if(_lastSides != _currentSides) {
+				_delayFrame = FRAMES_PER_CHANGE_SIDE
+				    * abs(static_cast<double>(_currentSides) - static_cast<double>(_lastSides));
 			}
 		}
 
 		// Create new pattern if needed
-		if (patterns.size() < 2 || patterns.back()->getFurthestWallDistance() < patternDistCreate) {
-			int pCount = factory.getPatterns().size();
-			int pSelected = rng.rand(pCount - 1);
-			auto& pattern = factory.getPatterns()[pSelected];
-			patterns.emplace_back(pattern->instantiate(rng, patterns.back()->getFurthestWallDistance()));
+		if (_patterns.size() < 2 || _patterns.back()->getFurthestWallDistance() < patternDistCreate) {
+			const auto pCount = static_cast<int>(_factory.getPatterns().size());
+			const auto pSelected = rng.rand(pCount - 1);
+			const auto& pattern = _factory.getPatterns()[pSelected];
+			_patterns.emplace_back(pattern->instantiate(rng, _patterns.back()->getFurthestWallDistance()));
 		}
 
 		// Rotate level
-		rotation += factory.getSpeedRotation() * multiplierRot * dilation;
-		if(rotation >= TAU) rotation -= TAU;
-		if(rotation < 0) rotation  += TAU;
+		_rotation += _factory.getSpeedRotation() * _multiplierRot * dilation;
+		if(_rotation >= TAU) _rotation -= TAU;
+		if(_rotation < 0) _rotation  += TAU;
 
 		// Flip level if needed
-		flipFrame -= dilation;
-		if(flipFrame <= 0) {
-			multiplierRot *= -1.0;
-			flipFrame = rng.rand(FLIP_FRAMES_MIN, FLIP_FRAMES_MAX);
+		_flipFrame -= dilation;
+		if(_flipFrame <= 0) {
+			_multiplierRot *= -1.0;
+			_flipFrame = rng.rand(FLIP_FRAMES_MIN, FLIP_FRAMES_MAX);
 		}
 	}
 
-	void Level::draw(Game& game, double scale, double offset) {
+	void Level::draw(Game& game, const double scale, const double offset) const {
 
 		// Calculate colors
-		double percentTween = (double)(tweenFrame) / (double)(factory.getSpeedPulse());
-		Color FG = interpolateColor(factory.getColorsFG()[indexFG], factory.getColorsFG()[nextIndexFG], percentTween);
-		Color BG1 = interpolateColor(factory.getColorsBG1()[indexBG1], factory.getColorsBG1()[nextIndexBG1], percentTween);
-		Color BG2 = interpolateColor(factory.getColorsBG2()[indexBG2], factory.getColorsBG2()[nextIndexBG2], percentTween);
+		const auto percentTween = _tweenFrame / _factory.getSpeedPulse();
+		const auto fg = interpolateColor(_factory.getColorsFG()[_indexFg], _factory.getColorsFG()[_nextIndexFg], percentTween);
+		const auto bg1 = interpolateColor(_factory.getColorsBG1()[_indexBg1], _factory.getColorsBG1()[_nextIndexBg1], percentTween);
+		const auto bg2 = interpolateColor(_factory.getColorsBG2()[_indexBg2], _factory.getColorsBG2()[_nextIndexBg2], percentTween);
 
 		// Fix for triangle levels
-		double diagonal = sidesTween >= 3 && sidesTween < 4 ?  2 : 1;
+		const double diagonal = _sidesTween >= 3 && _sidesTween < 4 ?  2 : 1;
 
-		Point center = game.getScreenCenter();
-		Point shadow = game.getShadowOffset();
+		const auto center = game.getScreenCenter();
+		const auto shadow = game.getShadowOffset();
 
-		game.drawBackground(BG1, BG2, center, diagonal, rotation, sidesTween);
+		game.drawBackground(bg1, bg2, center, diagonal, _rotation, _sidesTween);
 
 		// Draw shadows
-		Point offsetFocus = {center.x + shadow.x, center.y + shadow.y};
-		game.drawPatterns(COLOR_SHADOW, offsetFocus, patterns, rotation, sidesTween, offset, scale);
-		game.drawRegular(COLOR_SHADOW, offsetFocus, SCALE_HEX_LENGTH * scale, rotation, sidesTween);
-		game.drawCursor(COLOR_SHADOW, offsetFocus, cursorPos, rotation, scale);
+		const Point offsetFocus = {center.x + shadow.x, center.y + shadow.y};
+		game.drawPatterns(COLOR_SHADOW, offsetFocus, _patterns, _rotation, _sidesTween, offset, scale);
+		game.drawRegular(COLOR_SHADOW, offsetFocus, SCALE_HEX_LENGTH * scale, _rotation, _sidesTween);
+		game.drawCursor(COLOR_SHADOW, offsetFocus, _cursorPos, _rotation, scale);
 
 		// Draw real thing
-		game.drawPatterns(FG, center, patterns, rotation, sidesTween, offset, scale);
-		game.drawRegular(FG, center, SCALE_HEX_LENGTH * scale, rotation, sidesTween);
-		game.drawRegular(BG2, center, (SCALE_HEX_LENGTH - SCALE_HEX_BORDER) * scale, rotation, sidesTween);
-		game.drawCursor(FG, center, cursorPos, rotation, scale);
+		game.drawPatterns(fg, center, _patterns, _rotation, _sidesTween, offset, scale);
+		game.drawRegular(fg, center, SCALE_HEX_LENGTH * scale, _rotation, _sidesTween);
+		game.drawRegular(bg2, center, (SCALE_HEX_LENGTH - SCALE_HEX_BORDER) * scale, _rotation, _sidesTween);
+		game.drawCursor(fg, center, _cursorPos, _rotation, scale);
 	}
 
-	Movement Level::collision(double cursorDistance, double dilation) const {
+	Movement Level::collision(const double cursorDistance, const double dilation) const {
 		auto collision = Movement::CAN_MOVE;
 
 		// For all patterns (technically only need to check front two)
-		for(const auto& pattern : patterns) {
+		for(const auto& pattern : _patterns) {
 
 			// For all walls
 			for(const auto& wall : pattern->getWalls()) {
-				Movement check = wall->collision(cursorDistance, cursorPos, factory.getSpeedCursor() * dilation, pattern->getSides());
+				const auto check = wall->collision(cursorDistance, _cursorPos, _factory.getSpeedCursor() * dilation, pattern->getSides());
 
 				// Update collision
 				if(collision == Movement::CAN_MOVE) collision = check; //If we can move, try and replace it with something else
@@ -141,76 +142,74 @@ namespace SuperHaxagon {
 	}
 
 	void Level::increaseMultiplier() {
-		multiplierRot *= DIFFICULTY_MULTIPLIER_ROT;
-		multiplierWalls *= DIFFICULTY_MULTIPLIER_WALLS;
+		_multiplierRot *= DIFFICULTY_MULTIPLIER_ROT;
+		_multiplierWalls *= DIFFICULTY_MULTIPLIER_WALLS;
 	}
 
 	void Level::clearPatterns() {
-		patterns.clear();
+		_patterns.clear();
 	}
 
-	void Level::rotate(double distance, double dilation) {
-		rotation += distance * dilation;
+	void Level::rotate(const double distance, const double dilation) {
+		_rotation += distance * dilation;
 	}
 
-	void Level::left(double dilation) {
-		cursorPos += factory.getSpeedCursor() * dilation;
+	void Level::left(const double dilation) {
+		_cursorPos += _factory.getSpeedCursor() * dilation;
 	}
 
-	void Level::right(double dilation) {
-		cursorPos -= factory.getSpeedCursor() * dilation;
+	void Level::right(const double dilation) {
+		_cursorPos -= _factory.getSpeedCursor() * dilation;
 	}
 
 	void Level::clamp() {
-		if(cursorPos >= TAU) cursorPos -= TAU;
-		if(cursorPos < 0) cursorPos  += TAU;
+		if(_cursorPos >= TAU) _cursorPos -= TAU;
+		if(_cursorPos < 0) _cursorPos  += TAU;
 	}
 
-	LevelFactory::LevelFactory(std::ifstream& file, std::vector<std::shared_ptr<PatternFactory>>& shared, Location loc) {
-		location = loc;
+	LevelFactory::LevelFactory(std::ifstream& file, std::vector<std::shared_ptr<PatternFactory>>& shared, const Location location) {
+		_location = location;
 
 		if (!readCompare(file, LEVEL_HEADER))
 			throw malformed("level", "level header invalid!");
 
-		name = readString(file, "level name");
-		difficulty = readString(file, name + " level difficulty");
-		mode = readString(file, name + " level mode");
-		creator = readString(file, name + " level creator");
-		music = "/" + readString(file, name + " level music");
+		_name = readString(file, "level name");
+		_difficulty = readString(file, _name + " level difficulty");
+		_mode = readString(file, _name + " level mode");
+		_creator = readString(file, _name + " level creator");
+		_music = "/" + readString(file, _name + " level music");
 
-		int numColorsBG1 = read32(file, 1, 512, "level background 1");
-		colorsBG1.reserve(numColorsBG1);
-		for (int i = 0; i < numColorsBG1; i++) colorsBG1.emplace_back(readColor(file));
+		const int numColorsBG1 = read32(file, 1, 512, "level background 1");
+		_colorsBg1.reserve(numColorsBG1);
+		for (auto i = 0; i < numColorsBG1; i++) _colorsBg1.emplace_back(readColor(file));
 
-		int numColorsBG2 = read32(file, 1, 512, "level background 2");
-		colorsBG2.reserve(numColorsBG2);
-		for (int i = 0; i < numColorsBG2; i++) colorsBG2.emplace_back(readColor(file));
+		const int numColorsBG2 = read32(file, 1, 512, "level background 2");
+		_colorsBg2.reserve(numColorsBG2);
+		for (auto i = 0; i < numColorsBG2; i++) _colorsBg2.emplace_back(readColor(file));
 
-		int numColorsFG = read32(file, 1, 512, "level foreground");
-		colorsFG.reserve(numColorsFG);
-		for (int i = 0; i < numColorsFG; i++) colorsFG.emplace_back(readColor(file));
+		const int numColorsFG = read32(file, 1, 512, "level foreground");
+		_colorsFg.reserve(numColorsFG);
+		for (auto i = 0; i < numColorsFG; i++) _colorsFg.emplace_back(readColor(file));
 
-		speedWall = readFloat(file);
-		speedRotation = readFloat(file);
-		speedCursor = readFloat(file);
-		speedPulse = read32(file, 4, 8192, "level pulse");
+		_speedWall = readFloat(file);
+		_speedRotation = readFloat(file);
+		_speedCursor = readFloat(file);
+		_speedPulse = read32(file, 4, 8192, "level pulse");
 
-		int numPatterns = read32(file, 1, 512, "level pattern count");
-		shared.reserve(numPatterns);
-
-		for (int i = 0; i < numPatterns; i++) {
-			bool found = false;
-			std::string search = readString(file, "level pattern name match");
+		const int numPatterns = read32(file, 1, 512, "level pattern count");
+		for (auto i = 0; i < numPatterns; i++) {
+			auto found = false;
+			auto search = readString(file, "level pattern name match");
 			for (const auto& pattern : shared) {
 				if (pattern->getName() == search) {
-					patterns.push_back(pattern);
+					_patterns.push_back(pattern);
 					found = true;
 					break;
 				}
 			}
 
 			if (!found)
-				throw malformed("level", "could not find pattern " + search + " for " + name);
+				throw malformed("level", "could not find pattern " + search + " for " + _name);
 		}
 
 		if (!readCompare(file, LEVEL_FOOTER))
@@ -221,9 +220,9 @@ namespace SuperHaxagon {
 		return std::make_unique<Level>(*this, rng, renderDistance);
 	}
 
-	bool LevelFactory::setHighScore(int score) {
-		if(score > highScore) {
-			highScore = score;
+	bool LevelFactory::setHighScore(const int score) {
+		if(score > _highScore) {
+			_highScore = score;
 			return true;
 		}
 

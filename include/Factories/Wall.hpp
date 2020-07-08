@@ -21,14 +21,14 @@ namespace SuperHaxagon {
 		std::array<Point, 4> calcPoints(const Point& focus, double rotation, double sides, double offset, double scale) const;
 		static Point calcPoint(const Point& focus, double rotation, double overflow, double distance, double sides, int side);
 
-		double getDistance() const {return distance;}
-		double getHeight() const {return height;}
-		int getSide() const {return side;}
+		double getDistance() const {return _distance;}
+		double getHeight() const {return _height;}
+		int getSide() const {return _side;}
 
 	private:
-		double distance;
-		double height;
-		int side;
+		double _distance;
+		double _height;
+		int _side;
 	};
 
 	class WallFactory {
@@ -40,9 +40,9 @@ namespace SuperHaxagon {
 		std::unique_ptr<Wall> instantiate(double offsetDistance, int offsetSide, int sides) const;
 
 	private:
-		uint16_t distance = 0;
-		uint16_t height = 0;
-		uint16_t side = 0;
+		uint16_t _distance = 0;
+		uint16_t _height = 0;
+		uint16_t _side = 0;
 	};
 }
 

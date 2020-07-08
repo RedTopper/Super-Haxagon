@@ -24,16 +24,16 @@ namespace SuperHaxagon {
 	public:
 		static constexpr double DIFFICULTY_MULTIPLIER_WALLS = 1.05;
 		static constexpr double DIFFICULTY_MULTIPLIER_ROT = 1.1;
-		static constexpr int FLIP_FRAMES_MIN = 120;
-		static constexpr int FLIP_FRAMES_MAX = 600;
-		static constexpr int FRAMES_PER_CHANGE_SIDE = 36;
+		static constexpr double FLIP_FRAMES_MIN = 120;
+		static constexpr double FLIP_FRAMES_MAX = 600;
+		static constexpr double FRAMES_PER_CHANGE_SIDE = 36;
 
 		Level(const LevelFactory& factory, Twist& rng, double patternDistCreate);
 		Level(Level&) = delete;
 		~Level();
 
 		void update(Twist& rng, double patternDistDelete, double patternDistCreate, double dilation);
-		void draw(Game& game, double scale, double offset);
+		void draw(Game& game, double scale, double offset) const;
 		Movement collision(double cursorDistance, double dilation) const;
 
 		void increaseMultiplier();
@@ -45,28 +45,28 @@ namespace SuperHaxagon {
 
 
 	private:
-		const LevelFactory& factory;
+		const LevelFactory& _factory;
 
-		std::deque<std::unique_ptr<Pattern>> patterns;
+		std::deque<std::unique_ptr<Pattern>> _patterns;
 
-		double multiplierRot = 1.0; // Current direction and speed of rotation
-		double multiplierWalls = 1.0; // Current speed of the walls flying at you
-		double cursorPos{};
-		double rotation{};
-		double sidesTween{};
-		int lastSides{};
-		int currentSides{};
+		double _multiplierRot = 1.0; // Current direction and speed of rotation
+		double _multiplierWalls = 1.0; // Current speed of the walls flying at you
+		double _cursorPos{};
+		double _rotation{};
+		double _sidesTween{};
+		int _lastSides{};
+		int _currentSides{};
 
-		double delayFrame{}; // Tween between side switches
-		double tweenFrame{}; // Tween colors
-		double flipFrame = FLIP_FRAMES_MAX; // Amount of frames left until flip
+		double _delayFrame{}; // Tween between side switches
+		double _tweenFrame{}; // Tween colors
+		double _flipFrame = FLIP_FRAMES_MAX; // Amount of frames left until flip
 
-		int indexBG1{};
-		int indexBG2{};
-		int indexFG{};
-		int nextIndexBG1{};
-		int nextIndexBG2{};
-		int nextIndexFG{};
+		int _indexBg1{};
+		int _indexBg2{};
+		int _indexFg{};
+		int _nextIndexBg1{};
+		int _nextIndexBg2{};
+		int _nextIndexFg{};
 	};
 
 	class LevelFactory {
@@ -79,45 +79,45 @@ namespace SuperHaxagon {
 
 		std::unique_ptr<Level> instantiate(Twist& rng, double renderDistance) const;
 
-		const std::vector<std::shared_ptr<PatternFactory>>& getPatterns() const {return patterns;}
-		const std::vector<Color>& getColorsFG() const {return colorsFG;}
-		const std::vector<Color>& getColorsBG1() const {return colorsBG1;}
-		const std::vector<Color>& getColorsBG2() const {return colorsBG2;}
+		const std::vector<std::shared_ptr<PatternFactory>>& getPatterns() const {return _patterns;}
+		const std::vector<Color>& getColorsFG() const {return _colorsFg;}
+		const std::vector<Color>& getColorsBG1() const {return _colorsBg1;}
+		const std::vector<Color>& getColorsBG2() const {return _colorsBg2;}
 
-		const std::string& getName() const {return name;}
-		const std::string& getDifficulty() const {return difficulty;}
-		const std::string& getMode() const {return mode;}
-		const std::string& getCreator() const {return creator;}
-		const std::string& getMusic() const {return music;}
+		const std::string& getName() const {return _name;}
+		const std::string& getDifficulty() const {return _difficulty;}
+		const std::string& getMode() const {return _mode;}
+		const std::string& getCreator() const {return _creator;}
+		const std::string& getMusic() const {return _music;}
 
-		Location getLocation() const {return location;}
-		int getHighScore() const {return highScore;}
-		int getSpeedPulse() const {return speedPulse;}
-		float getSpeedCursor() const {return speedCursor;}
-		float getSpeedRotation() const {return speedRotation;}
-		float getSpeedWall() const {return speedWall;}
+		Location getLocation() const {return _location;}
+		int getHighScore() const {return _highScore;}
+		int getSpeedPulse() const {return _speedPulse;}
+		float getSpeedCursor() const {return _speedCursor;}
+		float getSpeedRotation() const {return _speedRotation;}
+		float getSpeedWall() const {return _speedWall;}
 
 		bool setHighScore(int score);
 
 	private:
-		std::vector<std::shared_ptr<PatternFactory>> patterns;
-		std::vector<Color> colorsFG;
-		std::vector<Color> colorsBG1;
-		std::vector<Color> colorsBG2;
+		std::vector<std::shared_ptr<PatternFactory>> _patterns;
+		std::vector<Color> _colorsFg;
+		std::vector<Color> _colorsBg1;
+		std::vector<Color> _colorsBg2;
 
-		std::string name;
-		std::string difficulty;
-		std::string mode;
-		std::string creator;
-		std::string music;
+		std::string _name;
+		std::string _difficulty;
+		std::string _mode;
+		std::string _creator;
+		std::string _music;
 
-		Location location = Location::INTERNAL;
+		Location _location = Location::INTERNAL;
 
-		int highScore = 0;
-		int speedPulse;
-		float speedWall;
-		float speedRotation;
-		float speedCursor;
+		int _highScore = 0;
+		int _speedPulse;
+		float _speedWall;
+		float _speedRotation;
+		float _speedCursor;
 	};
 }
 

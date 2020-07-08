@@ -6,49 +6,50 @@ namespace SuperHaxagon {
 	const char* PatternFactory::PATTERN_HEADER = "PTN1.1";
 	const char* PatternFactory::PATTERN_FOOTER = "ENDPTN";
 
-	Pattern::Pattern(std::vector<std::unique_ptr<Wall>> walls, int sides) : walls(std::move(walls)), sides(sides) {}
+	Pattern::Pattern(std::vector<std::unique_ptr<Wall>> walls, const int sides) : _walls(std::move(walls)), _sides(sides) {}
 
 	double Pattern::getFurthestWallDistance() const {
 		double maxDistance = 0;
-		for(const auto& wall : walls) {
-			double distance = wall->getDistance() + wall->getHeight();
+		for(const auto& wall : _walls) {
+			const auto distance = wall->getDistance() + wall->getHeight();
 			if(distance > maxDistance) maxDistance = distance;
 		}
+
 		return maxDistance;
 	}
 
-	void Pattern::advance(double speed) {
-		for(auto& wall : walls) {
+	void Pattern::advance(const double speed) {
+		for(auto& wall : _walls) {
 			wall->advance(speed);
 		}
 	}
 
 	PatternFactory::PatternFactory(std::ifstream& file) {
-		name = readString(file, "pattern name");
+		_name = readString(file, "pattern name");
 
 		if (!readCompare(file, PATTERN_HEADER))
-			throw malformed("pattern", name + " pattern header invalid!");
+			throw malformed("pattern", _name + " pattern header invalid!");
 
 		// This might be able to be increased later
-		sides = read32(file, 0, 256, name + " pattern sides");
-		if(sides < MIN_PATTERN_SIDES) sides = MIN_PATTERN_SIDES;
+		_sides = read32(file, 0, 256, _name + " pattern sides");
+		if(_sides < MIN_PATTERN_SIDES) _sides = MIN_PATTERN_SIDES;
 
-		int numWalls = read32(file, 1, 1000, name + " pattern walls");
-		for(int i = 0; i < numWalls; i++) walls.emplace_back(std::make_unique<WallFactory>(file, sides));
+		const int numWalls = read32(file, 1, 1000, _name + " pattern walls");
+		for(auto i = 0; i < numWalls; i++) _walls.emplace_back(std::make_unique<WallFactory>(file, _sides));
 
 		if (!readCompare(file, PATTERN_FOOTER))
-			throw malformed("pattern", name + " pattern footer invalid!");
+			throw malformed("pattern", _name + " pattern footer invalid!");
 	}
 
 	PatternFactory::~PatternFactory() = default;
 
-	std::unique_ptr<Pattern> PatternFactory::instantiate(Twist& rng, double distance) const {
-		int offset = rng.rand(sides - 1);
+	std::unique_ptr<Pattern> PatternFactory::instantiate(Twist& rng, const double distance) const {
+		const auto offset = rng.rand(_sides - 1);
 		std::vector<std::unique_ptr<Wall>> active;
-		for(const auto& wall : walls) {
-			active.emplace_back(wall->instantiate(distance, offset, sides));
+		for(const auto& wall : _walls) {
+			active.emplace_back(wall->instantiate(distance, offset, _sides));
 		}
 
-		return std::make_unique<Pattern>(std::move(active), sides);
+		return std::make_unique<Pattern>(std::move(active), _sides);
 	}
 }

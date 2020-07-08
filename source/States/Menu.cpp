@@ -1,5 +1,7 @@
-#include <Driver/Audio.hpp>
+#include <array>
+
 #include "Core/Game.hpp"
+#include "Driver/Audio.hpp"
 #include "Driver/Font.hpp"
 #include "Factories/Level.hpp"
 #include "States/Quit.hpp"
@@ -8,108 +10,108 @@
 
 namespace SuperHaxagon {
 	Menu::Menu(Game& game) :
-		game(game),
-		platform(game.getPlatform())
+		_game(game),
+		_platform(game.getPlatform())
 	{}
 
 	Menu::~Menu() = default;
 
 	void Menu::enter() {
-		bgm = platform.loadAudio(platform.getPathRom("/bgm/pamgaea"), SuperHaxagon::Stream::INDIRECT);
-		platform.playSFX(game.getSfxHexagon());
-		platform.playBGM(*bgm);
+		_bgm = _platform.loadAudio(_platform.getPathRom("/bgm/pamgaea"), SuperHaxagon::Stream::INDIRECT);
+		_platform.playSFX(_game.getSfxHexagon());
+		_platform.playBGM(*_bgm);
 	}
 
 	void Menu::exit() {
-		platform.stopBGM();
+		_platform.stopBGM();
 	}
 
-	std::unique_ptr<State> Menu::update(double dilation) {
-		Buttons press = platform.getPressed();
+	std::unique_ptr<State> Menu::update(const double dilation) {
+		const auto press = _platform.getPressed();
 
 		if (press.quit) return std::make_unique<Quit>();
 
-		if(!transitionDirection) {
-			if (press.select) return std::make_unique<Play>(game, *game.getLevels()[level]);
+		if(!_transitionDirection) {
+			if (press.select) return std::make_unique<Play>(_game, *_game.getLevels()[_level]);
 			if (press.right) {
-				transitionDirection = 1;
-				lastLevel = level;
-				level++;
-				platform.playSFX(game.getSfxSelect());
+				_transitionDirection = 1;
+				_lastLevel = _level;
+				_level++;
+				_platform.playSFX(_game.getSfxSelect());
 			}
 			if (press.left) {
-				transitionDirection = -1;
-				lastLevel = level;
-				level--;
-				platform.playSFX(game.getSfxSelect());
+				_transitionDirection = -1;
+				_lastLevel = _level;
+				_level--;
+				_platform.playSFX(_game.getSfxSelect());
 			}
 		}
 
-		if(level >=  (int)game.getLevels().size()) level = 0;
-		if(level < 0) level = (int)game.getLevels().size() - 1;
-		if(transitionDirection) transitionFrame += dilation;
-		if(transitionFrame >= FRAMES_PER_TRANSITION) {
-			transitionFrame = 0;
-			transitionDirection = 0;
+		if(_level >=  static_cast<int>(_game.getLevels().size())) _level = 0;
+		if(_level < 0) _level = static_cast<int>(_game.getLevels().size()) - 1;
+		if(_transitionDirection) _transitionFrame += dilation;
+		if(_transitionFrame >= FRAMES_PER_TRANSITION) {
+			_transitionFrame = 0;
+			_transitionDirection = 0;
 		}
 
 		return nullptr;
 	}
 
 	void Menu::drawTop(double scale) {
-		double percentRotated = (double)(transitionFrame) / (double)FRAMES_PER_TRANSITION;
-		double rotation = percentRotated * TAU/6.0;
+		auto percentRotated = _transitionFrame / FRAMES_PER_TRANSITION;
+		auto rotation = percentRotated * TAU/6.0;
 
 		// If the user is going to the left, flip the radians so the animation plays backwards.
-		if(transitionDirection == -1) {
+		if(_transitionDirection == -1) {
 			rotation *= -1.0;
 		}
 
 		// Colors
-		Color FG{};
-		Color BG1{};
-		Color BG2{};
-		Color BG3{};
+		Color fg{};
+		Color bg1{};
+		Color bg2{};
+		Color bg3{};
 
-		auto& levelPrev = *game.getLevels()[lastLevel];
-		auto& levelCur = *game.getLevels()[level];
+		auto& levelPrev = *_game.getLevels()[_lastLevel];
+		auto& levelCur = *_game.getLevels()[_level];
 
-		if(transitionDirection) {
-			FG = interpolateColor(levelPrev.getColorsFG()[0], levelCur.getColorsFG()[0], percentRotated);
-			BG1 = interpolateColor(levelPrev.getColorsBG1()[0], levelCur.getColorsBG2()[0], percentRotated);
-			BG2 = interpolateColor(levelPrev.getColorsBG2()[0], levelCur.getColorsBG1()[0], percentRotated);
-			BG3 = interpolateColor(levelPrev.getColorsBG2()[0], levelCur.getColorsBG2()[0], percentRotated); //Real BG2 transition
+		if(_transitionDirection) {
+			fg = interpolateColor(levelPrev.getColorsFG()[0], levelCur.getColorsFG()[0], percentRotated);
+			bg1 = interpolateColor(levelPrev.getColorsBG1()[0], levelCur.getColorsBG2()[0], percentRotated);
+			bg2 = interpolateColor(levelPrev.getColorsBG2()[0], levelCur.getColorsBG1()[0], percentRotated);
+			bg3 = interpolateColor(levelPrev.getColorsBG2()[0], levelCur.getColorsBG2()[0], percentRotated); //Real BG2 transition
 		} else {
-			FG = levelCur.getColorsFG()[0];
-			BG1 = levelCur.getColorsBG1()[0];
-			BG2 = levelCur.getColorsBG2()[0];
-			BG3 = levelCur.getColorsBG2()[0]; //same as BG2
+			fg = levelCur.getColorsFG()[0];
+			bg1 = levelCur.getColorsBG1()[0];
+			bg2 = levelCur.getColorsBG2()[0];
+			bg3 = levelCur.getColorsBG2()[0]; //same as BG2
 		}
 
-		Point screen = platform.getScreenDim();
-		Point shadow = game.getShadowOffset();
+		auto screen = _platform.getScreenDim();
+		auto shadow = _game.getShadowOffset();
 
 		Point focus = {screen.x/2, screen.y/4};
 		Point offsetFocus = {focus.x + shadow.x, focus.y + shadow.y};
 
 		// Home screen always has 6 sides.
 		// Use a multiplier of 2 because the view is shifted down
-		game.drawBackground(BG1, BG2, focus, 2, rotation, 6.0);
+		_game.drawBackground(bg1, bg2, focus, 2, rotation, 6.0);
 
 		// Shadows
-		game.drawRegular(COLOR_SHADOW, offsetFocus, SCALE_HEX_LENGTH * scale, rotation, 6.0);
-		game.drawCursor(COLOR_SHADOW, offsetFocus, TAU / 4.0, 0, scale);
+		_game.drawRegular(COLOR_SHADOW, offsetFocus, SCALE_HEX_LENGTH * scale, rotation, 6.0);
+		_game.drawCursor(COLOR_SHADOW, offsetFocus, TAU / 4.0, 0, scale);
 
 		// Geometry
-		game.drawRegular(FG, focus,SCALE_HEX_LENGTH * scale, rotation, 6.0);
-		game.drawRegular(BG3, focus, SCALE_HEX_LENGTH * scale - SCALE_HEX_BORDER * scale, rotation, 6.0);
-		game.drawCursor(FG, focus, TAU / 4.0, 0, scale); //Draw cursor fixed quarter circle, no movement.
+		_game.drawRegular(fg, focus,SCALE_HEX_LENGTH * scale, rotation, 6.0);
+		_game.drawRegular(bg3, focus, SCALE_HEX_LENGTH * scale - SCALE_HEX_BORDER * scale, rotation, 6.0);
+		_game.drawCursor(fg, focus, TAU / 4.0, 0, scale); //Draw cursor fixed quarter circle, no movement.
 
-		auto& large = game.getFontLarge();
-		auto& small = game.getFontSmall();
+		auto& large = _game.getFontLarge();
+		auto& small = _game.getFontSmall();
 
 		// Padding for text
-		double PAD = 3 * scale;
+		auto pad = 3 * scale;
 
 		// Actual text
 		auto scoreTime = "BEST: " + getTime(levelCur.getHighScore());
@@ -121,11 +123,11 @@ namespace SuperHaxagon {
 		small.setScale(scale);
 
 		// Text positions
-		Point posTitle = {PAD, PAD};
-		Point posDifficulty = {PAD, posTitle.y + large.getHeight() + PAD};
-		Point posMode = {PAD, posDifficulty.y + small.getHeight() + PAD};
-		Point posCreator = {PAD, posMode.y + (renderCreator ? small.getHeight() + PAD : 0)};
-		Point posTime = {PAD, screen.y - small.getHeight() - PAD};
+		Point posTitle = {pad, pad};
+		Point posDifficulty = {pad, posTitle.y + large.getHeight() + pad};
+		Point posMode = {pad, posDifficulty.y + small.getHeight() + pad};
+		Point posCreator = {pad, posMode.y + (renderCreator ? small.getHeight() + pad : 0)};
+		Point posTime = {pad, screen.y - small.getHeight() - pad};
 
 		// Triangle positions
 		Point infoPos = {0, 0};
@@ -134,29 +136,29 @@ namespace SuperHaxagon {
 			small.getWidth(diff),
 			small.getWidth(mode),
 			small.getWidth(auth),
-		}) + PAD, posCreator.y + small.getHeight() + PAD};
+		}) + pad, posCreator.y + small.getHeight() + pad};
 
 		// It looks like the original game had triangles flipped....
 		std::array<Point, 3> infoTriangle = {
-			Point{infoSize.x, platform.getScreenDim().y - infoSize.y},
-			Point{infoSize.x, platform.getScreenDim().y},
-			Point{infoSize.x + infoSize.y/2,  platform.getScreenDim().y}
+			Point{infoSize.x, _platform.getScreenDim().y - infoSize.y},
+			Point{infoSize.x, _platform.getScreenDim().y},
+			Point{infoSize.x + infoSize.y/2,  _platform.getScreenDim().y}
 		};
 
-		platform.drawRect(COLOR_TRANSPARENT, infoPos, infoSize);
-		platform.drawTriangle(COLOR_TRANSPARENT, infoTriangle);
+		_platform.drawRect(COLOR_TRANSPARENT, infoPos, infoSize);
+		_platform.drawTriangle(COLOR_TRANSPARENT, infoTriangle);
 
 		// Score block with triangle
-		Point timePos = {0, posTime.y - PAD};
-		Point timeSize = {small.getWidth(scoreTime) + PAD * 2, small.getHeight() + PAD * 2};
+		Point timePos = {0, posTime.y - pad};
+		Point timeSize = {small.getWidth(scoreTime) + pad * 2, small.getHeight() + pad * 2};
 		std::array<Point, 3> timeTriangle = {
 			Point{timeSize.x, timeSize.y},
 			Point{timeSize.x, 0},
 			Point{timeSize.x + timeSize.y/2, 0}
 		};
 
-		platform.drawRect(COLOR_TRANSPARENT, timePos, timeSize);
-		platform.drawTriangle(COLOR_TRANSPARENT, timeTriangle);
+		_platform.drawRect(COLOR_TRANSPARENT, timePos, timeSize);
+		_platform.drawTriangle(COLOR_TRANSPARENT, timeTriangle);
 
 		large.draw(COLOR_WHITE, posTitle, Alignment::LEFT, levelCur.getName());
 		small.draw(COLOR_GREY, posDifficulty, Alignment::LEFT, diff);

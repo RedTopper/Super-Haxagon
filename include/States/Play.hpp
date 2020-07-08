@@ -18,7 +18,7 @@ namespace SuperHaxagon {
 		static constexpr int PULSE_TIME = 75;
 		static constexpr double PULSE_TIMES = 2.0;
 
-		Play(Game& game, LevelFactory& level);
+		Play(Game& game, LevelFactory& factory);
 		Play(Play&) = delete;
 		~Play() override;
 
@@ -29,15 +29,15 @@ namespace SuperHaxagon {
 		void exit() override;
 
 	private:
-		Game& game;
-		Platform& platform;
-		LevelFactory& factory;
-		std::unique_ptr<Level> level;
-		std::unique_ptr<Audio> bgm;
+		Game& _game;
+		Platform& _platform;
+		LevelFactory& _factory;
+		std::unique_ptr<Level> _level;
+		std::unique_ptr<Audio> _bgm;
 
-		double scalePrev = 0;
-		double scoreWidth = 0;
-		double score = 0;
+		double _scalePrev = 0;
+		double _scoreWidth = 0;
+		double _score = 0;
 	};
 }
 

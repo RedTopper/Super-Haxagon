@@ -1,3 +1,5 @@
+#include <array>
+
 #include "Core/Game.hpp"
 #include "Driver/Font.hpp"
 #include "Driver/Audio.hpp"
@@ -9,43 +11,43 @@
 namespace SuperHaxagon {
 
 	Play::Play(Game& game, LevelFactory& factory) :
-		game(game),
-		platform(game.getPlatform()),
-		factory(factory),
-		level(factory.instantiate(game.getTwister(), SCALE_BASE_DISTANCE))
+		_game(game),
+		_platform(game.getPlatform()),
+		_factory(factory),
+		_level(factory.instantiate(game.getTwister(), SCALE_BASE_DISTANCE))
 	{}
 
 	Play::~Play() = default;
 
 	void Play::enter() {
 		std::string path;
-		if (factory.getLocation() == Location::INTERNAL) {
-			path = platform.getPathRom("/bgm" + factory.getMusic());
-		} else if (factory.getLocation() == Location::EXTERNAL) {
-			path = platform.getPath("/bgm" + factory.getMusic());
+		if (_factory.getLocation() == Location::INTERNAL) {
+			path = _platform.getPathRom("/bgm" + _factory.getMusic());
+		} else if (_factory.getLocation() == Location::EXTERNAL) {
+			path = _platform.getPath("/bgm" + _factory.getMusic());
 		}
 
-		bgm = platform.loadAudio(path, Stream::INDIRECT);
-		platform.playSFX(game.getSfxBegin());
-		platform.playBGM(*bgm);
+		_bgm = _platform.loadAudio(path, Stream::INDIRECT);
+		_platform.playSFX(_game.getSfxBegin());
+		_platform.playBGM(*_bgm);
 	}
 
 	void Play::exit() {
-		platform.stopBGM();
+		_platform.stopBGM();
 	}
 
-	std::unique_ptr<State> Play::update(double dilation) {
-		double maxRenderDistance = SCALE_BASE_DISTANCE * (game.getScreenDimMax() / 240);
-		level->update(game.getTwister(), SCALE_HEX_LENGTH, maxRenderDistance, dilation);
+	std::unique_ptr<State> Play::update(const double dilation) {
+		const auto maxRenderDistance = SCALE_BASE_DISTANCE * (_game.getScreenDimMax() / 240);
+		_level->update(_game.getTwister(), SCALE_HEX_LENGTH, maxRenderDistance, dilation);
 
 		// Button presses
-		auto pressed = platform.getPressed();
+		const auto pressed = _platform.getPressed();
 
 		// Check collision
-		double cursorDistance = SCALE_HEX_LENGTH + SCALE_HUMAN_PADDING + SCALE_HUMAN_HEIGHT;
-		auto hit = level->collision(cursorDistance, dilation);
+		const auto cursorDistance = SCALE_HEX_LENGTH + SCALE_HUMAN_PADDING + SCALE_HUMAN_HEIGHT;
+		const auto hit = _level->collision(cursorDistance, dilation);
 		if(pressed.back || hit == Movement::DEAD) {
-			return std::make_unique<Over>(game, factory, std::move(level), score);
+			return std::make_unique<Over>(_game, _factory, std::move(_level), _score);
 		}
 
 		if (pressed.quit) {
@@ -53,114 +55,114 @@ namespace SuperHaxagon {
 		}
 
 		if (pressed.left && hit != Movement::CANNOT_MOVE_LEFT) {
-			level->left(dilation);
+			_level->left(dilation);
 		} else if (pressed.right && hit != Movement::CANNOT_MOVE_RIGHT) {
-			level->right(dilation);
+			_level->right(dilation);
 		}
 
 		// Make sure the cursor doesn't extend too far
-		level->clamp();
+		_level->clamp();
 
 		// Update score
-		auto lastScoreText = getScoreText((int) score, false);
-		score += dilation;
+		const auto* lastScoreText = getScoreText(static_cast<int>(_score), false);
+		_score += dilation;
 
-		if(lastScoreText != getScoreText((int) score, false)) {
-			level->increaseMultiplier();
-			platform.playSFX(game.getSfxLevelUp());
+		if(lastScoreText != getScoreText(static_cast<int>(_score), false)) {
+			_level->increaseMultiplier();
+			_platform.playSFX(_game.getSfxLevelUp());
 		}
 
 		return nullptr;
 	}
 
-	void Play::drawTop(double scale) {
-		level->draw(game, scale, 0);
+	void Play::drawTop(const double scale) {
+		_level->draw(_game, scale, 0);
 	}
 
-	void Play::drawBot(double scale) {
-		auto& small = game.getFontSmall();
+	void Play::drawBot(const double scale) {
+		auto& small = _game.getFontSmall();
 
 		// Makes it so the score text doesn't freak out
 		// if getWidth returns slightly different values
 		// each frame
-		if (scalePrev != scale) {
-			scalePrev = scale;
+		if (_scalePrev != scale) {
+			_scalePrev = scale;
 			small.setScale(scale);
-			scoreWidth = small.getWidth("TIME: " + getTime(0));
+			_scoreWidth = small.getWidth("TIME: " + getTime(0));
 		}
 
-		double width = platform.getScreenDim().x;
-		double PAD = 3 * scale;
+		const auto width = _platform.getScreenDim().x;
+		const auto pad = 3 * scale;
 
 		small.setScale(scale);
 
 		// Draw the top left POINT/LINE thing
 		// Note, 400 is kind of arbitrary. Perhaps it's needed to update this later.
-		auto levelUp = getScoreText((int) score, platform.getScreenDim().x <= 400);
-		Point levelUpPosText = {PAD, PAD};
-		Point levelUpBkgPos = {0, 0};
-		Point LevelUpBkgSize = {
-			levelUpPosText.x + small.getWidth(levelUp) + PAD,
-			levelUpPosText.y + small.getHeight() + PAD
+		const auto* levelUp = getScoreText(static_cast<int>(_score), _platform.getScreenDim().x <= 400);
+		const Point levelUpPosText = {pad, pad};
+		const Point levelUpBkgPos = {0, 0};
+		const Point levelUpBkgSize = {
+			levelUpPosText.x + small.getWidth(levelUp) + pad,
+			levelUpPosText.y + small.getHeight() + pad
 		};
 
-		std::array<Point, 3> levelUpBkgTri = {
-			Point{LevelUpBkgSize.x, platform.getScreenDim().y - LevelUpBkgSize.y},
-			Point{LevelUpBkgSize.x, platform.getScreenDim().y},
-			Point{LevelUpBkgSize.x + LevelUpBkgSize.y/2, platform.getScreenDim().y}
+		const std::array<Point, 3> levelUpBkgTri = {
+			Point{levelUpBkgSize.x, _platform.getScreenDim().y - levelUpBkgSize.y},
+			Point{levelUpBkgSize.x, _platform.getScreenDim().y},
+			Point{levelUpBkgSize.x + levelUpBkgSize.y/2, _platform.getScreenDim().y}
 		};
 
-		platform.drawRect(COLOR_TRANSPARENT, levelUpBkgPos, LevelUpBkgSize);
-		platform.drawTriangle(COLOR_TRANSPARENT, levelUpBkgTri);
+		_platform.drawRect(COLOR_TRANSPARENT, levelUpBkgPos, levelUpBkgSize);
+		_platform.drawTriangle(COLOR_TRANSPARENT, levelUpBkgTri);
 		small.draw(COLOR_WHITE, levelUpPosText, Alignment::LEFT, levelUp);
 
 		// Draw the current score
-		auto textScore = "TIME: " + getTime((int)score);
-		Point scorePosText = { width - PAD - scoreWidth, PAD};
-		Point scoreBkgPos = {scorePosText.x - PAD, 0};
+		const auto textScore = "TIME: " + getTime(_score);
+		const Point scorePosText = { width - pad - _scoreWidth, pad};
+		const Point scoreBkgPos = {scorePosText.x - pad, 0};
 		Point scoreBkgSize = {
 			width - scoreBkgPos.x,
-			scorePosText.y + small.getHeight() + PAD
+			scorePosText.y + small.getHeight() + pad
 		};
 
 		// Before we draw the score, compute the best time graph.
-		bool drawBar = false;
-		bool drawHigh = false;
-		double originalY = scoreBkgSize.y;
-		double HEIGHT_BAR = 2 * scale;
-		if (factory.getHighScore() > 0) {
-			if (score < factory.getHighScore()) {
-				scoreBkgSize.y += HEIGHT_BAR + PAD;
+		auto drawBar = false;
+		auto drawHigh = false;
+		const auto originalY = scoreBkgSize.y;
+		const auto heightBar = 2 * scale;
+		if (_factory.getHighScore() > 0) {
+			if (_score < _factory.getHighScore()) {
+				scoreBkgSize.y += heightBar + pad;
 				drawBar = true;
 			} else {
-				scoreBkgSize.y += small.getHeight() + PAD;
+				scoreBkgSize.y += small.getHeight() + pad;
 				drawHigh = true;
 			}
 		}
 
-		std::array<Point, 3> scoreBkgTri = {
-			Point{scoreBkgPos.x, platform.getScreenDim().y - scoreBkgSize.y},
-			Point{scoreBkgPos.x, platform.getScreenDim().y},
-			Point{scoreBkgPos.x - scoreBkgSize.y/2, platform.getScreenDim().y}
+		const std::array<Point, 3> scoreBkgTri = {
+			Point{scoreBkgPos.x, _platform.getScreenDim().y - scoreBkgSize.y},
+			Point{scoreBkgPos.x, _platform.getScreenDim().y},
+			Point{scoreBkgPos.x - scoreBkgSize.y/2, _platform.getScreenDim().y}
 		};
 
-		platform.drawTriangle(COLOR_TRANSPARENT, scoreBkgTri);
-		platform.drawRect(COLOR_TRANSPARENT, scoreBkgPos, scoreBkgSize);
+		_platform.drawTriangle(COLOR_TRANSPARENT, scoreBkgTri);
+		_platform.drawRect(COLOR_TRANSPARENT, scoreBkgPos, scoreBkgSize);
 		small.draw(COLOR_WHITE, scorePosText, Alignment::LEFT, textScore);
 
 		if (drawBar) {
-			Point barPos = {scorePosText.x, originalY};
-			Point barWidth = {scoreWidth, HEIGHT_BAR};
-			Point barWidthScore = {scoreWidth * (score / factory.getHighScore()), HEIGHT_BAR};
-			platform.drawRect(COLOR_BLACK, barPos, barWidth);
-			platform.drawRect(COLOR_WHITE, barPos, barWidthScore);
+			const Point barPos = {scorePosText.x, originalY};
+			const Point barWidth = {_scoreWidth, heightBar};
+			const Point barWidthScore = {_scoreWidth * (_score / _factory.getHighScore()), heightBar};
+			_platform.drawRect(COLOR_BLACK, barPos, barWidth);
+			_platform.drawRect(COLOR_WHITE, barPos, barWidthScore);
 		}
 
 		if (drawHigh) {
-			Color textColor = COLOR_WHITE;
-			Point posBest = {width - PAD, originalY};
-			if (score - factory.getHighScore() <= PULSE_TIMES * PULSE_TIME) {
-				double percent = getPulse(score, PULSE_TIME, factory.getHighScore());
+			auto textColor = COLOR_WHITE;
+			const Point posBest = {width - pad, originalY};
+			if (_score - _factory.getHighScore() <= PULSE_TIMES * PULSE_TIME) {
+				const auto percent = getPulse(_score, PULSE_TIME, _factory.getHighScore());
 				textColor = interpolateColor(PULSE_LOW, PULSE_HIGH, percent);
 			}
 

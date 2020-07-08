@@ -22,15 +22,15 @@ namespace SuperHaxagon {
 		void exit() override;
 
 	private:
-		Game& game;
-		Platform& platform;
+		Game& _game;
+		Platform& _platform;
 
-		std::unique_ptr<Audio> bgm;
+		std::unique_ptr<Audio> _bgm;
 
-		double transitionFrame = 0;
-		int transitionDirection = 0;
-		int lastLevel = 0;
-		int level = 0;
+		double _transitionFrame = 0;
+		int _transitionDirection = 0;
+		int _lastLevel = 0;
+		int _level = 0;
 	};
 }
 

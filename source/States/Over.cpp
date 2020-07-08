@@ -1,4 +1,7 @@
 #include <cstring>
+#include <ostream>
+#include <fstream>
+#include <iostream>
 
 #include "Core/Game.hpp"
 #include "Driver/Font.hpp"
@@ -11,21 +14,21 @@
 
 namespace SuperHaxagon {
 
-	Over::Over(Game& game, LevelFactory& factory, std::unique_ptr<Level> level, int score) :
-		game(game),
-		platform(game.getPlatform()),
-		factory(factory),
-		level(std::move(level)),
-		score(score) {
-		high = factory.setHighScore(score);
+	Over::Over(Game& game, LevelFactory& factory, std::unique_ptr<Level> level, const double score) :
+		_game(game),
+		_platform(game.getPlatform()),
+		_factory(factory),
+		_level(std::move(level)),
+		_score(score) {
+		_high = factory.setHighScore(static_cast<int>(score));
 	}
 
 	Over::~Over() = default;
 
 	void Over::enter() {
-		platform.playSFX(game.getSfxOver());
+		_platform.playSFX(_game.getSfxOver());
 
-		std::ofstream scores(platform.getPath("/scores.db"), std::ios::out | std::ios::binary);
+		std::ofstream scores(_platform.getPath("/scores.db"), std::ios::out | std::ios::binary);
 
 		if (!scores) {
 			std::cout << "cannot open score db for write" << std::endl;
@@ -33,10 +36,10 @@ namespace SuperHaxagon {
 		}
 
 		scores.write(Load::SCORE_HEADER, strlen(Load::SCORE_HEADER));
-		uint32_t levels = game.getLevels().size();
+		auto levels = static_cast<uint32_t>(_game.getLevels().size());
 		scores.write(reinterpret_cast<char*>(&levels), sizeof(levels));
 
-		for (const auto& lev : game.getLevels()) {
+		for (const auto& lev : _game.getLevels()) {
 			writeString(scores, lev->getName());
 			writeString(scores, lev->getDifficulty());
 			writeString(scores, lev->getMode());
@@ -48,69 +51,69 @@ namespace SuperHaxagon {
 		scores.write(Load::SCORE_FOOTER, strlen(Load::SCORE_FOOTER));
 	}
 
-	std::unique_ptr<State> Over::update(double dilation) {
-		frames += dilation;
-		level->rotate(GAME_OVER_ROT_SPEED, dilation);
-		level->clamp();
+	std::unique_ptr<State> Over::update(const double dilation) {
+		_frames += dilation;
+		_level->rotate(GAME_OVER_ROT_SPEED, dilation);
+		_level->clamp();
 
-		auto press = platform.getPressed();
+		const auto press = _platform.getPressed();
 		if(press.quit) return std::make_unique<Quit>();
 
-		if(frames <= FRAMES_PER_GAME_OVER) {
-			offset *= GAME_OVER_ACCELERATION_RATE * dilation + 1.0;
+		if(_frames <= FRAMES_PER_GAME_OVER) {
+			_offset *= GAME_OVER_ACCELERATION_RATE * dilation + 1.0;
 		}
 
-		if(frames >= FRAMES_PER_GAME_OVER) {
-			level->clearPatterns();
+		if(_frames >= FRAMES_PER_GAME_OVER) {
+			_level->clearPatterns();
 			if (press.select) {
-				return std::make_unique<Play>(game, factory);
+				return std::make_unique<Play>(_game, _factory);
 			}
 
 			if (press.back) {
-				return std::make_unique<Menu>(game);
+				return std::make_unique<Menu>(_game);
 			}
 		}
 
 		return nullptr;
 	}
 
-	void Over::drawTop(double scale) {
-		level->draw(game, scale, offset);
+	void Over::drawTop(const double scale) {
+		_level->draw(_game, scale, _offset);
 	}
 
-	void Over::drawBot(double scale) {
-		auto& large = game.getFontLarge();
-		auto& small = game.getFontSmall();
+	void Over::drawBot(const double scale) {
+		auto& large = _game.getFontLarge();
+		auto& small = _game.getFontSmall();
 		large.setScale(scale);
 		small.setScale(scale);
 
-		double PAD_TEXT = 3 * scale;
-		double MARGIN = 20 * scale;
-		double width = platform.getScreenDim().x;
-		double height = platform.getScreenDim().y;
-		double heightLarge = large.getHeight();
-		double heightSmall = small.getHeight();
+		const auto padText = 3 * scale;
+		const auto margin = 20 * scale;
+		const auto width = _platform.getScreenDim().x;
+		const auto height = _platform.getScreenDim().y;
+		const auto heightLarge = large.getHeight();
+		const auto heightSmall = small.getHeight();
 
-		Point posGameOver = {width / 2, MARGIN};
-		Point posTime = {width / 2, posGameOver.y + heightLarge + PAD_TEXT};
-		Point posBest = {width / 2, posTime.y + heightSmall + PAD_TEXT};
-		Point posB = {width / 2, height - MARGIN - heightSmall};
-		Point posA = {width / 2, posB.y - heightSmall - PAD_TEXT};
+		const Point posGameOver = {width / 2, margin};
+		const Point posTime = {width / 2, posGameOver.y + heightLarge + padText};
+		const Point posBest = {width / 2, posTime.y + heightSmall + padText};
+		const Point posB = {width / 2, height - margin - heightSmall};
+		const Point posA = {width / 2, posB.y - heightSmall - padText};
 
-		auto textScore = std::string("SCORE: ") + getTime(score);
+		const auto textScore = std::string("SCORE: ") + getTime(_score);
 		large.draw(COLOR_WHITE, posGameOver, Alignment::CENTER,  "GAME OVER");
 		small.draw(COLOR_WHITE, posTime, Alignment::CENTER, textScore);
 
-		if(high) {
-			double percent = getPulse(frames, PULSE_TIME, 0);
-			Color pulse = interpolateColor(PULSE_LOW, PULSE_HIGH, percent);
+		if(_high) {
+			const auto percent = getPulse(_frames, PULSE_TIME, 0);
+			const auto pulse = interpolateColor(PULSE_LOW, PULSE_HIGH, percent);
 			small.draw(pulse, posBest, Alignment::CENTER, "NEW RECORD!");
 		} else {
-			auto textBest = std::string("BEST: ") + getTime(factory.getHighScore());
+			const auto textBest = std::string("BEST: ") + getTime(_factory.getHighScore());
 			small.draw(COLOR_WHITE, posBest, Alignment::CENTER, textBest);
 		}
 
-		if(frames >= FRAMES_PER_GAME_OVER) {
+		if(_frames >= FRAMES_PER_GAME_OVER) {
 			small.draw(COLOR_WHITE, posA, Alignment::CENTER, "PRESS (SEL) TO PLAY");
 			small.draw(COLOR_WHITE, posB, Alignment::CENTER, "PRESS (ESC) TO QUIT");
 		}

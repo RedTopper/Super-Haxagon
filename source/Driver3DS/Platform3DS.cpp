@@ -4,8 +4,8 @@
 #include <array>
 #include <sys/stat.h>
 
-#include "Driver3DS/Player3DS.hpp"
-#include "Driver3DS/Audio3DS.hpp"
+#include "Driver3DS/PlayerWav3DS.hpp"
+#include "Driver3DS/AudioWav3DS.hpp"
 #include "Driver3DS/Font3DS.hpp"
 #include "Driver3DS/Platform3DS.hpp"
 
@@ -57,7 +57,7 @@ namespace SuperHaxagon {
 	}
 
 	std::unique_ptr<Audio> Platform3DS::loadAudio(const std::string& path, Stream stream) {
-		return std::make_unique<Audio3DS>(path);
+		return std::make_unique<AudioWav3DS>(path);
 	}
 
 	std::unique_ptr<Font> Platform3DS::loadFont(const std::string& path, int size) {

@@ -1,7 +1,7 @@
-#include "Driver3DS/Player3DS.hpp"
+#include "Driver3DS/PlayerWav3DS.hpp"
 
 namespace SuperHaxagon {
-	Player3DS::Player3DS(u8* data, const u32 sampleRate, const u32 dataSize, const u16 channels, const u16 bitsPerSample, const u16 ndspFormat) :
+	PlayerWav3DS::PlayerWav3DS(u8* data, const u32 sampleRate, const u32 dataSize, const u16 channels, const u16 bitsPerSample, const u16 ndspFormat) :
 			_data(data),
 			_sampleRate(sampleRate),
 			_dataSize(dataSize),
@@ -10,12 +10,12 @@ namespace SuperHaxagon {
 			_ndspFormat(ndspFormat)
 	{}
 
-	Player3DS::~Player3DS() {
-		Player3DS::stop();
+	PlayerWav3DS::~PlayerWav3DS() {
+		PlayerWav3DS::stop();
 		ndspChnWaveBufClear(_channel);
 	}
 
-	void Player3DS::play() {
+	void PlayerWav3DS::play() {
 		stop();
 		float mix[12]{};
 		mix[0] = 1.0;
@@ -33,11 +33,11 @@ namespace SuperHaxagon {
 		ndspChnWaveBufAdd(_channel, &_buffer);
 	}
 
-	void Player3DS::stop() {
+	void PlayerWav3DS::stop() {
 		ndspChnWaveBufClear(_channel);
 	}
 
-	bool Player3DS::isDone() {
+	bool PlayerWav3DS::isDone() {
 		return _buffer.status == NDSP_WBUF_DONE;
 	}
 }

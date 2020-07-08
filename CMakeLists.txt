@@ -1,10 +1,10 @@
 # This CMake file should build SuperHaxagon on MinGW and MSVC
+# It will not compile the 3DS version, use the Makefile for that
 cmake_minimum_required(VERSION 3.10)
 project(Super_Haxagon)
 
 include_directories("$ENV{DEVKITPRO}/libctru/include")
-include_directories("$ENV{DEVKITPRO}/portlibs/3ds/include/ogg")
-include_directories("$ENV{DEVKITPRO}/portlibs/3ds/include/opus")
+include_directories("$ENV{DEVKITPRO}/portlibs/3ds/include")
 include_directories("${CMAKE_CURRENT_LIST_DIR}/libraries/SFML/include")
 include_directories("${CMAKE_CURRENT_LIST_DIR}/include")
 

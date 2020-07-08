@@ -6,10 +6,10 @@
 #include "Driver/Player.hpp"
 
 namespace SuperHaxagon {
-	class Player3DS : public Player {
+	class PlayerWav3DS : public Player {
 	public:
-		Player3DS(u8* data, u32 sampleRate, u32 dataSize, u16 channels, u16 bitsPerSample, u16 ndspFormat);
-		~Player3DS() override;
+		PlayerWav3DS(u8* data, u32 sampleRate, u32 dataSize, u16 channels, u16 bitsPerSample, u16 ndspFormat);
+		~PlayerWav3DS() override;
 
 		void setChannel(const int channel) override { _channel = channel; }
 		void setLoop(const bool loop) override { _loop = loop; }

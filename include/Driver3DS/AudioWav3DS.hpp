@@ -7,10 +7,10 @@
 #include "Driver/Audio.hpp"
 
 namespace SuperHaxagon {
-	class Audio3DS : public Audio {
+	class AudioWav3DS : public Audio {
 	public:
-		explicit Audio3DS(const std::string& path);
-		~Audio3DS() override;
+		explicit AudioWav3DS(const std::string& path);
+		~AudioWav3DS() override;
 
 		std::unique_ptr<Player> instantiate() override;
 

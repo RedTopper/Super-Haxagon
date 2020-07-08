@@ -24,7 +24,10 @@ endif
 ifeq ($(TARGET),3DS)
     SOURCE_DIRS += source/Driver3DS
 
-    LIBRARY_DIRS += $(DEVKITPRO)/libctru
+    # Shitty workaround for library includes not being set up right
+    INCLUDE_DIRS += $(DEVKITPRO)/portlibs/3ds/include/ogg $(DEVKITPRO)/portlibs/3ds/include/opus 
+    LIBRARY_DIRS += $(DEVKITPRO)/libctru $(DEVKITPRO)/portlibs/3ds/
+
     $(info $$LIBRARY_DIRS is [${LIBRARY_DIRS}])
     LIBRARIES += citro2d citro3d ctru m
 

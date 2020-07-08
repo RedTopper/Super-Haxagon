@@ -2,6 +2,7 @@
 #include <string>
 #include <memory>
 #include <array>
+#include <sys/stat.h>
 
 #include "Driver3DS/Player3DS.hpp"
 #include "Driver3DS/Audio3DS.hpp"
@@ -25,6 +26,10 @@ namespace SuperHaxagon {
 		// Setup NDSP
 		ndspInit();
 		ndspSetOutputMode(NDSP_OUTPUT_STEREO);
+
+		mkdir("sdmc:/3ds", 0777);
+		mkdir("sdmc:/3ds/data", 0777);
+		mkdir("sdmc:/3ds/data/haxagon", 0777);
 	}
 
 	Platform3DS::~Platform3DS() {
@@ -102,7 +107,7 @@ namespace SuperHaxagon {
 	}
 
 	Point Platform3DS::getScreenDim() const {
-		return {_drawingOnTop ? 400 : 320, 240};
+		return {static_cast<double>(_drawingOnTop ? 400 : 320), 240};
 	}
 
 	void Platform3DS::screenBegin() {

@@ -5,12 +5,11 @@
 
 #include "Driver/Audio.hpp"
 #include "Driver/Platform.hpp"
+#include "Driver/Player.hpp"
 
 static const int MAX_TRACKS = 4;
 
 namespace SuperHaxagon {
-	class Player;
-
 	class Platform3DS : public Platform {
 	public:
 		Platform3DS();

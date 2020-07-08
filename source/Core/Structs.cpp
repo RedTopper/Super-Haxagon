@@ -1,35 +1,36 @@
 #include <cmath>
 #include <string>
+#include <fstream>
 #include <sstream>
 #include <iomanip>
 
 #include "Core/Structs.hpp"
 
 namespace SuperHaxagon {
-	Color interpolateColor(const Color& one, const Color& two, double percent) {
+	Color interpolateColor(const Color& one, const Color& two, const double percent) {
 		Color result{};
-		result.r = (int)linear((double)one.r, (double)two.r, percent);
-		result.g = (int)linear((double)one.g, (double)two.g, percent);
-		result.b = (int)linear((double)one.b, (double)two.b, percent);
-		result.a = (int)linear((double)one.a, (double)two.a, percent);
+		result.r = static_cast<uint8_t>(linear(one.r, two.r, percent));
+		result.g = static_cast<uint8_t>(linear(one.g, two.g, percent));
+		result.b = static_cast<uint8_t>(linear(one.b, two.b, percent));
+		result.a = static_cast<uint8_t>(linear(one.a, two.a, percent));
 		return result;
 	}
 
-	double linear(double start, double end, double percent) {
+	double linear(const double start, const double end, const double percent) {
 		return (end - start) * percent + start;
 	}
 
-	Point calcPoint(const Point& focus, double rotation, double offset, double distance) {
+	Point calcPoint(const Point& focus, const double rotation, const double offset, const double distance) {
 		Point point = {0,0};
 		point.x = distance * cos(rotation + offset) + focus.x;
 		point.y = distance * sin(rotation + offset) + focus.y;
 		return point;
 	}
 
-	std::string getTime(int score) {
+	std::string getTime(const double score) {
 		std::stringstream buffer;
-		int scoreInt = (int)((double)score/60.0);
-		int decimalPart = (int)(((double)score/60.0 - (double)scoreInt) * 100.0);
+		const auto scoreInt = static_cast<int>(score / 60.0);
+		const auto decimalPart = static_cast<int>((score / 60.0 - scoreInt) * 100.0);
 		buffer << std::fixed << std::setfill('0')
 			<< std::setprecision(3) << std::setw(3)
 			<< scoreInt
@@ -39,14 +40,14 @@ namespace SuperHaxagon {
 		return buffer.str();
 	}
 
-	double getPulse(double frame, double range, double start) {
+	double getPulse(double frame, const double range, const double start) {
 		frame -= start;
 		// Alternate algorithm:
 		//double percent = sin((double)frame * <speed>) / 2.0 + 0.5;
 		return fabs(((frame - floor(frame / (range * 2)) * range * 2) - range) / range);
 	}
 
-	const char* getScoreText(int score, bool reduced) {
+	const char* getScoreText(const int score, const bool reduced) {
 		if (reduced) {
 			if (score < 10 * 60) return "SPACE";
 			if (score < 20 * 60) return "POINT";
@@ -55,15 +56,15 @@ namespace SuperHaxagon {
 			if (score < 50 * 60) return "QUAD";
 			if (score < 60 * 60) return "PENTA";
 			return "HEXA";
-		} else {
-			if (score < 10 * 60) return "SPACE";
-			if (score < 20 * 60) return "POINT";
-			if (score < 30 * 60) return "LINE";
-			if (score < 40 * 60) return "TRIANGLE";
-			if (score < 50 * 60) return "SQUARE";
-			if (score < 60 * 60) return "PENTAGON";
-			return "HEXAGON";
 		}
+		
+		if (score < 10 * 60) return "SPACE";
+		if (score < 20 * 60) return "POINT";
+		if (score < 30 * 60) return "LINE";
+		if (score < 40 * 60) return "TRIANGLE";
+		if (score < 50 * 60) return "SQUARE";
+		if (score < 60 * 60) return "PENTAGON";
+		return "HEXAGON";
 	}
 
 	std::runtime_error malformed(const std::string& where, const std::string& message) {
@@ -71,15 +72,13 @@ namespace SuperHaxagon {
 	}
 
 	bool readCompare(std::ifstream& file, const std::string& str) {
-		char* read = new char[str.length() + 1];
-		file.read(read, str.length());
+		const auto read = std::make_unique<char[]>(str.length() + 1);
+		file.read(read.get(), str.length());
 		read[str.length()] = '\0';
-		bool same = read == str;
-		delete[] read;
-		return same;
+		return read.get() == str;
 	}
 
-	uint32_t read32(std::ifstream& file, uint32_t min, uint32_t max, const std::string& noun) {
+	uint32_t read32(std::ifstream& file, const uint32_t min, const uint32_t max, const std::string& noun) {
 		uint32_t num;
 		file.read(reinterpret_cast<char*>(&num), sizeof(num));
 		if (num < min) throw malformed("int", noun + " is too small!");
@@ -109,17 +108,15 @@ namespace SuperHaxagon {
 	}
 
 	std::string readString(std::ifstream& file, const std::string& noun) {
-		int length = read32(file, 1, 300, noun + " string");
-		char* read = new char[length + 1];
-		file.read(read, length);
+		const size_t length = read32(file, 1, 300, noun + " string");
+		const auto read = std::make_unique<char[]>(length + 1);
+		file.read(read.get(), length);
 		read[length] = '\0';
-		auto ret = std::string(read);
-		delete[] read;
-		return ret;
+		return std::string(read.get());
 	}
 
 	void writeString(std::ofstream& file, const std::string& str) {
-		uint32_t len = str.length();
+		auto len = static_cast<uint32_t>(str.length());
 		file.write(reinterpret_cast<char*>(&len), sizeof(len));
 		file.write(str.c_str(), str.length());
 	}

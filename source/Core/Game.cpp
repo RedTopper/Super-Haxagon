@@ -2,7 +2,6 @@
 
 #include "Core/Game.hpp"
 #include "Driver/Audio.hpp"
-#include "Driver/Font.hpp"
 #include "Factories/Wall.hpp"
 #include "Factories/Pattern.hpp"
 #include "States/State.hpp"
@@ -11,69 +10,70 @@
 
 namespace SuperHaxagon {
 
-	Game::Game(Platform& platform) : platform(platform) {
+	Game::Game(Platform& platform) : _platform(platform) {
 		// Audio loading
-		sfxBegin = platform.loadAudio(platform.getPathRom("/sound/begin"), Stream::DIRECT);
-		sfxHexagon = platform.loadAudio(platform.getPathRom("/sound/hexagon"), Stream::DIRECT);
-		sfxOver = platform.loadAudio(platform.getPathRom("/sound/over"), Stream::DIRECT);
-		sfxSelect = platform.loadAudio(platform.getPathRom("/sound/select"), Stream::DIRECT);
-		sfxLevelUp = platform.loadAudio(platform.getPathRom("/sound/level"), Stream::DIRECT);
+		_sfxBegin = platform.loadAudio(platform.getPathRom("/sound/begin"), Stream::DIRECT);
+		_sfxHexagon = platform.loadAudio(platform.getPathRom("/sound/hexagon"), Stream::DIRECT);
+		_sfxOver = platform.loadAudio(platform.getPathRom("/sound/over"), Stream::DIRECT);
+		_sfxSelect = platform.loadAudio(platform.getPathRom("/sound/select"), Stream::DIRECT);
+		_sfxLevelUp = platform.loadAudio(platform.getPathRom("/sound/level"), Stream::DIRECT);
 
-		small = platform.loadFont(platform.getPathRom("/bump-it-up"), 16);
-		large = platform.loadFont(platform.getPathRom("/bump-it-up"), 32);
+		_small = platform.loadFont(platform.getPathRom("/bump-it-up"), 16);
+		_large = platform.loadFont(platform.getPathRom("/bump-it-up"), 32);
 
-		twister = platform.getTwister();
+		_twister = platform.getTwister();
 	}
 
 	Game::~Game() = default;
 
 	int Game::run() {
-		state = std::make_unique<Load>(*this);
-		state->enter();
-		while(platform.loop() && !dynamic_cast<Quit*>(state.get())) {
+		_state = std::make_unique<Load>(*this);
+		_state->enter();
+		while(_platform.loop() && !dynamic_cast<Quit*>(_state.get())) {
 			// The original game was built with a 3DS in mind, so when
 			// drawing we have to scale the game to however many times larger the viewport is.
-			double scale = getScreenDimMin() / 240.0;
+			const auto scale = getScreenDimMin() / 240.0;
+			const auto dilation = _platform.getDilation();
 
-			std::unique_ptr<State> next = state->update(platform.getDilation());
+			auto next = _state->update(dilation);
 			if (next) {
-				state->exit();
-				state = std::move(next);
-				state->enter();
-				state->update(platform.getDilation());
+				_state->exit();
+				_state = std::move(next);
+				_state->enter();
+				_state->update(dilation);
 			}
 
-			platform.screenBegin();
-			state->drawTop(scale);
-			platform.screenSwap();
-			state->drawBot(scale);
-			platform.screenFinalize();
+			_platform.screenBegin();
+			_state->drawTop(scale);
+			_platform.screenSwap();
+			_state->drawBot(scale);
+			_platform.screenFinalize();
 		}
 
 		return 0;
 	}
 
 	void Game::addLevel(std::unique_ptr<LevelFactory> level) {
-		levels.emplace_back(std::move(level));
+		_levels.emplace_back(std::move(level));
 	}
 
 	void Game::drawBackground(const Color& color1, const Color& color2, const Point& focus, double multiplier, double rotation, double sides) const {
 		// The game used to be based off a 3DS which has a bottom screen of 240px
-		double maxRenderDistance = SCALE_BASE_DISTANCE * (getScreenDimMax() / 240);
-		int exactSides = std::ceil(sides);
+		const auto maxRenderDistance = SCALE_BASE_DISTANCE * (getScreenDimMax() / 240);
+		const auto exactSides = static_cast<int>(std::ceil(sides));
 
 		//solid background.
-		Point position = {0,0};
-		Point size = platform.getScreenDim();
-		platform.drawRect(color1, position, size);
+		const Point position = {0,0};
+		const auto size = _platform.getScreenDim();
+		_platform.drawRect(color1, position, size);
 
 		//This draws the main background.
 		std::vector<Point> edges;
-		edges.reserve(exactSides);
+		edges.resize(exactSides);
 
-		for(int i = 0; i < exactSides; i++) {
-			edges[i].x = multiplier * maxRenderDistance * cos(rotation + (double)i * TAU / sides) + (double)(focus.x);
-			edges[i].y = multiplier * maxRenderDistance * sin(rotation + (double)i * TAU / sides) + (double)(focus.y);
+		for(auto i = 0; i < exactSides; i++) {
+			edges[i].x = multiplier * maxRenderDistance * cos(rotation + i * TAU / sides) + focus.x;
+			edges[i].y = multiplier * maxRenderDistance * sin(rotation + i * TAU / sides) + focus.y;
 		}
 
 		std::array<Point, 3> triangle{};
@@ -81,56 +81,56 @@ namespace SuperHaxagon {
 
 		//if the sides is odd we need to "make up a color" to put in the gap between the last and first color
 		if(exactSides % 2) {
-			triangle[1] = edges[exactSides - 1];
+			triangle[1] = edges[static_cast<size_t>(exactSides) - 1];
 			triangle[2] = edges[0];
-			platform.drawTriangle(interpolateColor(color1, color2, 0.5f), triangle);
+			_platform.drawTriangle(interpolateColor(color1, color2, 0.5f), triangle);
 		}
 
 		//Draw the rest of the triangles
-		for(int i = 0; i < exactSides - 1; i = i + 2) {
+		for(auto i = 0; i < exactSides - 1; i = i + 2) {
 			triangle[1] = edges[i];
-			triangle[2] = edges[i + 1];
-			platform.drawTriangle(color2, triangle);
+			triangle[2] = edges[static_cast<size_t>(i) + 1];
+			_platform.drawTriangle(color2, triangle);
 		}
 	}
 
-	void Game::drawRegular(const Color& color, const Point& focus, double height, double rotation, double sides) const {
-		int exactSides = std::ceil(sides);
+	void Game::drawRegular(const Color& color, const Point& focus, const double height, const double rotation, const double sides) const {
+		const auto exactSides = static_cast<int>(std::ceil(sides));
 
 		std::vector<Point> edges;
-		edges.reserve(exactSides);
+		edges.resize(exactSides);
 
 		// Calculate the triangle backwards so it overlaps correctly.
-		for(int i = 0; i < exactSides; i++) {
-			edges[i].x = height * cos(rotation + (double)i * TAU/sides) + (double)(focus.x);
-			edges[i].y = height * sin(rotation + (double)i * TAU/sides) + (double)(focus.y);
+		for(auto i = 0; i < exactSides; i++) {
+			edges[i].x = height * cos(rotation + i * TAU/sides) + focus.x;
+			edges[i].y = height * sin(rotation + i * TAU/sides) + focus.y;
 		}
 
 		std::array<Point, 3> triangle{};
 		triangle[0] = focus;
 
 		// Connect last triangle edge to first
-		triangle[1] = edges[exactSides - 1];
+		triangle[1] = edges[static_cast<size_t>(exactSides) - 1];
 		triangle[2] = edges[0];
-		platform.drawTriangle(color, triangle);
+		_platform.drawTriangle(color, triangle);
 
 		// Draw rest of regular polygon
-		for(int i = 0; i < exactSides - 1; i++) {
+		for(auto i = 0; i < exactSides - 1; i++) {
 			triangle[1] = edges[i];
-			triangle[2] = edges[i + 1];
-			platform.drawTriangle(color, triangle);
+			triangle[2] = edges[static_cast<size_t>(i) + 1];
+			_platform.drawTriangle(color, triangle);
 		}
 	}
 
-	void Game::drawCursor(const Color& color, const Point& focus, double cursor, double rotation, double scale) const {
+	void Game::drawCursor(const Color& color, const Point& focus, const double cursor, const double rotation, const double scale) const {
 		std::array<Point, 3> triangle{};
 		triangle[0] = calcPoint(focus, cursor + rotation, 0.0, (SCALE_HEX_LENGTH + SCALE_HUMAN_PADDING + SCALE_HUMAN_HEIGHT) * scale);
 		triangle[1] = calcPoint(focus, cursor + rotation, HUMAN_WIDTH_RAD/2, (SCALE_HEX_LENGTH + SCALE_HUMAN_PADDING) * scale);
 		triangle[2] = calcPoint(focus, cursor + rotation, -HUMAN_WIDTH_RAD/2, (SCALE_HEX_LENGTH + SCALE_HUMAN_PADDING) * scale);
-		platform.drawTriangle(color, triangle);
+		_platform.drawTriangle(color, triangle);
 	}
 
-	void Game::drawPatterns(const Color& color, const Point& focus, const std::deque<std::unique_ptr<Pattern>>& patterns, double rotation, double sides, double offset, double scale) const {
+	void Game::drawPatterns(const Color& color, const Point& focus, const std::deque<std::unique_ptr<Pattern>>& patterns, const double rotation, const double sides, const double offset, const double scale) const {
 		for(const auto& pattern : patterns) {
 			for(const auto& wall : pattern->getWalls()) {
 				drawWalls(color, focus, *wall, rotation, sides, offset, scale);
@@ -138,31 +138,31 @@ namespace SuperHaxagon {
 		}
 	}
 
-	void Game::drawWalls(const Color& color, const Point& focus, const Wall& wall, double rotation, double sides, double offset, double scale) const {
-		double distance = wall.getDistance() + offset;
+	void Game::drawWalls(const Color& color, const Point& focus, const Wall& wall, const double rotation, const double sides, const double offset, const double scale) const {
+		const auto distance = wall.getDistance() + offset;
 		if(distance + wall.getHeight() < SCALE_HEX_LENGTH) return; //TOO_CLOSE;
 		if(wall.getSide() >= sides) return; //NOT_IN_RANGE
 		drawTrap(color, wall.calcPoints(focus, rotation, sides, offset, scale));
 	}
 
-	void Game::drawTrap(Color color, const std::array<Point, 4>& points) const {
+	void Game::drawTrap(const Color color, const std::array<Point, 4>& points) const {
 		std::array<Point, 3> triangle{};
 		triangle[0] = points[0];
 		triangle[1] = points[1];
 		triangle[2] = points[2];
-		platform.drawTriangle(color, triangle);
+		_platform.drawTriangle(color, triangle);
 		triangle[1] = points[2];
 		triangle[2] = points[3];
-		platform.drawTriangle(color, triangle);
+		_platform.drawTriangle(color, triangle);
 	}
 
 	Point Game::getScreenCenter() const {
-		Point dim = platform.getScreenDim();
+		const auto dim = _platform.getScreenDim();
 		return {dim.x/2, dim.y/2};
 	}
 
 	Point Game::getShadowOffset() const {
-		double min = getScreenDimMin();
+		const auto min = getScreenDimMin();
 		return {min/60, -min/60};
 	}
 }

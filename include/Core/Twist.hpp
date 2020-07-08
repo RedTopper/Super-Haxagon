@@ -2,9 +2,7 @@
 #define SUPER_HAXAGON_TWIST_HPP
 
 #include <random>
-#include <iostream>
 #include <algorithm>
-#include <functional>
 #include <memory>
 
 #include "Structs.hpp"
@@ -17,15 +15,15 @@ namespace SuperHaxagon {
 	 */
 	class Twist {
 	public:
-		explicit Twist(std::unique_ptr<std::seed_seq> seeds) {
-			mt = std::make_unique<std::mt19937>(*seeds);
+		explicit Twist(const std::unique_ptr<std::seed_seq> seeds) {
+			_mt = std::make_unique<std::mt19937>(*seeds);
 		}
 
 		/**
 		 * Generates a float between [0.0, 1.0)
 		 * @return a random float
 		 */
-		double rand() {
+		double rand() const {
 			return rand(1.0);
 		}
 
@@ -34,7 +32,7 @@ namespace SuperHaxagon {
 		 * @param max The maximum integer (Closed)
 		 * @return a random int
 		 */
-		int rand(int max) {
+		int rand(const int max) const {
 			return rand(0, max);
 		}
 
@@ -43,17 +41,17 @@ namespace SuperHaxagon {
 		 * @param max The maximum double (Open)
 		 * @return a random double
 		 */
-		double rand(double max) {
+		double rand(const double max) const {
 			return rand(0.0, max);
 		}
 
 		/**
 		 * Generates a random point within the specified
 		 * dimension from ( [0, x], [0, y] )
-		 * @param p The maximum point (Closed)
+		 * @param max The maximum point (Closed)
 		 * @return a random point
 		 */
-		Point rand(const Point& max) {
+		Point rand(const Point& max) const {
 			return rand(Point(), max);
 		}
 
@@ -63,8 +61,8 @@ namespace SuperHaxagon {
 		 * @param max The maximum integer (Closed)
 		 * @return a random int
 		 */
-		int rand(int min, int max) {
-			return std::uniform_int_distribution<>(min, max)(*mt);
+		int rand(const int min, const int max) const {
+			return std::uniform_int_distribution<>(min, max)(*_mt);
 		}
 
 		/**
@@ -73,8 +71,8 @@ namespace SuperHaxagon {
 		 * @param max The maximum double (Open)
 		 * @return a random double
 		 */
-		double rand(double min, double max) {
-			return std::uniform_real_distribution<>(min, max)(*mt);
+		double rand(const double min, const double max) const {
+			return std::uniform_real_distribution<>(min, max)(*_mt);
 		}
 
 		/**
@@ -84,7 +82,7 @@ namespace SuperHaxagon {
 		 * @param max The maximum point (Closed)
 		 * @return a random point
 		 */
-		Point rand(const Point& min, const Point& max) {
+		Point rand(const Point& min, const Point& max) const {
 			return Point{rand(min.x, max.x), rand(min.y, max.y)};
 		}
 
@@ -95,8 +93,8 @@ namespace SuperHaxagon {
 		 * @param probability A geometric probability
 		 * @return a random int
 		 */
-		int geom(double probability) {
-			return std::geometric_distribution<>(probability)(*mt);
+		int geom(const double probability) const {
+			return std::geometric_distribution<>(probability)(*_mt);
 		}
 
 		/**
@@ -106,7 +104,7 @@ namespace SuperHaxagon {
 		 * @param max Upper bound (Closed)
 		 * @return a random int
 		 */
-		int geom(double probability, int min, int max) {
+		int geom(const double probability, const int min, const int max) const {
 			return std::min(geom(probability) + min, max);
 		}
 
@@ -116,11 +114,11 @@ namespace SuperHaxagon {
 		 */
 		void seed(const std::string& str) {
 			std::seed_seq seed(str.begin(), str.end());
-			mt = std::make_unique<std::mt19937>(seed);
+			_mt = std::make_unique<std::mt19937>(seed);
 		}
 
 	private:
-		std::unique_ptr<std::mt19937> mt;
+		std::unique_ptr<std::mt19937> _mt;
 	};
 }
 

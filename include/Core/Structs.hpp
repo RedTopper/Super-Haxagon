@@ -1,10 +1,8 @@
 #ifndef SUPER_HAXAGON_STRUCTS_HPP
 #define SUPER_HAXAGON_STRUCTS_HPP
 
-#include <cmath>
 #include <cstdint>
 #include <stdexcept>
-#include <fstream>
 
 namespace SuperHaxagon {
 	struct Color {
@@ -26,7 +24,7 @@ namespace SuperHaxagon {
 		DEAD,
 	};
 
-	static constexpr double TAU = M_PI * 2;
+	static constexpr double TAU = 3.14159265358979323846 * 2;
 
 	static constexpr double SCALE_BASE_DISTANCE = 300.0;
 	static constexpr double SCALE_HEX_LENGTH = 24.0;
@@ -68,7 +66,7 @@ namespace SuperHaxagon {
 	 * TTT:%% where  TTT is the current time in seconds, and %% is  the percent
 	 * through the current second.
 	 */
-	std::string getTime(int score);
+	std::string getTime(double score);
 
 	/**
 	 * Will pulse between 0.0 and 1.0 at the speed given (in tenths of a second).

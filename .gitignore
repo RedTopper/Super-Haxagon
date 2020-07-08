@@ -11,3 +11,5 @@
 /leveledit-two/hexlevels/backup
 /cmake-build-debug
 /.idea
+/.vs
+/out

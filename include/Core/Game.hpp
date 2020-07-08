@@ -1,7 +1,6 @@
 #ifndef SUPER_HAXAGON_GAME_HPP
 #define SUPER_HAXAGON_GAME_HPP
 
-#include <cmath>
 #include <deque>
 #include <memory>
 
@@ -22,26 +21,26 @@ namespace SuperHaxagon {
 		Game(const Game&) = delete;
 		~Game();
 
-		const std::vector<std::unique_ptr<LevelFactory>>& getLevels() const {return levels;}
+		const std::vector<std::unique_ptr<LevelFactory>>& getLevels() const {return _levels;}
 
-		Platform& getPlatform() const {return platform;}
-		Twist& getTwister() const {return *twister;}
-		Audio& getSfxBegin() const {return *sfxBegin;}
-		Audio& getSfxHexagon() const {return *sfxHexagon;}
-		Audio& getSfxOver() const {return *sfxOver;}
-		Audio& getSfxSelect() const {return *sfxSelect;}
-		Audio& getSfxLevelUp() const {return *sfxLevelUp;}
+		Platform& getPlatform() const {return _platform;}
+		Twist& getTwister() const {return *_twister;}
+		Audio& getSfxBegin() const {return *_sfxBegin;}
+		Audio& getSfxHexagon() const {return *_sfxHexagon;}
+		Audio& getSfxOver() const {return *_sfxOver;}
+		Audio& getSfxSelect() const {return *_sfxSelect;}
+		Audio& getSfxLevelUp() const {return *_sfxLevelUp;}
 
-		Font& getFontSmall() const {return *small;}
-		Font& getFontLarge() const {return *large;}
+		Font& getFontSmall() const {return *_small;}
+		Font& getFontLarge() const {return *_large;}
 
 		double getScreenDimMax() const {
-			auto size = platform.getScreenDim();
+			const auto size = _platform.getScreenDim();
 			return std::max(size.x, size.y);
 		}
 
 		double getScreenDimMin() const {
-			auto size = platform.getScreenDim();
+			const auto size = _platform.getScreenDim();
 			return std::min(size.x, size.y);
 		}
 
@@ -75,9 +74,7 @@ namespace SuperHaxagon {
 		 * Completely draws all patterns in a live level. Can also be used to create
 		 * an "Explosion" effect if you use "offset". (for game overs)
 		 */
-		void
-		drawPatterns(const Color& color, const Point& focus, const std::deque<std::unique_ptr<Pattern>>& patterns, double rotation, double sides, double offset,
-		             double scale) const;
+		void drawPatterns(const Color& color, const Point& focus, const std::deque<std::unique_ptr<Pattern>>& patterns, double rotation, double sides, double offset, double scale) const;
 
 		/**
 		 * Draws a single moving wall based on a live wall, a color, some rotational value, and the total
@@ -102,21 +99,21 @@ namespace SuperHaxagon {
 		Point getShadowOffset() const;
 
 	private:
-		Platform& platform;
+		Platform& _platform;
 
-		std::vector<std::unique_ptr<LevelFactory>> levels;
+		std::vector<std::unique_ptr<LevelFactory>> _levels;
 
-		std::unique_ptr<Twist> twister;
-		std::unique_ptr<State> state;
+		std::unique_ptr<Twist> _twister;
+		std::unique_ptr<State> _state;
 
-		std::unique_ptr<Audio> sfxBegin;
-		std::unique_ptr<Audio> sfxHexagon;
-		std::unique_ptr<Audio> sfxOver;
-		std::unique_ptr<Audio> sfxSelect;
-		std::unique_ptr<Audio> sfxLevelUp;
+		std::unique_ptr<Audio> _sfxBegin;
+		std::unique_ptr<Audio> _sfxHexagon;
+		std::unique_ptr<Audio> _sfxOver;
+		std::unique_ptr<Audio> _sfxSelect;
+		std::unique_ptr<Audio> _sfxLevelUp;
 
-		std::unique_ptr<Font> small;
-		std::unique_ptr<Font> large;
+		std::unique_ptr<Font> _small;
+		std::unique_ptr<Font> _large;
 	};
 }
 

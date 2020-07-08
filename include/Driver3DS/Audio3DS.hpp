@@ -15,14 +15,14 @@ namespace SuperHaxagon {
 		std::unique_ptr<Player> instantiate() override;
 
 	private:
-		u8* data = nullptr;
-		u32 sampleRate = 0;
-		u32 dataSize = 0;
-		u16 channels = 0;
-		u16 bitsPerSample = 0;
-		u16 ndspFormat = 0;
+		u8* _data = nullptr;
+		u32 _sampleRate = 0;
+		u32 _dataSize = 0;
+		u16 _channels = 0;
+		u16 _bitsPerSample = 0;
+		u16 _ndspFormat = 0;
 
-		bool loaded;
+		bool _loaded;
 	};
 }
 

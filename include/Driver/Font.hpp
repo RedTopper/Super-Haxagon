@@ -21,7 +21,7 @@ namespace SuperHaxagon {
 
 		virtual void setScale(double scale) = 0;
 		virtual double getHeight() const = 0;
-		virtual double getWidth(const std::string& text) const = 0;
+		virtual double getWidth(const std::string& str) const = 0;
 		virtual void draw(const Color& color, const Point& position, Alignment alignment, const std::string& text) const = 0;
 	};
 }

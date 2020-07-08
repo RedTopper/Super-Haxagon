@@ -5,6 +5,7 @@
 #include <string>
 
 #include "Driver/Audio.hpp"
+#include "Driver/Font.hpp"
 #include "Core/Twist.hpp"
 
 namespace SuperHaxagon {
@@ -18,7 +19,6 @@ namespace SuperHaxagon {
 
 	struct Point;
 	struct Color;
-	class Font;
 
 	class Platform {
 	public:

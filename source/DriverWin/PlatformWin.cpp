@@ -1,6 +1,8 @@
 #include <string>
 #include <ctime>
 #include <algorithm>
+#include <array>
+#include <iostream>
 
 #include "DriverWin/PlatformWin.hpp"
 #include "DriverWin/PlayerWin.hpp"
@@ -8,58 +10,62 @@
 #include "DriverWin/FontWin.hpp"
 
 namespace SuperHaxagon {
-	PlatformWin::PlatformWin() : clock(), bgm(nullptr) {
-		clock.restart();
+	PlatformWin::PlatformWin() : _bgm(nullptr) {
+		_clock.restart();
 
 		sf::ContextSettings settings;
 		settings.antialiasingLevel = 8;
 
 		sf::VideoMode video(
-			(int)(sf::VideoMode::getDesktopMode().width * 0.75),
-			(int)(sf::VideoMode::getDesktopMode().height * 0.75)
+			static_cast<int>(sf::VideoMode::getDesktopMode().width * 0.75),
+			static_cast<int>(sf::VideoMode::getDesktopMode().height * 0.75)
 		);
 
-		window = std::make_unique<sf::RenderWindow>(video, "Super Haxagon", sf::Style::Default, settings);
-		window->setVerticalSyncEnabled(true);
-		loaded = true;
+		_window = std::make_unique<sf::RenderWindow>(video, "Super Haxagon", sf::Style::Default, settings);
+		_window->setVerticalSyncEnabled(true);
+		_loaded = true;
 	}
 
 	PlatformWin::~PlatformWin() = default;
 
 	bool PlatformWin::loop() {
-		sf::Time throttle = sf::milliseconds(1);
+		const auto throttle = sf::milliseconds(1);
 		sf::sleep(throttle);
-		delta = clock.getElapsedTime().asSeconds();
-		clock.restart();
+		_delta = _clock.getElapsedTime().asSeconds();
+		_clock.restart();
 		sf::Event event{};
-		while (window->pollEvent(event)) {
+		while (_window->pollEvent(event)) {
 			if (event.type == sf::Event::Closed) {
-				window->close();
+				_window->close();
 			}
 
 			if (event.type == sf::Event::Resized) {
-				sf::FloatRect visibleArea(0, 0, event.size.width, event.size.height);
-				window->setView(sf::View(visibleArea));
+				sf::FloatRect visibleArea(
+					0.0f, 
+					0.0f, 
+					static_cast<float>(event.size.width), 
+					static_cast<float>(event.size.height)
+				);
+
+				_window->setView(sf::View(visibleArea));
 			}
 		}
-		return loaded && window->isOpen();
+		return _loaded && _window->isOpen();
 	}
 
 	double PlatformWin::getDilation() {
 		// The game was originally designed with 60FPS in mind
-		double dilation = delta / (1.0 / 60.0);
+		const auto dilation = _delta / (1.0 / 60.0);
 		return dilation > 4.0 ? 4.0 : (dilation < 0.05 ? 0.05 : dilation);
 	}
 
 	std::string PlatformWin::getPath(const std::string& partial) {
 		auto path = std::string("./data/custom") + partial;
-		std::replace(path.begin(), path.end(), '/', '\\');
 		return path;
 	}
 
 	std::string PlatformWin::getPathRom(const std::string& partial) {
 		auto path = std::string("./data/rom") + partial;
-		std::replace(path.begin(), path.end(), '/', '\\');
 		return path;
 	}
 
@@ -72,12 +78,12 @@ namespace SuperHaxagon {
 	}
 
 	void PlatformWin::playSFX(Audio& audio) {
-		for (auto it = sfx.begin(); it != sfx.end();) {
+		for (auto it = _sfx.begin(); it != _sfx.end();) {
 			auto& playing = *it;
 			if (playing->isDone()) {
-				it = sfx.erase(it);
+				it = _sfx.erase(it);
 			} else {
-				it++;
+				++it;
 			}
 		}
 
@@ -85,19 +91,19 @@ namespace SuperHaxagon {
 		if (!player) return;
 		player->setLoop(false);
 		player->play();
-		sfx.emplace_back(std::move(player));
+		_sfx.emplace_back(std::move(player));
 	}
 
 	void PlatformWin::playBGM(Audio& audio) {
-		bgm = audio.instantiate();
-		if (!bgm) return;
-		bgm->setChannel(0);
-		bgm->setLoop(true);
-		bgm->play();
+		_bgm = audio.instantiate();
+		if (!_bgm) return;
+		_bgm->setChannel(0);
+		_bgm->setLoop(true);
+		_bgm->play();
 	}
 
 	void PlatformWin::stopBGM() {
-		if (bgm) bgm->stop();
+		if (_bgm) _bgm->stop();
 	}
 
 	Buttons PlatformWin::getPressed() {
@@ -112,13 +118,13 @@ namespace SuperHaxagon {
 
 	Point PlatformWin::getScreenDim() const {
 		Point point{};
-		point.x = window->getSize().x;
-		point.y = window->getSize().y;
+		point.x = _window->getSize().x;
+		point.y = _window->getSize().y;
 		return point;
 	}
 
 	void PlatformWin::screenBegin() {
-		window->clear(sf::Color::Black);
+		_window->clear(sf::Color::Black);
 	}
 
 	void PlatformWin::screenSwap() {
@@ -126,28 +132,28 @@ namespace SuperHaxagon {
 	}
 
 	void PlatformWin::screenFinalize() {
-		window->display();
+		_window->display();
 	}
 
 	void PlatformWin::drawRect(const Color& color, const Point& point, const Point& size) {
-		sf::RectangleShape rectangle(sf::Vector2f(size.x, size.y));
-		sf::Color sfColor{color.r, color.g, color.b, color.a};
+		sf::RectangleShape rectangle(sf::Vector2f(static_cast<float>(size.x), static_cast<float>(size.y)));
+		const sf::Color sfColor{color.r, color.g, color.b, color.a};
 		rectangle.setFillColor(sfColor);
-		rectangle.setPosition((float)(point.x), (float)(point.y));
-		window->draw(rectangle);
+		rectangle.setPosition(static_cast<float>(point.x), static_cast<float>(point.y));
+		_window->draw(rectangle);
 	}
 
 	void PlatformWin::drawTriangle(const Color& color, const std::array<Point, 3>& points) {
-		double height = getScreenDim().y;
+		const auto height = getScreenDim().y;
+		const sf::Color sfColor{ color.r, color.g, color.b, color.a };
 		sf::ConvexShape convex;
 		convex.setPointCount(3);
-		convex.setPoint(0, sf::Vector2f((float)points[0].x, (float)(height - points[0].y)));
-		convex.setPoint(1, sf::Vector2f((float)points[1].x, (float)(height - points[1].y)));
-		convex.setPoint(2, sf::Vector2f((float)points[2].x, (float)(height - points[2].y)));
-		sf::Color sfColor{color.r, color.g, color.b, color.a};
+		convex.setPoint(0, sf::Vector2f(static_cast<float>(points[0].x), static_cast<float>(height - points[0].y)));
+		convex.setPoint(1, sf::Vector2f(static_cast<float>(points[1].x), static_cast<float>(height - points[1].y)));
+		convex.setPoint(2, sf::Vector2f(static_cast<float>(points[2].x), static_cast<float>(height - points[2].y)));
 		convex.setFillColor(sfColor);
 		convex.setPosition(0, 0);
-		window->draw(convex);
+		_window->draw(convex);
 	}
 
 	std::unique_ptr<Twist> PlatformWin::getTwister() {
@@ -161,7 +167,7 @@ namespace SuperHaxagon {
 			);
 		} catch (std::runtime_error& e) {
 			std::cout << e.what() << std::endl;
-			auto a = new std::seed_seq{time(nullptr)};
+			auto* a = new std::seed_seq{time(nullptr)};
 			return std::make_unique<Twist>(
 					std::unique_ptr<std::seed_seq>(a)
 			);

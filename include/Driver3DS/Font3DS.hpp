@@ -13,14 +13,14 @@ namespace SuperHaxagon {
 
 		void setScale(double) override {};
 		double getHeight() const override;
-		double getWidth(const std::string& text) const override;
+		double getWidth(const std::string& str) const override;
 		void draw(const Color& color, const Point& position, Alignment alignment, const std::string& str) const override;
 
 	private:
-		int size;
+		int _size;
 
-		C2D_Font font;
-		C2D_TextBuf& buff;
+		C2D_Font _font;
+		C2D_TextBuf& _buff;
 	};
 }
 

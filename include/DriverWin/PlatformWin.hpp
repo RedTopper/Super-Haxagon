@@ -1,14 +1,10 @@
 #ifndef SUPER_HAXAGON_PLATFORM_WIN_HPP
 #define SUPER_HAXAGON_PLATFORM_WIN_HPP
-#define SFML_STATIC
 
-#include <SFML/System.hpp>
 #include <SFML/Graphics.hpp>
-#include <SFML/Graphics/RenderTarget.hpp>
 #include <deque>
-#include <Driver/Audio.hpp>
 
-
+#include "Driver/Audio.hpp"
 #include "Driver/Platform.hpp"
 
 namespace SuperHaxagon {
@@ -41,15 +37,15 @@ namespace SuperHaxagon {
 		void drawTriangle(const Color& color, const std::array<Point, 3>& points) override;
 
 		std::unique_ptr<Twist> getTwister() override;
-		sf::RenderWindow& getWindow() const {return *window;}
+		sf::RenderWindow& getWindow() const {return *_window;}
 
 	private:
-		bool loaded = false;
-		double delta = 0.0;
-		sf::Clock clock;
-		std::unique_ptr<sf::RenderWindow> window;
-		std::deque<std::unique_ptr<Player>> sfx;
-		std::unique_ptr<Player> bgm;
+		bool _loaded = false;
+		double _delta = 0.0;
+		sf::Clock _clock;
+		std::unique_ptr<sf::RenderWindow> _window;
+		std::deque<std::unique_ptr<Player>> _sfx;
+		std::unique_ptr<Player> _bgm;
 	};
 }
 

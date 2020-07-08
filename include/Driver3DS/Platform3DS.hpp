@@ -1,7 +1,6 @@
 #ifndef SUPER_HAXAGON_PLATFORM_3DS_HPP
 #define SUPER_HAXAGON_PLATFORM_3DS_HPP
 
-#include <3ds.h>
 #include <citro2d.h>
 
 #include "Driver/Audio.hpp"
@@ -41,14 +40,14 @@ namespace SuperHaxagon {
 		std::unique_ptr<Twist> getTwister() override;
 
 	private:
-		std::unique_ptr<Player> sfx[MAX_TRACKS];
-		std::unique_ptr<Player> bgm;
+		std::unique_ptr<Player> _sfx[MAX_TRACKS]{};
+		std::unique_ptr<Player> _bgm = nullptr;
 
-		C3D_RenderTarget* top;
-		C3D_RenderTarget* bot;
-		C2D_TextBuf buff;
+		C3D_RenderTarget* _top;
+		C3D_RenderTarget* _bot;
+		C2D_TextBuf _buff;
 
-		bool drawingOnTop = true;
+		bool _drawingOnTop = true;
 	};
 }
 

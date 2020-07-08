@@ -1,17 +1,19 @@
+#include <SFML/Audio/Sound.hpp>
+
 #include "DriverWin/AudioWin.hpp"
 #include "DriverWin/PlayerWin.hpp"
 
 namespace SuperHaxagon {
-	AudioWin::AudioWin(const std::string& path, Stream _stream) {
-		if (_stream == Stream::DIRECT) {
-			buffer = std::make_unique<sf::SoundBuffer>();
-			if (buffer->loadFromFile(path + ".wav")) {
-				stream = Stream::DIRECT;
+	AudioWin::AudioWin(const std::string& path, const Stream stream) {
+		if (stream == Stream::DIRECT) {
+			_buffer = std::make_unique<sf::SoundBuffer>();
+			if (_buffer->loadFromFile(path + ".wav")) {
+				_stream = Stream::DIRECT;
 			}
-		} else if (_stream == Stream::INDIRECT) {
-			music = std::make_unique<sf::Music>();
-			if (music->openFromFile(path + ".ogg")) {
-				stream = Stream::INDIRECT;
+		} else if (stream == Stream::INDIRECT) {
+			_music = std::make_unique<sf::Music>();
+			if (_music->openFromFile(path + ".ogg")) {
+				_stream = Stream::INDIRECT;
 			}
 		}
 	}
@@ -19,13 +21,15 @@ namespace SuperHaxagon {
 	AudioWin::~AudioWin() = default;
 
 	std::unique_ptr<Player> AudioWin::instantiate() {
-		if (stream == Stream::DIRECT) {
+		if (_stream == Stream::DIRECT) {
 			auto sound = std::make_unique<sf::Sound>();
-			sound->setBuffer(*buffer);
+			sound->setBuffer(*_buffer);
 			return std::make_unique<PlayerWin>(std::move(sound));
-		} else if (stream == Stream::INDIRECT) {
-			stream = Stream::NONE;
-			return std::make_unique<PlayerWin>(std::move(music));
+		}
+
+		if (_stream == Stream::INDIRECT) {
+			_stream = Stream::NONE;
+			return std::make_unique<PlayerWin>(std::move(_music));
 		}
 
 		return nullptr;

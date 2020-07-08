@@ -6,7 +6,7 @@
 
 namespace SuperHaxagon {
 	Audio3DS::Audio3DS(const std::string& path) {
-		loaded = false;
+		_loaded = false;
 
 		//open file
 		std::ifstream file(path + ".wav", std::ios::in | std::ios::binary);
@@ -19,44 +19,44 @@ namespace SuperHaxagon {
 
 		//file sizes and metadata
 		file.seekg(40);
-		file.read(reinterpret_cast<char*>(&dataSize), sizeof(dataSize));
+		file.read(reinterpret_cast<char*>(&_dataSize), sizeof(_dataSize));
 		file.seekg(22);
-		file.read(reinterpret_cast<char*>(&channels), sizeof(channels));
+		file.read(reinterpret_cast<char*>(&_channels), sizeof(_channels));
 		file.seekg(24);
-		file.read(reinterpret_cast<char*>(&sampleRate), sizeof(sampleRate));
+		file.read(reinterpret_cast<char*>(&_sampleRate), sizeof(_sampleRate));
 		file.seekg(34);
-		file.read(reinterpret_cast<char*>(&bitsPerSample), sizeof(bitsPerSample));
+		file.read(reinterpret_cast<char*>(&_bitsPerSample), sizeof(_bitsPerSample));
 
 		//check header
-		if(dataSize == 0 || !(channels == 1 || channels == 2) || !(bitsPerSample == 8 || bitsPerSample == 16)) return;
+		if(_dataSize == 0 || !(_channels == 1 || _channels == 2) || !(_bitsPerSample == 8 || _bitsPerSample == 16)) return;
 
-		data = static_cast<u8*>(linearAlloc(dataSize));
+		_data = static_cast<u8*>(linearAlloc(_dataSize));
 
 		//check buffer
-		if(!data) return;
+		if(!_data) return;
 
 		//read file
 		file.seekg(44);
-		file.read(reinterpret_cast<char*>(data), dataSize);
+		file.read(reinterpret_cast<char*>(_data), _dataSize);
 
 		//set sound format
-		if(bitsPerSample == 8) {
-			ndspFormat = (channels == 1) ? NDSP_FORMAT_MONO_PCM8  : NDSP_FORMAT_STEREO_PCM8 ;
+		if(_bitsPerSample == 8) {
+			_ndspFormat = (_channels == 1) ? NDSP_FORMAT_MONO_PCM8  : NDSP_FORMAT_STEREO_PCM8 ;
 		} else {
-			ndspFormat = (channels == 1) ? NDSP_FORMAT_MONO_PCM16 : NDSP_FORMAT_STEREO_PCM16;
+			_ndspFormat = (_channels == 1) ? NDSP_FORMAT_MONO_PCM16 : NDSP_FORMAT_STEREO_PCM16;
 		}
 
 		//finish load
-		loaded = true;
+		_loaded = true;
 	}
 
 	Audio3DS::~Audio3DS() {
-		if(!loaded) return;
-		linearFree(data);
+		if(!_loaded) return;
+		linearFree(_data);
 	}
 
 	std::unique_ptr<Player> Audio3DS::instantiate() {
-		if (!loaded) return nullptr;
-		return std::make_unique<Player3DS>(data, sampleRate, dataSize, channels, bitsPerSample, ndspFormat);
+		if (!_loaded) return nullptr;
+		return std::make_unique<Player3DS>(_data, _sampleRate, _dataSize, _channels, _bitsPerSample, _ndspFormat);
 	}
 }

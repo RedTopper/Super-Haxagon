@@ -1,11 +1,8 @@
 #ifndef SUPER_HAXAGON_PLAYER_WIN_HPP
 #define SUPER_HAXAGON_PLAYER_WIN_HPP
-#define SFML_STATIC
 
 #include <memory>
 #include <SFML/Audio/SoundSource.hpp>
-#include <SFML/Audio/Sound.hpp>
-#include <SFML/Audio/Music.hpp>
 
 #include "Driver/Player.hpp"
 
@@ -23,8 +20,7 @@ namespace SuperHaxagon {
 		bool isDone() override;
 
 	private:
-		std::unique_ptr<sf::SoundSource> source;
-		bool loaded = false;
+		std::unique_ptr<sf::SoundSource> _source;
 	};
 }
 

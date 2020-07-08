@@ -1,6 +1,5 @@
 #ifndef SUPER_HAXAGON_FONT_WIN_HPP
 #define SUPER_HAXAGON_FONT_WIN_HPP
-#define SFML_STATIC
 
 #include <SFML/Graphics/Text.hpp>
 #include <SFML/Graphics/Font.hpp>
@@ -21,11 +20,11 @@ namespace SuperHaxagon {
 		void draw(const Color& color, const Point& position, Alignment alignment, const std::string& text) const override;
 
 	private:
-		PlatformWin& platform;
-		sf::Font font;
-		bool loaded = false;
-		double scale;
-		double size;
+		PlatformWin& _platform;
+		sf::Font _font;
+		bool _loaded = false;
+		double _scale;
+		double _size;
 	};
 }
 

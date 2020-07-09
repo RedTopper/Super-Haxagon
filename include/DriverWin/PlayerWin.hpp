@@ -16,7 +16,6 @@ namespace SuperHaxagon {
 		void setLoop(bool loop) override;
 
 		void play() override;
-		void stop() override;
 		bool isDone() override;
 
 	private:

@@ -4,8 +4,9 @@
 #include <array>
 #include <sys/stat.h>
 
-#include "Driver3DS/PlayerWav3DS.hpp"
+#include "Driver3DS/PlayerOgg3DS.hpp"
 #include "Driver3DS/AudioWav3DS.hpp"
+#include "Driver3DS/AudioOgg3DS.hpp"
 #include "Driver3DS/Font3DS.hpp"
 #include "Driver3DS/Platform3DS.hpp"
 
@@ -21,11 +22,19 @@ namespace SuperHaxagon {
 
 		_buff = C2D_TextBufNew(4096);
 		_top = C2D_CreateScreenTarget(GFX_TOP, GFX_LEFT);
+
+		#ifdef DEBUG
+		consoleInit(GFX_BOTTOM, NULL);
+		#else
 		_bot = C2D_CreateScreenTarget(GFX_BOTTOM, GFX_LEFT);
+		#endif
 
 		// Setup NDSP
 		ndspInit();
 		ndspSetOutputMode(NDSP_OUTPUT_STEREO);
+		ndspSetCallback(PlayerOgg3DS::audioCallback, nullptr);
+
+		LightEvent_Init(&PlayerOgg3DS::_event, RESET_ONESHOT);
 
 		mkdir("sdmc:/3ds", 0777);
 		mkdir("sdmc:/3ds/data", 0777);
@@ -57,7 +66,11 @@ namespace SuperHaxagon {
 	}
 
 	std::unique_ptr<Audio> Platform3DS::loadAudio(const std::string& path, Stream stream) {
-		return std::make_unique<AudioWav3DS>(path);
+		if (stream == Stream::DIRECT) {
+			return std::make_unique<AudioWav3DS>(path);
+		} else {
+			return std::make_unique<AudioOgg3DS>(path);
+		}
 	}
 
 	std::unique_ptr<Font> Platform3DS::loadFont(const std::string& path, int size) {
@@ -90,7 +103,6 @@ namespace SuperHaxagon {
 	}
 
 	void Platform3DS::stopBGM() {
-		if (_bgm) _bgm->stop();
 		_bgm = nullptr;
 	}
 
@@ -118,9 +130,11 @@ namespace SuperHaxagon {
 	}
 
 	void Platform3DS::screenSwap() {
+		#ifndef DEBUG
 		_drawingOnTop = false;
 		C2D_TargetClear(_bot, C2D_Color32(0x00, 0x00, 0x00, 0xff));
 		C2D_SceneBegin(_bot);
+		#endif
 	}
 
 	void Platform3DS::screenFinalize() {

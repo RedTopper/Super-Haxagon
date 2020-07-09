@@ -11,16 +11,15 @@ namespace SuperHaxagon {
 	{}
 
 	PlayerWav3DS::~PlayerWav3DS() {
-		PlayerWav3DS::stop();
 		ndspChnWaveBufClear(_channel);
 	}
 
 	void PlayerWav3DS::play() {
-		stop();
 		float mix[12]{};
 		mix[0] = 1.0;
 		mix[1] = 1.0;
 		ndspChnReset(_channel);
+		ndspChnWaveBufClear(_channel);
 		ndspChnSetInterp(_channel, NDSP_INTERP_LINEAR);
 		ndspChnSetRate(_channel, _sampleRate);
 		ndspChnSetFormat(_channel, _ndspFormat);
@@ -31,10 +30,6 @@ namespace SuperHaxagon {
 		_buffer.offset = 0;
 		DSP_FlushDataCache(_data, _dataSize);
 		ndspChnWaveBufAdd(_channel, &_buffer);
-	}
-
-	void PlayerWav3DS::stop() {
-		ndspChnWaveBufClear(_channel);
 	}
 
 	bool PlayerWav3DS::isDone() {

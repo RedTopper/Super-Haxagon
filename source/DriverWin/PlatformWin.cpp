@@ -103,7 +103,8 @@ namespace SuperHaxagon {
 	}
 
 	void PlatformWin::stopBGM() {
-		if (_bgm) _bgm->stop();
+		// Destructor will be called and audio will stop
+		if (_bgm) _bgm = nullptr;
 	}
 
 	Buttons PlatformWin::getPressed() {

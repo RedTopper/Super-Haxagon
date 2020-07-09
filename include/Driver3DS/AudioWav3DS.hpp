@@ -1,5 +1,5 @@
-#ifndef SUPER_HAXAGON_AUDIO_3DS_HPP
-#define SUPER_HAXAGON_AUDIO_3DS_HPP
+#ifndef SUPER_HAXAGON_AUDIO_WAV_3DS_HPP
+#define SUPER_HAXAGON_AUDIO_WAV_3DS_HPP
 
 #include <3ds.h>
 #include <memory>
@@ -26,4 +26,4 @@ namespace SuperHaxagon {
 	};
 }
 
-#endif //SUPER_HAXAGON_AUDIO_3DS_HPP
+#endif //SUPER_HAXAGON_AUDIO_WAV_3DS_HPP

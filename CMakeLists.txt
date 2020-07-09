@@ -4,8 +4,8 @@ cmake_minimum_required(VERSION 3.10)
 project(Super_Haxagon)
 
 include_directories("$ENV{DEVKITPRO}/libctru/include")
-include_directories("$ENV{DEVKITPRO}/portlibs/3ds/include")
 include_directories("${CMAKE_CURRENT_LIST_DIR}/libraries/SFML/include")
+include_directories("${CMAKE_CURRENT_LIST_DIR}/libraries/stb")
 include_directories("${CMAKE_CURRENT_LIST_DIR}/include")
 
 set(CMAKE_CXX_STANDARD 14)

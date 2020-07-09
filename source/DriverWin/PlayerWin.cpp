@@ -7,7 +7,7 @@ namespace SuperHaxagon {
 	PlayerWin::PlayerWin(std::unique_ptr<sf::SoundSource> source) : _source(std::move(source)) {}
 
 	PlayerWin::~PlayerWin() {
-		PlayerWin::stop();
+		_source->stop();
 	}
 
 	void PlayerWin::setLoop(const bool loop) {
@@ -20,10 +20,6 @@ namespace SuperHaxagon {
 
 	void PlayerWin::play() {
 		_source->play();
-	}
-
-	void PlayerWin::stop() {
-		_source->stop();
 	}
 
 	bool PlayerWin::isDone() {

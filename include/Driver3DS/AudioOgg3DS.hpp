@@ -1,7 +1,6 @@
 #ifndef SUPER_HAXAGON_AUDIO_OGG_3DS_HPP
 #define SUPER_HAXAGON_AUDIO_OGG_3DS_HPP
 
-#include <3ds.h>
 #include <memory>
 #include <string>
 

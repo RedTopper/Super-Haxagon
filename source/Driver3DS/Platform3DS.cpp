@@ -2,15 +2,12 @@
 #include <string>
 #include <memory>
 #include <array>
-#include <sys/stat.h>
 
 #include "Driver3DS/PlayerOgg3DS.hpp"
 #include "Driver3DS/AudioWav3DS.hpp"
 #include "Driver3DS/AudioOgg3DS.hpp"
 #include "Driver3DS/Font3DS.hpp"
 #include "Driver3DS/Platform3DS.hpp"
-
-static const int SAMPLE_RATE = 48000;
 
 namespace SuperHaxagon {
 	Platform3DS::Platform3DS() {
@@ -35,9 +32,11 @@ namespace SuperHaxagon {
 		ndspSetCallback(PlayerOgg3DS::audioCallback, nullptr);
 		LightEvent_Init(&PlayerOgg3DS::_event, RESET_ONESHOT);
 
+		#ifdef _3DS
 		mkdir("sdmc:/3ds", 0777);
 		mkdir("sdmc:/3ds/data", 0777);
 		mkdir("sdmc:/3ds/data/haxagon", 0777);
+		#endif
 	}
 
 	Platform3DS::~Platform3DS() {
@@ -67,9 +66,9 @@ namespace SuperHaxagon {
 	std::unique_ptr<Audio> Platform3DS::loadAudio(const std::string& path, Stream stream) {
 		if (stream == Stream::DIRECT) {
 			return std::make_unique<AudioWav3DS>(path);
-		} else {
-			return std::make_unique<AudioOgg3DS>(path);
 		}
+		
+		return std::make_unique<AudioOgg3DS>(path);
 	}
 
 	std::unique_ptr<Font> Platform3DS::loadFont(const std::string& path, int size) {

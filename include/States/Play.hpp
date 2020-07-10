@@ -38,7 +38,7 @@ namespace SuperHaxagon {
 		double _scalePrev = 0;
 		double _scoreWidth = 0;
 		double _score = 0;
-		double _levelIndex = 0;
+		int _levelIndex = 0;
 	};
 }
 

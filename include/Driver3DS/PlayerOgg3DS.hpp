@@ -37,8 +37,6 @@ namespace SuperHaxagon {
 		static unsigned int getSamplesPerBuff(unsigned int sampleRate);
 		static unsigned int getWaveBuffSize(unsigned int sampleRate, int channels);
 
-
-
 		Thread _thread{};
 		int16_t* _audioBuffer = nullptr;
 		int16_t* _currentBuffer = nullptr;

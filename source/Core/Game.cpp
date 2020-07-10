@@ -36,11 +36,11 @@ namespace SuperHaxagon {
 			const auto dilation = _platform.getDilation();
 
 			auto next = _state->update(dilation);
-			if (next) {
+			while (next) {
 				_state->exit();
 				_state = std::move(next);
 				_state->enter();
-				_state->update(dilation);
+				next = _state->update(dilation);
 			}
 
 			_platform.screenBegin();

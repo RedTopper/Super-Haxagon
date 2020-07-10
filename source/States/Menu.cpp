@@ -47,7 +47,7 @@ namespace SuperHaxagon {
 			}
 		}
 
-		auto& levelCur = *_game.getLevels()[_level];
+
 		if (_transitionDirection) {
 			_fgIndex = 0;
 			_bg1Index = 0;
@@ -71,6 +71,7 @@ namespace SuperHaxagon {
 			_fgIndexLast = _fgIndex++;
 			_bg1IndexLast = _bg1Index++;
 			_bg2IndexLast = _bg2Index++;
+			auto& levelCur = *_game.getLevels()[_level];
 			if (_fgIndex >= levelCur.getColorsFG().size()) _fgIndex = 0;
 			if (_bg1Index >= levelCur.getColorsBG1().size()) _bg1Index = 0;
 			if (_bg2Index >= levelCur.getColorsBG2().size()) _bg2Index = 0;

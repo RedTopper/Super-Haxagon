@@ -18,7 +18,7 @@ namespace SuperHaxagon {
 		static constexpr int PULSE_TIME = 75;
 		static constexpr double PULSE_TIMES = 2.0;
 
-		Play(Game& game, LevelFactory& factory);
+		Play(Game& game, LevelFactory& factory, int levelIndex);
 		Play(Play&) = delete;
 		~Play() override;
 
@@ -38,6 +38,7 @@ namespace SuperHaxagon {
 		double _scalePrev = 0;
 		double _scoreWidth = 0;
 		double _score = 0;
+		double _levelIndex = 0;
 	};
 }
 

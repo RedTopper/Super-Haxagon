@@ -83,6 +83,6 @@ namespace SuperHaxagon {
 	}
 
 	std::unique_ptr<State> Load::update(double) {
-		return std::make_unique<Menu>(_game);
+		return std::make_unique<Menu>(_game, 0);
 	}
 }

@@ -122,11 +122,11 @@ namespace SuperHaxagon {
 		}
 	}
 
-	void Game::drawCursor(const Color& color, const Point& focus, const double cursor, const double rotation, const double scale) const {
+	void Game::drawCursor(const Color& color, const Point& focus, const double cursor, const double rotation, const double offset, const double scale) const {
 		std::array<Point, 3> triangle{};
-		triangle[0] = calcPoint(focus, cursor + rotation, 0.0, (SCALE_HEX_LENGTH + SCALE_HUMAN_PADDING + SCALE_HUMAN_HEIGHT) * scale);
-		triangle[1] = calcPoint(focus, cursor + rotation, HUMAN_WIDTH_RAD/2, (SCALE_HEX_LENGTH + SCALE_HUMAN_PADDING) * scale);
-		triangle[2] = calcPoint(focus, cursor + rotation, -HUMAN_WIDTH_RAD/2, (SCALE_HEX_LENGTH + SCALE_HUMAN_PADDING) * scale);
+		triangle[0] = calcPoint(focus, cursor + rotation, 0.0, (SCALE_HEX_LENGTH + SCALE_HUMAN_PADDING + SCALE_HUMAN_HEIGHT + offset) * scale);
+		triangle[1] = calcPoint(focus, cursor + rotation, HUMAN_WIDTH_RAD/2, (SCALE_HEX_LENGTH + SCALE_HUMAN_PADDING + offset) * scale);
+		triangle[2] = calcPoint(focus, cursor + rotation, -HUMAN_WIDTH_RAD/2, (SCALE_HEX_LENGTH + SCALE_HUMAN_PADDING + offset) * scale);
 		_platform.drawTriangle(color, triangle);
 	}
 

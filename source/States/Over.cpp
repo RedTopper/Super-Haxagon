@@ -1,10 +1,8 @@
 #include <cstring>
 #include <ostream>
 #include <fstream>
-#include <iostream>
 
 #include "Core/Game.hpp"
-#include "Driver/Font.hpp"
 #include "Factories/Level.hpp"
 #include "States/Quit.hpp"
 #include "States/Over.hpp"
@@ -14,12 +12,13 @@
 
 namespace SuperHaxagon {
 
-	Over::Over(Game& game, LevelFactory& factory, std::unique_ptr<Level> level, const double score) :
+	Over::Over(Game& game, LevelFactory& factory, std::unique_ptr<Level> level, const double score, int levelIndex) :
 		_game(game),
 		_platform(game.getPlatform()),
 		_factory(factory),
 		_level(std::move(level)),
-		_score(score) {
+		_score(score),
+		_levelIndex(levelIndex) {
 		_high = factory.setHighScore(static_cast<int>(score));
 	}
 
@@ -30,10 +29,7 @@ namespace SuperHaxagon {
 
 		std::ofstream scores(_platform.getPath("/scores.db"), std::ios::out | std::ios::binary);
 
-		if (!scores) {
-			std::cout << "cannot open score db for write" << std::endl;
-			return;
-		}
+		if (!scores) return;
 
 		scores.write(Load::SCORE_HEADER, strlen(Load::SCORE_HEADER));
 		auto levels = static_cast<uint32_t>(_game.getLevels().size());
@@ -66,11 +62,11 @@ namespace SuperHaxagon {
 		if(_frames >= FRAMES_PER_GAME_OVER) {
 			_level->clearPatterns();
 			if (press.select) {
-				return std::make_unique<Play>(_game, _factory);
+				return std::make_unique<Play>(_game, _factory, _levelIndex);
 			}
 
 			if (press.back) {
-				return std::make_unique<Menu>(_game);
+				return std::make_unique<Menu>(_game, _levelIndex);
 			}
 		}
 
@@ -78,7 +74,7 @@ namespace SuperHaxagon {
 	}
 
 	void Over::drawTop(const double scale) {
-		_level->draw(_game, scale, _offset);
+		_level->draw(_game, scale, _offset, 0);
 	}
 
 	void Over::drawBot(const double scale) {
@@ -114,8 +110,12 @@ namespace SuperHaxagon {
 		}
 
 		if(_frames >= FRAMES_PER_GAME_OVER) {
-			small.draw(COLOR_WHITE, posA, Alignment::CENTER, "PRESS (SEL) TO PLAY");
-			small.draw(COLOR_WHITE, posB, Alignment::CENTER, "PRESS (ESC) TO QUIT");
+			Buttons a{};
+			a.select = true;
+			small.draw(COLOR_WHITE, posA, Alignment::CENTER, "PRESS (" + _platform.getButtonName(a) + ") TO PLAY");
+			Buttons b{};
+			b.back = true;
+			small.draw(COLOR_WHITE, posB, Alignment::CENTER, "PRESS (" + _platform.getButtonName(b) + ") TO QUIT");
 		}
 	}
 }

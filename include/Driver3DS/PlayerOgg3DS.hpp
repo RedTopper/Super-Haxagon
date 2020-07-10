@@ -6,10 +6,9 @@
 #include <3ds.h>
 #include <3ds/synchronization.h>
 
-#define STB_VORBIS_HEADER_ONLY
-#include <stb_vorbis.c>
-
 #include "Driver/Player.hpp"
+
+struct stb_vorbis;
 
 namespace SuperHaxagon {
 	class PlayerOgg3DS : public Player {
@@ -20,17 +19,17 @@ namespace SuperHaxagon {
 		explicit PlayerOgg3DS(const std::string& path);
 		~PlayerOgg3DS() override;
 
+		static void audioCallback(void*);
+		static LightEvent _event;
+
+	private:
 		void setChannel(int channel) override;
 		void setLoop(bool loop) override;
 
 		void play() override;
 		bool isDone() override;
+		double getVelocity() override;
 
-		static void audioCallback(void*);
-
-		static LightEvent _event;
-
-	private:
 		static bool audioDecode(stb_vorbis* file, ndspWaveBuf* buff, int channel, bool loop);
 		static void audioThread(void*);
 
@@ -38,8 +37,12 @@ namespace SuperHaxagon {
 		static unsigned int getSamplesPerBuff(unsigned int sampleRate);
 		static unsigned int getWaveBuffSize(unsigned int sampleRate, int channels);
 
+
+
 		Thread _thread{};
 		int16_t* _audioBuffer = nullptr;
+		int16_t* _currentBuffer = nullptr;
+		int64_t _tick = 0;
 		stb_vorbis* _oggFile = nullptr;
 		std::array<ndspWaveBuf, 3> _waveBuffs{};
 		volatile bool _loaded = false;

@@ -37,7 +37,9 @@ namespace SuperHaxagon {
 		virtual void playSFX(Audio& audio) = 0;
 		virtual void playBGM(Audio& audio) = 0;
 		virtual void stopBGM() = 0;
+		virtual double getBgmVelocity() = 0;
 
+		virtual std::string getButtonName(Buttons button) = 0;
 		virtual Buttons getPressed() = 0;
 		virtual Point getScreenDim() const = 0;
 

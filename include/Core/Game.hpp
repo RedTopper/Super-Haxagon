@@ -68,7 +68,7 @@ namespace SuperHaxagon {
 		/**
 		 * Draws the little cursor in the center of the screen controlled by a human.
 		 */
-		void drawCursor(const Color& color, const Point& focus, double cursor, double rotation, double scale) const;
+		void drawCursor(const Color& color, const Point& focus, const double cursor, const double rotation, const double offset, const double scale) const;
 
 		/**
 		 * Completely draws all patterns in a live level. Can also be used to create

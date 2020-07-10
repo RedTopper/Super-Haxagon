@@ -9,9 +9,10 @@
 #include "States/Menu.hpp"
 
 namespace SuperHaxagon {
-	Menu::Menu(Game& game) :
+	Menu::Menu(Game& game, int levelIndex) :
 		_game(game),
-		_platform(game.getPlatform())
+		_platform(game.getPlatform()),
+		_level(levelIndex)
 	{}
 
 	Menu::~Menu() = default;
@@ -32,7 +33,7 @@ namespace SuperHaxagon {
 		if (press.quit) return std::make_unique<Quit>();
 
 		if(!_transitionDirection) {
-			if (press.select) return std::make_unique<Play>(_game, *_game.getLevels()[_level]);
+			if (press.select) return std::make_unique<Play>(_game, *_game.getLevels()[_level], _level);
 			if (press.right) {
 				_transitionDirection = 1;
 				_lastLevel = _level;
@@ -100,12 +101,12 @@ namespace SuperHaxagon {
 
 		// Shadows
 		_game.drawRegular(COLOR_SHADOW, offsetFocus, SCALE_HEX_LENGTH * scale, rotation, 6.0);
-		_game.drawCursor(COLOR_SHADOW, offsetFocus, TAU / 4.0, 0, scale);
+		_game.drawCursor(COLOR_SHADOW, offsetFocus, TAU / 4.0, 0, 0, scale);
 
 		// Geometry
 		_game.drawRegular(fg, focus,SCALE_HEX_LENGTH * scale, rotation, 6.0);
 		_game.drawRegular(bg3, focus, SCALE_HEX_LENGTH * scale - SCALE_HEX_BORDER * scale, rotation, 6.0);
-		_game.drawCursor(fg, focus, TAU / 4.0, 0, scale); //Draw cursor fixed quarter circle, no movement.
+		_game.drawCursor(fg, focus, TAU / 4.0, 0, 0, scale); //Draw cursor fixed quarter circle, no movement.
 
 		auto& large = _game.getFontLarge();
 		auto& small = _game.getFontSmall();

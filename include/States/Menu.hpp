@@ -11,7 +11,7 @@ namespace SuperHaxagon {
 	public:
 		const int FRAMES_PER_TRANSITION = 12;
 
-		explicit Menu(Game& game);
+		explicit Menu(Game& game, int levelIndex);
 		Menu(Menu&) = delete;
 		~Menu() override;
 

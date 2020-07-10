@@ -17,7 +17,7 @@ namespace SuperHaxagon {
 		static constexpr int FRAMES_PER_GAME_OVER = 60;
 		static constexpr int PULSE_TIME = 75;
 
-		Over(Game& game, LevelFactory& factory, std::unique_ptr<Level> level, double score);
+		Over(Game& game, LevelFactory& factory, std::unique_ptr<Level> level, const double score, int levelIndex);
 		Over(Over&) = delete;
 		~Over() override;
 
@@ -36,6 +36,7 @@ namespace SuperHaxagon {
 		double _score = 0;
 		double _frames = 0;
 		double _offset = 1.0;
+		int _levelIndex = 0;
 	};
 }
 

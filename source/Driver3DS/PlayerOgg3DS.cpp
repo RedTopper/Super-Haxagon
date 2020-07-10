@@ -6,6 +6,9 @@
 #include "Driver3DS/PlayerOgg3DS.hpp"
 
 namespace SuperHaxagon {
+	const int BUFFER_MS = 200;
+	const int AVERAGE_MS = 40;
+
 	LightEvent PlayerOgg3DS::_event{};
 
 	PlayerOgg3DS::PlayerOgg3DS(const std::string& path) {
@@ -60,7 +63,7 @@ namespace SuperHaxagon {
 		if (!_loaded) return;
 
 		ndspChnReset(_channel);
-		ndspChnSetInterp(_channel, NDSP_INTERP_LINEAR);
+		ndspChnSetInterp(_channel, NDSP_INTERP_POLYPHASE);
 		ndspChnSetRate(_channel, static_cast<float>(_oggFile->sample_rate));
 		ndspChnSetFormat(_channel, _oggFile->channels == 1 ? NDSP_FORMAT_MONO_PCM16 : NDSP_FORMAT_STEREO_PCM16);
 
@@ -77,6 +80,24 @@ namespace SuperHaxagon {
 
 	bool PlayerOgg3DS::isDone() {
 		return !_quit;
+	}
+
+	double PlayerOgg3DS::getVelocity() {
+		if (!_loaded || !_currentBuffer) return 0;
+
+		auto offset = svcGetSystemTick() - _tick;
+		auto* buffer = _currentBuffer;
+		auto ms = static_cast<int>(offset / CPU_TICKS_PER_MSEC);
+		ms = ms > BUFFER_MS - AVERAGE_MS ? BUFFER_MS - AVERAGE_MS : (ms < 0 ? 0 : ms);
+		auto samplesToAverage = _oggFile->sample_rate * AVERAGE_MS / 1000;
+		auto samplesStart = _oggFile->sample_rate * ms / 1000;
+		auto total = 0.0;
+		for (unsigned int i = 0; i < samplesToAverage; i+= _oggFile->channels) {
+			total += pow(static_cast<double>(buffer[samplesStart + i]), 2);
+		}
+
+		auto val = sqrt(total / samplesToAverage) / 32767;
+		return val > 1 ? 1 : val;
 	}
 
 	bool PlayerOgg3DS::audioDecode(stb_vorbis* file, ndspWaveBuf* buff, int channel, bool loop) {
@@ -119,6 +140,8 @@ namespace SuperHaxagon {
 			for(auto& _waveBuff : pointer->_waveBuffs) {
 				if(_waveBuff.status != NDSP_WBUF_DONE) continue;
 				if(!audioDecode(pointer->_oggFile, &_waveBuff, pointer->_channel, pointer->_loop)) return;
+				pointer->_currentBuffer = _waveBuff.data_pcm16;
+				pointer->_tick = svcGetSystemTick();
 			}
 
 			LightEvent_Wait(&_event);
@@ -126,7 +149,7 @@ namespace SuperHaxagon {
 	}
 
 	unsigned int PlayerOgg3DS::getSamplesPerBuff(unsigned int sampleRate) {
-		return sampleRate * 120 / 1000;
+		return sampleRate * BUFFER_MS / 1000;
 	}
 
 	unsigned int PlayerOgg3DS::getWaveBuffSize(unsigned int sampleRate, int channels) {

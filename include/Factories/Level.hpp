@@ -33,7 +33,7 @@ namespace SuperHaxagon {
 		~Level();
 
 		void update(Twist& rng, double patternDistDelete, double patternDistCreate, double dilation);
-		void draw(Game& game, double scale, double offset) const;
+		void draw(Game& game, const double scale, const double offset, const double beat) const;
 		Movement collision(double cursorDistance, double dilation) const;
 
 		void increaseMultiplier();

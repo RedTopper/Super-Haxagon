@@ -33,7 +33,6 @@ namespace SuperHaxagon {
 		ndspInit();
 		ndspSetOutputMode(NDSP_OUTPUT_STEREO);
 		ndspSetCallback(PlayerOgg3DS::audioCallback, nullptr);
-
 		LightEvent_Init(&PlayerOgg3DS::_event, RESET_ONESHOT);
 
 		mkdir("sdmc:/3ds", 0777);
@@ -104,6 +103,20 @@ namespace SuperHaxagon {
 
 	void Platform3DS::stopBGM() {
 		_bgm = nullptr;
+	}
+
+	double Platform3DS::getBgmVelocity() {
+		if (_bgm) return _bgm->getVelocity();
+		return 0;
+	}
+
+	std::string Platform3DS::getButtonName(Buttons button) {
+		if (button.back) return "B";
+		else if (button.select) return "A";
+		else if (button.left) return "LEFT";
+		else if (button.right) return "RIGHT";
+		else if (button.quit) return "START";
+		else return "?";
 	}
 
 	Buttons Platform3DS::getPressed() {

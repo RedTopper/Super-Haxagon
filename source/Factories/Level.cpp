@@ -91,7 +91,7 @@ namespace SuperHaxagon {
 		}
 	}
 
-	void Level::draw(Game& game, const double scale, const double offset) const {
+	void Level::draw(Game& game, const double scale, const double offset, const double beat) const {
 
 		// Calculate colors
 		const auto percentTween = _tweenFrame / _factory.getSpeedPulse();
@@ -109,15 +109,15 @@ namespace SuperHaxagon {
 
 		// Draw shadows
 		const Point offsetFocus = {center.x + shadow.x, center.y + shadow.y};
-		game.drawPatterns(COLOR_SHADOW, offsetFocus, _patterns, _rotation, _sidesTween, offset, scale);
-		game.drawRegular(COLOR_SHADOW, offsetFocus, SCALE_HEX_LENGTH * scale, _rotation, _sidesTween);
-		game.drawCursor(COLOR_SHADOW, offsetFocus, _cursorPos, _rotation, scale);
+		game.drawPatterns(COLOR_SHADOW, offsetFocus, _patterns, _rotation, _sidesTween, offset + beat, scale);
+		game.drawRegular(COLOR_SHADOW, offsetFocus, (SCALE_HEX_LENGTH + beat) * scale, _rotation, _sidesTween);
+		game.drawCursor(COLOR_SHADOW, offsetFocus, _cursorPos, _rotation, beat, scale);
 
 		// Draw real thing
-		game.drawPatterns(fg, center, _patterns, _rotation, _sidesTween, offset, scale);
-		game.drawRegular(fg, center, SCALE_HEX_LENGTH * scale, _rotation, _sidesTween);
-		game.drawRegular(bg2, center, (SCALE_HEX_LENGTH - SCALE_HEX_BORDER) * scale, _rotation, _sidesTween);
-		game.drawCursor(fg, center, _cursorPos, _rotation, scale);
+		game.drawPatterns(fg, center, _patterns, _rotation, _sidesTween, offset+ beat, scale);
+		game.drawRegular(fg, center, (SCALE_HEX_LENGTH + beat) * scale, _rotation, _sidesTween);
+		game.drawRegular(bg2, center, (SCALE_HEX_LENGTH - SCALE_HEX_BORDER + beat) * scale, _rotation, _sidesTween);
+		game.drawCursor(fg, center, _cursorPos, _rotation, beat, scale);
 	}
 
 	Movement Level::collision(const double cursorDistance, const double dilation) const {

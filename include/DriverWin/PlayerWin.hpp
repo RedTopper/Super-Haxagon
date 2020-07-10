@@ -12,13 +12,14 @@ namespace SuperHaxagon {
 		explicit PlayerWin(std::unique_ptr<sf::SoundSource> source);
 		~PlayerWin() override;
 
+	private:
 		void setChannel(int) override {};
 		void setLoop(bool loop) override;
 
 		void play() override;
 		bool isDone() override;
+		double getVelocity() override;
 
-	private:
 		std::unique_ptr<sf::SoundSource> _source;
 	};
 }

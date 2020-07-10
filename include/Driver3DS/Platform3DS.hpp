@@ -26,7 +26,9 @@ namespace SuperHaxagon {
 		void playSFX(Audio& audio) override;
 		void playBGM(Audio& audio) override;
 		void stopBGM() override;
+		double getBgmVelocity() override;
 
+		std::string getButtonName(Buttons button) override;
 		Buttons getPressed() override;
 		Point getScreenDim() const override;
 

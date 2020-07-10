@@ -107,6 +107,19 @@ namespace SuperHaxagon {
 		if (_bgm) _bgm = nullptr;
 	}
 
+	double PlatformWin::getBgmVelocity() {
+		return _bgm ? _bgm->getVelocity() : 0.0;
+	}
+
+	std::string PlatformWin::getButtonName(Buttons button) {
+		if (button.back) return "ESC";
+		else if (button.select) return "ENTER";
+		else if (button.left) return "LEFT";
+		else if (button.right) return "RIGHT";
+		else if (button.quit) return "DELETE";
+		else return "?";
+	}
+
 	Buttons PlatformWin::getPressed() {
 		Buttons buttons{};
 		buttons.select = sf::Keyboard::isKeyPressed(sf::Keyboard::Enter);

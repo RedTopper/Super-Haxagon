@@ -10,11 +10,12 @@
 
 namespace SuperHaxagon {
 
-	Play::Play(Game& game, LevelFactory& factory) :
+	Play::Play(Game& game, LevelFactory& factory, int levelIndex) :
 		_game(game),
 		_platform(game.getPlatform()),
 		_factory(factory),
-		_level(factory.instantiate(game.getTwister(), SCALE_BASE_DISTANCE))
+		_level(factory.instantiate(game.getTwister(), SCALE_BASE_DISTANCE)),
+		_levelIndex(levelIndex)
 	{}
 
 	Play::~Play() = default;
@@ -47,7 +48,7 @@ namespace SuperHaxagon {
 		const auto cursorDistance = SCALE_HEX_LENGTH + SCALE_HUMAN_PADDING + SCALE_HUMAN_HEIGHT;
 		const auto hit = _level->collision(cursorDistance, dilation);
 		if(pressed.back || hit == Movement::DEAD) {
-			return std::make_unique<Over>(_game, _factory, std::move(_level), _score);
+			return std::make_unique<Over>(_game, _factory, std::move(_level), _score, _levelIndex);
 		}
 
 		if (pressed.quit) {
@@ -76,7 +77,7 @@ namespace SuperHaxagon {
 	}
 
 	void Play::drawTop(const double scale) {
-		_level->draw(_game, scale, 0);
+		_level->draw(_game, scale, 0, _platform.getBgmVelocity() * SCALE_PULSE_MAX);
 	}
 
 	void Play::drawBot(const double scale) {

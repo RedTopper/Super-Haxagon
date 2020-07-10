@@ -25,4 +25,8 @@ namespace SuperHaxagon {
 	bool PlayerWin::isDone() {
 		return _source->getStatus() == sf::SoundSource::Stopped;
 	}
+
+	double PlayerWin::getVelocity() {
+		return 0;
+	}
 }

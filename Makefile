@@ -15,10 +15,6 @@ DESCRIPTION := A Super Hexagon Clone
 
 BUILD_FLAGS_CXX := -std=gnu++14
 
-ifndef TARGET
-$(error State target platform with one of 'make TARGET:=[3DS SWITCH WIN64]')
-endif
-
 # 3DS CONFIGURATION #
 
 ifeq ($(TARGET),3DS)
@@ -29,15 +25,15 @@ ifeq ($(TARGET),3DS)
     LIBRARY_DIRS += $(DEVKITPRO)/libctru $(DEVKITPRO)/portlibs/3ds/
 
     $(info $$LIBRARY_DIRS is [${LIBRARY_DIRS}])
-    LIBRARIES += citro2d citro3d ctru m opusfile ogg opus
+    LIBRARIES += citro2d citro3d ctru m
 
     PRODUCT_CODE := CTR-P-HAXA
     UNIQUE_ID := 0x099AA
     ROMFS_DIR := romfs
 
-    BANNER_AUDIO := resource/audio.wav
-    BANNER_IMAGE := resource/banner.cgfx
-    ICON := resource/icon-3ds.png
+    BANNER_AUDIO := media/audio.wav
+    BANNER_IMAGE := media/banner.cgfx
+    ICON := media/icon-3ds.png
 endif
 
 # Switch CONFIGURATION #
@@ -48,7 +44,7 @@ ifeq ($(TARGET),SWITCH)
     LIBRARY_DIRS += $(DEVKITPRO)/libnx
     LIBRARIES += nx
 
-    ICON := resource/icon-switch.jpg
+    ICON := media/icon-switch.jpg
 endif
 
 # Windows CONFIGURATION #

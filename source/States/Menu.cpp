@@ -9,7 +9,7 @@
 #include "States/Menu.hpp"
 
 namespace SuperHaxagon {
-	Menu::Menu(Game& game, int levelIndex) :
+	Menu::Menu(Game& game, const int levelIndex) :
 		_game(game),
 		_platform(game.getPlatform()),
 		_level(levelIndex)
@@ -30,22 +30,32 @@ namespace SuperHaxagon {
 	std::unique_ptr<State> Menu::update(const double dilation) {
 		const auto press = _platform.getPressed();
 
+
 		if (press.quit) return std::make_unique<Quit>();
 
-		if(!_transitionDirection) {
+		if (!_transitionDirection) {
 			if (press.select) return std::make_unique<Play>(_game, *_game.getLevels()[_level], _level);
 			if (press.right) {
 				_transitionDirection = 1;
-				_lastLevel = _level;
 				_level++;
 				_platform.playSFX(_game.getSfxSelect());
 			}
 			if (press.left) {
 				_transitionDirection = -1;
-				_lastLevel = _level;
 				_level--;
 				_platform.playSFX(_game.getSfxSelect());
 			}
+		}
+
+		auto& levelCur = *_game.getLevels()[_level];
+		if (_transitionDirection) {
+			_fgIndex = 0;
+			_bg1Index = 0;
+			_bg2Index = 0;
+			_fgIndexLast = 0;
+			_bg1IndexLast = 0;
+			_bg2IndexLast = 0;
+			_colorFrame = FRAMES_PER_COLOR;
 		}
 
 		if(_level >=  static_cast<int>(_game.getLevels().size())) _level = 0;
@@ -54,6 +64,18 @@ namespace SuperHaxagon {
 		if(_transitionFrame >= FRAMES_PER_TRANSITION) {
 			_transitionFrame = 0;
 			_transitionDirection = 0;
+		}
+
+		if(!_transitionDirection && _colorFrame >= FRAMES_PER_COLOR) {
+			_colorFrame = 0;
+			_fgIndexLast = _fgIndex++;
+			_bg1IndexLast = _bg1Index++;
+			_bg2IndexLast = _bg2Index++;
+			if (_fgIndex >= levelCur.getColorsFG().size()) _fgIndex = 0;
+			if (_bg1Index >= levelCur.getColorsBG1().size()) _bg1Index = 0;
+			if (_bg2Index >= levelCur.getColorsBG2().size()) _bg2Index = 0;
+		} else {
+			_colorFrame += dilation;
 		}
 
 		return nullptr;
@@ -74,19 +96,21 @@ namespace SuperHaxagon {
 		Color bg2{};
 		Color bg3{};
 
-		auto& levelPrev = *_game.getLevels()[_lastLevel];
 		auto& levelCur = *_game.getLevels()[_level];
 
 		if(_transitionDirection) {
-			fg = interpolateColor(levelPrev.getColorsFG()[0], levelCur.getColorsFG()[0], percentRotated);
-			bg1 = interpolateColor(levelPrev.getColorsBG1()[0], levelCur.getColorsBG2()[0], percentRotated);
-			bg2 = interpolateColor(levelPrev.getColorsBG2()[0], levelCur.getColorsBG1()[0], percentRotated);
-			bg3 = interpolateColor(levelPrev.getColorsBG2()[0], levelCur.getColorsBG2()[0], percentRotated); //Real BG2 transition
+			fg = interpolateColor(_fg, levelCur.getColorsFG()[0], percentRotated);
+			bg1 = interpolateColor(_bg1, levelCur.getColorsBG2()[0], percentRotated);
+			bg2 = interpolateColor(_bg2, levelCur.getColorsBG1()[0], percentRotated);
+			bg3 = interpolateColor(_bg2, levelCur.getColorsBG2()[0], percentRotated); //Real BG2 transition
 		} else {
-			fg = levelCur.getColorsFG()[0];
-			bg1 = levelCur.getColorsBG1()[0];
-			bg2 = levelCur.getColorsBG2()[0];
-			bg3 = levelCur.getColorsBG2()[0]; //same as BG2
+			_fg = interpolateColor(levelCur.getColorsFG()[_fgIndexLast], levelCur.getColorsFG()[_fgIndex], _colorFrame / FRAMES_PER_COLOR);
+			_bg1 = interpolateColor(levelCur.getColorsBG1()[_bg1IndexLast], levelCur.getColorsBG1()[_bg1Index], _colorFrame / FRAMES_PER_COLOR);
+			_bg2 = interpolateColor(levelCur.getColorsBG2()[_bg2IndexLast], levelCur.getColorsBG2()[_bg2Index], _colorFrame / FRAMES_PER_COLOR);
+			fg = _fg;
+			bg1 = _bg1;
+			bg2 = _bg2;
+			bg3 = _bg2;
 		}
 
 		auto screen = _platform.getScreenDim();

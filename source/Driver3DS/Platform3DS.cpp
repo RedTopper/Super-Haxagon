@@ -2,6 +2,9 @@
 #include <string>
 #include <memory>
 #include <array>
+#ifdef _3DS
+#include <sys/stat.h>
+#endif
 
 #include "Driver3DS/PlayerOgg3DS.hpp"
 #include "Driver3DS/AudioWav3DS.hpp"
@@ -63,7 +66,7 @@ namespace SuperHaxagon {
 		return std::string("romfs:") + partial;
 	}
 
-	std::unique_ptr<Audio> Platform3DS::loadAudio(const std::string& path, Stream stream) {
+	std::unique_ptr<Audio> Platform3DS::loadAudio(const std::string& path, const Stream stream) {
 		if (stream == Stream::DIRECT) {
 			return std::make_unique<AudioWav3DS>(path);
 		}
@@ -77,7 +80,7 @@ namespace SuperHaxagon {
 
 	// Note: If there are no available channels the audio is silently discarded
 	void Platform3DS::playSFX(Audio& audio) {
-		int channel = 1;
+		auto channel = 1;
 		for (auto& player : _sfx) {
 			if (!player || player->isDone()) {
 				player = audio.instantiate();
@@ -109,13 +112,13 @@ namespace SuperHaxagon {
 		return 0;
 	}
 
-	std::string Platform3DS::getButtonName(Buttons button) {
+	std::string Platform3DS::getButtonName(const Buttons button) {
 		if (button.back) return "B";
-		else if (button.select) return "A";
-		else if (button.left) return "LEFT";
-		else if (button.right) return "RIGHT";
-		else if (button.quit) return "START";
-		else return "?";
+		if (button.select) return "A";
+		if (button.left) return "LEFT";
+		if (button.right) return "RIGHT";
+		if (button.quit) return "START";
+		return "?";
 	}
 
 	Buttons Platform3DS::getPressed() {

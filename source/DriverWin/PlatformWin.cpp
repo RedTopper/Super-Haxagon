@@ -111,13 +111,13 @@ namespace SuperHaxagon {
 		return _bgm ? _bgm->getVelocity() : 0.0;
 	}
 
-	std::string PlatformWin::getButtonName(Buttons button) {
+	std::string PlatformWin::getButtonName(const Buttons button) {
 		if (button.back) return "ESC";
-		else if (button.select) return "ENTER";
-		else if (button.left) return "LEFT";
-		else if (button.right) return "RIGHT";
-		else if (button.quit) return "DELETE";
-		else return "?";
+		if (button.select) return "ENTER";
+		if (button.left) return "LEFT";
+		if (button.right) return "RIGHT";
+		if (button.quit) return "DELETE";
+		return "?";
 	}
 
 	Buttons PlatformWin::getPressed() {

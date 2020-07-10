@@ -53,13 +53,13 @@ Super Haxagon can build for 3DS and Windows (MinGW + MSVC). For desktop platform
 
 ## Screenshots
 
-![Title Screen](./media/testmenu_20161225_2335_00002.png "One of the many modes")
-![Game Over](./media/testmenu_20161225_2348_00000.png "Game over! Go! Game over! Go!")
-![Walls](./media/testmenu_20161225_2336_00003.png "The walls move twoards you!")
-![Shapes](./media/testmenu_20161225_2337_00006.png "All shapes and sizes!")
-![Shapes](./media/testmenu_20161225_2340_00011.png "Super Pentagon?")
+![In Game](./media/Windows_2020-07-10_014324.png "The First Level")
+![Death Spiral](./media/Windows_2020-07-10_014604.png "Death Spiral")
+![Title Screen](./media/Windows_2020-07-10_014649.png "Title Screen")
+![Shapes](./media/testmenu_20161225_2337_00006.png "All shapes and sizes")
+![Shapes](./media/testmenu_20161225_2340_00011.png "Super Pentagon")
 
-## The Original
+### Proof of Concept
 
 ![Humble Beginnings](./media/scr_2_MERGED.png "Humble Arrow")
 ![Humble Beginnings](./media/scr_1_MERGED.png "The First Test")

@@ -59,13 +59,13 @@ Super Haxagon can build for 3DS and Windows (MinGW + MSVC). For desktop platform
 
 ## Screenshots
 
-![In Game](./media/Windows_2020-07-10_014324.png "The First Level")
-![Death Spiral](./media/Windows_2020-07-10_014604.png "Death Spiral")
-![Title Screen](./media/Windows_2020-07-10_014650.png "Title Screen")
-![Shapes](./media/testmenu_20161225_2337_00006.png "All shapes and sizes")
-![Shapes](./media/testmenu_20161225_2340_00011.png "Super Pentagon")
+![In Game](./media/screenshots/Windows_2020-07-10_014324.png "The First Level")
+![Death Spiral](./media/screenshots/Windows_2020-07-10_014604.png "Death Spiral")
+![Title Screen](./media/screenshots/Windows_2020-07-10_014650.png "Title Screen")
+![Shapes](./media/screenshots/testmenu_20161225_2337_00006.png "All shapes and sizes")
+![Shapes](./media/screenshots/testmenu_20161225_2340_00011.png "Super Pentagon")
 
 ### Proof of Concept
 
-![Humble Beginnings](./media/scr_2_MERGED.png "Humble Arrow")
-![Humble Beginnings](./media/scr_1_MERGED.png "The First Test")
+![Humble Beginnings](./media/screenshots/scr_2_MERGED.png "Humble Arrow")
+![Humble Beginnings](./media/screenshots/scr_1_MERGED.png "The First Test")

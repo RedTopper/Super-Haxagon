@@ -56,9 +56,7 @@ namespace SuperHaxagon {
 	double linear(double start, double end, double percent);
 
 	/**
-	 * Calculates a point (either for a wall or a general point) based on the running level's rotation, some offset
-	 * so it renders correctly, some distance the point should be from the center, the side the point
-	 * should be rendered on, based on a total number of sides the shape has.
+	 * Rotates a cartesian point around the origin
 	 */
 	Point rotateAroundOrigin(const Point& point, double rotation);
 

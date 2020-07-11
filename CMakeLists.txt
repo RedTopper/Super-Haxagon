@@ -4,18 +4,27 @@ cmake_minimum_required(VERSION 3.10)
 project(Super_Haxagon)
 
 set(CMAKE_CXX_STANDARD 14)
-set(SFML_STATIC_LIBRARIES TRUE)
 
 if(CMAKE_COMPILER_IS_GNUCXX)
     add_definitions(-Wall -Wextra -pedantic)
 endif(CMAKE_COMPILER_IS_GNUCXX)
 
+if(UNIX)
+    message(STATUS "Compiling with GCC")
+    # Make sure you have SFML installed via your package manager
+    # Usually `sudo apt install libsfml-dev` or similar (Debian/Ubuntu)
+endif()
+
 if(MINGW OR MSYS)
+    message(STATUS "Compiling with MinGW")
+    set(SFML_STATIC_LIBRARIES TRUE)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mwindows")
     set(SFML_DIR "${CMAKE_CURRENT_SOURCE_DIR}/libraries/MinGW/SFML/lib/cmake/SFML")
 endif()
 
 if(MSVC)
+    message(STATUS "Compiling with MSVC")
+    set(SFML_STATIC_LIBRARIES TRUE)
     set(SFML_DIR "${CMAKE_CURRENT_SOURCE_DIR}/libraries/MSVC/SFML/lib/cmake/SFML")
 endif()
 
@@ -26,10 +35,10 @@ include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
 find_package(SFML 2 COMPONENTS system window graphics audio)
 
 add_executable(SuperHaxagon WIN32 ${OPTIONS}
-        source/DriverWin/AudioSFML.cpp
-        source/DriverWin/FontSFML.cpp
-        source/DriverWin/PlatformSFML.cpp
-        source/DriverWin/PlayerSFML.cpp
+    source/DriverSFML/AudioSFML.cpp
+    source/DriverSFML/FontSFML.cpp
+    source/DriverSFML/PlatformSFML.cpp
+    source/DriverSFML/PlayerSFML.cpp
 
     source/States/Load.cpp
     source/States/Menu.cpp

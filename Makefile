@@ -51,12 +51,20 @@ endif
 # Windows CONFIGURATION #
 
 ifeq ($(TARGET),WIN64)
-    SOURCE_DIRS += source/DriverWin
+    SOURCE_DIRS += source/DriverSFML
 
     LIBRARY_DIRS += ./libraries/MinGW/SFML /mingw64 /mingw64/lib
     LIBRARIES += sfml-graphics-s sfml-window-s sfml-audio-s sfml-system-s winmm openal32 gdi32 opengl32 freetype flac vorbisenc vorbisfile vorbis ogg
 
     BUILD_FLAGS := -mwindows -DSFML_STATIC
+endif
+
+# Linux CONFIGURATION #
+
+ifeq ($(TARGET),LINUX64)
+    SOURCE_DIRS += source/DriverSFML
+
+    LIBRARIES += sfml-graphics sfml-window sfml-audio sfml-system
 endif
 
 # INTERNAL #

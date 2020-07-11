@@ -9,28 +9,32 @@
 #include "DriverSwitch/PlatformSwitch.hpp"
 #elif defined _WIN64 || defined __CYGWIN__
 #include "DriverSFML/PlatformSFML.hpp"
+#elif defined __linux__
+#include "DriverSFML/PlatformSFML.hpp"
 #else
 #error "Target platform is not supported by any driver."
 #endif
 
 namespace SuperHaxagon {
 	std::unique_ptr<Platform> getPlatform() {
-#if defined _3DS
+		#if defined _3DS
 		return std::make_unique<Platform3DS>();
-#elif defined __SWITCH__
+		#elif defined __SWITCH__
 		return std::make_unique<PlatformSwitch>();
-#elif defined _WIN64 || defined __CYGWIN__
+		#elif defined _WIN64 || defined __CYGWIN__
 		return std::make_unique<PlatformSFML>();
-#else
+		#elif defined __linux__
+		return std::make_unique<PlatformSFML>();
+		#else
 		return nullptr;
-#endif
+		#endif
 	}
 }
 
 #ifdef _WIN64
 int WinMain() {
 #else
-int main(int argv, char** args) {
+int main(int, char**) {
 #endif
 	auto ret = 0;
 

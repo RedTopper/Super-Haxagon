@@ -2,7 +2,7 @@
 #define SUPER_HAXAGON_PLAYER_SOUND_SFML_HPP
 
 #include <memory>
-#include <SFML/Audio/SoundSource.hpp>
+#include <SFML/Audio/Sound.hpp>
 
 #include "Driver/Player.hpp"
 

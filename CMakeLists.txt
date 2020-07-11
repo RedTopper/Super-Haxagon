@@ -38,7 +38,8 @@ add_executable(SuperHaxagon WIN32 ${OPTIONS}
     source/DriverSFML/AudioSFML.cpp
     source/DriverSFML/FontSFML.cpp
     source/DriverSFML/PlatformSFML.cpp
-        source/DriverSFML/PlayerSoundSFML.cpp
+    source/DriverSFML/PlayerSoundSFML.cpp
+    source/DriverSFML/PlayerMusicSFML.cpp
 
     source/States/Load.cpp
     source/States/Menu.cpp

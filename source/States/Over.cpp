@@ -53,7 +53,7 @@ namespace SuperHaxagon {
 		_level->clamp();
 
 		const auto press = _platform.getPressed();
-		if(press.quit) return std::make_unique<Quit>();
+		if(press.quit) return std::make_unique<Quit>(_game);
 
 		if(_frames <= FRAMES_PER_GAME_OVER) {
 			_offset *= GAME_OVER_ACCELERATION_RATE * dilation + 1.0;

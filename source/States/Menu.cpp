@@ -29,7 +29,7 @@ namespace SuperHaxagon {
 		const auto press = _platform.getPressed();
 
 
-		if (press.quit) return std::make_unique<Quit>();
+		if (press.quit) return std::make_unique<Quit>(_game);
 
 		if (!_transitionDirection) {
 			if (press.select) return std::make_unique<Play>(_game, *_game.getLevels()[_level], _level);

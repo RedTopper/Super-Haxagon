@@ -52,7 +52,7 @@ namespace SuperHaxagon {
 		}
 
 		if (pressed.quit) {
-			return std::make_unique<Quit>();
+			return std::make_unique<Quit>(_game);
 		}
 
 		if (pressed.left && hit != Movement::CANNOT_MOVE_LEFT) {

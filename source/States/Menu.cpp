@@ -1,8 +1,6 @@
 #include <array>
 
 #include "Core/Game.hpp"
-#include "Driver/Audio.hpp"
-#include "Driver/Font.hpp"
 #include "Factories/Level.hpp"
 #include "States/Quit.hpp"
 #include "States/Play.hpp"
@@ -117,21 +115,22 @@ namespace SuperHaxagon {
 		auto screen = _platform.getScreenDim();
 		auto shadow = _game.getShadowOffset();
 
-		Point focus = {screen.x/2, screen.y/4};
+		Point focus = {screen.x/2, screen.y/6};
 		Point offsetFocus = {focus.x + shadow.x, focus.y + shadow.y};
 
 		// Home screen always has 6 sides.
 		// Use a multiplier of 2 because the view is shifted down
+		// Note: Draw cursor TAU/4 = Up, no rotation
 		_game.drawBackground(bg1, bg2, focus, 2, rotation, 6.0);
 
 		// Shadows
-		_game.drawRegular(COLOR_SHADOW, offsetFocus, SCALE_HEX_LENGTH * scale, rotation, 6.0);
-		_game.drawCursor(COLOR_SHADOW, offsetFocus, TAU / 4.0, 0, 0, scale);
+		_game.drawRegular(COLOR_SHADOW, offsetFocus, SCALE_HEX_LENGTH * SCALE_MENU * scale, rotation, 6.0);
+		_game.drawCursor(COLOR_SHADOW, offsetFocus, TAU / 4.0, 0, SCALE_HEX_LENGTH + SCALE_HUMAN_PADDING + 4, scale * SCALE_MENU * 0.75);
 
 		// Geometry
-		_game.drawRegular(fg, focus,SCALE_HEX_LENGTH * scale, rotation, 6.0);
-		_game.drawRegular(bg3, focus, SCALE_HEX_LENGTH * scale - SCALE_HEX_BORDER * scale, rotation, 6.0);
-		_game.drawCursor(fg, focus, TAU / 4.0, 0, 0, scale); //Draw cursor fixed quarter circle, no movement.
+		_game.drawRegular(fg, focus,SCALE_HEX_LENGTH * SCALE_MENU * scale, rotation, 6.0);
+		_game.drawRegular(bg3, focus, (SCALE_HEX_LENGTH - SCALE_HEX_BORDER / 2) * SCALE_MENU * scale, rotation, 6.0);
+		_game.drawCursor(fg, focus, TAU / 4.0, 0, SCALE_HEX_LENGTH + SCALE_HUMAN_PADDING + 4, scale * SCALE_MENU * 0.75);
 
 		auto& large = _game.getFontLarge();
 		auto& small = _game.getFontSmall();

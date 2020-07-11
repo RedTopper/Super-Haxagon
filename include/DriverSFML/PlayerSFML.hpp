@@ -7,10 +7,10 @@
 #include "Driver/Player.hpp"
 
 namespace SuperHaxagon {
-	class PlayerWin : public Player {
+	class PlayerSFML : public Player {
 	public:
-		explicit PlayerWin(std::unique_ptr<sf::SoundSource> source);
-		~PlayerWin() override;
+		explicit PlayerSFML(std::unique_ptr<sf::SoundSource> source);
+		~PlayerSFML() override;
 
 	private:
 		void setChannel(int) override {};

@@ -40,6 +40,16 @@ namespace SuperHaxagon {
 		mkdir("sdmc:/3ds/data", 0777);
 		mkdir("sdmc:/3ds/data/haxagon", 0777);
 		#endif
+
+		// Clear screen
+		C3D_FrameBegin(C3D_FRAME_SYNCDRAW);
+		C2D_TargetClear(_top, C2D_Color32(0x00, 0x00, 0x00, 0xff));
+		C2D_SceneBegin(_top);
+		#ifndef DEBUG
+		C2D_TargetClear(_bot, C2D_Color32(0x00, 0x00, 0x00, 0xff));
+		C2D_SceneBegin(_bot);
+		#endif
+		C3D_FrameEnd(0);
 	}
 
 	Platform3DS::~Platform3DS() {

@@ -1,26 +1,26 @@
-#include "DriverWin/FontWin.hpp"
-#include "DriverWin/PlatformWin.hpp"
+#include "DriverSFML/FontSFML.hpp"
+#include "DriverSFML/PlatformSFML.hpp"
 
 namespace SuperHaxagon {
-	FontWin::FontWin(PlatformWin& platform, const std::string& path, const double size) :
+	FontSFML::FontSFML(PlatformSFML& platform, const std::string& path, const double size) :
 		_platform(platform),
 		_scale(1),
 		_size(size) {
 		_loaded = _font.loadFromFile(path + ".ttf");
 	}
 
-	FontWin::~FontWin() = default;
+	FontSFML::~FontSFML() = default;
 
-	void FontWin::setScale(const double scale) {
+	void FontSFML::setScale(const double scale) {
 		// scale up at half rate so it looks nice I guess?
 		_scale = (scale - 1) / 2 + 1;
 	}
 
-	double FontWin::getHeight() const {
+	double FontSFML::getHeight() const {
 		return _size * _scale;
 	}
 
-	double FontWin::getWidth(const std::string& text) const {
+	double FontSFML::getWidth(const std::string& text) const {
 		if (!_loaded) return 0;
 		sf::Text sfText;
 		sfText.setFont(_font);
@@ -29,7 +29,7 @@ namespace SuperHaxagon {
 		return sfText.getLocalBounds().width;
 	}
 
-	void FontWin::draw(const Color& color, const Point& position, Alignment alignment, const std::string& text) const {
+	void FontSFML::draw(const Color& color, const Point& position, Alignment alignment, const std::string& text) const {
 		if (!_loaded) return;
 		sf::Text sfText;
 		sf::Vector2f sfPosition;

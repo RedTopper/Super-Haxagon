@@ -1,16 +1,16 @@
 #include <SFML/Audio/Sound.hpp>
 #include <SFML/Audio/Music.hpp>
 
-#include "DriverWin/PlayerWin.hpp"
+#include "DriverSFML/PlayerSFML.hpp"
 
 namespace SuperHaxagon {
-	PlayerWin::PlayerWin(std::unique_ptr<sf::SoundSource> source) : _source(std::move(source)) {}
+	PlayerSFML::PlayerSFML(std::unique_ptr<sf::SoundSource> source) : _source(std::move(source)) {}
 
-	PlayerWin::~PlayerWin() {
+	PlayerSFML::~PlayerSFML() {
 		_source->stop();
 	}
 
-	void PlayerWin::setLoop(const bool loop) {
+	void PlayerSFML::setLoop(const bool loop) {
 		if (auto* sound = dynamic_cast<sf::Sound*>(_source.get())) {
 			sound->setLoop(loop);
 		} else if (auto* music = dynamic_cast<sf::Music*>(_source.get())) {
@@ -18,15 +18,15 @@ namespace SuperHaxagon {
 		}
 	}
 
-	void PlayerWin::play() {
+	void PlayerSFML::play() {
 		_source->play();
 	}
 
-	bool PlayerWin::isDone() {
+	bool PlayerSFML::isDone() {
 		return _source->getStatus() == sf::SoundSource::Stopped;
 	}
 
-	double PlayerWin::getVelocity() {
+	double PlayerSFML::getVelocity() {
 		return 0;
 	}
 }

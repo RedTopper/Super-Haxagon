@@ -10,10 +10,10 @@
 namespace SuperHaxagon {
 	class Player;
 
-	class PlatformWin : public Platform {
+	class PlatformSFML : public Platform {
 	public:
-		PlatformWin();
-		~PlatformWin() override;
+		PlatformSFML();
+		~PlatformSFML() override;
 
 		bool loop() override;
 		double getDilation() override;

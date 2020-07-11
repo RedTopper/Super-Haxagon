@@ -8,7 +8,7 @@
 #elif defined __SWITCH__
 #include "DriverSwitch/PlatformSwitch.hpp"
 #elif defined _WIN64 || defined __CYGWIN__
-#include "DriverWin/PlatformWin.hpp"
+#include "DriverSFML/PlatformSFML.hpp"
 #else
 #error "Target platform is not supported by any driver."
 #endif
@@ -20,7 +20,7 @@ namespace SuperHaxagon {
 #elif defined __SWITCH__
 		return std::make_unique<PlatformSwitch>();
 #elif defined _WIN64 || defined __CYGWIN__
-		return std::make_unique<PlatformWin>();
+		return std::make_unique<PlatformSFML>();
 #else
 		return nullptr;
 #endif

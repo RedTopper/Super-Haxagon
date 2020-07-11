@@ -1,7 +1,6 @@
 #include <memory>
 
 #include "Core/Game.hpp"
-#include "Driver/Audio.hpp"
 #include "Factories/Wall.hpp"
 #include "Factories/Pattern.hpp"
 #include "States/State.hpp"
@@ -124,9 +123,13 @@ namespace SuperHaxagon {
 
 	void Game::drawCursor(const Color& color, const Point& focus, const double cursor, const double rotation, const double offset, const double scale) const {
 		std::array<Point, 3> triangle{};
-		triangle[0] = calcPoint(focus, cursor + rotation, 0.0, (SCALE_HEX_LENGTH + SCALE_HUMAN_PADDING + SCALE_HUMAN_HEIGHT + offset) * scale);
-		triangle[1] = calcPoint(focus, cursor + rotation, HUMAN_WIDTH_RAD/2, (SCALE_HEX_LENGTH + SCALE_HUMAN_PADDING + offset) * scale);
-		triangle[2] = calcPoint(focus, cursor + rotation, -HUMAN_WIDTH_RAD/2, (SCALE_HEX_LENGTH + SCALE_HUMAN_PADDING + offset) * scale);
+		triangle[0] = {-SCALE_HUMAN_WIDTH/2 * scale, offset * scale};
+		triangle[1] = {SCALE_HUMAN_WIDTH/2 * scale, offset * scale};
+		triangle[2] = {0, (SCALE_HUMAN_HEIGHT + offset) * scale};
+		for (Point& p : triangle) {
+			p = rotateAroundOrigin(p, cursor + rotation - TAU / 4.0);
+			p = {p.x + focus.x, p.y + focus.y};
+		}
 		_platform.drawTriangle(color, triangle);
 	}
 

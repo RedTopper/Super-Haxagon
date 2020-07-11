@@ -34,6 +34,7 @@ ifeq ($(TARGET),3DS)
     BANNER_AUDIO := media/audio.wav
     BANNER_IMAGE := media/banner.cgfx
     ICON := media/icon-3ds.png
+    ICON_FLAGS := --flags visible,ratingrequired,recordusage --cero 153 --esrb 153 --usk 153 --pegigen 153 --pegiptr 153 --pegibbfc 153 --cob 153 --grb 153 --cgsrr 153
 endif
 
 # Switch CONFIGURATION #
@@ -52,7 +53,7 @@ endif
 ifeq ($(TARGET),WIN64)
     SOURCE_DIRS += source/DriverWin
 
-    LIBRARY_DIRS += ./libraries/SFML /mingw64 /mingw64/lib
+    LIBRARY_DIRS += ./libraries/SFML-MinGW /mingw64 /mingw64/lib
     LIBRARIES += sfml-graphics-s sfml-window-s sfml-audio-s sfml-system-s winmm openal32 gdi32 opengl32 freetype flac vorbisenc vorbisfile vorbis ogg
 
     BUILD_FLAGS := -mwindows -DSFML_STATIC

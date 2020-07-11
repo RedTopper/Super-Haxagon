@@ -3,14 +3,8 @@
 cmake_minimum_required(VERSION 3.10)
 project(Super_Haxagon)
 
-include_directories("$ENV{DEVKITPRO}/libctru/include")
-include_directories("${CMAKE_CURRENT_LIST_DIR}/libraries/SFML/include")
-include_directories("${CMAKE_CURRENT_LIST_DIR}/libraries/stb")
-include_directories("${CMAKE_CURRENT_LIST_DIR}/include")
-
 set(CMAKE_CXX_STANDARD 14)
 set(SFML_STATIC_LIBRARIES TRUE)
-set(SFML_DIR "${CMAKE_CURRENT_LIST_DIR}/libraries/SFML/lib/cmake/SFML")
 
 if(CMAKE_COMPILER_IS_GNUCXX)
     add_definitions(-Wall -Wextra -pedantic)
@@ -18,19 +12,24 @@ endif(CMAKE_COMPILER_IS_GNUCXX)
 
 if(MINGW OR MSYS)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mwindows")
+    set(SFML_DIR "${CMAKE_CURRENT_SOURCE_DIR}/libraries/MinGW/SFML/lib/cmake/SFML")
 endif()
 
-add_compile_definitions(SFML_STATIC)
+if(MSVC)
+    set(SFML_DIR "${CMAKE_CURRENT_SOURCE_DIR}/libraries/MSVC/SFML/lib/cmake/SFML")
+endif()
 
-find_package(SFML REQUIRED system window graphics audio)
+include_directories("$ENV{DEVKITPRO}/libctru/include")
+include_directories("${CMAKE_CURRENT_SOURCE_DIR}/libraries/stb")
+include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
 
-link_directories(libraries/SFML/lib)
+find_package(SFML 2 COMPONENTS system window graphics audio)
 
 add_executable(SuperHaxagon WIN32 ${OPTIONS}
-    source/DriverWin/AudioWin.cpp
-    source/DriverWin/FontWin.cpp
-    source/DriverWin/PlatformWin.cpp
-    source/DriverWin/PlayerWin.cpp
+        source/DriverWin/AudioSFML.cpp
+        source/DriverWin/FontSFML.cpp
+        source/DriverWin/PlatformSFML.cpp
+        source/DriverWin/PlayerSFML.cpp
 
     source/States/Load.cpp
     source/States/Menu.cpp
@@ -45,6 +44,4 @@ add_executable(SuperHaxagon WIN32 ${OPTIONS}
     source/Core/Main.cpp
     source/Core/Structs.cpp)
 
-target_link_libraries(SuperHaxagon
-    sfml-graphics-s sfml-window-s sfml-audio-s sfml-system-s
-    winmm openal32 gdi32 opengl32 freetype flac vorbisenc vorbisfile vorbis ogg)
+target_link_libraries(SuperHaxagon sfml-graphics sfml-window sfml-audio sfml-system)

@@ -7,12 +7,12 @@
 #include "Driver/Font.hpp"
 
 namespace SuperHaxagon {
-	class PlatformWin;
+	class PlatformSFML;
 
-	class FontWin : public Font {
+	class FontSFML : public Font {
 	public:
-		FontWin(PlatformWin& platform, const std::string& path, double size);
-		~FontWin() override;
+		FontSFML(PlatformSFML& platform, const std::string& path, double size);
+		~FontSFML() override;
 
 		void setScale(double scale) override;
 		double getHeight() const override;
@@ -20,7 +20,7 @@ namespace SuperHaxagon {
 		void draw(const Color& color, const Point& position, Alignment alignment, const std::string& text) const override;
 
 	private:
-		PlatformWin& _platform;
+		PlatformSFML& _platform;
 		sf::Font _font;
 		bool _loaded = false;
 		double _scale;

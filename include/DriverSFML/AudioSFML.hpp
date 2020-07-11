@@ -7,10 +7,10 @@
 #include "Driver/Audio.hpp"
 
 namespace SuperHaxagon {
-	class AudioWin : public Audio {
+	class AudioSFML : public Audio {
 	public:
-		AudioWin(const std::string& path, Stream stream);
-		~AudioWin() override;
+		AudioSFML(const std::string& path, Stream stream);
+		~AudioSFML() override;
 
 		std::unique_ptr<Player> instantiate() override;
 

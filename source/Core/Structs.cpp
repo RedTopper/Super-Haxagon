@@ -1,7 +1,7 @@
 #include <cmath>
 #include <string>
-#include <fstream>
 #include <sstream>
+#include <fstream>
 #include <iomanip>
 
 #include "Core/Structs.hpp"
@@ -20,11 +20,11 @@ namespace SuperHaxagon {
 		return (end - start) * percent + start;
 	}
 
-	Point calcPoint(const Point& focus, const double rotation, const double offset, const double distance) {
-		Point point = {0,0};
-		point.x = distance * cos(rotation + offset) + focus.x;
-		point.y = distance * sin(rotation + offset) + focus.y;
-		return point;
+	Point rotateAroundOrigin(const Point& point, double rotation) {
+		const auto s = sin(rotation);
+		const auto c = cos(rotation);
+		Point ret{point.x * c - point.y * s, point.x * s + point.y * c};
+		return ret;
 	}
 
 	std::string getTime(const double score) {

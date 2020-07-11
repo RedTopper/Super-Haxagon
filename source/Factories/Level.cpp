@@ -65,8 +65,7 @@ namespace SuperHaxagon {
 
 			// Delay the level if the shifted pattern does  not have the same sides as the last.
 			if(_lastSides != _currentSides) {
-				_delayFrame = FRAMES_PER_CHANGE_SIDE
-				    * abs(static_cast<double>(_currentSides) - static_cast<double>(_lastSides));
+				_delayFrame = FRAMES_PER_CHANGE_SIDE * std::abs(static_cast<double>(_currentSides) - static_cast<double>(_lastSides));
 			}
 		}
 
@@ -108,16 +107,17 @@ namespace SuperHaxagon {
 		game.drawBackground(bg1, bg2, center, diagonal, _rotation, _sidesTween);
 
 		// Draw shadows
+		const auto cursorDistance = SCALE_HEX_LENGTH + SCALE_HUMAN_PADDING;
 		const Point offsetFocus = {center.x + shadow.x, center.y + shadow.y};
 		game.drawPatterns(COLOR_SHADOW, offsetFocus, _patterns, _rotation, _sidesTween, offset + beat, scale);
 		game.drawRegular(COLOR_SHADOW, offsetFocus, (SCALE_HEX_LENGTH + beat) * scale, _rotation, _sidesTween);
-		game.drawCursor(COLOR_SHADOW, offsetFocus, _cursorPos, _rotation, beat, scale);
+		game.drawCursor(COLOR_SHADOW, offsetFocus, _cursorPos, _rotation, beat + cursorDistance, scale);
 
 		// Draw real thing
 		game.drawPatterns(fg, center, _patterns, _rotation, _sidesTween, offset+ beat, scale);
 		game.drawRegular(fg, center, (SCALE_HEX_LENGTH + beat) * scale, _rotation, _sidesTween);
 		game.drawRegular(bg2, center, (SCALE_HEX_LENGTH - SCALE_HEX_BORDER + beat) * scale, _rotation, _sidesTween);
-		game.drawCursor(fg, center, _cursorPos, _rotation, beat, scale);
+		game.drawCursor(fg, center, _cursorPos, _rotation, beat + cursorDistance, scale);
 	}
 
 	Movement Level::collision(const double cursorDistance, const double dilation) const {

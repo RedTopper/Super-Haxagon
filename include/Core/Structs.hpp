@@ -26,13 +26,14 @@ namespace SuperHaxagon {
 
 	static constexpr double TAU = 3.14159265358979323846 * 2;
 
+	static constexpr double SCALE_MENU = 4.0;
 	static constexpr double SCALE_BASE_DISTANCE = 300.0;
 	static constexpr double SCALE_HEX_LENGTH = 20.0;
 	static constexpr double SCALE_HEX_BORDER = 4.0;
 	static constexpr double SCALE_HUMAN_PADDING = 5.0;
 	static constexpr double SCALE_HUMAN_HEIGHT = 5.0;
 	static constexpr double SCALE_PULSE_MAX = 20.0;
-	static constexpr double HUMAN_WIDTH_RAD = TAU/30.0;
+	static constexpr double SCALE_HUMAN_WIDTH = 5.0;
 
 	static const Color COLOR_SHADOW = {0, 0, 0, 0xC0};
 	static const Color COLOR_TRANSPARENT = {0, 0, 0, 0xA0};
@@ -59,7 +60,7 @@ namespace SuperHaxagon {
 	 * so it renders correctly, some distance the point should be from the center, the side the point
 	 * should be rendered on, based on a total number of sides the shape has.
 	 */
-	Point calcPoint(const Point& focus, double rotation, double offset, double distance);
+	Point rotateAroundOrigin(const Point& point, double rotation);
 
 	/**
 	 * Converts score into a string

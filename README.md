@@ -37,19 +37,25 @@ Super Haxagon can build for 3DS and Windows (MinGW + MSVC). For desktop platform
 1. Use the provided Makefile with the command `make TARGET:=3DS`
 1. Install either the CIA or 3DSX on your 3DS
 
-### PC Build (MSVC)
+### PC Build
 
 1. Clone this repository
-1. Download SFML and place it in the libraries directory and rename to `SFML`
+1. Download SFML and place it in the corresponding folder in `libraries`
+1. Rename the SFML library folder to `SFML`
+
+#### ... with MSVC
+
 1. Use Visual Studio to open a folder with the CMake file
-1. Switch to Release and press Play
+1. Build the game
+1. Copy the `romfs` folder and `SFML/bin/openal32.dll` library next to the built executable
+1. Press play
 
-### PC Build (MinGW)
+#### ... with MinGW
 
-1. Clone this repository
 1. Get MinGW
-1. Use the provided Makefile with the command `make TARGET:=WIN64`
-1. Move the `romfs` folder into a folder called `data`, and rename `romfs` to `rom`
+1. Use the provided Makefile with the command `make TARGET:=WIN64` OR use the CMake file
+1. Copy the `romfs` folder and `SFML/bin/openal32.dll` library next to the built executable
+1. Launch the executable
 
 ## Screenshots
 

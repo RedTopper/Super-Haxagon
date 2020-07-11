@@ -1,4 +1,3 @@
-#include <exception>
 #include <iostream>
 
 #include "Core/Game.hpp"
@@ -36,16 +35,7 @@ int WinMain() {
 #else
 int main(int, char**) {
 #endif
-	auto ret = 0;
-
-	try {
-		const auto platform = SuperHaxagon::getPlatform();
-		SuperHaxagon::Game game(*platform);
-		ret = game.run();
-	} catch (std::exception& e) {
-		std::cout << e.what();
-		ret = -1;
-	}
-
-	return ret;
+	const auto platform = SuperHaxagon::getPlatform();
+	SuperHaxagon::Game game(*platform);
+	return game.run();
 }

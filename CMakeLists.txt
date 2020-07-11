@@ -45,6 +45,7 @@ add_executable(SuperHaxagon WIN32 ${OPTIONS}
     source/States/Menu.cpp
     source/States/Over.cpp
     source/States/Play.cpp
+    source/States/Quit.cpp
 
     source/Factories/Level.cpp
     source/Factories/Pattern.cpp

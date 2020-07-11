@@ -59,11 +59,19 @@ Super Haxagon can build for 3DS and Windows (MinGW + MSVC). For desktop platform
 
 ## Screenshots
 
-![In Game](./media/screenshots/Windows_2020-07-10_014324.png "The First Level")
-![Death Spiral](./media/screenshots/Windows_2020-07-10_014604.png "Death Spiral")
-![Title Screen](./media/screenshots/Windows_2020-07-10_014650.png "Title Screen")
-![3DS Title](./media/screenshots/luma-2020-07-11-06-42-12-193.png "3DS Title")
-![Shapes](./media/screenshots/testmenu_20161225_2340_00011.png "Super Pentagon")
+Below are a few screenshots featuring both the Windows and 3DS platform. 3DS screenshots
+were taken on actual hardware.
+
+![3D Banner](./media/screenshots/HNI_0013.JPG "Banner")
+
+### Cross Platform
+
+![In Game Windows](./media/screenshots/Windows_2020-07-10_014324.png "In Game Windows")
+![In Game 3DS](./media/screenshots/luma-2020-07-11-06-48-44-586.png "In Game 3DS")
+![Title Screen Windows](./media/screenshots/Windows_2020-07-10_014650.png "Title Screen Windows")
+![Title Screen 3DS](./media/screenshots/luma-2020-07-11-06-42-12-193.png "Title Screen 3DS")
+![Death Spiral Windows](./media/screenshots/Windows_2020-07-10_014604.png "Death Spiral")
+![Death Spiral 3DS](./media/screenshots/luma-2020-07-11-06-55-45-531.png "Death Spiral 3DS")
 
 ### Proof of Concept
 

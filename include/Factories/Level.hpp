@@ -50,7 +50,7 @@ namespace SuperHaxagon {
 		std::deque<std::unique_ptr<Pattern>> _patterns;
 
 		double _multiplierRot = 1.0; // Current direction and speed of rotation
-		double _multiplierWalls = 1.0; // Current speed of the walls flying at you
+		double _multiplierWalls = 0.9; // Current speed of the walls flying at you
 		double _cursorPos{};
 		double _rotation{};
 		double _sidesTween{};

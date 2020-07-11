@@ -45,3 +45,5 @@ add_executable(SuperHaxagon WIN32 ${OPTIONS}
     source/Core/Structs.cpp)
 
 target_link_libraries(SuperHaxagon sfml-graphics sfml-window sfml-audio sfml-system)
+
+install(TARGETS SuperHaxagon RUNTIME DESTINATION .)

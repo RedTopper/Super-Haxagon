@@ -1,10 +1,7 @@
 #ifndef SUPER_HAXAGON_PLAY_HPP
 #define SUPER_HAXAGON_PLAY_HPP
 
-#include <deque>
-
 #include "State.hpp"
-#include "Core/Structs.hpp"
 
 namespace SuperHaxagon {
 	class Game;

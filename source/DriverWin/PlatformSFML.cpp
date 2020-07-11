@@ -3,9 +3,13 @@
 #include <algorithm>
 #include <array>
 #include <iostream>
+
+#ifdef _WIN32
 #include <direct.h>
+#else
 #include <sys/types.h>
 #include <sys/stat.h>
+#endif
 
 #include "DriverSFML/PlatformSFML.hpp"
 #include "DriverSFML/PlayerSFML.hpp"

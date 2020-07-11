@@ -1,5 +1,5 @@
-#ifndef SUPER_HAXAGON_PLATFORM_WIN_HPP
-#define SUPER_HAXAGON_PLATFORM_WIN_HPP
+#ifndef SUPER_HAXAGON_PLATFORM_SFML_HPP
+#define SUPER_HAXAGON_PLATFORM_SFML_HPP
 
 #include <SFML/Graphics.hpp>
 #include <deque>
@@ -51,4 +51,4 @@ namespace SuperHaxagon {
 	};
 }
 
-#endif //SUPER_HAXAGON_PLATFORM_WIN_HPP
+#endif //SUPER_HAXAGON_PLATFORM_SFML_HPP

@@ -6,7 +6,7 @@
 #if defined _3DS
 #include "Driver3DS/Platform3DS.hpp"
 #elif defined __SWITCH__
-#include "DriverSwitch/PlatformSwitch.hpp"
+#include "DriverSFML/PlatformSFML.hpp"
 #elif defined _WIN64 || defined __CYGWIN__
 #include "DriverSFML/PlatformSFML.hpp"
 #elif defined __linux__
@@ -20,7 +20,7 @@ namespace SuperHaxagon {
 		#if defined _3DS
 		return std::make_unique<Platform3DS>();
 		#elif defined __SWITCH__
-		return std::make_unique<PlatformSwitch>();
+		return std::make_unique<PlatformSFML>();
 		#elif defined _WIN64 || defined __CYGWIN__
 		return std::make_unique<PlatformSFML>();
 		#elif defined __linux__

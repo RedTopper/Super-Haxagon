@@ -12,7 +12,7 @@
 #endif
 
 #include "DriverSFML/PlatformSFML.hpp"
-#include "DriverSFML/PlayerSFML.hpp"
+#include "DriverSFML/PlayerSoundSFML.hpp"
 #include "DriverSFML/AudioSFML.hpp"
 #include "DriverSFML/FontSFML.hpp"
 

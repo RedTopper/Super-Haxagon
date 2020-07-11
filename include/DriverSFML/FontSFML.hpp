@@ -1,5 +1,5 @@
-#ifndef SUPER_HAXAGON_FONT_WIN_HPP
-#define SUPER_HAXAGON_FONT_WIN_HPP
+#ifndef SUPER_HAXAGON_FONT_SFML_HPP
+#define SUPER_HAXAGON_FONT_SFML_HPP
 
 #include <SFML/Graphics/Text.hpp>
 #include <SFML/Graphics/Font.hpp>
@@ -28,4 +28,4 @@ namespace SuperHaxagon {
 	};
 }
 
-#endif //SUPER_HAXAGON_FONT_WIN_HPP
+#endif //SUPER_HAXAGON_FONT_SFML_HPP

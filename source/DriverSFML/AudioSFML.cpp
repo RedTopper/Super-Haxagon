@@ -1,7 +1,8 @@
 #include <SFML/Audio/Sound.hpp>
 
 #include "DriverSFML/AudioSFML.hpp"
-#include "DriverSFML/PlayerSFML.hpp"
+#include "DriverSFML/PlayerSoundSFML.hpp"
+#include "DriverSFML/PlayerMusicSFML.hpp"
 
 namespace SuperHaxagon {
 	AudioSFML::AudioSFML(const std::string& path, const Stream stream) {
@@ -24,12 +25,12 @@ namespace SuperHaxagon {
 		if (_stream == Stream::DIRECT) {
 			auto sound = std::make_unique<sf::Sound>();
 			sound->setBuffer(*_buffer);
-			return std::make_unique<PlayerSFML>(std::move(sound));
+			return std::make_unique<PlayerSoundSFML>(std::move(sound));
 		}
 
 		if (_stream == Stream::INDIRECT) {
 			_stream = Stream::NONE;
-			return std::make_unique<PlayerSFML>(std::move(_music));
+			return std::make_unique<PlayerMusicSFML>(std::move(_music));
 		}
 
 		return nullptr;

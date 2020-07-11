@@ -4,15 +4,20 @@
 #include "States/State.hpp"
 
 namespace SuperHaxagon {
+	class Game;
+
 	class Quit : public State {
 	public:
-		Quit() = default;
+		explicit Quit(Game& game);
 		Quit(Quit&) = delete;
 		~Quit() override = default;
 
-		std::unique_ptr<State> update(double) override {return nullptr;}
+		std::unique_ptr<State> update(double) override;
 		void drawTop(double) override {}
 		void drawBot(double) override {}
+
+	private:
+		Game& _game;
 	};
 }
 

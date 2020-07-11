@@ -19,13 +19,13 @@ if(MINGW OR MSYS)
     message(STATUS "Compiling with MinGW")
     set(SFML_STATIC_LIBRARIES TRUE)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mwindows")
-    set(SFML_DIR "${CMAKE_CURRENT_SOURCE_DIR}/libraries/MinGW/SFML/lib/cmake/SFML")
+    set(SFML_DIR "${CMAKE_CURRENT_SOURCE_DIR}/libraries/SFML-MinGW/lib/cmake/SFML")
 endif()
 
 if(MSVC)
     message(STATUS "Compiling with MSVC")
     set(SFML_STATIC_LIBRARIES TRUE)
-    set(SFML_DIR "${CMAKE_CURRENT_SOURCE_DIR}/libraries/MSVC/SFML/lib/cmake/SFML")
+    set(SFML_DIR "${CMAKE_CURRENT_SOURCE_DIR}/libraries/SFML-MSVC/lib/cmake/SFML")
 endif()
 
 include_directories("$ENV{DEVKITPRO}/libctru/include")
@@ -38,7 +38,7 @@ add_executable(SuperHaxagon WIN32 ${OPTIONS}
     source/DriverSFML/AudioSFML.cpp
     source/DriverSFML/FontSFML.cpp
     source/DriverSFML/PlatformSFML.cpp
-    source/DriverSFML/PlayerSFML.cpp
+        source/DriverSFML/PlayerSoundSFML.cpp
 
     source/States/Load.cpp
     source/States/Menu.cpp

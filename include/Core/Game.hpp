@@ -44,6 +44,8 @@ namespace SuperHaxagon {
 			return std::min(size.x, size.y);
 		}
 
+		void setRunning(bool running) {_running = running;}
+
 		/**
 		 * Runs the game
 		 */
@@ -114,6 +116,8 @@ namespace SuperHaxagon {
 
 		std::unique_ptr<Font> _small;
 		std::unique_ptr<Font> _large;
+
+		bool _running;
 	};
 }
 

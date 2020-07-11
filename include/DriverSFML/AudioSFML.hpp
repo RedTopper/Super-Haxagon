@@ -1,5 +1,5 @@
-#ifndef SUPER_HAXAGON_AUDIO_WIN_HPP
-#define SUPER_HAXAGON_AUDIO_WIN_HPP
+#ifndef SUPER_HAXAGON_AUDIO_SFML_HPP
+#define SUPER_HAXAGON_AUDIO_SFML_HPP
 
 #include <SFML/Audio/SoundBuffer.hpp>
 #include <SFML/Audio/Music.hpp>
@@ -22,4 +22,4 @@ namespace SuperHaxagon {
 	};
 }
 
-#endif //SUPER_HAXAGON_AUDIO_WIN_HPP
+#endif //SUPER_HAXAGON_AUDIO_SFML_HPP

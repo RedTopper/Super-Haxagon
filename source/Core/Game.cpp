@@ -28,13 +28,14 @@ namespace SuperHaxagon {
 	int Game::run() {
 		_state = std::make_unique<Load>(*this);
 		_state->enter();
-		while(_platform.loop() && !dynamic_cast<Quit*>(_state.get())) {
+		while(_running && _platform.loop()) {
 			// The original game was built with a 3DS in mind, so when
 			// drawing we have to scale the game to however many times larger the viewport is.
 			const auto scale = getScreenDimMin() / 240.0;
 			const auto dilation = _platform.getDilation();
 
 			auto next = _state->update(dilation);
+			if (!_running) break;
 			while (next) {
 				_state->exit();
 				_state = std::move(next);

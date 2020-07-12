@@ -18,7 +18,7 @@ BUILD_FLAGS_CXX := -std=gnu++14
 # 3DS CONFIGURATION #
 
 ifeq ($(TARGET),3DS)
-    SOURCE_DIRS += source/Driver3DS
+    SOURCE_DIRS += source/Driver/3DS
 
     # Shitty workaround for library includes not being set up right
     INCLUDE_DIRS += libraries/stb
@@ -40,7 +40,7 @@ endif
 # Switch CONFIGURATION #
 
 ifeq ($(TARGET),SWITCH)
-    SOURCE_DIRS += source/DriverSFML
+    SOURCE_DIRS += source/Driver/SFML source/Driver/Switch
 
     LIBRARY_DIRS += $(DEVKITPRO)/libnx ./libraries/SFML-Switch
     LIBRARIES += sfml-graphics-s sfml-window-s sfml-audio-s sfml-system-s nx winmm openal32 gdi32 opengl32 freetype flac vorbisenc vorbisfile vorbis ogg
@@ -53,7 +53,7 @@ endif
 # Windows CONFIGURATION #
 
 ifeq ($(TARGET),WIN64)
-    SOURCE_DIRS += source/DriverSFML
+    SOURCE_DIRS += source/Driver/SFML source/Driver/Win
 
     LIBRARY_DIRS += ./libraries/SFML-MinGW /mingw64 /mingw64/lib
     LIBRARIES += sfml-graphics-s sfml-window-s sfml-audio-s sfml-system-s winmm openal32 gdi32 opengl32 freetype flac vorbisenc vorbisfile vorbis ogg
@@ -64,7 +64,7 @@ endif
 # Linux CONFIGURATION #
 
 ifeq ($(TARGET),LINUX64)
-    SOURCE_DIRS += source/DriverSFML
+    SOURCE_DIRS += source/Driver/SFML source/Driver/Linux
 
     LIBRARIES += sfml-graphics sfml-window sfml-audio sfml-system
 endif

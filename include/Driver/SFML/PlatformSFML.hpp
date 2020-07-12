@@ -6,20 +6,20 @@
 
 #include "Driver/Audio.hpp"
 #include "Driver/Platform.hpp"
+#include "Driver/Player.hpp"
 
 namespace SuperHaxagon {
-	class Player;
 
 	class PlatformSFML : public Platform {
 	public:
-		PlatformSFML();
+		PlatformSFML(Dbg dbg, sf::VideoMode video);
 		~PlatformSFML() override;
 
 		bool loop() override;
 		double getDilation() override;
 
-		std::string getPath(const std::string& partial) override;
-		std::string getPathRom(const std::string& partial) override;
+		std::string getPath(const std::string& partial) override = 0;
+		std::string getPathRom(const std::string& partial) override = 0;
 		std::unique_ptr<Audio> loadAudio(const std::string& path, Stream stream) override;
 		std::unique_ptr<Font> loadFont(const std::string& path, int size) override;
 
@@ -38,7 +38,11 @@ namespace SuperHaxagon {
 		void drawRect(const Color& color, const Point& point, const Point& size) override;
 		void drawTriangle(const Color& color, const std::array<Point, 3>& points) override;
 
-		std::unique_ptr<Twist> getTwister() override;
+		std::unique_ptr<Twist> getTwister() override = 0;
+
+		void show() override = 0;
+		void message(Dbg level, const std::string& where, const std::string& message) override = 0;
+
 		sf::RenderWindow& getWindow() const {return *_window;}
 
 	private:
@@ -47,7 +51,7 @@ namespace SuperHaxagon {
 		sf::Clock _clock;
 		std::unique_ptr<sf::RenderWindow> _window;
 		std::deque<std::unique_ptr<Player>> _sfx;
-		std::unique_ptr<Player> _bgm;
+		std::unique_ptr<Player> _bgm = nullptr;
 	};
 }
 

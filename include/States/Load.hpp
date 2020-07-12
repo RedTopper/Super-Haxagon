@@ -19,7 +19,7 @@ namespace SuperHaxagon {
 		Load(Load&) = delete;
 		~Load() override;
 
-		bool loadLevel(std::ifstream& file, Location location) const;
+		bool loadFile(std::ifstream& file, Location location) const;
 		bool loadScores(std::ifstream& file) const;
 
 		std::unique_ptr<State> update(double dilation) override;

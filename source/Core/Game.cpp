@@ -4,7 +4,6 @@
 #include "Factories/Wall.hpp"
 #include "Factories/Pattern.hpp"
 #include "States/State.hpp"
-#include "States/Quit.hpp"
 #include "States/Load.hpp"
 
 namespace SuperHaxagon {

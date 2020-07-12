@@ -31,7 +31,7 @@ namespace SuperHaxagon {
 		static const char* PATTERN_FOOTER;
 		static constexpr int MIN_PATTERN_SIDES = 3;
 
-		explicit PatternFactory(std::ifstream& file);
+		PatternFactory(std::ifstream& file, Platform& platform);
 		~PatternFactory();
 
 		std::unique_ptr<Pattern> instantiate(Twist& rng, double distance) const;

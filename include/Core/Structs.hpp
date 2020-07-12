@@ -5,6 +5,8 @@
 #include <stdexcept>
 
 namespace SuperHaxagon {
+	class Platform;
+
 	struct Color {
 		uint8_t r;
 		uint8_t g;
@@ -81,11 +83,6 @@ namespace SuperHaxagon {
 	const char* getScoreText(int score, bool reduced);
 
 	/**
-	 *
-	 */
-	void warn(const std::string& where, const std::string& message);
-
-	/**
 	 * Compares a fixed length string to an expected string in a file.
 	 * (useful for checking both headers and footers)
 	 */
@@ -94,7 +91,7 @@ namespace SuperHaxagon {
 	/**
 	 * Reads an integer from a file advancing its internal pointer
 	 */
-	uint32_t read32(std::ifstream& file, uint32_t min, uint32_t max, const std::string& noun);
+	uint32_t read32(std::ifstream& file, uint32_t min, uint32_t max, Platform& platform, const std::string& noun);
 
 	/**
 	 * Reads a short from a file advancing its internal pointer
@@ -114,7 +111,7 @@ namespace SuperHaxagon {
 	/**
 	 * Reads a string from the binary file
 	 */
-	std::string readString(std::ifstream& file, const std::string& noun);
+	std::string readString(std::ifstream& file, Platform& platform, const std::string& noun);
 
 	/**
 	 * Writes a string with a length to a binary file

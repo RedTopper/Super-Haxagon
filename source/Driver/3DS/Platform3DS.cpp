@@ -2,9 +2,8 @@
 #include <string>
 #include <memory>
 #include <array>
-#ifdef _3DS
+#include <iostream>
 #include <sys/stat.h>
-#endif
 
 #include "Driver/3DS/PlayerOgg3DS.hpp"
 #include "Driver/3DS/AudioWav3DS.hpp"
@@ -13,7 +12,7 @@
 #include "Driver/3DS/Platform3DS.hpp"
 
 namespace SuperHaxagon {
-	Platform3DS::Platform3DS() {
+	Platform3DS::Platform3DS(Dbg dbg) : Platform(dbg) {
 		romfsInit();
 		gfxInitDefault();
 		C3D_Init(C3D_DEFAULT_CMDBUF_SIZE);
@@ -23,11 +22,13 @@ namespace SuperHaxagon {
 		_buff = C2D_TextBufNew(4096);
 		_top = C2D_CreateScreenTarget(GFX_TOP, GFX_LEFT);
 
-		#ifdef DEBUG
-		consoleInit(GFX_BOTTOM, NULL);
-		#else
-		_bot = C2D_CreateScreenTarget(GFX_BOTTOM, GFX_LEFT);
-		#endif
+		if (_dbg == Dbg::FATAL) {
+			// Use the bottom screen for drawing
+			_bot = C2D_CreateScreenTarget(GFX_BOTTOM, GFX_LEFT);
+		} else {
+			// Otherwise create console on bottom if we want more messages
+			consoleInit(GFX_BOTTOM, nullptr);
+		}
 
 		// Setup NDSP
 		ndspInit();
@@ -35,20 +36,21 @@ namespace SuperHaxagon {
 		ndspSetCallback(PlayerOgg3DS::audioCallback, nullptr);
 		LightEvent_Init(&PlayerOgg3DS::_event, RESET_ONESHOT);
 
-		#ifdef _3DS
 		mkdir("sdmc:/3ds", 0777);
 		mkdir("sdmc:/3ds/data", 0777);
 		mkdir("sdmc:/3ds/data/haxagon", 0777);
-		#endif
 
 		// Clear screen
 		C3D_FrameBegin(C3D_FRAME_SYNCDRAW);
 		C2D_TargetClear(_top, C2D_Color32(0x00, 0x00, 0x00, 0xff));
 		C2D_SceneBegin(_top);
-		#ifndef DEBUG
-		C2D_TargetClear(_bot, C2D_Color32(0x00, 0x00, 0x00, 0xff));
-		C2D_SceneBegin(_bot);
-		#endif
+
+		if (_dbg == Dbg::FATAL) {
+			// Allowed to draw bottom screen if in fatal mode
+			C2D_TargetClear(_bot, C2D_Color32(0x00, 0x00, 0x00, 0xff));
+			C2D_SceneBegin(_bot);
+		}
+
 		C3D_FrameEnd(0);
 	}
 
@@ -150,16 +152,17 @@ namespace SuperHaxagon {
 	void Platform3DS::screenBegin() {
 		_drawingOnTop = true;
 		C3D_FrameBegin(C3D_FRAME_SYNCDRAW);
-		C2D_TargetClear(_top, C2D_Color32(0x00, 0x00, 0xFF, 0xff));
+		C2D_TargetClear(_top, C2D_Color32(0x00, 0x00, 0x00, 0xff));
 		C2D_SceneBegin(_top);
 	}
 
 	void Platform3DS::screenSwap() {
-		#ifndef DEBUG
-		_drawingOnTop = false;
-		C2D_TargetClear(_bot, C2D_Color32(0x00, 0x00, 0x00, 0xff));
-		C2D_SceneBegin(_bot);
-		#endif
+		if (_dbg == Dbg::FATAL) {
+			// Allowed to draw bottom screen if in fatal mode
+			_drawingOnTop = false;
+			C2D_TargetClear(_bot, C2D_Color32(0x00, 0x00, 0x00, 0xff));
+			C2D_SceneBegin(_bot);
+		}
 	}
 
 	void Platform3DS::screenFinalize() {
@@ -194,5 +197,62 @@ namespace SuperHaxagon {
 		return std::make_unique<Twist>(
 			std::unique_ptr<std::seed_seq>(a)
 		);
+	}
+
+	void Platform3DS::show() {
+		bool display = false;
+		for (const auto& message : _messages) {
+			if (message.first == Dbg::FATAL) {
+				display = true;
+			}
+		}
+
+		if (display) {
+			if (_dbg == Dbg::FATAL) {
+				// Need to create console to show user the error
+				consoleInit(GFX_TOP, nullptr);
+				std::cout << "Fatal error! START to quit." << std::endl;
+				std::cout << "Last messages:" << std::endl << std::endl;
+				for (const auto& message : _messages) {
+					std::cout << message.second << std::endl;
+				}
+			} else {
+				// Otherwise the console exists and just needs to show
+				// the message for a bit longer
+				C3D_FrameBegin(C3D_FRAME_SYNCDRAW);
+				C2D_TargetClear(_top, C2D_Color32(0x00, 0x00, 0x00, 0xff));
+				C2D_SceneBegin(_top);
+				C3D_FrameEnd(0);
+
+				std::cout << std::endl << "[3ds] Fatal error! START to quit." << std::endl;
+			}
+
+			while (aptMainLoop()) {
+				gspWaitForVBlank();
+				gfxSwapBuffers();
+				hidScanInput();
+				u32 kDown = hidKeysDown();
+				if (kDown & KEY_START) break;
+			}
+		}
+	}
+
+	void Platform3DS::message(Dbg dbg, const std::string& where, const std::string& message) {
+		std::string format;
+		if (dbg == Dbg::INFO) {
+			format = "[3ds:info] " + where + ": " + message;
+		} else if (dbg == Dbg::WARN) {
+			format = "[3ds:warn] " + where + ": " + message;
+		} else if (dbg == Dbg::FATAL){
+			format = "[3ds:fatal] " + where + ": " + message;
+		}
+
+		if (_dbg != Dbg::FATAL) {
+			// If we are in non FATAL mode, there's a console to print to
+			std::cout << format << std::endl;
+		}
+
+		_messages.emplace_back(dbg, format);
+		if (_messages.size() > 32) _messages.pop_front();
 	}
 }

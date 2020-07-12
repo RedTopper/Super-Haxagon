@@ -6,6 +6,7 @@
 #include <iostream>
 
 #include "Core/Structs.hpp"
+#include "Driver/Platform.hpp"
 
 namespace SuperHaxagon {
 	Color interpolateColor(const Color& one, const Color& two, const double percent) {
@@ -68,10 +69,6 @@ namespace SuperHaxagon {
 		return "HEXAGON";
 	}
 
-	void warn(const std::string& where, const std::string& message) {
-		std::cerr << ("[warn] '" + where + "': " + message) << std::endl;
-	}
-
 	bool readCompare(std::ifstream& file, const std::string& str) {
 		const auto read = std::make_unique<char[]>(str.length() + 1);
 		file.read(read.get(), str.length());
@@ -79,18 +76,18 @@ namespace SuperHaxagon {
 		return read.get() == str;
 	}
 
-	uint32_t read32(std::ifstream& file, const uint32_t min, const uint32_t max, const std::string& noun) {
+	uint32_t read32(std::ifstream& file, const uint32_t min, const uint32_t max, Platform& platform, const std::string& noun) {
 		uint32_t num;
 		file.read(reinterpret_cast<char*>(&num), sizeof(num));
 
 		if (num < min) {
 			num = min;
-			warn("int", noun + " is too small, but continuing anyway.");
+			platform.message(Dbg::WARN, "int", noun + " is too small, but continuing anyway.");
 		}
 
 		if (num > max) {
 			num = max;
-			warn("int", noun + " is too large, but continuing anyway.");
+			platform.message(Dbg::WARN, "int", noun + " is too large, but continuing anyway.");
 		}
 
 		return num;
@@ -117,8 +114,8 @@ namespace SuperHaxagon {
 		return color;
 	}
 
-	std::string readString(std::ifstream& file, const std::string& noun) {
-		const size_t length = read32(file, 1, 300, noun + " string");
+	std::string readString(std::ifstream& file, Platform& platform, const std::string& noun) {
+		const size_t length = read32(file, 1, 300, platform, noun + " string");
 		const auto read = std::make_unique<char[]>(length + 1);
 		file.read(read.get(), length);
 		read[length] = '\0';

@@ -9,7 +9,7 @@
 #include "Core/Twist.hpp"
 
 namespace SuperHaxagon {
-	enum class Level {
+	enum class Dbg {
 		INFO,
 		WARN,
 		FATAL
@@ -28,7 +28,7 @@ namespace SuperHaxagon {
 
 	class Platform {
 	public:
-		Platform() = default;
+		explicit Platform(Dbg dbg) : _dbg(dbg) {}
 		Platform(Platform&) = delete;
 		virtual ~Platform() = default;
 
@@ -57,7 +57,11 @@ namespace SuperHaxagon {
 
 		virtual std::unique_ptr<Twist> getTwister() = 0;
 
-		virtual void message(Level level, const std::string& where, const std::string& message);
+		virtual void show() = 0;
+		virtual void message(Dbg level, const std::string& where, const std::string& message) = 0;
+
+	protected:
+		Dbg _dbg;
 	};
 }
 

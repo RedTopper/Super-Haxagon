@@ -11,12 +11,14 @@ endif(CMAKE_COMPILER_IS_GNUCXX)
 
 if(UNIX)
     message(STATUS "Compiling with GCC")
+    set(DRIVER source/Driver/Linux/PlatformLinux.cpp)
     # Make sure you have SFML installed via your package manager
     # Usually `sudo apt install libsfml-dev` or similar (Debian/Ubuntu)
 endif()
 
 if(MINGW OR MSYS)
     message(STATUS "Compiling with MinGW")
+    set(DRIVER source/Driver/Win/PlatformWin.cpp)
     set(SFML_STATIC_LIBRARIES TRUE)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mwindows")
     set(SFML_DIR "${CMAKE_CURRENT_SOURCE_DIR}/libraries/SFML-MinGW/lib/cmake/SFML")
@@ -24,6 +26,7 @@ endif()
 
 if(MSVC)
     message(STATUS "Compiling with MSVC")
+    set(DRIVER source/Driver/Win/PlatformWin.cpp)
     set(SFML_STATIC_LIBRARIES TRUE)
     set(SFML_DIR "${CMAKE_CURRENT_SOURCE_DIR}/libraries/SFML-MSVC/lib/cmake/SFML")
 endif()
@@ -34,12 +37,12 @@ include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
 
 find_package(SFML 2 COMPONENTS system window graphics audio)
 
-add_executable(SuperHaxagon WIN32 ${OPTIONS}
-        source/Driver/SFML/AudioSFML.cpp
-        source/Driver/SFML/FontSFML.cpp
-        source/Driver/SFML/PlatformSFML.cpp
-        source/Driver/SFML/PlayerSoundSFML.cpp
-        source/Driver/SFML/PlayerMusicSFML.cpp
+add_executable(SuperHaxagon WIN32 ${DRIVER}
+    source/Driver/SFML/PlatformSFML.cpp
+    source/Driver/SFML/AudioSFML.cpp
+    source/Driver/SFML/FontSFML.cpp
+    source/Driver/SFML/PlayerSoundSFML.cpp
+    source/Driver/SFML/PlayerMusicSFML.cpp
 
     source/States/Load.cpp
     source/States/Menu.cpp

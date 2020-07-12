@@ -74,7 +74,7 @@ namespace SuperHaxagon {
 		static const char* LEVEL_HEADER;
 		static const char* LEVEL_FOOTER;
 
-		LevelFactory(std::ifstream& file, std::vector<std::shared_ptr<PatternFactory>>& shared, Location location);
+		LevelFactory(std::ifstream& file, std::vector<std::shared_ptr<PatternFactory>>& shared, Location location, Platform& platform);
 		LevelFactory(const LevelFactory&) = delete;
 
 		std::unique_ptr<Level> instantiate(Twist& rng, double renderDistance) const;

@@ -167,41 +167,41 @@ namespace SuperHaxagon {
 		if(_cursorPos < 0) _cursorPos  += TAU;
 	}
 
-	LevelFactory::LevelFactory(std::ifstream& file, std::vector<std::shared_ptr<PatternFactory>>& shared, const Location location) {
+	LevelFactory::LevelFactory(std::ifstream& file, std::vector<std::shared_ptr<PatternFactory>>& shared, const Location location, Platform& platform) {
 		_location = location;
 
 		if (!readCompare(file, LEVEL_HEADER)) {
-			warn("level", "level header invalid!");
+			platform.message(Dbg::WARN, "level", "level header invalid!");
 			return;
 		}
 
-		_name = readString(file, "level name");
-		_difficulty = readString(file, _name + " level difficulty");
-		_mode = readString(file, _name + " level mode");
-		_creator = readString(file, _name + " level creator");
-		_music = "/" + readString(file, _name + " level music");
+		_name = readString(file, platform, "level name");
+		_difficulty = readString(file, platform, _name + " level difficulty");
+		_mode = readString(file, platform, _name + " level mode");
+		_creator = readString(file, platform, _name + " level creator");
+		_music = "/" + readString(file, platform, _name + " level music");
 
-		const int numColorsBG1 = read32(file, 1, 512, "level background 1");
+		const int numColorsBG1 = read32(file, 1, 512, platform, "level background 1");
 		_colorsBg1.reserve(numColorsBG1);
 		for (auto i = 0; i < numColorsBG1; i++) _colorsBg1.emplace_back(readColor(file));
 
-		const int numColorsBG2 = read32(file, 1, 512, "level background 2");
+		const int numColorsBG2 = read32(file, 1, 512, platform, "level background 2");
 		_colorsBg2.reserve(numColorsBG2);
 		for (auto i = 0; i < numColorsBG2; i++) _colorsBg2.emplace_back(readColor(file));
 
-		const int numColorsFG = read32(file, 1, 512, "level foreground");
+		const int numColorsFG = read32(file, 1, 512, platform, "level foreground");
 		_colorsFg.reserve(numColorsFG);
 		for (auto i = 0; i < numColorsFG; i++) _colorsFg.emplace_back(readColor(file));
 
 		_speedWall = readFloat(file);
 		_speedRotation = readFloat(file);
 		_speedCursor = readFloat(file);
-		_speedPulse = read32(file, 4, 8192, "level pulse");
+		_speedPulse = read32(file, 4, 8192, platform, "level pulse");
 
-		const int numPatterns = read32(file, 1, 512, "level pattern count");
+		const int numPatterns = read32(file, 1, 512, platform, "level pattern count");
 		for (auto i = 0; i < numPatterns; i++) {
 			auto found = false;
-			auto search = readString(file, "level pattern name match");
+			auto search = readString(file, platform, "level pattern name match");
 			for (const auto& pattern : shared) {
 				if (pattern->getName() == search) {
 					_patterns.push_back(pattern);
@@ -211,13 +211,13 @@ namespace SuperHaxagon {
 			}
 
 			if (!found) {
-				warn("level", "could not find pattern " + search + " for " + _name);
+				platform.message(Dbg::WARN, "level", "could not find pattern " + search + " for " + _name);
 				return;
 			}
 		}
 
 		if (!readCompare(file, LEVEL_FOOTER)) {
-			warn("level", "level footer invalid!");
+			platform.message(Dbg::WARN, "level", "level footer invalid!");
 			return;
 		}
 

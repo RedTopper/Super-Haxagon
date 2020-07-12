@@ -1,15 +1,5 @@
 #include <string>
-#include <ctime>
-#include <algorithm>
 #include <array>
-#include <iostream>
-
-#ifdef _WIN32
-#include <direct.h>
-#else
-#include <sys/types.h>
-#include <sys/stat.h>
-#endif
 
 #include "Driver/SFML/PlatformSFML.hpp"
 #include "Driver/SFML/PlayerSoundSFML.hpp"
@@ -17,24 +7,11 @@
 #include "Driver/SFML/FontSFML.hpp"
 
 namespace SuperHaxagon {
-	PlatformSFML::PlatformSFML() : _bgm(nullptr) {
+	PlatformSFML::PlatformSFML(Dbg dbg, sf::VideoMode video) : Platform(dbg) {
 		_clock.restart();
 
 		sf::ContextSettings settings;
 		settings.antialiasingLevel = 8;
-
-		sf::VideoMode video(
-			static_cast<int>(sf::VideoMode::getDesktopMode().width * 0.75),
-			static_cast<int>(sf::VideoMode::getDesktopMode().height * 0.75)
-		);
-
-		#if defined(_WIN32)
-		const auto nError = _mkdir("./sdmc");
-		#else
-		const auto nError = mkdir("./sdmc", 755);
-		#endif
-
-		if (nError) std::cout << "Could not create user directory" << std::endl;
 
 		_window = std::make_unique<sf::RenderWindow>(video, "Super Haxagon", sf::Style::Default, settings);
 		_window->setVerticalSyncEnabled(true);
@@ -72,16 +49,6 @@ namespace SuperHaxagon {
 		// The game was originally designed with 60FPS in mind
 		const auto dilation = _delta / (1.0 / 60.0);
 		return dilation > 4.0 ? 4.0 : (dilation < 0.05 ? 0.05 : dilation);
-	}
-
-	std::string PlatformSFML::getPath(const std::string& partial) {
-		auto path = std::string("./sdmc") + partial;
-		return path;
-	}
-
-	std::string PlatformSFML::getPathRom(const std::string& partial) {
-		auto path = std::string("./romfs") + partial;
-		return path;
 	}
 
 	std::unique_ptr<Audio> PlatformSFML::loadAudio(const std::string& path, Stream stream) {
@@ -183,23 +150,5 @@ namespace SuperHaxagon {
 		convex.setFillColor(sfColor);
 		convex.setPosition(0, 0);
 		_window->draw(convex);
-	}
-
-	std::unique_ptr<Twist> PlatformSFML::getTwister() {
-		try {
-			std::random_device source;
-			if (source.entropy() == 0) throw std::runtime_error("entropy too low, seeding with time");
-			std::mt19937::result_type data[std::mt19937::state_size];
-			generate(std::begin(data), std::end(data), ref(source));
-			return std::make_unique<Twist>(
-					std::make_unique<std::seed_seq>(std::begin(data), std::end(data))
-			);
-		} catch (std::runtime_error& e) {
-			std::cout << e.what() << std::endl;
-			auto* a = new std::seed_seq{time(nullptr)};
-			return std::make_unique<Twist>(
-					std::unique_ptr<std::seed_seq>(a)
-			);
-		}
 	}
 }

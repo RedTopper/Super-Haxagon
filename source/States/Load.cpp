@@ -18,31 +18,44 @@ namespace SuperHaxagon {
 	Load::Load(Game& game) : _game(game), _platform(game.getPlatform()) {}
 	Load::~Load() = default;
 
-	bool Load::loadLevel(std::ifstream& file, Location location) const {
+	bool Load::loadFile(std::ifstream& file, Location location) const {
 		std::vector<std::shared_ptr<PatternFactory>> patterns;
 
 		if(!readCompare(file, PROJECT_HEADER)) {
-			warn("load", "file header invalid!");
+			_platform.message(Dbg::WARN, "file", "file header invalid!");
 			return false;
 		}
 
-		const int numPatterns = read32(file, 1, 300, "number of patterns");
+		const int numPatterns = read32(file, 1, 300, _platform, "number of patterns");
 		patterns.reserve(numPatterns);
 		for (auto i = 0; i < numPatterns; i++) {
-			auto pattern = std::make_shared<PatternFactory>(file);
-			if (!pattern->isLoaded()) return false;
+			auto pattern = std::make_shared<PatternFactory>(file, _platform);
+			if (!pattern->isLoaded()) {
+				_platform.message(Dbg::WARN, "file", "a pattern failed to load");
+				return false;
+			}
+
 			patterns.emplace_back(std::move(pattern));
 		}
 
-		const int numLevels = read32(file, 1, 300, "number of levels");
+		if (patterns.empty()) {
+			_platform.message(Dbg::WARN, "file", "no patterns loaded");
+			return false;
+		}
+
+		const int numLevels = read32(file, 1, 300, _platform, "number of levels");
 		for (auto i = 0; i < numLevels; i++) {
-			auto level = std::make_unique<LevelFactory>(file, patterns, location);
-			if (!level->isLoaded()) return false;
+			auto level = std::make_unique<LevelFactory>(file, patterns, location, _platform);
+			if (!level->isLoaded()) {
+				_platform.message(Dbg::WARN, "file", "a level failed to load");
+				return false;
+			}
+
 			_game.addLevel(std::move(level));
 		}
 
 		if(!readCompare(file, PROJECT_FOOTER)) {
-			warn("load", "file footer invalid!");
+			_platform.message(Dbg::WARN, "load", "file footer invalid");
 			return false;
 		}
 
@@ -51,22 +64,22 @@ namespace SuperHaxagon {
 
 	bool Load::loadScores(std::ifstream& file) const {
 		if (!file) {
-			warn("scores", "no score database");
+			_platform.message(Dbg::INFO, "scores", "no score database");
 			return true;
 		}
 
 		if (!readCompare(file, SCORE_HEADER)) {
-			warn("scores", "score header invalid, but continuing anyway");
+			_platform.message(Dbg::WARN,"scores", "score header invalid, skipping scores");
 			return true; // If there is no score database silently fail.
 		}
 
-		const int numScores = read32(file, 1, 300, "number of scores");
+		const int numScores = read32(file, 1, 300, _platform, "number of scores");
 		for (auto i = 0; i < numScores; i++) {
-			auto name = readString(file, "score level name");
-			auto difficulty = readString(file, "score level difficulty");
-			auto mode = readString(file, "score level mode");
-			auto creator = readString(file, "score level creator");
-			const int score = read32(file, 0, INT_MAX, "score");
+			auto name = readString(file, _platform, "score level name");
+			auto difficulty = readString(file, _platform, "score level difficulty");
+			auto mode = readString(file, _platform, "score level mode");
+			auto creator = readString(file, _platform, "score level creator");
+			const int score = read32(file, 0, INT_MAX, _platform, "score");
 			for (const auto& level : _game.getLevels()) {
 				if (level->getName() == name && level->getDifficulty() == difficulty && level->getMode() == mode && level->getCreator() == creator) {
 					level->setHighScore(score);
@@ -75,7 +88,7 @@ namespace SuperHaxagon {
 		}
 
 		if (!readCompare(file, SCORE_FOOTER)) {
-			warn("scores", "file footer invalid, db broken");
+			_platform.message(Dbg::WARN,"scores", "file footer invalid, db broken");
 			return false;
 		}
 
@@ -93,11 +106,11 @@ namespace SuperHaxagon {
 			const auto loc = location.first;
 			std::ifstream file(path, std::ios::in | std::ios::binary);
 			if (!file) continue;
-			if (!loadLevel(file, loc)) continue;
+			if (!loadFile(file, loc)) continue;
 		}
 
 		if (_game.getLevels().empty()) {
-			warn("enter", "no levels loaded!");
+			_platform.message(Dbg::FATAL, "scores", "no levels loaded");
 			return;
 		}
 

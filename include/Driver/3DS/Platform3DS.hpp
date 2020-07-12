@@ -2,6 +2,7 @@
 #define SUPER_HAXAGON_PLATFORM_3DS_HPP
 
 #include <citro2d.h>
+#include <deque>
 
 #include "Driver/Audio.hpp"
 #include "Driver/Platform.hpp"
@@ -12,7 +13,8 @@ static const int MAX_TRACKS = 4;
 namespace SuperHaxagon {
 	class Platform3DS : public Platform {
 	public:
-		Platform3DS();
+		explicit Platform3DS(Dbg dbg);
+		Platform3DS(Platform3DS&) = delete;
 		~Platform3DS() override;
 
 		bool loop() override;
@@ -40,9 +42,15 @@ namespace SuperHaxagon {
 
 		std::unique_ptr<Twist> getTwister() override;
 
+		void show() override;
+
+		void message(Dbg dbg, const std::string& where, const std::string& message) override;
+
 	private:
 		std::unique_ptr<Player> _sfx[MAX_TRACKS]{};
 		std::unique_ptr<Player> _bgm = nullptr;
+
+		std::deque<std::pair<Dbg, std::string>> _messages;
 
 		C3D_RenderTarget* _top;
 		C3D_RenderTarget* _bot;

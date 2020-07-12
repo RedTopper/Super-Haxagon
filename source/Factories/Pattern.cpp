@@ -1,4 +1,5 @@
 #include "Core/Twist.hpp"
+#include "Driver/Platform.hpp"
 #include "Factories/Pattern.hpp"
 #include "Factories/Wall.hpp"
 
@@ -24,23 +25,23 @@ namespace SuperHaxagon {
 		}
 	}
 
-	PatternFactory::PatternFactory(std::ifstream& file) {
-		_name = readString(file, "pattern name");
+	PatternFactory::PatternFactory(std::ifstream& file, Platform& platform) {
+		_name = readString(file, platform, "pattern name");
 
 		if (!readCompare(file, PATTERN_HEADER)) {
-			warn("pattern", _name + " pattern header invalid!");
+			platform.message(Dbg::WARN, "pattern", _name + " pattern header invalid!");
 			return;
 		}
 
 		// This might be able to be increased later
-		_sides = read32(file, 0, 256, _name + " pattern sides");
+		_sides = read32(file, 0, 256, platform, _name + " pattern sides");
 		if(_sides < MIN_PATTERN_SIDES) _sides = MIN_PATTERN_SIDES;
 
-		const int numWalls = read32(file, 1, 1000, _name + " pattern walls");
+		const int numWalls = read32(file, 1, 1000, platform, _name + " pattern walls");
 		for(auto i = 0; i < numWalls; i++) _walls.emplace_back(std::make_unique<WallFactory>(file, _sides));
 
 		if (!readCompare(file, PATTERN_FOOTER)) {
-			warn("pattern", _name + " pattern footer invalid!");
+			platform.message(Dbg::WARN, "pattern", _name + " pattern footer invalid!");
 			return;
 		}
 

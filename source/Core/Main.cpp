@@ -1,15 +1,13 @@
-#include <iostream>
-
 #include "Core/Game.hpp"
 
 #if defined _3DS
-#include "Driver3DS/Platform3DS.hpp"
+#include "Driver/3DS/Platform3DS.hpp"
 #elif defined __SWITCH__
-#include "DriverSFML/PlatformSFML.hpp"
+#include "Driver/Switch/PlatformSwitch.hpp"
 #elif defined _WIN64 || defined __CYGWIN__
-#include "Driver/SFML/PlatformSFML.hpp"
+#include "Driver/Win/PlatformWin.hpp"
 #elif defined __linux__
-#include "DriverSFML/PlatformSFML.hpp"
+#include "Driver/Linux/PlatformLinux.hpp"
 #else
 #error "Target platform is not supported by any driver."
 #endif
@@ -17,13 +15,13 @@
 namespace SuperHaxagon {
 	std::unique_ptr<Platform> getPlatform() {
 		#if defined _3DS
-		return std::make_unique<Platform3DS>();
+		return std::make_unique<Platform3DS>(Dbg::FATAL);
 		#elif defined __SWITCH__
-		return std::make_unique<PlatformSFML>();
+		return std::make_unique<PlatformSwitch>(Dbg::FATAL);
 		#elif defined _WIN64 || defined __CYGWIN__
-		return std::make_unique<PlatformSFML>();
+		return std::make_unique<PlatformWin>(Dbg::INFO);
 		#elif defined __linux__
-		return std::make_unique<PlatformSFML>();
+		return std::make_unique<PlatformLinux>(Dbg::INFO);
 		#else
 		return nullptr;
 		#endif
@@ -36,6 +34,10 @@ int WinMain() {
 int main(int, char**) {
 #endif
 	const auto platform = SuperHaxagon::getPlatform();
+	platform->message(SuperHaxagon::Dbg::INFO, "main", "starting game");
 	SuperHaxagon::Game game(*platform);
-	return game.run();
+	auto ret = game.run();
+	platform->message(SuperHaxagon::Dbg::INFO, "main", "stopping game");
+	platform->show();
+	return ret;
 }

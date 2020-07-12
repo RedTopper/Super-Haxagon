@@ -1,8 +1,8 @@
 #include <string>
 #include <fstream>
 
-#include "Driver3DS/AudioWav3DS.hpp"
-#include "Driver3DS/PlayerWav3DS.hpp"
+#include "Driver/3DS/AudioWav3DS.hpp"
+#include "Driver/3DS/PlayerWav3DS.hpp"
 
 namespace SuperHaxagon {
 	AudioWav3DS::AudioWav3DS(const std::string& path) {

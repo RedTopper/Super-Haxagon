@@ -1,7 +1,7 @@
 #include <SFML/Audio/Sound.hpp>
 #include <SFML/Audio/Music.hpp>
 
-#include "DriverSFML/PlayerMusicSFML.hpp"
+#include "Driver/SFML/PlayerMusicSFML.hpp"
 
 namespace SuperHaxagon {
 	PlayerMusicSFML::PlayerMusicSFML(std::unique_ptr<sf::Music> music) : _music(std::move(music)) {}

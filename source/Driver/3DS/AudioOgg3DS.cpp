@@ -1,7 +1,7 @@
 #include <string>
 
-#include "Driver3DS/AudioOgg3DS.hpp"
-#include "Driver3DS/PlayerOgg3DS.hpp"
+#include "Driver/3DS/AudioOgg3DS.hpp"
+#include "Driver/3DS/PlayerOgg3DS.hpp"
 
 namespace SuperHaxagon {
 	AudioOgg3DS::AudioOgg3DS(const std::string& path) : _path(path + ".ogg") {}

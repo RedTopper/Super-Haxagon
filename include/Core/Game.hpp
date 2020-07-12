@@ -117,7 +117,7 @@ namespace SuperHaxagon {
 		std::unique_ptr<Font> _small;
 		std::unique_ptr<Font> _large;
 
-		bool _running;
+		bool _running = true;
 	};
 }
 

@@ -36,12 +36,15 @@ namespace SuperHaxagon {
 
 		std::unique_ptr<Pattern> instantiate(Twist& rng, double distance) const;
 
+		bool isLoaded() const {return _loaded;}
+
 		std::string getName() const {return _name;}
 
 	private:
 		std::vector<std::unique_ptr<WallFactory>> _walls;
 		std::string _name  = "";
 		int _sides = 0;
+		bool _loaded = false;
 	};
 }
 

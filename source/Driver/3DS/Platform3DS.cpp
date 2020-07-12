@@ -6,11 +6,11 @@
 #include <sys/stat.h>
 #endif
 
-#include "Driver3DS/PlayerOgg3DS.hpp"
-#include "Driver3DS/AudioWav3DS.hpp"
-#include "Driver3DS/AudioOgg3DS.hpp"
-#include "Driver3DS/Font3DS.hpp"
-#include "Driver3DS/Platform3DS.hpp"
+#include "Driver/3DS/PlayerOgg3DS.hpp"
+#include "Driver/3DS/AudioWav3DS.hpp"
+#include "Driver/3DS/AudioOgg3DS.hpp"
+#include "Driver/3DS/Font3DS.hpp"
+#include "Driver/3DS/Platform3DS.hpp"
 
 namespace SuperHaxagon {
 	Platform3DS::Platform3DS() {

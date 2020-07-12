@@ -2,7 +2,7 @@
 
 #include <stb_vorbis.c>
 
-#include "Driver3DS/PlayerOgg3DS.hpp"
+#include "Driver/3DS/PlayerOgg3DS.hpp"
 
 namespace SuperHaxagon {
 	const int BUFFER_MS = 200;

@@ -9,6 +9,12 @@
 #include "Core/Twist.hpp"
 
 namespace SuperHaxagon {
+	enum class Level {
+		INFO,
+		WARN,
+		FATAL
+	};
+
 	struct Buttons {
 		bool select : 1;
 		bool back : 1;
@@ -50,6 +56,8 @@ namespace SuperHaxagon {
 		virtual void drawTriangle(const Color& color, const std::array<Point, 3>& points) = 0;
 
 		virtual std::unique_ptr<Twist> getTwister() = 0;
+
+		virtual void message(Level level, const std::string& where, const std::string& message);
 	};
 }
 

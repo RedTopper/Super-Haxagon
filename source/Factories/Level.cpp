@@ -170,8 +170,10 @@ namespace SuperHaxagon {
 	LevelFactory::LevelFactory(std::ifstream& file, std::vector<std::shared_ptr<PatternFactory>>& shared, const Location location) {
 		_location = location;
 
-		if (!readCompare(file, LEVEL_HEADER))
-			throw malformed("level", "level header invalid!");
+		if (!readCompare(file, LEVEL_HEADER)) {
+			warn("level", "level header invalid!");
+			return;
+		}
 
 		_name = readString(file, "level name");
 		_difficulty = readString(file, _name + " level difficulty");
@@ -208,12 +210,18 @@ namespace SuperHaxagon {
 				}
 			}
 
-			if (!found)
-				throw malformed("level", "could not find pattern " + search + " for " + _name);
+			if (!found) {
+				warn("level", "could not find pattern " + search + " for " + _name);
+				return;
+			}
 		}
 
-		if (!readCompare(file, LEVEL_FOOTER))
-			throw malformed("level", "level footer invalid!");
+		if (!readCompare(file, LEVEL_FOOTER)) {
+			warn("level", "level footer invalid!");
+			return;
+		}
+
+		_loaded = true;
 	}
 
 	std::unique_ptr<Level> LevelFactory::instantiate(Twist& rng, double renderDistance) const {

@@ -19,8 +19,8 @@ namespace SuperHaxagon {
 		Load(Load&) = delete;
 		~Load() override;
 
-		void loadLevel(std::ifstream& file, Location location) const;
-		void loadScores(std::ifstream& file) const;
+		bool loadLevel(std::ifstream& file, Location location) const;
+		bool loadScores(std::ifstream& file) const;
 
 		std::unique_ptr<State> update(double dilation) override;
 		void enter() override;
@@ -30,6 +30,7 @@ namespace SuperHaxagon {
 	private:
 		Game& _game;
 		Platform& _platform;
+		bool _loaded = false;
 	};
 }
 

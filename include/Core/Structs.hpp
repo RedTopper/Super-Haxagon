@@ -81,9 +81,9 @@ namespace SuperHaxagon {
 	const char* getScoreText(int score, bool reduced);
 
 	/**
-	 * Creates an exception with
+	 *
 	 */
-	std::runtime_error malformed(const std::string& where, const std::string& message);
+	void warn(const std::string& where, const std::string& message);
 
 	/**
 	 * Compares a fixed length string to an expected string in a file.

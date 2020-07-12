@@ -11,10 +11,10 @@
 #include <sys/stat.h>
 #endif
 
-#include "DriverSFML/PlatformSFML.hpp"
-#include "DriverSFML/PlayerSoundSFML.hpp"
-#include "DriverSFML/AudioSFML.hpp"
-#include "DriverSFML/FontSFML.hpp"
+#include "Driver/SFML/PlatformSFML.hpp"
+#include "Driver/SFML/PlayerSoundSFML.hpp"
+#include "Driver/SFML/AudioSFML.hpp"
+#include "Driver/SFML/FontSFML.hpp"
 
 namespace SuperHaxagon {
 	PlatformSFML::PlatformSFML() : _bgm(nullptr) {

@@ -1,5 +1,5 @@
-#include "DriverSFML/FontSFML.hpp"
-#include "DriverSFML/PlatformSFML.hpp"
+#include "Driver/SFML/FontSFML.hpp"
+#include "Driver/SFML/PlatformSFML.hpp"
 
 namespace SuperHaxagon {
 	FontSFML::FontSFML(PlatformSFML& platform, const std::string& path, const double size) :

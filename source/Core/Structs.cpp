@@ -3,6 +3,7 @@
 #include <sstream>
 #include <fstream>
 #include <iomanip>
+#include <iostream>
 
 #include "Core/Structs.hpp"
 
@@ -67,8 +68,8 @@ namespace SuperHaxagon {
 		return "HEXAGON";
 	}
 
-	std::runtime_error malformed(const std::string& where, const std::string& message) {
-		return std::runtime_error("[malformed] '" + where + "': " + message);
+	void warn(const std::string& where, const std::string& message) {
+		std::cerr << ("[warn] '" + where + "': " + message) << std::endl;
 	}
 
 	bool readCompare(std::ifstream& file, const std::string& str) {
@@ -81,8 +82,17 @@ namespace SuperHaxagon {
 	uint32_t read32(std::ifstream& file, const uint32_t min, const uint32_t max, const std::string& noun) {
 		uint32_t num;
 		file.read(reinterpret_cast<char*>(&num), sizeof(num));
-		if (num < min) throw malformed("int", noun + " is too small!");
-		if (num > max) throw malformed("int", noun + " is too large!");
+
+		if (num < min) {
+			num = min;
+			warn("int", noun + " is too small, but continuing anyway.");
+		}
+
+		if (num > max) {
+			num = max;
+			warn("int", noun + " is too large, but continuing anyway.");
+		}
+
 		return num;
 	}
 

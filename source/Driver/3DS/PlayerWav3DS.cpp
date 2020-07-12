@@ -1,4 +1,4 @@
-#include "Driver3DS/PlayerWav3DS.hpp"
+#include "Driver/3DS/PlayerWav3DS.hpp"
 
 namespace SuperHaxagon {
 	PlayerWav3DS::PlayerWav3DS(u8* data, const u32 sampleRate, const u32 dataSize, const u16 channels, const u16 bitsPerSample, const u16 ndspFormat) :

@@ -79,6 +79,8 @@ namespace SuperHaxagon {
 
 		std::unique_ptr<Level> instantiate(Twist& rng, double renderDistance) const;
 
+		bool isLoaded() const {return _loaded;}
+
 		const std::vector<std::shared_ptr<PatternFactory>>& getPatterns() const {return _patterns;}
 		const std::vector<Color>& getColorsFG() const {return _colorsFg;}
 		const std::vector<Color>& getColorsBG1() const {return _colorsBg1;}
@@ -118,6 +120,7 @@ namespace SuperHaxagon {
 		float _speedWall;
 		float _speedRotation;
 		float _speedCursor;
+		bool _loaded = false;
 	};
 }
 

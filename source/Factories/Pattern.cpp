@@ -27,8 +27,10 @@ namespace SuperHaxagon {
 	PatternFactory::PatternFactory(std::ifstream& file) {
 		_name = readString(file, "pattern name");
 
-		if (!readCompare(file, PATTERN_HEADER))
-			throw malformed("pattern", _name + " pattern header invalid!");
+		if (!readCompare(file, PATTERN_HEADER)) {
+			warn("pattern", _name + " pattern header invalid!");
+			return;
+		}
 
 		// This might be able to be increased later
 		_sides = read32(file, 0, 256, _name + " pattern sides");
@@ -37,8 +39,12 @@ namespace SuperHaxagon {
 		const int numWalls = read32(file, 1, 1000, _name + " pattern walls");
 		for(auto i = 0; i < numWalls; i++) _walls.emplace_back(std::make_unique<WallFactory>(file, _sides));
 
-		if (!readCompare(file, PATTERN_FOOTER))
-			throw malformed("pattern", _name + " pattern footer invalid!");
+		if (!readCompare(file, PATTERN_FOOTER)) {
+			warn("pattern", _name + " pattern footer invalid!");
+			return;
+		}
+
+		_loaded = true;
 	}
 
 	PatternFactory::~PatternFactory() = default;

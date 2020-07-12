@@ -46,6 +46,8 @@ ifeq ($(TARGET),SWITCH)
     LIBRARIES += sfml-graphics-s sfml-window-s sfml-audio-s sfml-system-s nx winmm openal32 gdi32 opengl32 freetype flac vorbisenc vorbisfile vorbis ogg
 
     ICON := media/icon-switch.jpg
+
+    export NROFLAGS += --romfsdir=$(ROMFS_DIR)
 endif
 
 # Windows CONFIGURATION #

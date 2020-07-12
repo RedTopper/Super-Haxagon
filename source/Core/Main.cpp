@@ -7,7 +7,7 @@
 #elif defined __SWITCH__
 #include "DriverSFML/PlatformSFML.hpp"
 #elif defined _WIN64 || defined __CYGWIN__
-#include "DriverSFML/PlatformSFML.hpp"
+#include "Driver/SFML/PlatformSFML.hpp"
 #elif defined __linux__
 #include "DriverSFML/PlatformSFML.hpp"
 #else

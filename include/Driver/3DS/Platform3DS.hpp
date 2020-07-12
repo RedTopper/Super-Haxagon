@@ -50,10 +50,10 @@ namespace SuperHaxagon {
 		std::unique_ptr<Player> _sfx[MAX_TRACKS]{};
 		std::unique_ptr<Player> _bgm = nullptr;
 
-		std::deque<std::pair<Dbg, std::string>> _messages;
+		std::deque<std::pair<Dbg, std::string>> _messages{};
 
-		C3D_RenderTarget* _top;
-		C3D_RenderTarget* _bot;
+		C3D_RenderTarget* _top = nullptr;
+		C3D_RenderTarget* _bot = nullptr;
 		C2D_TextBuf _buff;
 
 		bool _drawingOnTop = true;

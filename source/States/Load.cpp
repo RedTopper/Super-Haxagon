@@ -110,7 +110,7 @@ namespace SuperHaxagon {
 		}
 
 		if (_game.getLevels().empty()) {
-			_platform.message(Dbg::FATAL, "scores", "no levels loaded");
+			_platform.message(Dbg::FATAL, "levels", "no levels loaded");
 			return;
 		}
 

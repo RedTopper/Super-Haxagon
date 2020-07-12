@@ -15,6 +15,8 @@ DESCRIPTION := A Super Hexagon Clone
 
 BUILD_FLAGS_CXX := -std=gnu++14
 
+ROMFS_DIR := romfs
+
 # 3DS CONFIGURATION #
 
 ifeq ($(TARGET),3DS)
@@ -29,7 +31,6 @@ ifeq ($(TARGET),3DS)
 
     PRODUCT_CODE := CTR-P-HAXA
     UNIQUE_ID := 0x099AA
-    ROMFS_DIR := romfs
 
     BANNER_AUDIO := media/audio.wav
     BANNER_IMAGE := media/banner.cgfx
@@ -42,12 +43,13 @@ endif
 ifeq ($(TARGET),SWITCH)
     SOURCE_DIRS += source/Driver/SFML source/Driver/Switch
 
-    LIBRARY_DIRS += $(DEVKITPRO)/libnx ./libraries/SFML-Switch
-    LIBRARIES += sfml-graphics-s sfml-window-s sfml-audio-s sfml-system-s nx winmm openal32 gdi32 opengl32 freetype flac vorbisenc vorbisfile vorbis ogg
+    # pacman -S switch-bzip2 switch-glad switch-libdrm_nouveau switch-zlib switch-freetype
+    # switch-libpng switch-mesa switch-libogg switch-libvorbisidec switch-libvorbis switch-flac libnx switch-sdl2
+	# Download https://github.com/TomBebb/mojoAL-switch/releases/tag/latest and put it in portlibs
+    LIBRARY_DIRS += $(DEVKITPRO)/libnx $(DEVKITPRO)/portlibs/switch ./libraries/SFML-Switch
+    LIBRARIES += sfml-graphics-s sfml-window-s sfml-audio-s sfml-system-s egl glad glapi drm_nouveau freetype png flac bz2 z mojoal vorbisenc vorbisfile vorbis ogg sdl2 nx
 
-    ICON := media/icon-switch.jpg
-
-    export NROFLAGS += --romfsdir=$(ROMFS_DIR)
+    ICON := media/icon-switch.jpg --romfsdir=./$(ROMFS_DIR)
 endif
 
 # Windows CONFIGURATION #

@@ -17,7 +17,7 @@ namespace SuperHaxagon {
 		#if defined _3DS
 		return std::make_unique<Platform3DS>(Dbg::FATAL);
 		#elif defined __SWITCH__
-		return std::make_unique<PlatformSwitch>(Dbg::FATAL);
+		return std::make_unique<PlatformSwitch>(Dbg::INFO);
 		#elif defined _WIN64 || defined __CYGWIN__
 		return std::make_unique<PlatformWin>(Dbg::INFO);
 		#elif defined __linux__
@@ -36,7 +36,7 @@ int main(int, char**) {
 	const auto platform = SuperHaxagon::getPlatform();
 	platform->message(SuperHaxagon::Dbg::INFO, "main", "starting game");
 	SuperHaxagon::Game game(*platform);
-	auto ret = game.run();
+	const auto ret = game.run();
 	platform->message(SuperHaxagon::Dbg::INFO, "main", "stopping game");
 	platform->show();
 	return ret;

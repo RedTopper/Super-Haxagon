@@ -127,10 +127,12 @@ namespace SuperHaxagon {
 		triangle[0] = {offset * scale, -SCALE_HUMAN_WIDTH/2 * scale};
 		triangle[1] = {offset * scale, SCALE_HUMAN_WIDTH/2 * scale};
 		triangle[2] = {(SCALE_HUMAN_HEIGHT + offset) * scale, 0};
-		for (Point& p : triangle) {
-			p = rotateAroundOrigin(p, cursor + rotation);
-			p = {p.x + focus.x, p.y + focus.y};
+		for (auto& p : triangle) {
+			const auto orig = rotateAroundOrigin(p, cursor + rotation);
+			p.x = orig.x + focus.x;
+			p.y = orig.y + focus.y;
 		}
+
 		_platform.drawTriangle(color, triangle);
 	}
 

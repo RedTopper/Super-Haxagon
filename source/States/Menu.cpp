@@ -28,7 +28,6 @@ namespace SuperHaxagon {
 	std::unique_ptr<State> Menu::update(const double dilation) {
 		const auto press = _platform.getPressed();
 
-
 		if (press.quit) return std::make_unique<Quit>(_game);
 
 		if (!_transitionDirection) {

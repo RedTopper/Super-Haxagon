@@ -41,7 +41,7 @@ namespace SuperHaxagon {
 		std::unique_ptr<Twist> getTwister() override = 0;
 
 		void show() override = 0;
-		void message(Dbg level, const std::string& where, const std::string& message) override = 0;
+		void message(Dbg dbg, const std::string& where, const std::string& message) override = 0;
 
 		sf::RenderWindow& getWindow() const {return *_window;}
 

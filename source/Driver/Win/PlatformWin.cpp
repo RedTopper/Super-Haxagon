@@ -1,3 +1,4 @@
+#define NOMINMAX
 #include <windows.h>
 #include <direct.h>
 #include <iostream>
@@ -5,11 +6,11 @@
 #include "Driver/Win/PlatformWin.hpp"
 
 namespace SuperHaxagon {
-	PlatformWin::PlatformWin(Dbg dbg) : PlatformSFML(dbg, sf::VideoMode(
+	PlatformWin::PlatformWin(const Dbg dbg) : PlatformSFML(dbg, sf::VideoMode(
 		static_cast<int>(sf::VideoMode::getDesktopMode().width * 0.75),
 		static_cast<int>(sf::VideoMode::getDesktopMode().height * 0.75)
 	)) {
-		mkdir(".\\sdmc");
+		_mkdir(".\\sdmc");
 	}
 
 	std::string PlatformWin::getPath(const std::string& partial) {
@@ -20,7 +21,7 @@ namespace SuperHaxagon {
 		return std::string(".\\romfs") + partial;
 	}
 
-	void PlatformWin::message(Dbg dbg, const std::string& where, const std::string& message) {
+	void PlatformWin::message(const Dbg dbg, const std::string& where, const std::string& message) {
 		if (dbg == Dbg::INFO) {
 			std::cout << "[win:info] " + where + ": " + message << std::endl;
 		} else if (dbg == Dbg::WARN) {

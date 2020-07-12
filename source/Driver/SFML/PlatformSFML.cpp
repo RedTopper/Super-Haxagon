@@ -7,7 +7,7 @@
 #include "Driver/SFML/FontSFML.hpp"
 
 namespace SuperHaxagon {
-	PlatformSFML::PlatformSFML(Dbg dbg, sf::VideoMode video) : Platform(dbg) {
+	PlatformSFML::PlatformSFML(const Dbg dbg, sf::VideoMode video) : Platform(dbg) {
 		_clock.restart();
 
 		sf::ContextSettings settings;
@@ -142,13 +142,12 @@ namespace SuperHaxagon {
 	void PlatformSFML::drawTriangle(const Color& color, const std::array<Point, 3>& points) {
 		const auto height = getScreenDim().y;
 		const sf::Color sfColor{ color.r, color.g, color.b, color.a };
-		sf::ConvexShape convex;
-		convex.setPointCount(3);
+		sf::ConvexShape convex(3);
+		convex.setPosition(0, 0);
+		convex.setFillColor(sfColor);
 		convex.setPoint(0, sf::Vector2f(static_cast<float>(points[0].x), static_cast<float>(height - points[0].y)));
 		convex.setPoint(1, sf::Vector2f(static_cast<float>(points[1].x), static_cast<float>(height - points[1].y)));
 		convex.setPoint(2, sf::Vector2f(static_cast<float>(points[2].x), static_cast<float>(height - points[2].y)));
-		convex.setFillColor(sfColor);
-		convex.setPosition(0, 0);
 		_window->draw(convex);
 	}
 }

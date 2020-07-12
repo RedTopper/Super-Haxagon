@@ -12,7 +12,7 @@
 #include "Driver/3DS/Platform3DS.hpp"
 
 namespace SuperHaxagon {
-	Platform3DS::Platform3DS(Dbg dbg) : Platform(dbg) {
+	Platform3DS::Platform3DS(const Dbg dbg) : Platform(dbg) {
 		romfsInit();
 		gfxInitDefault();
 		C3D_Init(C3D_DEFAULT_CMDBUF_SIZE);
@@ -200,7 +200,7 @@ namespace SuperHaxagon {
 	}
 
 	void Platform3DS::show() {
-		bool display = false;
+		auto display = false;
 		for (const auto& message : _messages) {
 			if (message.first == Dbg::FATAL) {
 				display = true;
@@ -231,21 +231,23 @@ namespace SuperHaxagon {
 				gspWaitForVBlank();
 				gfxSwapBuffers();
 				hidScanInput();
-				u32 kDown = hidKeysDown();
+				const auto kDown = hidKeysDown();
 				if (kDown & KEY_START) break;
 			}
 		}
 	}
 
-	void Platform3DS::message(Dbg dbg, const std::string& where, const std::string& message) {
+	void Platform3DS::message(const Dbg dbg, const std::string& where, const std::string& message) {
 		std::string format;
 		if (dbg == Dbg::INFO) {
-			format = "[3ds:info] " + where + ": " + message;
+			format = "[3ds:info] ";
 		} else if (dbg == Dbg::WARN) {
-			format = "[3ds:warn] " + where + ": " + message;
-		} else if (dbg == Dbg::FATAL){
-			format = "[3ds:fatal] " + where + ": " + message;
+			format = "[3ds:warn] ";
+		} else if (dbg == Dbg::FATAL) {
+			format = "[3ds:fatal] ";
 		}
+
+		format += where + ": " + message;
 
 		if (_dbg != Dbg::FATAL) {
 			// If we are in non FATAL mode, there's a console to print to

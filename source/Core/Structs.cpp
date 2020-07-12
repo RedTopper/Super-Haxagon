@@ -22,11 +22,10 @@ namespace SuperHaxagon {
 		return (end - start) * percent + start;
 	}
 
-	Point rotateAroundOrigin(const Point& point, double rotation) {
+	Point rotateAroundOrigin(const Point& point, const double rotation) {
 		const auto s = sin(rotation);
 		const auto c = cos(rotation);
-		Point ret{point.x * c - point.y * s,  point.x * s + point.y * c};
-		return ret;
+		return { point.x * c - point.y * s,  point.x * s + point.y * c };
 	}
 
 	std::string getTime(const double score) {

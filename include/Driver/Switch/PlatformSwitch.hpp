@@ -8,14 +8,18 @@
 namespace SuperHaxagon {
 	class PlatformSwitch : public PlatformSFML {
 	public:
-		explicit PlatformSwitch(const Dbg dbg);
+		explicit PlatformSwitch(Dbg dbg);
 		PlatformSwitch(PlatformSwitch&) = delete;
-		~PlatformSwitch() = default;
+		~PlatformSwitch() override = default;
+
+		bool loop() override;
 
 		std::string getPath(const std::string& partial) override;
 		std::string getPathRom(const std::string& partial) override;
-		bool loop() override;
+		std::unique_ptr<Font> loadFont(const std::string& path, int size) override;
+
 		std::unique_ptr<Twist> getTwister() override;
+
 		void show() override;
 		void message(Dbg dbg, const std::string& where, const std::string& message) override;
 

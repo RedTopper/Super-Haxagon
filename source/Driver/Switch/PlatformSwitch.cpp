@@ -2,10 +2,11 @@
 #include <sys/stat.h>
 #include <iostream>
 
+#include <Driver/Switch/FontSwitch.hpp>
 #include "Driver/Switch/PlatformSwitch.hpp"
 
 namespace SuperHaxagon {
-	PlatformSwitch::PlatformSwitch(const Dbg dbg): PlatformSFML(dbg, sf::VideoMode::getFullscreenModes()[0]) {
+	PlatformSwitch::PlatformSwitch(const Dbg dbg): PlatformSFML(dbg, sf::VideoMode::getDesktopMode()) {
 		romfsInit();
 		mkdir("sdmc:/haxagon", 0777);
 		_console = std::ofstream("sdmc:/haxagon/out.log");
@@ -19,13 +20,17 @@ namespace SuperHaxagon {
 		return "romfs:" + partial;
 	}
 
+	std::unique_ptr<Font> PlatformSwitch::loadFont(const std::string& path, int size) {
+		return std::make_unique<FontSwitch>(*this, path, size);
+	}
+
 	bool PlatformSwitch::loop() {
 		return appletMainLoop() && PlatformSFML::loop();
 	}
 	
 	std::unique_ptr<Twist> PlatformSwitch::getTwister() {
 		// ALSO a shitty way to do this but it's the best I got.
-		const auto a = new std::seed_seq{ svcGetSystemTick() };
+		const auto a = new std::seed_seq{ time(nullptr) };
 		return std::make_unique<Twist>(
 			std::unique_ptr<std::seed_seq>(a)
 		);

@@ -41,13 +41,13 @@ endif
 # Switch CONFIGURATION #
 
 ifeq ($(TARGET),SWITCH)
-    SOURCE_DIRS += source/Driver/SFML source/Driver/Switch
+    SOURCE_DIRS += source/Driver/Switch
 
     # pacman -S switch-bzip2 switch-glad switch-libdrm_nouveau switch-zlib switch-freetype
     # switch-libpng switch-mesa switch-libogg switch-libvorbisidec switch-libvorbis switch-flac libnx switch-sdl2
-	# Download https://github.com/TomBebb/mojoAL-switch/releases/tag/latest and put it in portlibs
-    LIBRARY_DIRS += $(DEVKITPRO)/libnx $(DEVKITPRO)/portlibs/switch ./libraries/SFML-Switch
-    LIBRARIES += sfml-graphics-s sfml-window-s sfml-audio-s sfml-system-s egl glad glapi drm_nouveau freetype png flac bz2 z mojoal vorbisenc vorbisfile vorbis ogg sdl2 nx
+    # Download https://github.com/TomBebb/mojoAL-switch/releases/tag/latest and put it in portlibs
+    LIBRARY_DIRS += $(DEVKITPRO)/libnx $(DEVKITPRO)/portlibs/switch
+    LIBRARIES += sdl2 egl glad glapi drm_nouveau freetype png flac bz2 z mojoal vorbisenc vorbisfile vorbis ogg nx
 
     ICON := media/icon-switch.jpg --romfsdir=./$(ROMFS_DIR)
 endif

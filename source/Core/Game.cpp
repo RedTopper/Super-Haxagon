@@ -22,9 +22,11 @@ namespace SuperHaxagon {
 		_twister = platform.getTwister();
 	}
 
-	Game::~Game() = default;
+	Game::~Game() {
+		_platform.message(SuperHaxagon::Dbg::INFO, "game", "shutdown ok");
+	}
 
-	int Game::run() {
+	void Game::run() {
 		_state = std::make_unique<Load>(*this);
 		_state->enter();
 		while(_running && _platform.loop()) {
@@ -48,8 +50,6 @@ namespace SuperHaxagon {
 			_state->drawBot(scale);
 			_platform.screenFinalize();
 		}
-
-		return 0;
 	}
 
 	void Game::addLevel(std::unique_ptr<LevelFactory> level) {
@@ -72,7 +72,7 @@ namespace SuperHaxagon {
 
 		for(auto i = 0; i < exactSides; i++) {
 			edges[i].x = multiplier * maxRenderDistance * cos(rotation + i * TAU / sides) + focus.x;
-			edges[i].y = multiplier * maxRenderDistance * sin(rotation + i * TAU / sides) + focus.y;
+			edges[i].y = multiplier * maxRenderDistance * sin(rotation + i * TAU / sides + PI) + focus.y;
 		}
 
 		std::array<Point, 3> triangle{};
@@ -102,7 +102,7 @@ namespace SuperHaxagon {
 		// Calculate the triangle backwards so it overlaps correctly.
 		for(auto i = 0; i < exactSides; i++) {
 			edges[i].x = height * cos(rotation + i * TAU/sides) + focus.x;
-			edges[i].y = height * sin(rotation + i * TAU/sides) + focus.y;
+			edges[i].y = height * sin(rotation + i * TAU/sides + PI) + focus.y;
 		}
 
 		std::array<Point, 3> triangle{};
@@ -169,7 +169,7 @@ namespace SuperHaxagon {
 
 	Point Game::getShadowOffset() const {
 		const auto min = getScreenDimMin();
-		return {min/60, -min/60};
+		return {min/60, min/60};
 	}
 }
 

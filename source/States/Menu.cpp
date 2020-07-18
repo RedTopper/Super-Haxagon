@@ -44,7 +44,6 @@ namespace SuperHaxagon {
 			}
 		}
 
-
 		if (_transitionDirection) {
 			_fgIndex = 0;
 			_bg1Index = 0;
@@ -114,7 +113,7 @@ namespace SuperHaxagon {
 		auto screen = _platform.getScreenDim();
 		auto shadow = _game.getShadowOffset();
 
-		Point focus = {screen.x/2, screen.y/6};
+		Point focus = {screen.x/2, screen.y/6 * 5};
 		Point offsetFocus = {focus.x + shadow.x, focus.y + shadow.y};
 
 		// Home screen always has 6 sides.
@@ -164,9 +163,9 @@ namespace SuperHaxagon {
 
 		// It looks like the original game had triangles flipped....
 		std::array<Point, 3> infoTriangle = {
-			Point{infoSize.x, _platform.getScreenDim().y - infoSize.y},
-			Point{infoSize.x, _platform.getScreenDim().y},
-			Point{infoSize.x + infoSize.y/2,  _platform.getScreenDim().y}
+			Point{infoSize.x, infoSize.y},
+			Point{infoSize.x, 0},
+			Point{infoSize.x + infoSize.y/2, 0}
 		};
 
 		_platform.drawRect(COLOR_TRANSPARENT, infoPos, infoSize);
@@ -176,9 +175,9 @@ namespace SuperHaxagon {
 		Point timePos = {0, posTime.y - pad};
 		Point timeSize = {small.getWidth(scoreTime) + pad * 2, small.getHeight() + pad * 2};
 		std::array<Point, 3> timeTriangle = {
-			Point{timeSize.x, timeSize.y},
-			Point{timeSize.x, 0},
-			Point{timeSize.x + timeSize.y/2, 0}
+			Point{timeSize.x,  _platform.getScreenDim().y - timeSize.y},
+			Point{timeSize.x,  _platform.getScreenDim().y},
+			Point{timeSize.x + timeSize.y/2,  _platform.getScreenDim().y}
 		};
 
 		_platform.drawRect(COLOR_TRANSPARENT, timePos, timeSize);

@@ -45,7 +45,7 @@ namespace SuperHaxagon {
 			return std::make_unique<Twist>(
 					std::make_unique<std::seed_seq>(std::begin(data), std::end(data))
 			);
-		} catch (std::runtime_error& e) {
+		} catch (std::runtime_error&) {
 			auto* a = new std::seed_seq{time(nullptr)};
 			return std::make_unique<Twist>(
 					std::unique_ptr<std::seed_seq>(a)

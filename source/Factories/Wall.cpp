@@ -76,7 +76,7 @@ namespace SuperHaxagon {
 		auto width = side * TAU/sides + overflow;
 		if(width > TAU + WALL_OVERFLOW) width = TAU + WALL_OVERFLOW;
 		point.x = distance * std::cos(rotation + width) + focus.x;
-		point.y = distance * std::sin(rotation + width) + focus.y;
+		point.y = distance * std::sin(rotation + width + PI) + focus.y;
 		return point;
 	}
 

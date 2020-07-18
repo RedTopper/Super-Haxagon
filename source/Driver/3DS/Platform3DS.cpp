@@ -182,11 +182,10 @@ namespace SuperHaxagon {
 
 	void Platform3DS::drawTriangle(const Color& color, const std::array<Point, 3>& points) {
 		const auto c = C2D_Color32(color.r, color.g, color.b, color.a);
-		const auto height = getScreenDim().y;
 		C2D_DrawTriangle(
-			static_cast<float>(points[0].x), static_cast<float>(height - points[0].y), c,
-			static_cast<float>(points[1].x), static_cast<float>(height - points[1].y), c,
-			static_cast<float>(points[2].x), static_cast<float>(height - points[2].y), c,
+			static_cast<float>(points[0].x), static_cast<float>(points[0].y), c,
+			static_cast<float>(points[1].x), static_cast<float>(points[1].y), c,
+			static_cast<float>(points[2].x), static_cast<float>(points[2].y), c,
 			0
 		);
 	}
@@ -199,7 +198,7 @@ namespace SuperHaxagon {
 		);
 	}
 
-	void Platform3DS::show() {
+	void Platform3DS::shutdown() {
 		auto display = false;
 		for (const auto& message : _messages) {
 			if (message.first == Dbg::FATAL) {

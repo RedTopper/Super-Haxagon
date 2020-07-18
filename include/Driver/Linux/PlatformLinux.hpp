@@ -13,7 +13,7 @@ namespace SuperHaxagon {
 		std::string getPath(const std::string& partial) override;
 		std::string getPathRom(const std::string& partial) override;
 
-		void show() override {};
+		void shutdown() override {};
 		void message(Dbg dbg, const std::string& where, const std::string& message) override;
 
 		std::unique_ptr<Twist> getTwister() override;

@@ -23,8 +23,8 @@ namespace SuperHaxagon {
 	}
 
 	Point rotateAroundOrigin(const Point& point, const double rotation) {
-		const auto s = sin(rotation);
 		const auto c = cos(rotation);
+		const auto s = sin(rotation + PI);
 		return { point.x * c - point.y * s,  point.x * s + point.y * c };
 	}
 

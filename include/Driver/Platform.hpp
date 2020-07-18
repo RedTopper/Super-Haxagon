@@ -57,7 +57,7 @@ namespace SuperHaxagon {
 
 		virtual std::unique_ptr<Twist> getTwister() = 0;
 
-		virtual void show() = 0;
+		virtual void shutdown() = 0;
 		virtual void message(Dbg level, const std::string& where, const std::string& message) = 0;
 
 	protected:

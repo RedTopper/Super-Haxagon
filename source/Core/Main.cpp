@@ -34,10 +34,15 @@ int WinMain() {
 int main(int, char**) {
 #endif
 	const auto platform = SuperHaxagon::getPlatform();
-	platform->message(SuperHaxagon::Dbg::INFO, "main", "starting game");
-	SuperHaxagon::Game game(*platform);
-	const auto ret = game.run();
-	platform->message(SuperHaxagon::Dbg::INFO, "main", "stopping game");
-	platform->show();
-	return ret;
+	platform->message(SuperHaxagon::Dbg::INFO, "main", "starting main");
+
+	if (platform->loop()) {
+		SuperHaxagon::Game game(*platform);
+		game.run();
+	}
+
+	platform->message(SuperHaxagon::Dbg::INFO, "main", "stopping main");
+	platform->shutdown();
+
+	return 0;
 }

@@ -129,6 +129,12 @@ namespace SuperHaxagon {
 
 	void PlatformSFML::screenFinalize() {
 		_window->display();
+		if (_verts > _vertsMax) {
+			message(Dbg::INFO, "verts", std::to_string(_verts));
+			_vertsMax = _verts;
+		}
+
+		_verts = 0;
 	}
 
 	void PlatformSFML::drawRect(const Color& color, const Point& point, const Point& size) {
@@ -137,17 +143,18 @@ namespace SuperHaxagon {
 		rectangle.setFillColor(sfColor);
 		rectangle.setPosition(static_cast<float>(point.x), static_cast<float>(point.y));
 		_window->draw(rectangle);
+		_verts += 6;
 	}
 
 	void PlatformSFML::drawTriangle(const Color& color, const std::array<Point, 3>& points) {
-		const auto height = getScreenDim().y;
 		const sf::Color sfColor{ color.r, color.g, color.b, color.a };
 		sf::ConvexShape convex(3);
 		convex.setPosition(0, 0);
 		convex.setFillColor(sfColor);
-		convex.setPoint(0, sf::Vector2f(static_cast<float>(points[0].x), static_cast<float>(height - points[0].y)));
-		convex.setPoint(1, sf::Vector2f(static_cast<float>(points[1].x), static_cast<float>(height - points[1].y)));
-		convex.setPoint(2, sf::Vector2f(static_cast<float>(points[2].x), static_cast<float>(height - points[2].y)));
+		convex.setPoint(0, sf::Vector2f(static_cast<float>(points[0].x), static_cast<float>(points[0].y)));
+		convex.setPoint(1, sf::Vector2f(static_cast<float>(points[1].x), static_cast<float>(points[1].y)));
+		convex.setPoint(2, sf::Vector2f(static_cast<float>(points[2].x), static_cast<float>(points[2].y)));
 		_window->draw(convex);
+		_verts += 4;
 	}
 }

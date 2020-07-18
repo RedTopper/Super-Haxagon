@@ -12,7 +12,7 @@ namespace SuperHaxagon {
 
 	class Over : public State {
 	public:
-		static constexpr double GAME_OVER_ROT_SPEED = TAU/240.0;
+		static constexpr double GAME_OVER_ROT_SPEED = TAU/400.0;
 		static constexpr double GAME_OVER_ACCELERATION_RATE = 0.1;
 		static constexpr int FRAMES_PER_GAME_OVER = 60;
 		static constexpr int PULSE_TIME = 75;

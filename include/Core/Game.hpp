@@ -49,7 +49,7 @@ namespace SuperHaxagon {
 		/**
 		 * Runs the game
 		 */
-		int run();
+		void run();
 
 		/**
 		 * Loads a level into the game

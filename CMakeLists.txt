@@ -62,4 +62,8 @@ add_executable(SuperHaxagon WIN32 ${DRIVER}
 
 target_link_libraries(SuperHaxagon sfml-graphics sfml-window sfml-audio sfml-system)
 
+add_custom_command(TARGET SuperHaxagon POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${SFML_DIR}/../../../bin/openal32.dll $<TARGET_FILE_DIR:SuperHaxagon>)
+add_custom_command(TARGET SuperHaxagon POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/romfs $<TARGET_FILE_DIR:SuperHaxagon>/romfs)
 install(TARGETS SuperHaxagon RUNTIME DESTINATION .)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/openal32.dll DESTINATION .)
+install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/romfs DESTINATION .)

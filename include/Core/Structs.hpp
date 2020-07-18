@@ -26,7 +26,8 @@ namespace SuperHaxagon {
 		DEAD,
 	};
 
-	static constexpr double TAU = 3.14159265358979323846 * 2;
+	static constexpr double PI = 3.14159265358979323846;
+	static constexpr double TAU = PI * 2;
 
 	static constexpr double SCALE_MENU = 4.0;
 	static constexpr double SCALE_BASE_DISTANCE = 300.0;

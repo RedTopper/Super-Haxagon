@@ -40,12 +40,14 @@ namespace SuperHaxagon {
 
 		std::unique_ptr<Twist> getTwister() override = 0;
 
-		void show() override = 0;
+		void shutdown() override = 0;
 		void message(Dbg dbg, const std::string& where, const std::string& message) override = 0;
 
 		sf::RenderWindow& getWindow() const {return *_window;}
 
 	private:
+		int _verts = 0;
+		int _vertsMax = 0;
 		bool _loaded = false;
 		double _delta = 0.0;
 		sf::Clock _clock;

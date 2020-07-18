@@ -108,9 +108,9 @@ namespace SuperHaxagon {
 		};
 
 		const std::array<Point, 3> levelUpBkgTri = {
-			Point{levelUpBkgSize.x, _platform.getScreenDim().y - levelUpBkgSize.y},
-			Point{levelUpBkgSize.x, _platform.getScreenDim().y},
-			Point{levelUpBkgSize.x + levelUpBkgSize.y/2, _platform.getScreenDim().y}
+			Point{levelUpBkgSize.x, levelUpBkgSize.y},
+			Point{levelUpBkgSize.x, 0},
+			Point{levelUpBkgSize.x + levelUpBkgSize.y/2, 0}
 		};
 
 		_platform.drawRect(COLOR_TRANSPARENT, levelUpBkgPos, levelUpBkgSize);
@@ -142,9 +142,9 @@ namespace SuperHaxagon {
 		}
 
 		const std::array<Point, 3> scoreBkgTri = {
-			Point{scoreBkgPos.x, _platform.getScreenDim().y - scoreBkgSize.y},
-			Point{scoreBkgPos.x, _platform.getScreenDim().y},
-			Point{scoreBkgPos.x - scoreBkgSize.y/2, _platform.getScreenDim().y}
+			Point{scoreBkgPos.x, scoreBkgSize.y},
+			Point{scoreBkgPos.x, 0},
+			Point{scoreBkgPos.x - scoreBkgSize.y/2, 0}
 		};
 
 		_platform.drawTriangle(COLOR_TRANSPARENT, scoreBkgTri);

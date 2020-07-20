@@ -43,7 +43,7 @@ void main() {
 )text";
 
 namespace SuperHaxagon {
-	FontSwitch::FontSwitch(PlatformSwitch& platform, const std::string& path, const double size) : _platform(platform), _size(size * 2) {
+	FontSwitch::FontSwitch(PlatformSwitch& platform, const std::string& path, const double size) : _platform(platform) {
 		const auto filename = path + ".ttf";
 
 		// Use a new FreeType2 library per font
@@ -59,7 +59,7 @@ namespace SuperHaxagon {
 			return;
 		}
 
-		FT_Set_Pixel_Sizes(face, 0, _size);
+		FT_Set_Pixel_Sizes(face, 0, size * 2);
 
 		int t = 0;
 		unsigned int w = 0;
@@ -72,7 +72,7 @@ namespace SuperHaxagon {
 				continue;
 			}
 
-			w += g->bitmap.width;
+			w += g->bitmap.width + 1;
 			h = std::max(h, g->bitmap.rows);
 			t = std::max(t, g->bitmap_top);
 		}
@@ -83,11 +83,13 @@ namespace SuperHaxagon {
 
 		_surface = std::make_shared<RenderTarget<VertexUV>>(platform, true, vertex_shader, fragment_shader, path);
 		_surface->bind();
+
 		platform.addRenderTarget(_surface);
+
 		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, w, h, 0, GL_RED, GL_UNSIGNED_BYTE, nullptr);
 
-		auto x = 0.0;
+		auto x = 0;
 		for(int i = GLYPH_START; i < GLYPH_END; i++) {
 			if(FT_Load_Char(face, i, FT_LOAD_RENDER)) continue;
 
@@ -108,11 +110,11 @@ namespace SuperHaxagon {
 			};
 
 			_chars[i].uv = {
-				(_chars[i].pxDim.x + x) / _texWidth,
+				(x + 0.0) / _texWidth,
 				_chars[i].pxDim.y / _texHeight
 			};
 
-			x += g->bitmap.width;
+			x += g->bitmap.width + 1;
 		}
 
 		FT_Done_Face(face);
@@ -128,11 +130,17 @@ namespace SuperHaxagon {
 	}
 
 	double FontSwitch::getHeight() const {
-		return _texHeight;
+		return _top;
 	}
 
 	double FontSwitch::getWidth(const std::string& text) const {
-		return text.length() * _size;
+		auto width = 0.0;
+		for (auto c : text) {
+			auto i = static_cast<int>(c);
+			width += _chars[i].pxAdvance.x;
+		}
+
+		return width;
 	}
 
 	void FontSwitch::draw(const Color& color, const Point& position, Alignment alignment, const std::string& text) {
@@ -145,7 +153,7 @@ namespace SuperHaxagon {
 
 		const auto z = _platform.getAndIncrementZ();
 		for (auto c : text) {
-			// WARNING: Why do I need to subtract 1?
+
 			auto i = static_cast<int>(c);
 			Point draw = {
 				cursor.x + _chars[i].pxOffset.x,
@@ -156,38 +164,15 @@ namespace SuperHaxagon {
 			Point uv = _chars[i].uv;
 
 			cursor.x += _chars[i].pxAdvance.x;
-			cursor.y -= -_chars[i].pxAdvance.y;
+			cursor.y -= _chars[i].pxAdvance.y;
 
 			// Cannot render empty characters
 			if(!dim.x || !dim.y) continue;
 
-			_surface->insert({
-				{draw.x, draw.y},
-				{uv.x, 0},
-				color,
-				z
-			}); // TL
-
-			_surface->insert({
-				{draw.x + dim.x, draw.y},
-				{uv.x + dim.x / _texWidth, 0},
-				color,
-				z
-			}); // TR
-
-			_surface->insert({
-				{draw.x, draw.y + dim.y},
-				{uv.x, uv.y},
-				color,
-				z
-			}); // BL
-
-			_surface->insert({
-				{draw.x + dim.x, draw.y + dim.y},
-				{uv.x + dim.x / _texWidth, uv.y},
-				color,
-				z
-			}); // BR
+			_surface->insert({{draw.x, draw.y}, {uv.x, 0}, color, z}); // TL
+			_surface->insert({{draw.x + dim.x, draw.y}, {uv.x + dim.x / _texWidth, 0}, color, z}); // TR
+			_surface->insert({{draw.x, draw.y + dim.y}, {uv.x, uv.y}, color, z}); // BL
+			_surface->insert({{draw.x + dim.x, draw.y + dim.y}, {uv.x + dim.x / _texWidth, uv.y}, color, z}); // BR
 
 			_surface->reference(0);
 			_surface->reference(1);
@@ -195,6 +180,7 @@ namespace SuperHaxagon {
 			_surface->reference(1);
 			_surface->reference(2);
 			_surface->reference(3);
+
 			_surface->advance(4);
 		}
 	}

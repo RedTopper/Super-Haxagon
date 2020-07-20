@@ -36,7 +36,6 @@ namespace SuperHaxagon {
 		PlatformSwitch& _platform;
 
 		bool _loaded = false;
-		double _size;
 		unsigned int _texWidth;
 		unsigned int _texHeight;
 		unsigned int _top; // from baseline to top

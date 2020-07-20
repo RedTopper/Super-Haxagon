@@ -49,6 +49,8 @@ ifeq ($(TARGET),SWITCH)
     LIBRARY_DIRS += $(DEVKITPRO)/libnx $(DEVKITPRO)/portlibs/switch
     LIBRARIES += sdl2 egl glad glapi drm_nouveau freetype png flac bz2 z mojoal vorbisenc vorbisfile vorbis ogg nx
 
+    BUILD_FLAGS_CXX += -I$(DEVKITPRO)/portlibs/switch/include/FreeType2
+
     ICON := media/icon-switch.jpg --romfsdir=./$(ROMFS_DIR)
 endif
 

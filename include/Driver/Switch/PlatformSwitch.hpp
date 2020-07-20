@@ -4,19 +4,14 @@
 #include <fstream>
 #include <deque>
 #include <array>
-#include <switch/display/native_window.h>
 #include <glad/glad.h>
 #include <EGL/egl.h>
+#include <switch/display/native_window.h>
 
 #include "Driver/Platform.hpp"
+#include "RenderTarget.hpp"
 
 namespace SuperHaxagon {
-	struct Vertex {
-		Point p;
-		Color c;
-		float z;
-	};
-
 	class PlatformSwitch : public Platform {
 	public:
 		explicit PlatformSwitch(Dbg dbg);
@@ -51,36 +46,35 @@ namespace SuperHaxagon {
 		void shutdown() override;
 		void message(Dbg dbg, const std::string& where, const std::string& message) override;
 
+		float getAndIncrementZ();
+		void addRenderTarget(std::shared_ptr<RenderTarget<Vertex>>& target) {_targetVertex.emplace_back(target);}
+		void addRenderTarget(std::shared_ptr<RenderTarget<VertexUV>>& target) {_targetVertexUV.emplace_back(target);}
+
 	private:
 		bool initEGL();
 
-		bool _loaded = false;
+		template<class T>
+		void render(std::deque<std::shared_ptr<RenderTarget<T>>> targets, bool transparent);
 
-		unsigned int _iboLastIndex = 0;
-		unsigned int _vboBufferSize = 0;
-		unsigned int _iboBufferSize = 0;
+		bool _loaded = false;
 
 		unsigned int _width = 1280;
 		unsigned int _height = 720;
 
 		float _z;
 
+		std::shared_ptr<RenderTarget<Vertex>> _opaque;
+		std::shared_ptr<RenderTarget<Vertex>> _transparent;
+
 		NWindow* _window;
 		EGLDisplay _display;
 		EGLContext _context{};
 		EGLSurface _surface{};
 
-		GLuint _program{};
-		GLuint _vao{};
-		GLuint _vbo{};
-		GLuint _ibo{};
-
-		std::vector<Vertex> _vertices;
-		std::vector<unsigned int> _indicesTransparent;
-		std::vector<unsigned int> _indicesOpaque;
-
 		std::ofstream _console;
 		std::deque<std::pair<Dbg, std::string>> _messages{};
+		std::deque<std::shared_ptr<RenderTarget<Vertex>>> _targetVertex{};
+		std::deque<std::shared_ptr<RenderTarget<VertexUV>>> _targetVertexUV{};
 	};
 }
 

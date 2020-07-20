@@ -29,7 +29,7 @@ namespace SuperHaxagon {
 		return sfText.getLocalBounds().width;
 	}
 
-	void FontSFML::draw(const Color& color, const Point& position, Alignment alignment, const std::string& text) const {
+	void FontSFML::draw(const Color& color, const Point& position, Alignment alignment, const std::string& text) {
 		if (!_loaded) return;
 		sf::Text sfText;
 		sf::Vector2f sfPosition;

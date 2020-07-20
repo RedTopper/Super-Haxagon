@@ -34,6 +34,7 @@ endif()
 include_directories("$ENV{DEVKITPRO}/libctru/include")
 include_directories("$ENV{DEVKITPRO}/libnx/include")
 include_directories("$ENV{DEVKITPRO}/portlibs/switch/include")
+include_directories("$ENV{DEVKITPRO}/portlibs/switch/include/freetype2")
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/libraries/stb")
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
 

@@ -14,7 +14,7 @@ namespace SuperHaxagon {
 		void setScale(double) override {};
 		double getHeight() const override;
 		double getWidth(const std::string& str) const override;
-		void draw(const Color& color, const Point& position, Alignment alignment, const std::string& str) const override;
+		void draw(const Color& color, const Point& position, Alignment alignment, const std::string& str) override;
 
 	private:
 		int _size;

@@ -10,10 +10,7 @@
 #include "Driver/Switch/FontSwitch.hpp"
 #include "Driver/Switch/PlatformSwitch.hpp"
 
-static constexpr int BUFFER_RESIZE_STEP = 500;
-static constexpr float Z_STEP = 0.0001f;
-
-static const char * vertex_shader = R"text(
+static const char* vertex_shader = R"text(
 #version 330 core
 
 layout(location = 0) in vec2 v_position;
@@ -34,7 +31,7 @@ void main() {
 }
 )text";
 
-static const char * fragment_shader = R"text(
+static const char* fragment_shader = R"text(
 #version 330 core
 
 layout(location = 0) out vec4 color;
@@ -59,50 +56,8 @@ static void callback(GLenum source, const GLenum type, GLuint id, const GLenum s
 	out << "Type: 0x" << type << (error ? " (GL ERROR)" : "") << std::endl;
 	out << "ID: 0x" << id << std::endl;
 	out << "Severity: 0x" << severity << std::endl;
-	out << message << std::endl;
-	platform->message(error ? SuperHaxagon::Dbg::FATAL : SuperHaxagon::Dbg::INFO, "switch,opengl", out.str());
-}
-
-/**
- * Helper function used to compile shaders
- */
-static GLuint compile(GLenum type, const char* source, SuperHaxagon::Platform& platform) {
-	GLint success;
-	GLchar msg[512];
-
-	GLuint handle = glCreateShader(type);
-	if (!handle) {
-		platform.message(SuperHaxagon::Dbg::INFO, "switch,shader",  "failed to create shader");
-		return 0;
-	}
-
-	glShaderSource(handle, 1, &source, nullptr);
-	glCompileShader(handle);
-	glGetShaderiv(handle, GL_COMPILE_STATUS, &success);
-
-	if (!success) {
-		glGetShaderInfoLog(handle, sizeof(msg), nullptr, msg);
-		platform.message(SuperHaxagon::Dbg::INFO, "switch,shader",  msg);
-		glDeleteShader(handle);
-		return 0;
-	}
-
-	return handle;
-}
-
-/**
- * Helper function used to resize OpenGL buffers
- */
-template<typename T>
-static void resize(GLuint type, unsigned int& size, std::vector<T>& vector, SuperHaxagon::PlatformSwitch& platform, const std::string& label) {
-	if (size < vector.size() || size == 0) {
-		if (size == 0) size = BUFFER_RESIZE_STEP;
-		while (size < vector.size()) size *= 2;
-		platform.message( SuperHaxagon::Dbg::INFO, "switch", "resized " + label + " to " + std::to_string(size));
-		glBufferData(type, size * sizeof(T), vector.data(), GL_DYNAMIC_DRAW);
-	} else {
-		glBufferSubData(type, 0, size * sizeof(T), vector.data());
-	}
+	out << message;
+	platform->message(error ? SuperHaxagon::Dbg::FATAL : SuperHaxagon::Dbg::INFO, "opengl", out.str());
 }
 
 namespace SuperHaxagon {
@@ -121,12 +76,12 @@ namespace SuperHaxagon {
 		nwindowSetCrop(_window, 0, 0, _width, _height);
 
 		if (!_display) {
-			PlatformSwitch::message(Dbg::FATAL, "switch,display", "error " + std::to_string(eglGetError()));
+			PlatformSwitch::message(Dbg::FATAL, "display", "error " + std::to_string(eglGetError()));
 			return;
 		}
 
 		if (!initEGL()) {
-			PlatformSwitch::message(Dbg::FATAL, "switch", "there was a fatal error creating an opengl context");
+			PlatformSwitch::message(Dbg::FATAL, "egl", "there was a fatal error creating an opengl context");
 			return;
 		}
 
@@ -140,39 +95,19 @@ namespace SuperHaxagon {
 		glDebugMessageCallback(callback, this);
 		glViewport(0, 1080 - _height, _width, _height);
 
-		const auto vs = compile(GL_VERTEX_SHADER, vertex_shader, *this);
-		const auto fs = compile(GL_FRAGMENT_SHADER, fragment_shader, *this);
+		_opaque = std::make_shared<RenderTarget<Vertex>>(*this, false, vertex_shader, fragment_shader, "platform opaque");
+		_transparent = std::make_shared<RenderTarget<Vertex>>(*this, true, vertex_shader, fragment_shader, "platform transparent");
+		addRenderTarget(_opaque);
+		addRenderTarget(_transparent);
 
-		_program = glCreateProgram();
-		glAttachShader(_program, vs);
-		glAttachShader(_program, fs);
-		glLinkProgram(_program);
-		glUseProgram(_program);
-
-		glDeleteShader(vs);
-		glDeleteShader(fs);
-
-		glGenVertexArrays(1, &_vao);
-		glBindVertexArray(_vao);
-		glGenBuffers(1, &_vbo);
-		glBindBuffer(GL_ARRAY_BUFFER, _vbo);
-		glGenBuffers(1, &_ibo);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _ibo);
-
-		glEnableVertexAttribArray(0);
-		glEnableVertexAttribArray(1);
-		glEnableVertexAttribArray(2);
-		glVertexAttribPointer(0, 2, GL_DOUBLE, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, p));
-		glVertexAttribPointer(1, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(Vertex), (void*)offsetof(Vertex, c));
-		glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, z));
-
-		PlatformSwitch::message(Dbg::INFO, "switch",  "opengl ok");
 		_loaded = true;
+
+		PlatformSwitch::message(Dbg::INFO, "platform",  "opengl ok");
 	}
 
 	PlatformSwitch::~PlatformSwitch() {
 		romfsExit();
-		PlatformSwitch::message(SuperHaxagon::Dbg::INFO, "switch", "shutdown ok");
+		PlatformSwitch::message(SuperHaxagon::Dbg::INFO, "platform", "shutdown ok");
 	}
 
 	bool PlatformSwitch::loop() {
@@ -263,18 +198,10 @@ namespace SuperHaxagon {
 	}
 
 	void PlatformSwitch::screenBegin() {
-		_vertices.clear();
-		_indicesOpaque.clear();
-		_indicesTransparent.clear();
-		_iboLastIndex = 0;
 		_z = 0.0f;
 		glClearColor(0.2f, 0.3f, 0.8f, 1.0f);
 		glClearDepth(0.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		const auto s_width = glGetUniformLocation(_program, "s_width");
-		const auto s_height = glGetUniformLocation(_program, "s_height");
-		glUniform1f(s_width, static_cast<float>(_width));
-		glUniform1f(s_height, static_cast<float>(_height));
 	}
 
 	void PlatformSwitch::screenSwap() {
@@ -282,52 +209,44 @@ namespace SuperHaxagon {
 	}
 
 	void PlatformSwitch::screenFinalize() {
-		resize(GL_ARRAY_BUFFER, _vboBufferSize, _vertices, *this, "vertices");
+		// Want to render opaque first, then transparent
+		render(_targetVertex, false);
+		render(_targetVertexUV, false);
+		render(_targetVertex, true);
+		render(_targetVertexUV, true);
 
-		// Need to reverse opaque objects so the gpu renders transparency correctly
-		std::reverse(_indicesOpaque.begin(),_indicesOpaque.end());
-		resize(GL_ELEMENT_ARRAY_BUFFER, _iboBufferSize, _indicesOpaque, *this, "opaque indices");
-		glDrawElements(GL_TRIANGLES, _indicesOpaque.size(), GL_UNSIGNED_INT, nullptr);
-
-		glEnable(GL_BLEND);
-		glDepthMask(GL_FALSE);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		resize(GL_ELEMENT_ARRAY_BUFFER, _iboBufferSize, _indicesTransparent, *this, "transparent indices");
-		glDrawElements(GL_TRIANGLES, _indicesTransparent.size(), GL_UNSIGNED_INT, nullptr);
-		glDepthMask(GL_TRUE);
-		glDisable(GL_BLEND);
-
+		// Present
 		eglSwapBuffers(_display, _surface);
 	}
 
 	void PlatformSwitch::drawRect(const Color& color, const Point& point, const Point& size) {
-		_vertices.push_back({point, color, _z});
-		_vertices.push_back({{point.x + size.x, point.y}, color, _z});
-		_vertices.push_back({{point.x, point.y + size.y}, color, _z});
-		_vertices.push_back({{point.x + size.x, point.y + size.y}, color, _z});
+		const auto z = getAndIncrementZ();
+		auto& buffer = color.a == 0xFF || color.a == 0 ? _opaque : _transparent;
+		buffer->insert({point, color, z});
+		buffer->insert({{point.x + size.x, point.y}, color, z});
+		buffer->insert({{point.x, point.y + size.y}, color, z});
+		buffer->insert({{point.x + size.x, point.y + size.y}, color, z});
 
-		auto& buffer = color.a == 0xFF || color.a == 0 ? _indicesOpaque : _indicesTransparent;
-		buffer.push_back(_iboLastIndex);
-		buffer.push_back(_iboLastIndex + 1);
-		buffer.push_back(_iboLastIndex + 2);
-		buffer.push_back(_iboLastIndex + 1);
-		buffer.push_back(_iboLastIndex + 2);
-		buffer.push_back(_iboLastIndex + 3);
+		buffer->reference(0);
+		buffer->reference(1);
+		buffer->reference(2);
+		buffer->reference(1);
+		buffer->reference(2);
+		buffer->reference(3);
 
-		_iboLastIndex += 4;
-		_z += Z_STEP;
+		buffer->advance(4);
 	}
 
 	void PlatformSwitch::drawTriangle(const Color& color, const std::array<Point, 3>& points) {
-		unsigned int last = _iboLastIndex;
-		auto& buffer = color.a == 0xFF || color.a == 0 ? _indicesOpaque : _indicesTransparent;
+		auto last = 0;
+		const auto z = getAndIncrementZ();
+		auto& buffer = color.a == 0xFF || color.a == 0 ? _opaque : _transparent;
 		for (const auto& point : points) {
-			_vertices.push_back({point, color, _z});
-			buffer.push_back(last++);
+			buffer->insert({point, color, z});
+			buffer->reference(last++);
 		}
 
-		_iboLastIndex += 3;
-		_z += Z_STEP;
+		buffer->advance(last);
 	}
 	
 	std::unique_ptr<Twist> PlatformSwitch::getTwister() {
@@ -339,11 +258,6 @@ namespace SuperHaxagon {
 	}
 	
 	void PlatformSwitch::shutdown() {
-		glDeleteBuffers(1, &_vbo);
-		glDeleteBuffers(1, &_ibo);
-		glDeleteVertexArrays(1, &_vao);
-		glDeleteProgram(_program);
-
 		if (_display) {
 			eglMakeCurrent(_display, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
 
@@ -410,7 +324,7 @@ namespace SuperHaxagon {
 		eglInitialize(_display, nullptr, nullptr);
 
 		if (eglBindAPI(EGL_OPENGL_API) == EGL_FALSE) {
-			message(Dbg::FATAL, "switch,api", "error " + std::to_string(eglGetError()));
+			message(Dbg::FATAL, "api", "error " + std::to_string(eglGetError()));
 			eglTerminate(_display);
 			return false;
 		}
@@ -418,26 +332,26 @@ namespace SuperHaxagon {
 		EGLConfig config;
 		EGLint numConfigs;
 		static const EGLint framebufferAttributeList[] = {
-				EGL_RENDERABLE_TYPE, EGL_OPENGL_BIT,
-				EGL_RED_SIZE,       8,
-				EGL_GREEN_SIZE,     8,
-				EGL_BLUE_SIZE,      8,
-				EGL_ALPHA_SIZE,     8,
-				EGL_DEPTH_SIZE,     24,
-				EGL_STENCIL_SIZE,   8,
-				EGL_NONE
+			EGL_RENDERABLE_TYPE, EGL_OPENGL_BIT,
+			EGL_RED_SIZE,       8,
+			EGL_GREEN_SIZE,     8,
+			EGL_BLUE_SIZE,      8,
+			EGL_ALPHA_SIZE,     8,
+			EGL_DEPTH_SIZE,     24,
+			EGL_STENCIL_SIZE,   8,
+			EGL_NONE
 		};
 
 		eglChooseConfig(_display, framebufferAttributeList, &config, 1, &numConfigs);
 		if (numConfigs == 0) {
-			message(Dbg::FATAL, "switch,config", "error " + std::to_string(eglGetError()));
+			message(Dbg::FATAL, "config", "error " + std::to_string(eglGetError()));
 			eglTerminate(_display);
 			return false;
 		}
 
 		_surface = eglCreateWindowSurface(_display, config, reinterpret_cast<EGLNativeWindowType>(_window), nullptr);
 		if (!_surface) {
-			message(Dbg::FATAL, "switch,surface", "error " + std::to_string(eglGetError()));
+			message(Dbg::FATAL, "surface", "error " + std::to_string(eglGetError()));
 			eglTerminate(_display);
 			return false;
 		}
@@ -452,7 +366,7 @@ namespace SuperHaxagon {
 		_context = eglCreateContext(_display, config, EGL_NO_CONTEXT, contextAttributeList);
 		if (!_context)
 		{
-			message(Dbg::FATAL, "switch,context", "error " + std::to_string(eglGetError()));
+			message(Dbg::FATAL, "context", "error " + std::to_string(eglGetError()));
 			eglDestroySurface(_display, _surface);
 			eglTerminate(_display);
 			return false;
@@ -460,5 +374,20 @@ namespace SuperHaxagon {
 
 		eglMakeCurrent(_display, _surface, _surface, _context);
 		return true;
+	}
+
+	float PlatformSwitch::getAndIncrementZ() {
+		const auto step = 0.00001f;
+		const auto z = _z;
+		_z += step;
+		return z;
+	}
+
+	template<class T>
+	void PlatformSwitch::render(std::deque<std::shared_ptr<RenderTarget<T>>> targets, bool transparent) {
+		for (const auto& target : targets) {
+			if (target->isTransparent() != transparent) continue;
+			target->draw(*this);
+		}
 	}
 }

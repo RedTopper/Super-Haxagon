@@ -30,7 +30,7 @@ namespace SuperHaxagon {
 		void stopBGM() override;
 		double getBgmVelocity() override;
 
-		std::string getButtonName(Buttons button) override;
+		std::string getButtonName(const Buttons& button) override;
 		Buttons getPressed() override;
 		Point getScreenDim() const override;
 

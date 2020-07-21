@@ -28,7 +28,7 @@ namespace SuperHaxagon {
 		void stopBGM() override;
 		double getBgmVelocity() override;
 
-		std::string getButtonName(Buttons button) override;
+		std::string getButtonName(const Buttons& button) override;
 		Buttons getPressed() override;
 		Point getScreenDim() const override;
 
@@ -46,8 +46,6 @@ namespace SuperHaxagon {
 		sf::RenderWindow& getWindow() const {return *_window;}
 
 	private:
-		int _verts = 0;
-		int _vertsMax = 0;
 		bool _loaded = false;
 		double _delta = 0.0;
 		sf::Clock _clock;

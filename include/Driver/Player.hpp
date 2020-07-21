@@ -18,6 +18,7 @@ namespace SuperHaxagon {
 		// These controls shouldn't be accessed outside of the platform
 		friend class Platform3DS;
 		friend class PlatformSFML;
+		friend class PlatformSwitch;
 	};
 }
 

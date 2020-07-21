@@ -6,9 +6,13 @@
 #include <EGL/egl.h>
 #include <EGL/eglext.h>
 #include <glad/glad.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_mixer.h>
 
+#include "Driver/Switch/AudioSwitch.hpp"
 #include "Driver/Switch/FontSwitch.hpp"
 #include "Driver/Switch/PlatformSwitch.hpp"
+#include "Driver/Switch/PlayerMusSwitch.hpp"
 
 static const char* vertex_shader = R"text(
 #version 330 core
@@ -47,7 +51,7 @@ void main() {
  * Helper function used for debugging OpenGL
  */
 static void callback(GLenum source, const GLenum type, GLuint id, const GLenum severity, GLsizei, const GLchar* message, const void* userParam) {
-	// WCGW?
+	// WCGW casting away const-ness?
 	auto* platform = const_cast<SuperHaxagon::PlatformSwitch*>(reinterpret_cast<const SuperHaxagon::PlatformSwitch*>(userParam));
 	auto error = type == GL_DEBUG_TYPE_ERROR;
 	std::stringstream out;
@@ -63,12 +67,20 @@ static void callback(GLenum source, const GLenum type, GLuint id, const GLenum s
 namespace SuperHaxagon {
 	PlatformSwitch::PlatformSwitch(const Dbg dbg): Platform(dbg) {
 		romfsInit();
+		SDL_Init(SDL_INIT_AUDIO);
+		Mix_Init(MIX_INIT_OGG);
+		Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, MIX_DEFAULT_CHANNELS, 4096);
+		Mix_AllocateChannels(5);
+
 		mkdir("sdmc:/switch", 0777);
 		mkdir("sdmc:/switch/SuperHaxagon", 0777);
 
 		_window = nwindowGetDefault();
 		_console = std::ofstream("sdmc:/switch/SuperHaxagon/out.log");
 		_display = eglGetDisplay(EGL_DEFAULT_DISPLAY);
+
+		PlatformSwitch::message(Dbg::INFO, "platform", "booting");
+		PlatformSwitch::message(Dbg::INFO, "platform", Mix_GetError());
 
 		// Create window as 1080p, but _width and _height start at 720p.
 		// Window is then cropped.
@@ -106,6 +118,8 @@ namespace SuperHaxagon {
 	}
 
 	PlatformSwitch::~PlatformSwitch() {
+		Mix_Quit();
+		SDL_Quit();
 		romfsExit();
 		PlatformSwitch::message(SuperHaxagon::Dbg::INFO, "platform", "shutdown ok");
 	}
@@ -144,15 +158,18 @@ namespace SuperHaxagon {
 	}
 
 	void PlatformSwitch::playBGM(Audio& audio) {
-
+		_bgm = audio.instantiate();
+		if (!_bgm) return;
+		_bgm->setLoop(true);
+		_bgm->play();
 	}
 
 	void PlatformSwitch::stopBGM() {
-
+		if (!_bgm) _bgm = nullptr;
 	}
 
 	double PlatformSwitch::getBgmVelocity() {
-		return 0;
+		return _bgm ? _bgm->getVelocity() : 0.0;
 	}
 
 	std::string PlatformSwitch::getPath(const std::string& partial) {
@@ -164,14 +181,14 @@ namespace SuperHaxagon {
 	}
 
 	std::unique_ptr<Audio> PlatformSwitch::loadAudio(const std::string& path, Stream stream) {
-		return nullptr;
+		return std::make_unique<AudioSwitch>(*this, path, stream);
 	}
 
 	std::unique_ptr<Font> PlatformSwitch::loadFont(const std::string& path, int size) {
 		return std::make_unique<FontSwitch>(*this, path, size);
 	}
 
-	std::string PlatformSwitch::getButtonName(const Buttons button) {
+	std::string PlatformSwitch::getButtonName(const Buttons& button) {
 		if (button.back) return "B";
 		if (button.select) return "A";
 		if (button.left) return "LEFT";

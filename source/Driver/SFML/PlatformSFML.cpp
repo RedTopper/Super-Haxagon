@@ -79,7 +79,6 @@ namespace SuperHaxagon {
 	void PlatformSFML::playBGM(Audio& audio) {
 		_bgm = audio.instantiate();
 		if (!_bgm) return;
-		_bgm->setChannel(0);
 		_bgm->setLoop(true);
 		_bgm->play();
 	}
@@ -93,7 +92,7 @@ namespace SuperHaxagon {
 		return _bgm ? _bgm->getVelocity() : 0.0;
 	}
 
-	std::string PlatformSFML::getButtonName(const Buttons button) {
+	std::string PlatformSFML::getButtonName(const Buttons& button) {
 		if (button.back) return "ESC";
 		if (button.select) return "ENTER";
 		if (button.left) return "LEFT";
@@ -129,12 +128,6 @@ namespace SuperHaxagon {
 
 	void PlatformSFML::screenFinalize() {
 		_window->display();
-		if (_verts > _vertsMax) {
-			message(Dbg::INFO, "verts", std::to_string(_verts));
-			_vertsMax = _verts;
-		}
-
-		_verts = 0;
 	}
 
 	void PlatformSFML::drawRect(const Color& color, const Point& point, const Point& size) {
@@ -143,7 +136,6 @@ namespace SuperHaxagon {
 		rectangle.setFillColor(sfColor);
 		rectangle.setPosition(static_cast<float>(point.x), static_cast<float>(point.y));
 		_window->draw(rectangle);
-		_verts += 6;
 	}
 
 	void PlatformSFML::drawTriangle(const Color& color, const std::array<Point, 3>& points) {
@@ -155,6 +147,5 @@ namespace SuperHaxagon {
 		convex.setPoint(1, sf::Vector2f(static_cast<float>(points[1].x), static_cast<float>(points[1].y)));
 		convex.setPoint(2, sf::Vector2f(static_cast<float>(points[2].x), static_cast<float>(points[2].y)));
 		_window->draw(convex);
-		_verts += 4;
 	}
 }

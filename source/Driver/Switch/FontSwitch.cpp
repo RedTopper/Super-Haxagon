@@ -125,10 +125,6 @@ namespace SuperHaxagon {
 
 	FontSwitch::~FontSwitch() = default;
 
-	void FontSwitch::setScale(const double) {
-		// Ignored
-	}
-
 	double FontSwitch::getHeight() const {
 		return _top;
 	}
@@ -150,6 +146,11 @@ namespace SuperHaxagon {
 			position.x,
 			position.y + _top
 		};
+
+		const auto width = getWidth(text);
+		if (alignment == Alignment::LEFT) cursor.x = position.x;
+		if (alignment == Alignment::CENTER) cursor.x = position.x - width / 2;
+		if (alignment == Alignment::RIGHT) cursor.x = position.x - width;
 
 		const auto z = _platform.getAndIncrementZ();
 		for (auto c : text) {

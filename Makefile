@@ -45,11 +45,12 @@ ifeq ($(TARGET),SWITCH)
 
     # pacman -S switch-bzip2 switch-glad switch-libdrm_nouveau switch-zlib switch-freetype
     # switch-libpng switch-mesa switch-libogg switch-libvorbisidec switch-libvorbis switch-flac libnx switch-sdl2
-    # Download https://github.com/TomBebb/mojoAL-switch/releases/tag/latest and put it in portlibs
+	# I'm sure there's more but just try to play around with pacman to get them all
     LIBRARY_DIRS += $(DEVKITPRO)/libnx $(DEVKITPRO)/portlibs/switch
-    LIBRARIES += sdl2 egl glad glapi drm_nouveau freetype png flac bz2 z mojoal vorbisenc vorbisfile vorbis ogg nx
+    LIBRARIES += SDL2_mixer SDL2 egl glad glapi drm_nouveau freetype png16 bz2 z vorbisidec opusfile opus ogg mpg123 modplug nx
 
-    BUILD_FLAGS_CXX += -I$(DEVKITPRO)/portlibs/switch/include/FreeType2
+    BUILD_FLAGS += -ffunction-sections -O2 -ftls-model=local-exec -I$(DEVKITPRO)/portlibs/switch/include/FreeType2
+    BUILD_FLAGS_CXX += -march=armv8-a+crc+crypto
 
     ICON := media/icon-switch.jpg --romfsdir=./$(ROMFS_DIR)
 endif

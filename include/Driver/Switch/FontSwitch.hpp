@@ -27,7 +27,7 @@ namespace SuperHaxagon {
 		FontSwitch(SuperHaxagon::PlatformSwitch& platform, const std::string& path, const double size);
 		~FontSwitch() override;
 
-		void setScale(double scale) override;
+		void setScale(double scale) override {};
 		double getHeight() const override;
 		double getWidth(const std::string& text) const override;
 		void draw(const Color& color, const Point& position, Alignment alignment, const std::string& text) override;

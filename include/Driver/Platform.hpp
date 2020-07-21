@@ -45,7 +45,7 @@ namespace SuperHaxagon {
 		virtual void stopBGM() = 0;
 		virtual double getBgmVelocity() = 0;
 
-		virtual std::string getButtonName(Buttons button) = 0;
+		virtual std::string getButtonName(const Buttons& button) = 0;
 		virtual Buttons getPressed() = 0;
 		virtual Point getScreenDim() const = 0;
 

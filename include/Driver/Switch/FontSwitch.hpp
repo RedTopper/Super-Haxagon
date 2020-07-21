@@ -24,10 +24,10 @@ namespace SuperHaxagon {
 
 	class FontSwitch : public Font {
 	public:
-		FontSwitch(SuperHaxagon::PlatformSwitch& platform, const std::string& path, const double size);
+		FontSwitch(SuperHaxagon::PlatformSwitch& platform, const std::string& path, double size);
 		~FontSwitch() override;
 
-		void setScale(double scale) override {};
+		void setScale(double) override {};
 		double getHeight() const override;
 		double getWidth(const std::string& text) const override;
 		void draw(const Color& color, const Point& position, Alignment alignment, const std::string& text) override;

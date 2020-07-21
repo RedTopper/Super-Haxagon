@@ -30,6 +30,7 @@ namespace SuperHaxagon {
 		Audio& getSfxOver() const {return *_sfxOver;}
 		Audio& getSfxSelect() const {return *_sfxSelect;}
 		Audio& getSfxLevelUp() const {return *_sfxLevelUp;}
+		Audio& getBgm() const {return *_bgm;}
 
 		Font& getFontSmall() const {return *_small;}
 		Font& getFontLarge() const {return *_large;}
@@ -45,6 +46,11 @@ namespace SuperHaxagon {
 		}
 
 		void setRunning(bool running) {_running = running;}
+
+		void setBgm(std::unique_ptr<Audio> bgm) {
+			if (_bgm) _platform.stopBGM();
+			_bgm = std::move(bgm);
+		}
 
 		/**
 		 * Runs the game
@@ -113,6 +119,7 @@ namespace SuperHaxagon {
 		std::unique_ptr<Audio> _sfxOver;
 		std::unique_ptr<Audio> _sfxSelect;
 		std::unique_ptr<Audio> _sfxLevelUp;
+		std::unique_ptr<Audio> _bgm;
 
 		std::unique_ptr<Font> _small;
 		std::unique_ptr<Font> _large;

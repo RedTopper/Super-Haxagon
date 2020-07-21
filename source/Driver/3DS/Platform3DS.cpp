@@ -115,10 +115,6 @@ namespace SuperHaxagon {
 		_bgm->play();
 	}
 
-	void Platform3DS::stopBGM() {
-		_bgm = nullptr;
-	}
-
 	double Platform3DS::getBgmVelocity() {
 		if (_bgm) return _bgm->getVelocity();
 		return 0;

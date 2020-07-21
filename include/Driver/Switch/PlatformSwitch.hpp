@@ -4,11 +4,11 @@
 #include <fstream>
 #include <deque>
 #include <array>
-#include <glad/glad.h>
 #include <EGL/egl.h>
 #include <switch/display/native_window.h>
 
 #include "Driver/Platform.hpp"
+#include "Driver/Player.hpp"
 #include "RenderTarget.hpp"
 
 namespace SuperHaxagon {
@@ -28,7 +28,6 @@ namespace SuperHaxagon {
 
 		void playSFX(Audio& audio) override;
 		void playBGM(Audio& audio) override;
-		void stopBGM() override;
 		double getBgmVelocity() override;
 
 		std::string getButtonName(const Buttons& button) override;
@@ -61,7 +60,7 @@ namespace SuperHaxagon {
 		unsigned int _width = 1280;
 		unsigned int _height = 720;
 
-		float _z;
+		float _z = 0.0f;
 
 		std::shared_ptr<RenderTarget<Vertex>> _opaque;
 		std::shared_ptr<RenderTarget<Vertex>> _transparent;
@@ -75,8 +74,6 @@ namespace SuperHaxagon {
 		std::deque<std::pair<Dbg, std::string>> _messages{};
 		std::deque<std::shared_ptr<RenderTarget<Vertex>>> _targetVertex{};
 		std::deque<std::shared_ptr<RenderTarget<VertexUV>>> _targetVertexUV{};
-
-		std::unique_ptr<Player> _bgm;
 	};
 }
 

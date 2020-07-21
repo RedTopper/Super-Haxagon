@@ -16,10 +16,12 @@ namespace SuperHaxagon {
 		void setLoop(bool loop) override;
 
 		void play() override;
+		void pause() override;
 		bool isDone() override;
 		double getVelocity() override;
 
-		bool _loop;
+		bool _loop = false;
+		bool _launched = false;
 		Mix_Music* _music;
 	};
 }

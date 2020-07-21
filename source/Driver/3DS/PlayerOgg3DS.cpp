@@ -40,11 +40,13 @@ namespace SuperHaxagon {
 		if (!_loaded) return;
 		if (_thread) {
 			_quit = true;
+			_paused = false;
 			LightEvent_Signal(&_event);
 			threadJoin(_thread, UINT64_MAX);
 			threadFree(_thread);
 		}
 
+		ndspChnWaveBufClear(_channel);
 		ndspChnReset(_channel);
 		linearFree(_audioBuffer);
 		stb_vorbis_close(_oggFile);
@@ -61,6 +63,12 @@ namespace SuperHaxagon {
 	void PlayerOgg3DS::play() {
 		if (!_loaded) return;
 
+		if (_thread) {
+			_paused = false;
+			LightEvent_Signal(&_event);
+			return;
+		}
+
 		ndspChnReset(_channel);
 		ndspChnSetInterp(_channel, NDSP_INTERP_POLYPHASE);
 		ndspChnSetRate(_channel, static_cast<float>(_oggFile->sample_rate));
@@ -75,6 +83,12 @@ namespace SuperHaxagon {
 
 		// Start the thread, passing our opusFile as an argument.
 		_thread = threadCreate(audioThread, this, THREAD_STACK_SZ, priority, THREAD_AFFINITY, false);
+	}
+
+
+	void PlayerOgg3DS::pause() {
+		_paused = true;
+		ndspChnWaveBufClear(_channel);
 	}
 
 	bool PlayerOgg3DS::isDone() {
@@ -136,11 +150,13 @@ namespace SuperHaxagon {
 		if (!pointer) return;
 
 		while(!pointer->_quit) {
-			for(auto& _waveBuff : pointer->_waveBuffs) {
-				if(_waveBuff.status != NDSP_WBUF_DONE) continue;
-				if(!audioDecode(pointer->_oggFile, &_waveBuff, pointer->_channel, pointer->_loop)) return;
-				pointer->_currentBuffer = _waveBuff.data_pcm16;
-				pointer->_tick = svcGetSystemTick();
+			if (!pointer->_paused) {
+				for (auto& _waveBuff : pointer->_waveBuffs) {
+					if (_waveBuff.status != NDSP_WBUF_DONE) continue;
+					if (!audioDecode(pointer->_oggFile, &_waveBuff, pointer->_channel, pointer->_loop)) return;
+					pointer->_currentBuffer = _waveBuff.data_pcm16;
+					pointer->_tick = svcGetSystemTick();
+				}
 			}
 
 			LightEvent_Wait(&_event);

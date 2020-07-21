@@ -5,7 +5,7 @@
 
 namespace SuperHaxagon {
 
-	AudioSwitch::AudioSwitch(Platform& platform, const std::string& path, Stream stream) {
+	AudioSwitch::AudioSwitch(Platform& platform, const std::string& path, const Stream stream) {
 		if (stream == Stream::DIRECT) _sfx = Mix_LoadWAV((path + ".wav").c_str());
 		if (stream == Stream::INDIRECT) _music = Mix_LoadMUS((path + ".ogg").c_str());
 

@@ -18,6 +18,10 @@ namespace SuperHaxagon {
 		_music->play();
 	}
 
+	void PlayerMusicSFML::pause() {
+		_music->pause();
+	}
+
 	bool PlayerMusicSFML::isDone() {
 		return _music->getStatus() == sf::SoundSource::Stopped;
 	}

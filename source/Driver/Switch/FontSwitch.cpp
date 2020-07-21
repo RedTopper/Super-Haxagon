@@ -61,11 +61,11 @@ namespace SuperHaxagon {
 
 		FT_Set_Pixel_Sizes(face, 0, size * 2);
 
-		int t = 0;
+		auto t = 0;
 		unsigned int w = 0;
 		unsigned int h = 0;
 		auto* g = face->glyph;
-		for(int i = GLYPH_START; i < GLYPH_END; i++) {
+		for(auto i = GLYPH_START; i < GLYPH_END; i++) {
 			if(FT_Load_Char(face, i, FT_LOAD_RENDER)) {
 				const auto letter = std::to_string(static_cast<char>(i));
 				platform.message(Dbg::WARN, "font", "failed to load " + letter);
@@ -90,7 +90,7 @@ namespace SuperHaxagon {
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, w, h, 0, GL_RED, GL_UNSIGNED_BYTE, nullptr);
 
 		auto x = 0;
-		for(int i = GLYPH_START; i < GLYPH_END; i++) {
+		for(auto i = GLYPH_START; i < GLYPH_END; i++) {
 			if(FT_Load_Char(face, i, FT_LOAD_RENDER)) continue;
 
 			glTexSubImage2D(GL_TEXTURE_2D, 0, x, 0, g->bitmap.width, g->bitmap.rows,  GL_RED, GL_UNSIGNED_BYTE, g->bitmap.buffer);
@@ -132,7 +132,7 @@ namespace SuperHaxagon {
 	double FontSwitch::getWidth(const std::string& text) const {
 		auto width = 0.0;
 		for (auto c : text) {
-			auto i = static_cast<int>(c);
+			const auto i = static_cast<int>(c);
 			width += _chars[i].pxAdvance.x;
 		}
 
@@ -155,14 +155,14 @@ namespace SuperHaxagon {
 		const auto z = _platform.getAndIncrementZ();
 		for (auto c : text) {
 
-			auto i = static_cast<int>(c);
-			Point draw = {
+			const auto i = static_cast<int>(c);
+			const Point draw = {
 				cursor.x + _chars[i].pxOffset.x,
 				cursor.y - _chars[i].pxOffset.y
 			};
 
-			Point dim = _chars[i].pxDim;
-			Point uv = _chars[i].uv;
+			const auto dim = _chars[i].pxDim;
+			const auto uv = _chars[i].uv;
 
 			cursor.x += _chars[i].pxAdvance.x;
 			cursor.y -= _chars[i].pxAdvance.y;

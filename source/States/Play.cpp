@@ -21,20 +21,12 @@ namespace SuperHaxagon {
 	Play::~Play() = default;
 
 	void Play::enter() {
-		std::string path;
-		if (_factory.getLocation() == Location::INTERNAL) {
-			path = _platform.getPathRom("/bgm" + _factory.getMusic());
-		} else if (_factory.getLocation() == Location::EXTERNAL) {
-			path = _platform.getPath("/bgm" + _factory.getMusic());
-		}
-
-		_bgm = _platform.loadAudio(path, Stream::INDIRECT);
+		_platform.resumeBGM();
 		_platform.playSFX(_game.getSfxBegin());
-		_platform.playBGM(*_bgm);
 	}
 
 	void Play::exit() {
-		_platform.stopBGM();
+		_platform.pauseBGM();
 	}
 
 	std::unique_ptr<State> Play::update(const double dilation) {

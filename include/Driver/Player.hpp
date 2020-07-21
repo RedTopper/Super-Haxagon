@@ -12,10 +12,12 @@ namespace SuperHaxagon {
 		virtual void setChannel(int channel) = 0;
 		virtual void setLoop(bool loop) = 0;
 		virtual void play() = 0;
+		virtual void pause() = 0;
 		virtual bool isDone() = 0;
 		virtual double getVelocity() = 0;
 
 		// These controls shouldn't be accessed outside of the platform
+		friend class Platform;
 		friend class Platform3DS;
 		friend class PlatformSFML;
 		friend class PlatformSwitch;

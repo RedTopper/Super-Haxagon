@@ -16,6 +16,7 @@ namespace SuperHaxagon {
 		void setLoop(const bool loop) override { _loop = loop; }
 		
 		void play() override;
+		void pause() override {};
 		bool isDone() override;
 		double getVelocity() override;
 

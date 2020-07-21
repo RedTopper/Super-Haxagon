@@ -25,7 +25,6 @@ namespace SuperHaxagon {
 
 		void playSFX(Audio& audio) override;
 		void playBGM(Audio& audio) override;
-		void stopBGM() override;
 		double getBgmVelocity() override;
 
 		std::string getButtonName(const Buttons& button) override;
@@ -51,7 +50,6 @@ namespace SuperHaxagon {
 		sf::Clock _clock;
 		std::unique_ptr<sf::RenderWindow> _window;
 		std::deque<std::unique_ptr<Player>> _sfx;
-		std::unique_ptr<Player> _bgm = nullptr;
 	};
 }
 

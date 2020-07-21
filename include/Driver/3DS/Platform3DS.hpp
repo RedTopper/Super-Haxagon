@@ -27,7 +27,6 @@ namespace SuperHaxagon {
 
 		void playSFX(Audio& audio) override;
 		void playBGM(Audio& audio) override;
-		void stopBGM() override;
 		double getBgmVelocity() override;
 
 		std::string getButtonName(const Buttons& button) override;
@@ -48,7 +47,6 @@ namespace SuperHaxagon {
 
 	private:
 		std::unique_ptr<Player> _sfx[MAX_TRACKS]{};
-		std::unique_ptr<Player> _bgm = nullptr;
 
 		std::deque<std::pair<Dbg, std::string>> _messages{};
 

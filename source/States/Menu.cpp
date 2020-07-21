@@ -16,13 +16,9 @@ namespace SuperHaxagon {
 	Menu::~Menu() = default;
 
 	void Menu::enter() {
-		_bgm = _platform.loadAudio(_platform.getPathRom("/bgm/pamgaea"), SuperHaxagon::Stream::INDIRECT);
+		_game.setBgm(_platform.loadAudio(_platform.getPathRom("/bgm/pamgaea"), SuperHaxagon::Stream::INDIRECT));
 		_platform.playSFX(_game.getSfxHexagon());
-		_platform.playBGM(*_bgm);
-	}
-
-	void Menu::exit() {
-		_platform.stopBGM();
+		_platform.playBGM(_game.getBgm());
 	}
 
 	std::unique_ptr<State> Menu::update(const double dilation) {
@@ -31,12 +27,27 @@ namespace SuperHaxagon {
 		if (press.quit) return std::make_unique<Quit>(_game);
 
 		if (!_transitionDirection) {
-			if (press.select) return std::make_unique<Play>(_game, *_game.getLevels()[_level], _level);
+			if (press.select) {
+				std::string path;
+				auto& levelFactory = *_game.getLevels()[_level];
+				if (levelFactory.getLocation() == Location::INTERNAL) {
+					path = _platform.getPathRom("/bgm" + levelFactory.getMusic());
+				} else if (levelFactory.getLocation() == Location::EXTERNAL) {
+					path = _platform.getPath("/bgm" + levelFactory.getMusic());
+				}
+
+				_game.setBgm(_platform.loadAudio(path, Stream::INDIRECT));
+				_platform.playBGM(_game.getBgm());
+
+				return std::make_unique<Play>(_game, levelFactory, _level);
+			}
+
 			if (press.right) {
 				_transitionDirection = 1;
 				_level++;
 				_platform.playSFX(_game.getSfxSelect());
 			}
+
 			if (press.left) {
 				_transitionDirection = -1;
 				_level--;

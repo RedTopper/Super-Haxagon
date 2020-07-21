@@ -9,13 +9,14 @@ namespace SuperHaxagon {
 	class PlayerSfxSwitch : public Player {
 	public:
 		explicit PlayerSfxSwitch(Mix_Chunk* sfx);
-		~PlayerSfxSwitch() override = default;
+		~PlayerSfxSwitch() override;
 
 	private:
 		void setChannel(int) override {};
 		void setLoop(bool) override {};
 
 		void play() override;
+		void pause() override {};
 		bool isDone() override {return true;}
 		double getVelocity() override {return 0.0;}
 

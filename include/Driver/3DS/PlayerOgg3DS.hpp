@@ -27,6 +27,7 @@ namespace SuperHaxagon {
 		void setLoop(bool loop) override;
 
 		void play() override;
+		void pause() override;
 		bool isDone() override;
 		double getVelocity() override;
 
@@ -43,9 +44,10 @@ namespace SuperHaxagon {
 		int64_t _tick = 0;
 		stb_vorbis* _oggFile = nullptr;
 		std::array<ndspWaveBuf, 3> _waveBuffs{};
-		volatile bool _loaded = false;
-		volatile bool _loop = false;
-		volatile bool _quit = false;
+		volatile bool _loaded = false;   // if data is loaded
+		volatile bool _loop = false;     // if audio should loop
+		volatile bool _quit = false;     // if thread should be shut down
+		volatile bool _paused = false;   // if music is currently paused
 		volatile int _channel = 0;
 	};
 }

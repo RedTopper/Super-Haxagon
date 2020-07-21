@@ -47,13 +47,31 @@ void main() {
 }
 )text";
 
+static const EGLint FRAMEBUFFER_ATTRIBUTE_LIST[] = {
+	EGL_RENDERABLE_TYPE, EGL_OPENGL_BIT,
+	EGL_RED_SIZE,       8,
+	EGL_GREEN_SIZE,     8,
+	EGL_BLUE_SIZE,      8,
+	EGL_ALPHA_SIZE,     8,
+	EGL_DEPTH_SIZE,     24,
+	EGL_STENCIL_SIZE,   8,
+	EGL_NONE
+};
+
+static const EGLint CONTEXT_ATTRIBUTE_LIST[] = {
+	EGL_CONTEXT_OPENGL_PROFILE_MASK_KHR, EGL_CONTEXT_OPENGL_CORE_PROFILE_BIT_KHR,
+	EGL_CONTEXT_MAJOR_VERSION_KHR, 4,
+	EGL_CONTEXT_MINOR_VERSION_KHR, 3,
+	EGL_NONE
+};
+
 /**
  * Helper function used for debugging OpenGL
  */
-static void callback(GLenum source, const GLenum type, GLuint id, const GLenum severity, GLsizei, const GLchar* message, const void* userParam) {
+static void callback(const GLenum source, const GLenum type, const GLuint id, const GLenum severity, GLsizei, const GLchar* message, const void* userParam) {
 	// WCGW casting away const-ness?
-	auto* platform = const_cast<SuperHaxagon::PlatformSwitch*>(reinterpret_cast<const SuperHaxagon::PlatformSwitch*>(userParam));
-	auto error = type == GL_DEBUG_TYPE_ERROR;
+	auto* platform = const_cast<SuperHaxagon::PlatformSwitch*>(static_cast<const SuperHaxagon::PlatformSwitch*>(userParam));
+	const auto error = type == GL_DEBUG_TYPE_ERROR;
 	std::stringstream out;
 	out << std::hex << "Message from OpenGL:" << std::endl;
 	out << "Source: 0x" << source << std::endl;
@@ -127,8 +145,8 @@ namespace SuperHaxagon {
 	bool PlatformSwitch::loop() {
 		if (!_loaded) return false;
 
-		double width = _width;
-		double height = _height;
+		const double width = _width;
+		const double height = _height;
 		switch (appletGetOperationMode()) {
 			default:
 			case AppletOperationMode_Handheld:
@@ -164,10 +182,6 @@ namespace SuperHaxagon {
 		_bgm->play();
 	}
 
-	void PlatformSwitch::stopBGM() {
-		if (!_bgm) _bgm = nullptr;
-	}
-
 	double PlatformSwitch::getBgmVelocity() {
 		return _bgm ? _bgm->getVelocity() : 0.0;
 	}
@@ -199,8 +213,8 @@ namespace SuperHaxagon {
 
 	Buttons PlatformSwitch::getPressed() {
 		hidScanInput();
-		u64 kDown = hidKeysDown(CONTROLLER_P1_AUTO);
-		u64 kPressed = hidKeysHeld(CONTROLLER_P1_AUTO);
+		const auto kDown = hidKeysDown(CONTROLLER_P1_AUTO);
+		const auto kPressed = hidKeysHeld(CONTROLLER_P1_AUTO);
 		Buttons buttons{};
 		buttons.select = kDown & KEY_A;
 		buttons.back = kDown & KEY_B;
@@ -348,18 +362,8 @@ namespace SuperHaxagon {
 
 		EGLConfig config;
 		EGLint numConfigs;
-		static const EGLint framebufferAttributeList[] = {
-			EGL_RENDERABLE_TYPE, EGL_OPENGL_BIT,
-			EGL_RED_SIZE,       8,
-			EGL_GREEN_SIZE,     8,
-			EGL_BLUE_SIZE,      8,
-			EGL_ALPHA_SIZE,     8,
-			EGL_DEPTH_SIZE,     24,
-			EGL_STENCIL_SIZE,   8,
-			EGL_NONE
-		};
 
-		eglChooseConfig(_display, framebufferAttributeList, &config, 1, &numConfigs);
+		eglChooseConfig(_display, FRAMEBUFFER_ATTRIBUTE_LIST, &config, 1, &numConfigs);
 		if (numConfigs == 0) {
 			message(Dbg::FATAL, "config", "error " + std::to_string(eglGetError()));
 			eglTerminate(_display);
@@ -373,14 +377,7 @@ namespace SuperHaxagon {
 			return false;
 		}
 
-		static const EGLint contextAttributeList[] = {
-			EGL_CONTEXT_OPENGL_PROFILE_MASK_KHR, EGL_CONTEXT_OPENGL_CORE_PROFILE_BIT_KHR,
-			EGL_CONTEXT_MAJOR_VERSION_KHR, 4,
-			EGL_CONTEXT_MINOR_VERSION_KHR, 3,
-			EGL_NONE
-		};
-
-		_context = eglCreateContext(_display, config, EGL_NO_CONTEXT, contextAttributeList);
+		_context = eglCreateContext(_display, config, EGL_NO_CONTEXT, CONTEXT_ATTRIBUTE_LIST);
 		if (!_context)
 		{
 			message(Dbg::FATAL, "context", "error " + std::to_string(eglGetError()));

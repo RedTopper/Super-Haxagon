@@ -5,6 +5,7 @@
 #include <string>
 
 #include "Driver/Audio.hpp"
+#include "Driver/Player.hpp"
 #include "Driver/Font.hpp"
 #include "Core/Twist.hpp"
 
@@ -42,7 +43,6 @@ namespace SuperHaxagon {
 
 		virtual void playSFX(Audio& audio) = 0;
 		virtual void playBGM(Audio& audio) = 0;
-		virtual void stopBGM() = 0;
 		virtual double getBgmVelocity() = 0;
 
 		virtual std::string getButtonName(const Buttons& button) = 0;
@@ -60,8 +60,23 @@ namespace SuperHaxagon {
 		virtual void shutdown() = 0;
 		virtual void message(Dbg level, const std::string& where, const std::string& message) = 0;
 
+		void stopBGM() {
+			_bgm = nullptr;
+		}
+
+		void pauseBGM() {
+			if (!_bgm) return;
+			_bgm->pause();
+		}
+
+		void resumeBGM() {
+			if (!_bgm) return;
+			_bgm->play();
+		}
+
 	protected:
 		Dbg _dbg;
+		std::unique_ptr<Player> _bgm = nullptr;
 	};
 }
 

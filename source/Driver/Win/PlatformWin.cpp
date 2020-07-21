@@ -14,11 +14,15 @@ namespace SuperHaxagon {
 	}
 
 	std::string PlatformWin::getPath(const std::string& partial) {
-		return std::string(".\\sdmc") + partial;
+		auto path = partial;
+		std::replace(path.begin(), path.end(), '/', '\\');
+		return std::string(".\\sdmc") + path;
 	}
 
 	std::string PlatformWin::getPathRom(const std::string& partial) {
-		return std::string(".\\romfs") + partial;
+		auto path = partial;
+		std::replace(path.begin(), path.end(), '/', '\\');
+		return std::string(".\\romfs") + path;
 	}
 
 	void PlatformWin::message(const Dbg dbg, const std::string& where, const std::string& message) {

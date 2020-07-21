@@ -83,11 +83,6 @@ namespace SuperHaxagon {
 		_bgm->play();
 	}
 
-	void PlatformSFML::stopBGM() {
-		// Destructor will be called and audio will stop
-		if (_bgm) _bgm = nullptr;
-	}
-
 	double PlatformSFML::getBgmVelocity() {
 		return _bgm ? _bgm->getVelocity() : 0.0;
 	}

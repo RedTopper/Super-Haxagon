@@ -12,7 +12,17 @@ namespace SuperHaxagon {
 	}
 
 	void PlayerMusSwitch::play() {
+		if (_launched) {
+			Mix_ResumeMusic();
+			return;
+		}
+
+		_launched = true;
 		Mix_PlayMusic(_music, _loop ? -1 : 1);
+	}
+
+	void PlayerMusSwitch::pause() {
+		Mix_PauseMusic();
 	}
 
 	bool PlayerMusSwitch::isDone() {

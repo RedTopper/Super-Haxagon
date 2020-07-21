@@ -33,7 +33,7 @@ namespace SuperHaxagon {
 		void reference(unsigned int index);
 		void advance(unsigned int indices);
 		void draw(Platform& platform);
-		bool isTransparent() {return _transparent;}
+		bool isTransparent() const {return _transparent;}
 
 	private:
 		void init(Platform& platform, const char* shaderVertex, const char* shaderFragment);

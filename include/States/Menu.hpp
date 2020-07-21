@@ -20,13 +20,11 @@ namespace SuperHaxagon {
 		void drawTop(double scale) override;
 		void drawBot(double scale) override;
 		void enter() override;
-		void exit() override;
+		void exit() override {};
 
 	private:
 		Game& _game;
 		Platform& _platform;
-
-		std::unique_ptr<Audio> _bgm;
 
 		double _transitionFrame = FRAMES_PER_TRANSITION;
 		double _colorFrame = FRAMES_PER_COLOR;

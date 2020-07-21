@@ -70,7 +70,7 @@ namespace SuperHaxagon {
 		SDL_Init(SDL_INIT_AUDIO);
 		Mix_Init(MIX_INIT_OGG);
 		Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, MIX_DEFAULT_CHANNELS, 4096);
-		Mix_AllocateChannels(5);
+		Mix_AllocateChannels(16);
 
 		mkdir("sdmc:/switch", 0777);
 		mkdir("sdmc:/switch/SuperHaxagon", 0777);
@@ -154,7 +154,7 @@ namespace SuperHaxagon {
 	}
 
 	void PlatformSwitch::playSFX(Audio& audio) {
-
+		audio.instantiate()->play();
 	}
 
 	void PlatformSwitch::playBGM(Audio& audio) {

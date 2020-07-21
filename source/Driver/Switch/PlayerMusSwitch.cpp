@@ -4,7 +4,7 @@ namespace SuperHaxagon {
 	PlayerMusSwitch::PlayerMusSwitch(Mix_Music* music) : _music(music) {}
 
 	PlayerMusSwitch::~PlayerMusSwitch() {
-		Mix_PauseMusic();
+		Mix_HaltMusic();
 	}
 
 	void PlayerMusSwitch::setLoop(const bool loop) {

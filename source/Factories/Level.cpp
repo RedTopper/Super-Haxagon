@@ -52,7 +52,7 @@ namespace SuperHaxagon {
 				pattern->advance(_factory.getSpeedWall() * dilation * _multiplierWalls);
 			}
 		} else {
-			const auto percent = _delayFrame / FRAMES_PER_CHANGE_SIDE * abs(_currentSides - _lastSides);
+			const auto percent = _delayFrame / _delayMax;
 			_sidesTween = linear(_currentSides, _lastSides, percent);
 			_delayFrame -= dilation;
 		}
@@ -65,7 +65,8 @@ namespace SuperHaxagon {
 
 			// Delay the level if the shifted pattern does  not have the same sides as the last.
 			if(_lastSides != _currentSides) {
-				_delayFrame = FRAMES_PER_CHANGE_SIDE * std::abs(static_cast<double>(_currentSides) - static_cast<double>(_lastSides));
+				_delayMax = FRAMES_PER_CHANGE_SIDE / _factory.getSpeedWall() * static_cast<double>(std::abs(_currentSides - _lastSides));
+				_delayFrame = _delayMax;
 			}
 		}
 
@@ -142,8 +143,9 @@ namespace SuperHaxagon {
 	}
 
 	void Level::increaseMultiplier() {
-		_multiplierRot *= DIFFICULTY_MULTIPLIER_ROT;
-		_multiplierWalls *= DIFFICULTY_MULTIPLIER_WALLS;
+		const auto dir = (_multiplierRot > 0 ? 1 : -1);
+		_multiplierRot += dir * DIFFICULTY_SCALAR_ROT;
+		_multiplierWalls += DIFFICULTY_SCALAR_WALLS;
 	}
 
 	void Level::clearPatterns() {

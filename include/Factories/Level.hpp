@@ -22,11 +22,11 @@ namespace SuperHaxagon {
 
 	class Level {
 	public:
-		static constexpr double DIFFICULTY_MULTIPLIER_WALLS = 1.05;
-		static constexpr double DIFFICULTY_MULTIPLIER_ROT = 1.1;
+		static constexpr double DIFFICULTY_SCALAR_WALLS = 0.04;
+		static constexpr double DIFFICULTY_SCALAR_ROT = 0.1;
 		static constexpr double FLIP_FRAMES_MIN = 120;
 		static constexpr double FLIP_FRAMES_MAX = 600;
-		static constexpr double FRAMES_PER_CHANGE_SIDE = 36;
+		static constexpr double FRAMES_PER_CHANGE_SIDE = 50;
 
 		Level(const LevelFactory& factory, Twist& rng, double patternDistCreate);
 		Level(Level&) = delete;
@@ -50,7 +50,7 @@ namespace SuperHaxagon {
 		std::deque<std::unique_ptr<Pattern>> _patterns;
 
 		double _multiplierRot = 1.0; // Current direction and speed of rotation
-		double _multiplierWalls = 0.9; // Current speed of the walls flying at you
+		double _multiplierWalls = 0.85; // Current speed of the walls flying at you
 		double _cursorPos{};
 		double _rotation{};
 		double _sidesTween{};
@@ -58,6 +58,7 @@ namespace SuperHaxagon {
 		int _currentSides{};
 
 		double _delayFrame{}; // Tween between side switches
+		double _delayMax{};   // When a delay starts, this is the initial value of _delayFrame
 		double _tweenFrame{}; // Tween colors
 		double _flipFrame = FLIP_FRAMES_MAX; // Amount of frames left until flip
 

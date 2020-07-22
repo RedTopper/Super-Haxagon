@@ -16,49 +16,38 @@ You can download the latest build on [the releases page](https://github.com/RedI
  * Custom Levels
  * OGG decoder for BGM
  * High Score Saving
- 
-## Credits
- * Audio from [Open Hexagon](http://vittorioromeo.info/projects.html)
- * ...And more audio by [Kevin MacLeod](http://incompetech.com/) under [Creative Commons: By Attribution 3.0](http://creativecommons.org/licenses/by/3.0/)
- * 2D engine by fincs at [devkitPro/citro2D](https://github.com/devkitPro/citro2d)
- * 3D engine by fincs at [devkitPro/citro3D](https://github.com/devkitPro/citro3d)
- * Smea for [the CTR User library](https://github.com/devkitPro/libctru)
- * Actual font: [Bump IT UP](http://fontstruct.com/fontstructions/show/155156/bump_it_up)
- * and all of the people on the [contributors page](https://github.com/RedInquisitive/Super-Haxagon/graphs/contributors) (seriously, thanks!)
 
 ## Building
 
-Super Haxagon can build for 3DS and Windows (MinGW + MSVC). For desktop platforms, it uses a cross platform library called SFML, so it will probably also compile on Linux and MacOS without any issues.
+Super Haxagon can build for 3DS, Switch, Windows (MinGW + MSVC), and Linux. For desktop platforms, it uses a cross platform library called SFML, so it will probably also compile on other platforms that support it.
+
+1. Clone this repository with `git clone https://github.com/RedInquisitive/Super-Haxagon.git --recursive`
 
 ### 3DS Build
 
-1. Clone this repository with `git clone https://github.com/RedInquisitive/Super-Haxagon.git --recursive`
 1. Get MinGW and DevkitPro and install dependencies listed in the Makefile
 1. Use the provided Makefile with the command `make TARGET:=3DS`
 1. Install either the CIA or 3DSX on your 3DS
 
 ### Switch Build
 
-1. Clone this repository
 1. Get MinGW and DevkitPro and install dependencies listed in the Makefile
 1. Use the provided Makefile with the command `make TARGET:=SWITCH`
 1. Copy the .nro to `sdmc:/switch/SuperHaxagon/SuperHaxagon.nro` and launch it from the hbmenu
 
 ### PC Build
 
-1. Clone this repository
-1. Download SFML for your platform
-
 #### ... with MSVC on Windows
 
+1. Download SFML for your MSVC version
 1. Rename the SFML folder to `SFML-MSVC` and place it in libraries
 1. Use Visual Studio to open a folder with the CMake file
 1. Build the game
 1. Press play
 
-#### ... with MinGW on Windows
+#### ... with MinGW/msys on Windows
 
-1. Get MinGW
+1. Download SFML for your MinGW version
 1. Rename the SFML folder to `SFML-MinGW` and place it in libraries
 1. Use the provided Makefile with the command `make TARGET:=WIN64` OR use the CMake file
 1. Copy the `romfs` folder and `SFML/bin/openal32.dll` library next to the built executable (only needed with Makefile)
@@ -70,6 +59,22 @@ Super Haxagon can build for 3DS and Windows (MinGW + MSVC). For desktop platform
 1. Clone this repository
 1. Use the CMake file or Makefile `make TARGET:=LINUX64` to build it
 1. Launch the executable
+
+## Credits
+
+Thanks everyone for:
+
+ * The toolchain by [devkitPro](https://github.com/devkitPro)
+ * The 3DS 2D engine by fincs at [devkitPro/citro2D](https://github.com/devkitPro/citro2d)
+ * The CTR User library by Smea at [devkitPro/libctru](https://github.com/devkitPro/libctru)
+ * the Switch User library by Switchbrew at [switchbrew/libnx](https://github.com/switchbrew/libnx)
+ * The font Bump IT UP by aaronamar at [fontstruct.com](http://fontstruct.com/fontstructions/show/155156/bump_it_up)
+ * Steveice10 for the build tools at [Steveice10/buildtools](https://github.com/Steveice10/buildtools)
+ * Sean T. Barrett for OGG decoding at [nothings/stb](https://github.com/nothings/stb)
+ * The SFML developers for, well, [SFML](https://www.sfml-dev.org/)
+ * Audio from Open Hexagon at [SuperV1234/SSVOpenHexagon](https://github.com/SuperV1234/SSVOpenHexagon)
+ * ...and Kevin MacLeod for more music at [incompetech.com](http://incompetech.com/) under [Creative Commons: By Attribution 3.0](http://creativecommons.org/licenses/by/3.0/)
+ * and all of the people on the [contributors page](https://github.com/RedInquisitive/Super-Haxagon/graphs/contributors) (seriously, you guys rock!)
 
 ## Screenshots
 

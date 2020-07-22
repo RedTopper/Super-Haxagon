@@ -33,28 +33,42 @@ Super Haxagon can build for 3DS and Windows (MinGW + MSVC). For desktop platform
 ### 3DS Build
 
 1. Clone this repository with `git clone https://github.com/RedInquisitive/Super-Haxagon.git --recursive`
-1. Get MinGW and DevkitPro
+1. Get MinGW and DevkitPro and install dependencies listed in the Makefile
 1. Use the provided Makefile with the command `make TARGET:=3DS`
 1. Install either the CIA or 3DSX on your 3DS
+
+### Switch Build
+
+1. Clone this repository
+1. Get MinGW and DevkitPro and install dependencies listed in the Makefile
+1. Use the provided Makefile with the command `make TARGET:=SWITCH`
+1. Copy the .nro to `sdmc:/switch/SuperHaxagon/SuperHaxagon.nro` and launch it from the hbmenu
 
 ### PC Build
 
 1. Clone this repository
-1. Download SFML and place it in the corresponding folder in `libraries`
-1. Rename the SFML library folder to `SFML`
+1. Download SFML for your platform
 
-#### ... with MSVC
+#### ... with MSVC on Windows
 
+1. Rename the SFML folder to `SFML-MSVC` and place it in libraries
 1. Use Visual Studio to open a folder with the CMake file
 1. Build the game
-1. Copy the `romfs` folder and `SFML/bin/openal32.dll` library next to the built executable
 1. Press play
 
-#### ... with MinGW
+#### ... with MinGW on Windows
 
 1. Get MinGW
+1. Rename the SFML folder to `SFML-MinGW` and place it in libraries
 1. Use the provided Makefile with the command `make TARGET:=WIN64` OR use the CMake file
-1. Copy the `romfs` folder and `SFML/bin/openal32.dll` library next to the built executable
+1. Copy the `romfs` folder and `SFML/bin/openal32.dll` library next to the built executable (only needed with Makefile)
+1. Launch the executable
+
+#### ... with GCC on Linux
+
+1. Install SFML through your distro's package manager
+1. Clone this repository
+1. Use the CMake file or Makefile `make TARGET:=LINUX64` to build it
 1. Launch the executable
 
 ## Screenshots

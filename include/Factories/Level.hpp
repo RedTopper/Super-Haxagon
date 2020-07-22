@@ -43,13 +43,14 @@ namespace SuperHaxagon {
 		void right(double dilation);
 		void clamp();
 
+		const LevelFactory& getLevelFactory() const {return _factory;}
 
 	private:
 		const LevelFactory& _factory;
 
 		std::deque<std::unique_ptr<Pattern>> _patterns;
 
-		double _multiplierRot = 1.0; // Current direction and speed of rotation
+		double _multiplierRot = 0.9; // Current direction and speed of rotation
 		double _multiplierWalls = 0.85; // Current speed of the walls flying at you
 		double _cursorPos{};
 		double _rotation{};

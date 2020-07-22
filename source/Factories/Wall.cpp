@@ -57,9 +57,9 @@ namespace SuperHaxagon {
 		std::array<Point, 4> quad{};
 		auto tHeight = _height;
 		auto tDistance = _distance + offset;
-		if(tDistance < SCALE_HEX_LENGTH - 2.0) {//so the distance is never negative as it enters.
-			tHeight -= SCALE_HEX_LENGTH - 2.0 - tDistance;
-			tDistance = SCALE_HEX_LENGTH - 2.0; //Should never be 0!!!
+		if(tDistance < SCALE_HEX_LENGTH) {//so the distance is never negative as it enters.
+			tHeight -= SCALE_HEX_LENGTH - tDistance;
+			tDistance = SCALE_HEX_LENGTH; //Should never be 0!!!
 		}
 
 		tDistance *= scale;

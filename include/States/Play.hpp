@@ -14,6 +14,7 @@ namespace SuperHaxagon {
 	public:
 		static constexpr int PULSE_TIME = 75;
 		static constexpr double PULSE_TIMES = 2.0;
+		static constexpr double SKEW_MAX = 0.3;
 
 		Play(Game& game, LevelFactory& factory, int levelIndex);
 		Play(Play&) = delete;
@@ -30,12 +31,14 @@ namespace SuperHaxagon {
 		Platform& _platform;
 		LevelFactory& _factory;
 		std::unique_ptr<Level> _level;
-		std::unique_ptr<Audio> _bgm;
 
 		double _scalePrev = 0;
 		double _scoreWidth = 0;
 		double _score = 0;
 		int _levelIndex = 0;
+
+		double _skewFrame = 0.0;
+		double _skewDirection = 1.0;
 	};
 }
 

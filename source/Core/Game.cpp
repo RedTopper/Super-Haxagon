@@ -76,19 +76,22 @@ namespace SuperHaxagon {
 		}
 
 		std::array<Point, 3> triangle{};
-		triangle[0] = focus;
 
 		//if the sides is odd we need to "make up a color" to put in the gap between the last and first color
 		if(exactSides % 2) {
+			triangle[0] = focus;
 			triangle[1] = edges[static_cast<size_t>(exactSides) - 1];
 			triangle[2] = edges[0];
+			skew(triangle);
 			_platform.drawTriangle(interpolateColor(color1, color2, 0.5f), triangle);
 		}
 
 		//Draw the rest of the triangles
 		for(auto i = 0; i < exactSides - 1; i = i + 2) {
+			triangle[0] = focus;
 			triangle[1] = edges[i];
 			triangle[2] = edges[static_cast<size_t>(i) + 1];
+			skew(triangle);
 			_platform.drawTriangle(color2, triangle);
 		}
 	}
@@ -106,17 +109,21 @@ namespace SuperHaxagon {
 		}
 
 		std::array<Point, 3> triangle{};
-		triangle[0] = focus;
 
 		// Connect last triangle edge to first
+		triangle[0] = focus;
 		triangle[1] = edges[static_cast<size_t>(exactSides) - 1];
 		triangle[2] = edges[0];
+		skew(triangle);
 		_platform.drawTriangle(color, triangle);
 
 		// Draw rest of regular polygon
+
 		for(auto i = 0; i < exactSides - 1; i++) {
+			triangle[0] = focus;
 			triangle[1] = edges[i];
 			triangle[2] = edges[static_cast<size_t>(i) + 1];
+			skew(triangle);
 			_platform.drawTriangle(color, triangle);
 		}
 	}
@@ -133,6 +140,7 @@ namespace SuperHaxagon {
 			p.y = orig.y + focus.y;
 		}
 
+		skew(triangle);
 		_platform.drawTriangle(color, triangle);
 	}
 
@@ -156,9 +164,12 @@ namespace SuperHaxagon {
 		triangle[0] = points[0];
 		triangle[1] = points[1];
 		triangle[2] = points[2];
+		skew(triangle);
 		_platform.drawTriangle(color, triangle);
+		triangle[0] = points[0];
 		triangle[1] = points[2];
 		triangle[2] = points[3];
+		skew(triangle);
 		_platform.drawTriangle(color, triangle);
 	}
 
@@ -169,7 +180,17 @@ namespace SuperHaxagon {
 
 	Point Game::getShadowOffset() const {
 		const auto min = getScreenDimMin();
+		if (_shadowAuto) {
+			return {0, min/180 + min/15 * _skew};
+		}
 		return {min/60, min/60};
+	}
+
+	void Game::skew(std::array<Point, 3>& skew) const {
+		const auto screen = _platform.getScreenDim();
+		for (Point& point : skew) {
+			point.y = ((point.y / screen.y - 0.5) * (1.0 - _skew) + 0.5) * screen.y;
+		}
 	}
 }
 

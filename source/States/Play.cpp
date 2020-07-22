@@ -21,6 +21,7 @@ namespace SuperHaxagon {
 	Play::~Play() = default;
 
 	void Play::enter() {
+		_game.setShadowAuto(true);
 		_platform.resumeBGM();
 		_platform.playSFX(_game.getSfxBegin());
 	}
@@ -31,6 +32,13 @@ namespace SuperHaxagon {
 
 	std::unique_ptr<State> Play::update(const double dilation) {
 		const auto maxRenderDistance = SCALE_BASE_DISTANCE * (_game.getScreenDimMax() / 240);
+
+		// Render the level with a skewed 3D look
+		const auto skewFrameMax = _level->getLevelFactory().getSpeedPulse() * 2.5;
+		_skewFrame += dilation * _skewDirection * (_level->getLevelFactory().getSpeedRotation() > 0 ? 1 : 0);
+		_game.setSkew((-cos(_skewFrame / skewFrameMax * PI) + 1.0) / 2.0 * SKEW_MAX);
+
+		// Update level
 		_level->update(_game.getTwister(), SCALE_HEX_LENGTH, maxRenderDistance, dilation);
 
 		// Button presses

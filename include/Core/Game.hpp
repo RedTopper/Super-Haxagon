@@ -46,7 +46,8 @@ namespace SuperHaxagon {
 		}
 
 		void setRunning(bool running) {_running = running;}
-
+		void setSkew(double skew) {_skew = skew;}
+		void setShadowAuto(double shadowAuto) {_shadowAuto = shadowAuto;}
 		void setBgm(std::unique_ptr<Audio> bgm) {
 			if (_bgm) _platform.stopBGM();
 			_bgm = std::move(bgm);
@@ -106,6 +107,11 @@ namespace SuperHaxagon {
 		 */
 		Point getShadowOffset() const;
 
+		/**
+		 * Skews the screen to give a 3D effect. Modifies the incoming triangle
+		 */
+		void skew(std::array<Point, 3>& skew) const;
+
 	private:
 		Platform& _platform;
 
@@ -125,6 +131,8 @@ namespace SuperHaxagon {
 		std::unique_ptr<Font> _large;
 
 		bool _running = true;
+		bool _shadowAuto = false;
+		double _skew = 0.0;
 	};
 }
 

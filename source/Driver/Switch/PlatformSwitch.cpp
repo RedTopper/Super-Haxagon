@@ -119,6 +119,7 @@ namespace SuperHaxagon {
 
 		glEnable(GL_DEBUG_OUTPUT);
 		glEnable(GL_DEPTH_TEST);
+		//glEnable(GL_CULL_FACE);
 		glDepthMask(GL_TRUE);
 		glDepthFunc(GL_GREATER);
 		glDepthRange(0.0f, 1.0f);
@@ -172,7 +173,9 @@ namespace SuperHaxagon {
 	}
 
 	void PlatformSwitch::playSFX(Audio& audio) {
-		audio.instantiate()->play();
+		auto sfx = audio.instantiate();
+		if (!sfx) return;
+		sfx->play();
 	}
 
 	void PlatformSwitch::playBGM(Audio& audio) {

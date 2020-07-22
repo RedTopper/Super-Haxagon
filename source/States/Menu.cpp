@@ -16,6 +16,8 @@ namespace SuperHaxagon {
 	Menu::~Menu() = default;
 
 	void Menu::enter() {
+		_game.setSkew(0.0);
+		_game.setShadowAuto(false);
 		_game.setBgm(_platform.loadAudio(_platform.getPathRom("/bgm/pamgaea"), SuperHaxagon::Stream::INDIRECT));
 		_platform.playSFX(_game.getSfxHexagon());
 		_platform.playBGM(_game.getBgm());

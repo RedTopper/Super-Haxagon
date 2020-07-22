@@ -7,6 +7,3 @@
 [submodule "libraries/stb"]
 	path = libraries/stb
 	url = https://github.com/nothings/stb.git
-[submodule "libraries/SFML-Switch"]
-	path = libraries/SFML-Switch
-	url = https://github.com/TomBebb/SFML-switch.git

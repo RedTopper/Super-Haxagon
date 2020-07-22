@@ -2,7 +2,7 @@
 
 # ![Icon](./media/icon-3ds.png "Icon") Super-Haxagon
 
-Super Haxagon is an cross platform, open source [Super Hexagon](http://superhexagon.com/) clone for the 3DS, Windows, and Linux. It runs full speed on the old 3DS, new 3DS, and in [citra-emu/citra](https://github.com/citra-emu/citra). It also has a GUI based level editor called [Haxa Editor](https://github.com/RedInquisitive/Haxa-Editor).
+Super Haxagon is an cross platform, open source [Super Hexagon](http://superhexagon.com/) clone for the Nintendo 3DS, Nintendo Switch, Windows, and Linux. It is developed in C++ and uses no additional libraries for the core logic, making it easy (in theory) to port to new platforms. It also has a GUI based level editor called [Haxa Editor](https://github.com/RedInquisitive/Haxa-Editor).
 
 ## Download
 

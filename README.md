@@ -82,12 +82,19 @@ were taken on actual hardware.
 
 ![In Game Windows](./media/screenshots/Windows_2020-07-10_014324.png "In Game Windows")
 ![In Game 3DS](./media/screenshots/luma-2020-07-11-06-48-44-586.png "In Game 3DS")
+
+<details><summary>More Screenshots</summary>
+
 ![Title Screen Windows](./media/screenshots/Windows_2020-07-10_014650.png "Title Screen Windows")
 ![Title Screen 3DS](./media/screenshots/luma-2020-07-11-06-42-12-193.png "Title Screen 3DS")
 ![Death Spiral Windows](./media/screenshots/Windows_2020-07-10_014604.png "Death Spiral")
 ![Death Spiral 3DS](./media/screenshots/luma-2020-07-11-06-55-45-531.png "Death Spiral 3DS")
 
-### Proof of Concept
+</details>
+
+<details><summary>Proof of Concept</summary>
 
 ![Humble Beginnings](./media/screenshots/scr_2_MERGED.png "Humble Arrow")
 ![Humble Beginnings](./media/screenshots/scr_1_MERGED.png "The First Test")
+
+</details>

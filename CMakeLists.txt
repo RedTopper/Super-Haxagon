@@ -58,6 +58,7 @@ add_executable(SuperHaxagon WIN32 ${DRIVER}
     source/Factories/Wall.cpp
 
     source/Core/Game.cpp
+    source/Core/Metadata.cpp
     source/Core/Main.cpp
     source/Core/Structs.cpp)
 

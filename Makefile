@@ -26,6 +26,9 @@ ifeq ($(TARGET),3DS)
     INCLUDE_DIRS += libraries/stb
     LIBRARY_DIRS += $(DEVKITPRO)/libctru $(DEVKITPRO)/portlibs/3ds/
 
+    # As long as 
+    BUILD_FLAGS += -O2 -Wno-psabi -ffast-math
+
     $(info $$LIBRARY_DIRS is [${LIBRARY_DIRS}])
     LIBRARIES += citro2d citro3d ctru m
 

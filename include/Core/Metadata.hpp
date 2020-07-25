@@ -1,0 +1,8 @@
+#ifndef SUPER_HAXAGON_METADATA_HPP
+#define SUPER_HAXAGON_METADATA_HPP
+
+namespace SuperHaxagon {
+	
+}
+
+#endif //SUPER_HAXAGON_METADATA_HPP

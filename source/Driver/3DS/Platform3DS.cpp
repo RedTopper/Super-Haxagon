@@ -120,11 +120,6 @@ namespace SuperHaxagon {
 		_bgm->play();
 	}
 
-	double Platform3DS::getBGMTime() {
-		if (_bgm) return _bgm->getTime();
-		return 0;
-	}
-
 	std::string Platform3DS::getButtonName(const Buttons& button) {
 		if (button.back) return "B";
 		if (button.select) return "A";

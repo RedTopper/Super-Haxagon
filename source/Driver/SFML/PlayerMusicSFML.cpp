@@ -22,11 +22,11 @@ namespace SuperHaxagon {
 		_music->pause();
 	}
 
-	bool PlayerMusicSFML::isDone() {
+	bool PlayerMusicSFML::isDone() const {
 		return _music->getStatus() == sf::SoundSource::Stopped;
 	}
 
-	double PlayerMusicSFML::getTime() {
-		return 0;
+	double PlayerMusicSFML::getTime() const {
+		return _music->getPlayingOffset().asSeconds();
 	}
 }

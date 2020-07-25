@@ -23,17 +23,21 @@ namespace SuperHaxagon {
 	class Level {
 	public:
 		static constexpr double DIFFICULTY_SCALAR_WALLS = 0.04;
-		static constexpr double DIFFICULTY_SCALAR_ROT = 0.1;
+		static constexpr double DIFFICULTY_SCALAR_ROT = 0.09;
 		static constexpr double FLIP_FRAMES_MIN = 120;
 		static constexpr double FLIP_FRAMES_MAX = 600;
 		static constexpr double FRAMES_PER_CHANGE_SIDE = 50;
+		static constexpr double FRAMES_PER_SPIN = 90;
+		static constexpr double FRAMES_PER_PULSE = 10;
+		static constexpr double SPIN_MULTIPLIER = 1.5;
+		static constexpr double PULSE_DISTANCE = 4.0;
 
 		Level(const LevelFactory& factory, Twist& rng, double patternDistCreate);
 		Level(Level&) = delete;
 		~Level();
 
 		void update(Twist& rng, double patternDistDelete, double patternDistCreate, double dilation);
-		void draw(Game& game, const double scale, const double offsetWall, const double offsetPulse) const;
+		void draw(Game& game, double scale, double offsetWall) const;
 		Movement collision(double cursorDistance, double dilation) const;
 
 		void increaseMultiplier();
@@ -42,6 +46,11 @@ namespace SuperHaxagon {
 		void left(double dilation);
 		void right(double dilation);
 		void clamp();
+
+		// Effects
+		void spin();
+		void invertBG();
+		void pulse();
 
 		const LevelFactory& getLevelFactory() const {return _factory;}
 
@@ -69,6 +78,10 @@ namespace SuperHaxagon {
 		int _nextIndexBg1{};
 		int _nextIndexBg2{};
 		int _nextIndexFg{};
+
+		bool _bgInverted = false;
+		double _pulse = 0.0;
+		double _spin = 0.0;
 	};
 
 	class LevelFactory {

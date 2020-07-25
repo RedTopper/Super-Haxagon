@@ -12,15 +12,15 @@ namespace SuperHaxagon {
 		explicit PlayerSoundSFML(std::unique_ptr<sf::Sound> sound);
 		~PlayerSoundSFML() override;
 
-	private:
 		void setChannel(int) override {};
 		void setLoop(bool loop) override;
 
 		void play() override;
 		void pause() override {};
-		bool isDone() override;
-		double getTime() override;
+		bool isDone() const override;
+		double getTime() const override;
 
+	private:
 		std::unique_ptr<sf::Sound> _sound;
 	};
 }

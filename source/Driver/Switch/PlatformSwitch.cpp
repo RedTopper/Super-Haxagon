@@ -185,10 +185,6 @@ namespace SuperHaxagon {
 		_bgm->play();
 	}
 
-	double PlatformSwitch::getBGMTime() {
-		return _bgm ? _bgm->getTime() : 0.0;
-	}
-
 	std::string PlatformSwitch::getPath(const std::string& partial) {
 		return "sdmc:/switch/SuperHaxagon" + partial;
 	}

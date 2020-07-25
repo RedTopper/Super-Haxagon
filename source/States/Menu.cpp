@@ -1,6 +1,7 @@
 #include <array>
 
 #include "Core/Game.hpp"
+#include "Core/Metadata.hpp"
 #include "Factories/Level.hpp"
 #include "States/Quit.hpp"
 #include "States/Play.hpp"
@@ -18,9 +19,9 @@ namespace SuperHaxagon {
 	void Menu::enter() {
 		_game.setSkew(0.0);
 		_game.setShadowAuto(false);
-		_game.setBgm(_platform.loadAudio(_platform.getPathRom("/bgm/pamgaea"), SuperHaxagon::Stream::INDIRECT));
-		_platform.playSFX(_game.getSfxHexagon());
-		_platform.playBGM(_game.getBgm());
+		_game.setBGMAudio(_platform.loadAudio(_platform.getPathRom("/bgm/pamgaea"), SuperHaxagon::Stream::INDIRECT));
+		_platform.playSFX(_game.getSFXHexagon());
+		_platform.playBGM(_game.getBGMAudio());
 	}
 
 	std::unique_ptr<State> Menu::update(const double dilation) {
@@ -30,16 +31,22 @@ namespace SuperHaxagon {
 
 		if (!_transitionDirection) {
 			if (press.select) {
-				std::string path;
 				auto& levelFactory = *_game.getLevels()[_level];
+				const auto base = "/bgm" + levelFactory.getMusic();
+				std::string path;
+				std::string pathMeta;
+				
 				if (levelFactory.getLocation() == Location::INTERNAL) {
-					path = _platform.getPathRom("/bgm" + levelFactory.getMusic());
+					path = _platform.getPathRom(base);
+					pathMeta = _platform.getPathRom(base + ".txt");
 				} else if (levelFactory.getLocation() == Location::EXTERNAL) {
-					path = _platform.getPath("/bgm" + levelFactory.getMusic());
+					path = _platform.getPath(base);
+					pathMeta = _platform.getPath(base + ".txt");
 				}
 
-				_game.setBgm(_platform.loadAudio(path, Stream::INDIRECT));
-				_platform.playBGM(_game.getBgm());
+				_game.setBGMAudio(_platform.loadAudio(path, Stream::INDIRECT));
+				_game.setBGMMetadata(std::make_unique<Metadata>(pathMeta));
+				_platform.playBGM(_game.getBGMAudio());
 
 				return std::make_unique<Play>(_game, levelFactory, _level);
 			}
@@ -47,13 +54,13 @@ namespace SuperHaxagon {
 			if (press.right) {
 				_transitionDirection = 1;
 				_level++;
-				_platform.playSFX(_game.getSfxSelect());
+				_platform.playSFX(_game.getSFXSelect());
 			}
 
 			if (press.left) {
 				_transitionDirection = -1;
 				_level--;
-				_platform.playSFX(_game.getSfxSelect());
+				_platform.playSFX(_game.getSFXSelect());
 			}
 		}
 

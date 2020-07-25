@@ -11,15 +11,15 @@ namespace SuperHaxagon {
 		explicit PlayerMusSwitch(Mix_Music* music);
 		~PlayerMusSwitch() override;
 
-	private:
 		void setChannel(int) override {};
 		void setLoop(bool loop) override;
 
 		void play() override;
 		void pause() override;
-		bool isDone() override;
-		double getTime() override;
+		bool isDone() const override;
+		double getTime() const override;
 
+	private:
 		bool _loop = false;
 		bool _launched = false;
 		Mix_Music* _music;

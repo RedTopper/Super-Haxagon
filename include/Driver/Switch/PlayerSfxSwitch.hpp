@@ -11,15 +11,15 @@ namespace SuperHaxagon {
 		explicit PlayerSfxSwitch(Mix_Chunk* sfx);
 		~PlayerSfxSwitch() override;
 
-	private:
 		void setChannel(int) override {};
 		void setLoop(bool) override {};
 
 		void play() override;
 		void pause() override {};
-		bool isDone() override {return true;}
-		double getTime() override {return 0.0;}
+		bool isDone() const override {return true;}
+		double getTime() const override {return 0.0;}
 
+	private:
 		Mix_Chunk* _sfx;
 	};
 }

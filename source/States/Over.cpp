@@ -25,7 +25,7 @@ namespace SuperHaxagon {
 	Over::~Over() = default;
 
 	void Over::enter() {
-		_platform.playSFX(_game.getSfxOver());
+		_platform.playSFX(_game.getSFXOver());
 
 		std::ofstream scores(_platform.getPath("/scores.db"), std::ios::out | std::ios::binary);
 
@@ -74,7 +74,7 @@ namespace SuperHaxagon {
 	}
 
 	void Over::drawTop(const double scale) {
-		_level->draw(_game, scale, _offset, 0);
+		_level->draw(_game, scale, _offset);
 	}
 
 	void Over::drawBot(const double scale) {

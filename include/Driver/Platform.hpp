@@ -29,7 +29,7 @@ namespace SuperHaxagon {
 
 	class Platform {
 	public:
-		explicit Platform(Dbg dbg) : _dbg(dbg) {}
+		explicit Platform(const Dbg dbg) : _dbg(dbg) {}
 		Platform(Platform&) = delete;
 		virtual ~Platform() = default;
 
@@ -43,7 +43,8 @@ namespace SuperHaxagon {
 
 		virtual void playSFX(Audio& audio) = 0;
 		virtual void playBGM(Audio& audio) = 0;
-		virtual double getBGMTime() = 0;
+		virtual void stopBGM() {_bgm = nullptr;}
+		virtual Player* getBGM() {return _bgm.get();}
 
 		virtual std::string getButtonName(const Buttons& button) = 0;
 		virtual Buttons getPressed() = 0;
@@ -59,20 +60,6 @@ namespace SuperHaxagon {
 
 		virtual void shutdown() = 0;
 		virtual void message(Dbg level, const std::string& where, const std::string& message) = 0;
-
-		void stopBGM() {
-			_bgm = nullptr;
-		}
-
-		void pauseBGM() {
-			if (!_bgm) return;
-			_bgm->pause();
-		}
-
-		void resumeBGM() {
-			if (!_bgm) return;
-			_bgm->play();
-		}
 
 	protected:
 		Dbg _dbg;

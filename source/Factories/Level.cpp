@@ -79,19 +79,26 @@ namespace SuperHaxagon {
 		}
 
 		// Rotate level
-		_rotation += _factory.getSpeedRotation() * _multiplierRot * dilation;
+		_rotation += (_factory.getSpeedRotation() + _spin) * _multiplierRot * dilation;
 		if(_rotation >= TAU) _rotation -= TAU;
 		if(_rotation < 0) _rotation  += TAU;
 
-		// Flip level if needed
+		// Update effect timings
 		_flipFrame -= dilation;
-		if(_flipFrame <= 0) {
+		_spin -= _factory.getSpeedRotation() * SPIN_MULTIPLIER / FRAMES_PER_SPIN * dilation;
+		_pulse -= PULSE_DISTANCE / FRAMES_PER_PULSE * dilation;
+		if (_spin < 0) _spin = 0;
+		if (_pulse < 0) _pulse = 0;
+
+		// Flip level if needed
+		// Cannot flip while spin effect is happening
+		if(_spin == 0 && _flipFrame <= 0) {
 			_multiplierRot *= -1.0;
 			_flipFrame = rng.rand(FLIP_FRAMES_MIN, FLIP_FRAMES_MAX);
 		}
 	}
 
-	void Level::draw(Game& game, const double scale, const double offsetWall, const double offsetPulse) const {
+	void Level::draw(Game& game, const double scale, const double offsetWall) const {
 
 		// Calculate colors
 		const auto percentTween = _tweenFrame / _factory.getSpeedPulse();
@@ -105,20 +112,20 @@ namespace SuperHaxagon {
 		const auto center = game.getScreenCenter();
 		const auto shadow = game.getShadowOffset();
 
-		game.drawBackground(bg1, bg2, center, diagonal, _rotation, _sidesTween);
+		game.drawBackground(_bgInverted ? bg2 : bg1, _bgInverted ? bg1 : bg2, center, diagonal, _rotation, _sidesTween);
 
 		// Draw shadows
 		const auto cursorDistance = SCALE_HEX_LENGTH + SCALE_HUMAN_PADDING;
 		const Point offsetFocus = {center.x + shadow.x, center.y + shadow.y};
-		game.drawPatterns(COLOR_SHADOW, offsetFocus, _patterns, _rotation, _sidesTween, offsetWall + offsetPulse, scale);
-		game.drawRegular(COLOR_SHADOW, offsetFocus, (SCALE_HEX_LENGTH + offsetPulse) * scale, _rotation, _sidesTween);
-		game.drawCursor(COLOR_SHADOW, offsetFocus, _cursorPos, _rotation, offsetPulse + cursorDistance, scale);
+		game.drawPatterns(COLOR_SHADOW, offsetFocus, _patterns, _rotation, _sidesTween, offsetWall + _pulse, scale);
+		game.drawRegular(COLOR_SHADOW, offsetFocus, (SCALE_HEX_LENGTH + _pulse) * scale, _rotation, _sidesTween);
+		game.drawCursor(COLOR_SHADOW, offsetFocus, _cursorPos, _rotation, _pulse + cursorDistance, scale);
 
 		// Draw real thing
-		game.drawPatterns(fg, center, _patterns, _rotation, _sidesTween, offsetWall + offsetPulse, scale);
-		game.drawRegular(fg, center, (SCALE_HEX_LENGTH + offsetPulse) * scale, _rotation, _sidesTween);
-		game.drawRegular(bg2, center, (SCALE_HEX_LENGTH - SCALE_HEX_BORDER + offsetPulse) * scale, _rotation, _sidesTween);
-		game.drawCursor(fg, center, _cursorPos, _rotation, offsetPulse + cursorDistance, scale);
+		game.drawPatterns(fg, center, _patterns, _rotation, _sidesTween, offsetWall + _pulse, scale);
+		game.drawRegular(fg, center, (SCALE_HEX_LENGTH + _pulse) * scale, _rotation, _sidesTween);
+		game.drawRegular(bg2, center, (SCALE_HEX_LENGTH - SCALE_HEX_BORDER + _pulse) * scale, _rotation, _sidesTween);
+		game.drawCursor(fg, center, _cursorPos, _rotation, _pulse + cursorDistance, scale);
 	}
 
 	Movement Level::collision(const double cursorDistance, const double dilation) const {
@@ -167,6 +174,18 @@ namespace SuperHaxagon {
 	void Level::clamp() {
 		if(_cursorPos >= TAU) _cursorPos -= TAU;
 		if(_cursorPos < 0) _cursorPos  += TAU;
+	}
+
+	void Level::spin() {
+		_spin = _factory.getSpeedRotation() * SPIN_MULTIPLIER;
+	}
+	
+	void Level::invertBG() {
+		_bgInverted = !_bgInverted;
+	}
+	
+	void Level::pulse() {
+		_pulse = PULSE_DISTANCE;
 	}
 
 	LevelFactory::LevelFactory(std::ifstream& file, std::vector<std::shared_ptr<PatternFactory>>& shared, const Location location, Platform& platform) {

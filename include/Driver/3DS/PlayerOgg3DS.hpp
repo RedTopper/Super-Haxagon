@@ -22,15 +22,15 @@ namespace SuperHaxagon {
 		static void audioCallback(void*);
 		static LightEvent _event;
 
-	private:
 		void setChannel(int channel) override;
 		void setLoop(bool loop) override;
 
 		void play() override;
 		void pause() override;
-		bool isDone() override;
-		double getTime() override;
+		bool isDone() const override;
+		double getTime() const override;
 
+	private:
 		static bool audioDecode(stb_vorbis* file, ndspWaveBuf* buff, int channel);
 		static void audioThread(void*);
 

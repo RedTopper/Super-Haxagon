@@ -4,6 +4,7 @@
 #include <deque>
 #include <memory>
 
+#include "Core/Metadata.hpp"
 #include "Driver/Platform.hpp"
 
 namespace SuperHaxagon {
@@ -25,12 +26,13 @@ namespace SuperHaxagon {
 
 		Platform& getPlatform() const {return _platform;}
 		Twist& getTwister() const {return *_twister;}
-		Audio& getSfxBegin() const {return *_sfxBegin;}
-		Audio& getSfxHexagon() const {return *_sfxHexagon;}
-		Audio& getSfxOver() const {return *_sfxOver;}
-		Audio& getSfxSelect() const {return *_sfxSelect;}
-		Audio& getSfxLevelUp() const {return *_sfxLevelUp;}
-		Audio& getBgm() const {return *_bgm;}
+		Audio& getSFXBegin() const {return *_sfxBegin;}
+		Audio& getSFXHexagon() const {return *_sfxHexagon;}
+		Audio& getSFXOver() const {return *_sfxOver;}
+		Audio& getSFXSelect() const {return *_sfxSelect;}
+		Audio& getSFXLevelUp() const {return *_sfxLevelUp;}
+		Audio& getBGMAudio() const {return *_bgmAudio;}
+		Metadata& getBGMMetadata() const {return *_bgmMetadata;}
 
 		Font& getFontSmall() const {return *_small;}
 		Font& getFontLarge() const {return *_large;}
@@ -45,12 +47,13 @@ namespace SuperHaxagon {
 			return std::min(size.x, size.y);
 		}
 
-		void setRunning(bool running) {_running = running;}
-		void setSkew(double skew) {_skew = skew;}
-		void setShadowAuto(double shadowAuto) {_shadowAuto = shadowAuto;}
-		void setBgm(std::unique_ptr<Audio> bgm) {
-			if (_bgm) _platform.stopBGM();
-			_bgm = std::move(bgm);
+		void setRunning(const bool running) {_running = running;}
+		void setSkew(const double skew) {_skew = skew;}
+		void setShadowAuto(const bool shadowAuto) {_shadowAuto = shadowAuto;}
+		void setBGMMetadata(std::unique_ptr<Metadata> metadata) {_bgmMetadata = std::move(metadata);}
+		void setBGMAudio(std::unique_ptr<Audio> bgmAudio) {
+			if (_bgmAudio) _platform.stopBGM();
+			_bgmAudio = std::move(bgmAudio);
 		}
 
 		/**
@@ -125,7 +128,8 @@ namespace SuperHaxagon {
 		std::unique_ptr<Audio> _sfxOver;
 		std::unique_ptr<Audio> _sfxSelect;
 		std::unique_ptr<Audio> _sfxLevelUp;
-		std::unique_ptr<Audio> _bgm;
+		std::unique_ptr<Audio> _bgmAudio;
+		std::unique_ptr<Metadata> _bgmMetadata;
 
 		std::unique_ptr<Font> _small;
 		std::unique_ptr<Font> _large;

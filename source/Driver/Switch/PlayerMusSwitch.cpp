@@ -25,11 +25,11 @@ namespace SuperHaxagon {
 		Mix_PauseMusic();
 	}
 
-	bool PlayerMusSwitch::isDone() {
+	bool PlayerMusSwitch::isDone() const {
 		return !Mix_PlayingMusic();
 	}
 
-	double PlayerMusSwitch::getTime() {
+	double PlayerMusSwitch::getTime() const {
 		return 0;
 	}
 }

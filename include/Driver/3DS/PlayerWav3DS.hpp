@@ -11,15 +11,15 @@ namespace SuperHaxagon {
 		PlayerWav3DS(u8* data, u32 sampleRate, u32 dataSize, u16 channels, u16 bitsPerSample, u16 ndspFormat);
 		~PlayerWav3DS() override;
 
-	private:
 		void setChannel(const int channel) override { _channel = channel; }
 		void setLoop(const bool loop) override { _loop = loop; }
 		
 		void play() override;
 		void pause() override {};
-		bool isDone() override;
-		double getTime() override;
+		bool isDone() const override;
+		double getTime() const override;
 
+	private:
 		u8* _data;
 		u32 _sampleRate;
 		u32 _dataSize;

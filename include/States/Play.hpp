@@ -15,6 +15,7 @@ namespace SuperHaxagon {
 		static constexpr int PULSE_TIME = 75;
 		static constexpr double PULSE_TIMES = 2.0;
 		static constexpr double SKEW_MAX = 0.3;
+		static constexpr double SKEW_MIN_FRAMES = 120.0;
 
 		Play(Game& game, LevelFactory& factory, int levelIndex);
 		Play(Play&) = delete;

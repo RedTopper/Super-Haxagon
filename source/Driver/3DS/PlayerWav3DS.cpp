@@ -32,11 +32,11 @@ namespace SuperHaxagon {
 		ndspChnWaveBufAdd(_channel, &_buffer);
 	}
 
-	bool PlayerWav3DS::isDone() {
+	bool PlayerWav3DS::isDone() const {
 		return _buffer.status == NDSP_WBUF_DONE;
 	}
 
-	double PlayerWav3DS::getTime() {
+	double PlayerWav3DS::getTime() const {
 		// Don't care about the time of WAV files
 		return 0;
 	}

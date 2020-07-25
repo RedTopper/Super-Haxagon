@@ -90,10 +90,6 @@ namespace SuperHaxagon {
 		_bgm->play();
 	}
 
-	double PlatformSFML::getBGMTime() {
-		return _bgm ? _bgm->getTime() : 0.0;
-	}
-
 	std::string PlatformSFML::getButtonName(const Buttons& button) {
 		if (button.back) return "ESC";
 		if (button.select) return "ENTER";

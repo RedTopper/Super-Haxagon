@@ -20,22 +20,35 @@ namespace SuperHaxagon {
 	Play::~Play() = default;
 
 	void Play::enter() {
+		auto* bgm = _platform.getBGM();
+		if (bgm) bgm->play();
+		_platform.playSFX(_game.getSFXBegin());
 		_game.setShadowAuto(true);
-		_platform.resumeBGM();
-		_platform.playSFX(_game.getSfxBegin());
 	}
 
 	void Play::exit() {
-		_platform.pauseBGM();
+		auto* bgm = _platform.getBGM();
+		if (bgm) bgm->pause();
 	}
 
 	std::unique_ptr<State> Play::update(const double dilation) {
 		const auto maxRenderDistance = SCALE_BASE_DISTANCE * (_game.getScreenDimMax() / 400);
 
 		// Render the level with a skewed 3D look
-		const auto skewFrameMax = _level->getLevelFactory().getSpeedPulse() * 2.5;
+		auto skewFrameMax = _level->getLevelFactory().getSpeedPulse() * 2.5;
+		skewFrameMax = skewFrameMax < SKEW_MIN_FRAMES ? SKEW_MIN_FRAMES : skewFrameMax;
 		_skewFrame += dilation * _skewDirection * (_level->getLevelFactory().getSpeedRotation() > 0 ? 1 : 0);
 		_game.setSkew((-cos(_skewFrame / skewFrameMax * PI) + 1.0) / 2.0 * SKEW_MAX);
+
+		// Get effect data
+		auto& metadata = _game.getBGMMetadata();
+		const auto* bgm = _platform.getBGM();
+		const auto time = bgm ? bgm->getTime() : 0.0;
+
+		// Apply effects. More can be added here if needed.
+		if (metadata.getMetadata(time, "S")) _level->spin();
+		if (metadata.getMetadata(time, "I")) _level->invertBG();
+		if (metadata.getMetadata(time, "B")) _level->pulse();
 
 		// Update level
 		_level->update(_game.getTwister(), SCALE_HEX_LENGTH, maxRenderDistance, dilation);
@@ -46,6 +59,8 @@ namespace SuperHaxagon {
 		// Check collision
 		const auto cursorDistance = SCALE_HEX_LENGTH + SCALE_HUMAN_PADDING + SCALE_HUMAN_HEIGHT;
 		const auto hit = _level->collision(cursorDistance, dilation);
+
+		// Keys
 		if(pressed.back || hit == Movement::DEAD) {
 			return std::make_unique<Over>(_game, _factory, std::move(_level), _score, _levelIndex);
 		}
@@ -69,14 +84,14 @@ namespace SuperHaxagon {
 
 		if(lastScoreText != getScoreText(static_cast<int>(_score), false)) {
 			_level->increaseMultiplier();
-			_platform.playSFX(_game.getSfxLevelUp());
+			_platform.playSFX(_game.getSFXLevelUp());
 		}
 
 		return nullptr;
 	}
 
 	void Play::drawTop(const double scale) {
-		_level->draw(_game, scale, 0, 0);
+		_level->draw(_game, scale, 0);
 	}
 
 	void Play::drawBot(const double scale) {

@@ -93,11 +93,11 @@ namespace SuperHaxagon {
 		_diff = svcGetSystemTick();
 	}
 
-	bool PlayerOgg3DS::isDone() {
+	bool PlayerOgg3DS::isDone() const {
 		return !_quit;
 	}
 
-	double PlayerOgg3DS::getTime() {
+	double PlayerOgg3DS::getTime() const {
 		if (!_loaded) return 0;
 
 		// If we set diff (paused), we are frozen in time. Otherwise, the current timestamp is

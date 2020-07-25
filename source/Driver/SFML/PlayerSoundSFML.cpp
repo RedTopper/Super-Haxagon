@@ -18,11 +18,11 @@ namespace SuperHaxagon {
 		_sound->play();
 	}
 
-	bool PlayerSoundSFML::isDone() {
+	bool PlayerSoundSFML::isDone() const {
 		return _sound->getStatus() == sf::SoundSource::Stopped;
 	}
 
-	double PlayerSoundSFML::getTime() {
+	double PlayerSoundSFML::getTime() const {
 		return 0;
 	}
 }

@@ -18,7 +18,7 @@ namespace SuperHaxagon {
 		void play() override;
 		void pause() override {};
 		bool isDone() override {return true;}
-		double getVelocity() override {return 0.0;}
+		double getTime() override {return 0.0;}
 
 		Mix_Chunk* _sfx;
 	};

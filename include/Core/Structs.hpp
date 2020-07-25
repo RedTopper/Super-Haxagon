@@ -35,7 +35,6 @@ namespace SuperHaxagon {
 	static constexpr double SCALE_HEX_BORDER = 4.0;
 	static constexpr double SCALE_HUMAN_PADDING = 5.0;
 	static constexpr double SCALE_HUMAN_HEIGHT = 5.0;
-	static constexpr double SCALE_PULSE_MAX = 20.0;
 	static constexpr double SCALE_HUMAN_WIDTH = 5.0;
 
 	static const Color COLOR_SHADOW = {0, 0, 0, 0xC0};

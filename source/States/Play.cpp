@@ -2,7 +2,6 @@
 
 #include "Core/Game.hpp"
 #include "Driver/Font.hpp"
-#include "Driver/Audio.hpp"
 #include "Factories/Level.hpp"
 #include "States/Play.hpp"
 #include "States/Quit.hpp"
@@ -10,7 +9,7 @@
 
 namespace SuperHaxagon {
 
-	Play::Play(Game& game, LevelFactory& factory, int levelIndex) :
+	Play::Play(Game& game, LevelFactory& factory, const int levelIndex) :
 		_game(game),
 		_platform(game.getPlatform()),
 		_factory(factory),
@@ -31,7 +30,7 @@ namespace SuperHaxagon {
 	}
 
 	std::unique_ptr<State> Play::update(const double dilation) {
-		const auto maxRenderDistance = SCALE_BASE_DISTANCE * (_game.getScreenDimMax() / 240);
+		const auto maxRenderDistance = SCALE_BASE_DISTANCE * (_game.getScreenDimMax() / 400);
 
 		// Render the level with a skewed 3D look
 		const auto skewFrameMax = _level->getLevelFactory().getSpeedPulse() * 2.5;
@@ -77,7 +76,7 @@ namespace SuperHaxagon {
 	}
 
 	void Play::drawTop(const double scale) {
-		_level->draw(_game, scale, 0, _platform.getBgmVelocity() * SCALE_PULSE_MAX);
+		_level->draw(_game, scale, 0, 0);
 	}
 
 	void Play::drawBot(const double scale) {

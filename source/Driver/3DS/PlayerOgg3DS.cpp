@@ -5,8 +5,7 @@
 #include "Driver/3DS/PlayerOgg3DS.hpp"
 
 namespace SuperHaxagon {
-	const int BUFFER_MS = 200;
-	const int AVERAGE_MS = 40;
+	const int BUFFER_MS = 100;
 
 	LightEvent PlayerOgg3DS::_event{};
 
@@ -38,9 +37,10 @@ namespace SuperHaxagon {
 
 	PlayerOgg3DS::~PlayerOgg3DS() {
 		if (!_loaded) return;
+
+		_quit = true;
+
 		if (_thread) {
-			_quit = true;
-			_paused = false;
 			LightEvent_Signal(&_event);
 			threadJoin(_thread, UINT64_MAX);
 			threadFree(_thread);
@@ -64,8 +64,10 @@ namespace SuperHaxagon {
 		if (!_loaded) return;
 
 		if (_thread) {
-			_paused = false;
+			if (_diff) _start += svcGetSystemTick() - _diff;
+			ndspChnSetPaused(_channel, false);
 			LightEvent_Signal(&_event);
+			_diff = 0;
 			return;
 		}
 
@@ -81,45 +83,36 @@ namespace SuperHaxagon {
 		priority = priority < 0x18 ? 0x18 : priority;
 		priority = priority > 0x3F ? 0x3F : priority;
 
-		// Start the thread, passing our opusFile as an argument.
+		// Start the thread, passing the player as an argument.
 		_thread = threadCreate(audioThread, this, THREAD_STACK_SZ, priority, THREAD_AFFINITY, false);
+		_start = svcGetSystemTick();
 	}
 
-
 	void PlayerOgg3DS::pause() {
-		_paused = true;
-		ndspChnWaveBufClear(_channel);
+		ndspChnSetPaused(_channel, true);
+		_diff = svcGetSystemTick();
 	}
 
 	bool PlayerOgg3DS::isDone() {
 		return !_quit;
 	}
 
-	double PlayerOgg3DS::getVelocity() {
-		if (!_loaded || !_currentBuffer) return 0;
+	double PlayerOgg3DS::getTime() {
+		if (!_loaded) return 0;
 
-		const auto offset = svcGetSystemTick() - _tick;
-		auto* buffer = _currentBuffer;
-		auto ms = static_cast<int>(offset / CPU_TICKS_PER_MSEC);
-		ms = ms > BUFFER_MS - AVERAGE_MS ? BUFFER_MS - AVERAGE_MS : (ms < 0 ? 0 : ms);
-		const auto samplesToAverage = _oggFile->sample_rate * AVERAGE_MS / 1000;
-		const auto samplesStart = _oggFile->sample_rate * ms / 1000;
-		auto total = 0.0;
-		for (unsigned int i = 0; i < samplesToAverage; i+= _oggFile->channels) {
-			total += pow(static_cast<double>(buffer[samplesStart + i]), 2);
-		}
-
-		const auto val = sqrt(total / samplesToAverage) / 32767;
-		return val > 1 ? 1 : val;
+		// If we set diff (paused), we are frozen in time. Otherwise, the current timestamp is
+		// the system minus the start of the song.
+		auto ticks = _diff ? _diff - _start : svcGetSystemTick() - _start;
+		auto timeMs = static_cast<double>(ticks) / CPU_TICKS_PER_MSEC;
+		return timeMs / 1000.0;
 	}
 
-	bool PlayerOgg3DS::audioDecode(stb_vorbis* file, ndspWaveBuf* buff, const int channel, const bool loop) {
+	bool PlayerOgg3DS::audioDecode(stb_vorbis* file, ndspWaveBuf* buff, const int channel) {
 		long totalSamples = 0;
 
 		while (totalSamples < static_cast<long>(getSamplesPerBuff(file->sample_rate))) {
 			auto* const buffer = buff->data_pcm16 + (totalSamples * file->channels);
 			const size_t bufferSize = (getSamplesPerBuff(file->sample_rate) - totalSamples) * file->channels;
-
 
 			const auto samples = stb_vorbis_get_samples_short_interleaved(file, file->channels, buffer, bufferSize);
 			if (samples <= 0) break;
@@ -127,17 +120,10 @@ namespace SuperHaxagon {
 			totalSamples += samples;
 		}
 
-		if (totalSamples == 0) {
-			if (loop) {
-				stb_vorbis_seek_start(file);
-			} else {
-				return false;
-			}
-		}
-
+		if (totalSamples == 0) return false;
 		buff->nsamples = totalSamples;
 		ndspChnWaveBufAdd(channel, buff);
-		DSP_FlushDataCache(buff->data_pcm16,totalSamples * file->channels * sizeof(int16_t));
+		DSP_FlushDataCache(buff->data_pcm16, totalSamples * file->channels * sizeof(int16_t));
 		return true;
 	}
 
@@ -150,12 +136,17 @@ namespace SuperHaxagon {
 		if (!pointer) return;
 
 		while(!pointer->_quit) {
-			if (!pointer->_paused) {
-				for (auto& _waveBuff : pointer->_waveBuffs) {
-					if (_waveBuff.status != NDSP_WBUF_DONE) continue;
-					if (!audioDecode(pointer->_oggFile, &_waveBuff, pointer->_channel, pointer->_loop)) return;
-					pointer->_currentBuffer = _waveBuff.data_pcm16;
-					pointer->_tick = svcGetSystemTick();
+			for (auto& _waveBuff : pointer->_waveBuffs) {
+				if (_waveBuff.status != NDSP_WBUF_DONE) continue;
+				if (!audioDecode(pointer->_oggFile, &_waveBuff, pointer->_channel)) {
+					if (!pointer->_loop) {
+						pointer->_quit = true;
+						return;
+					}
+
+					// We are looping, so go back to the beginning
+					stb_vorbis_seek_start(pointer->_oggFile);
+					pointer->_start = svcGetSystemTick();
 				}
 			}
 

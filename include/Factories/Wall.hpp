@@ -1,7 +1,6 @@
 #ifndef SUPER_HAXAGON_WALL_HPP
 #define SUPER_HAXAGON_WALL_HPP
 
-#include <memory>
 #include <array>
 
 #include "Core/Structs.hpp"
@@ -37,7 +36,7 @@ namespace SuperHaxagon {
 
 		WallFactory(std::ifstream& file, int maxSides);
 
-		std::unique_ptr<Wall> instantiate(double offsetDistance, int offsetSide, int sides) const;
+		Wall instantiate(double offsetDistance, int offsetSide, int sides) const;
 
 	private:
 		uint16_t _distance = 0;

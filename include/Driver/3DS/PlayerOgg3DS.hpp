@@ -29,26 +29,25 @@ namespace SuperHaxagon {
 		void play() override;
 		void pause() override;
 		bool isDone() override;
-		double getVelocity() override;
+		double getTime() override;
 
-		static bool audioDecode(stb_vorbis* file, ndspWaveBuf* buff, int channel, bool loop);
+		static bool audioDecode(stb_vorbis* file, ndspWaveBuf* buff, int channel);
 		static void audioThread(void*);
 
 		// 120 ms per buffer
 		static unsigned int getSamplesPerBuff(unsigned int sampleRate);
 		static unsigned int getWaveBuffSize(unsigned int sampleRate, int channels);
 
-		Thread _thread{};
+		Thread _thread = nullptr;
 		int16_t* _audioBuffer = nullptr;
-		int16_t* _currentBuffer = nullptr;
-		int64_t _tick = 0;
 		stb_vorbis* _oggFile = nullptr;
 		std::array<ndspWaveBuf, 3> _waveBuffs{};
 		volatile bool _loaded = false;   // if data is loaded
 		volatile bool _loop = false;     // if audio should loop
 		volatile bool _quit = false;     // if thread should be shut down
-		volatile bool _paused = false;   // if music is currently paused
 		volatile int _channel = 0;
+		volatile uint64_t _start = 0;
+		volatile uint64_t _diff = 0;
 	};
 }
 

@@ -185,8 +185,8 @@ namespace SuperHaxagon {
 		_bgm->play();
 	}
 
-	double PlatformSwitch::getBgmVelocity() {
-		return _bgm ? _bgm->getVelocity() : 0.0;
+	double PlatformSwitch::getBGMTime() {
+		return _bgm ? _bgm->getTime() : 0.0;
 	}
 
 	std::string PlatformSwitch::getPath(const std::string& partial) {

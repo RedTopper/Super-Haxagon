@@ -26,7 +26,7 @@ namespace SuperHaxagon {
 		return _music->getStatus() == sf::SoundSource::Stopped;
 	}
 
-	double PlayerMusicSFML::getVelocity() {
+	double PlayerMusicSFML::getTime() {
 		return 0;
 	}
 }

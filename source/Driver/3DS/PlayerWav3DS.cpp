@@ -36,8 +36,8 @@ namespace SuperHaxagon {
 		return _buffer.status == NDSP_WBUF_DONE;
 	}
 
-	double PlayerWav3DS::getVelocity() {
-		// Don't care about the velocity of WAV files
+	double PlayerWav3DS::getTime() {
+		// Don't care about the time of WAV files
 		return 0;
 	}
 }

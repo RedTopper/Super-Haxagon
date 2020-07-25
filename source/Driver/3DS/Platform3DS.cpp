@@ -55,6 +55,9 @@ namespace SuperHaxagon {
 	}
 
 	Platform3DS::~Platform3DS() {
+		// Call d'tors before filesystem and audio shutdown.
+		for (auto& track : _sfx) track = nullptr;
+		_bgm = nullptr;
 		C2D_Fini();
 		C3D_Fini();
 		gfxExit();
@@ -63,11 +66,13 @@ namespace SuperHaxagon {
 	}
 
 	bool Platform3DS::loop() {
+		_delta = (svcGetSystemTick() - _last) / CPU_TICKS_PER_MSEC / 1000.0;
+		_last = svcGetSystemTick();
 		return aptMainLoop();
 	}
 
 	double Platform3DS::getDilation() {
-		return 1.0;
+		return _delta / (1.0 / 60.0);
 	}
 
 	std::string Platform3DS::getPath(const std::string& partial) {
@@ -115,8 +120,8 @@ namespace SuperHaxagon {
 		_bgm->play();
 	}
 
-	double Platform3DS::getBgmVelocity() {
-		if (_bgm) return _bgm->getVelocity();
+	double Platform3DS::getBGMTime() {
+		if (_bgm) return _bgm->getTime();
 		return 0;
 	}
 

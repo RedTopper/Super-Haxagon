@@ -29,7 +29,7 @@ namespace SuperHaxagon {
 		return !Mix_PlayingMusic();
 	}
 
-	double PlayerMusSwitch::getVelocity() {
+	double PlayerMusSwitch::getTime() {
 		return 0;
 	}
 }

@@ -5,23 +5,22 @@
 #include <string>
 #include <memory>
 
+#include "Factories/Wall.hpp"
+
 namespace SuperHaxagon {
 	class Twist;
-	class Wall;
-	class WallFactory;
-
 	class Pattern {
 	public:
-		Pattern(std::vector<std::unique_ptr<Wall>> walls, int sides);
+		Pattern(std::vector<Wall> walls, int sides);
 
-		const std::vector<std::unique_ptr<Wall>>& getWalls() const {return _walls;}
+		const std::vector<Wall>& getWalls() const {return _walls;}
 		int getSides() const {return _sides;}
 
 		double getFurthestWallDistance() const;
 		void advance(double speed);
 
 	private:
-		std::vector<std::unique_ptr<Wall>> _walls;
+		std::vector<Wall> _walls;
 		int _sides;
 	};
 
@@ -34,14 +33,14 @@ namespace SuperHaxagon {
 		PatternFactory(std::ifstream& file, Platform& platform);
 		~PatternFactory();
 
-		std::unique_ptr<Pattern> instantiate(Twist& rng, double distance) const;
+		Pattern instantiate(Twist& rng, double distance) const;
 
 		bool isLoaded() const {return _loaded;}
 
 		std::string getName() const {return _name;}
 
 	private:
-		std::vector<std::unique_ptr<WallFactory>> _walls;
+		std::vector<WallFactory> _walls;
 		std::string _name  = "";
 		int _sides = 0;
 		bool _loaded = false;

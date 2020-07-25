@@ -23,6 +23,7 @@ namespace SuperHaxagon {
 	}
 
 	Game::~Game() {
+		_platform.stopBGM();
 		_platform.message(SuperHaxagon::Dbg::INFO, "game", "shutdown ok");
 	}
 
@@ -144,10 +145,10 @@ namespace SuperHaxagon {
 		_platform.drawTriangle(color, triangle);
 	}
 
-	void Game::drawPatterns(const Color& color, const Point& focus, const std::deque<std::unique_ptr<Pattern>>& patterns, const double rotation, const double sides, const double offset, const double scale) const {
+	void Game::drawPatterns(const Color& color, const Point& focus, const std::deque<Pattern>& patterns, const double rotation, const double sides, const double offset, const double scale) const {
 		for(const auto& pattern : patterns) {
-			for(const auto& wall : pattern->getWalls()) {
-				drawWalls(color, focus, *wall, rotation, sides, offset, scale);
+			for(const auto& wall : pattern.getWalls()) {
+				drawWalls(color, focus, wall, rotation, sides, offset, scale);
 			}
 		}
 	}

@@ -20,12 +20,12 @@ namespace SuperHaxagon {
 			const auto pSelected = rng.rand(pCount - 1);
 			const auto& pattern = factory.getPatterns()[pSelected];
 			_patterns.emplace_back(pattern->instantiate(rng, distance));
-			distance = _patterns.back()->getFurthestWallDistance();
-		} while (_patterns.back()->getFurthestWallDistance() < patternDistCreate);
+			distance = _patterns.back().getFurthestWallDistance();
+		} while (_patterns.back().getFurthestWallDistance() < patternDistCreate);
 
 		//set up the amount of sides the level should have.
-		_lastSides = _patterns.front()->getSides();
-		_currentSides = _patterns.front()->getSides();
+		_lastSides = _patterns.front().getSides();
+		_currentSides = _patterns.front().getSides();
 		_cursorPos = TAU/4.0 + (factory.getSpeedCursor() / 2.0);
 	}
 
@@ -49,7 +49,7 @@ namespace SuperHaxagon {
 		if(_delayFrame <= 0) {
 			_sidesTween = _currentSides;
 			for(auto& pattern : _patterns) {
-				pattern->advance(_factory.getSpeedWall() * dilation * _multiplierWalls);
+				pattern.advance(_factory.getSpeedWall() * dilation * _multiplierWalls);
 			}
 		} else {
 			const auto percent = _delayFrame / _delayMax;
@@ -58,10 +58,10 @@ namespace SuperHaxagon {
 		}
 
 		// Shift patterns forward
-		if(_patterns.front()->getFurthestWallDistance() < patternDistDelete) {
-			_lastSides = _patterns.front()->getSides();
+		if(_patterns.front().getFurthestWallDistance() < patternDistDelete) {
+			_lastSides = _patterns.front().getSides();
 			_patterns.pop_front();
-			_currentSides = _patterns.front()->getSides();
+			_currentSides = _patterns.front().getSides();
 
 			// Delay the level if the shifted pattern does  not have the same sides as the last.
 			if(_lastSides != _currentSides) {
@@ -71,11 +71,11 @@ namespace SuperHaxagon {
 		}
 
 		// Create new pattern if needed
-		if (_patterns.size() < 2 || _patterns.back()->getFurthestWallDistance() < patternDistCreate) {
+		if (_patterns.size() < 2 || _patterns.back().getFurthestWallDistance() < patternDistCreate) {
 			const auto pCount = static_cast<int>(_factory.getPatterns().size());
 			const auto pSelected = rng.rand(pCount - 1);
 			const auto& pattern = _factory.getPatterns()[pSelected];
-			_patterns.emplace_back(pattern->instantiate(rng, _patterns.back()->getFurthestWallDistance()));
+			_patterns.emplace_back(pattern->instantiate(rng, _patterns.back().getFurthestWallDistance()));
 		}
 
 		// Rotate level
@@ -91,7 +91,7 @@ namespace SuperHaxagon {
 		}
 	}
 
-	void Level::draw(Game& game, const double scale, const double offset, const double beat) const {
+	void Level::draw(Game& game, const double scale, const double offsetWall, const double offsetPulse) const {
 
 		// Calculate colors
 		const auto percentTween = _tweenFrame / _factory.getSpeedPulse();
@@ -110,15 +110,15 @@ namespace SuperHaxagon {
 		// Draw shadows
 		const auto cursorDistance = SCALE_HEX_LENGTH + SCALE_HUMAN_PADDING;
 		const Point offsetFocus = {center.x + shadow.x, center.y + shadow.y};
-		game.drawPatterns(COLOR_SHADOW, offsetFocus, _patterns, _rotation, _sidesTween, offset + beat, scale);
-		game.drawRegular(COLOR_SHADOW, offsetFocus, (SCALE_HEX_LENGTH + beat) * scale, _rotation, _sidesTween);
-		game.drawCursor(COLOR_SHADOW, offsetFocus, _cursorPos, _rotation, beat + cursorDistance, scale);
+		game.drawPatterns(COLOR_SHADOW, offsetFocus, _patterns, _rotation, _sidesTween, offsetWall + offsetPulse, scale);
+		game.drawRegular(COLOR_SHADOW, offsetFocus, (SCALE_HEX_LENGTH + offsetPulse) * scale, _rotation, _sidesTween);
+		game.drawCursor(COLOR_SHADOW, offsetFocus, _cursorPos, _rotation, offsetPulse + cursorDistance, scale);
 
 		// Draw real thing
-		game.drawPatterns(fg, center, _patterns, _rotation, _sidesTween, offset+ beat, scale);
-		game.drawRegular(fg, center, (SCALE_HEX_LENGTH + beat) * scale, _rotation, _sidesTween);
-		game.drawRegular(bg2, center, (SCALE_HEX_LENGTH - SCALE_HEX_BORDER + beat) * scale, _rotation, _sidesTween);
-		game.drawCursor(fg, center, _cursorPos, _rotation, beat + cursorDistance, scale);
+		game.drawPatterns(fg, center, _patterns, _rotation, _sidesTween, offsetWall + offsetPulse, scale);
+		game.drawRegular(fg, center, (SCALE_HEX_LENGTH + offsetPulse) * scale, _rotation, _sidesTween);
+		game.drawRegular(bg2, center, (SCALE_HEX_LENGTH - SCALE_HEX_BORDER + offsetPulse) * scale, _rotation, _sidesTween);
+		game.drawCursor(fg, center, _cursorPos, _rotation, offsetPulse + cursorDistance, scale);
 	}
 
 	Movement Level::collision(const double cursorDistance, const double dilation) const {
@@ -128,8 +128,8 @@ namespace SuperHaxagon {
 		for(const auto& pattern : _patterns) {
 
 			// For all walls
-			for(const auto& wall : pattern->getWalls()) {
-				const auto check = wall->collision(cursorDistance, _cursorPos, _factory.getSpeedCursor() * dilation, pattern->getSides());
+			for(const auto& wall : pattern.getWalls()) {
+				const auto check = wall.collision(cursorDistance, _cursorPos, _factory.getSpeedCursor() * dilation, pattern.getSides());
 
 				// Update collision
 				if(collision == Movement::CAN_MOVE) collision = check; //If we can move, try and replace it with something else

@@ -83,7 +83,7 @@ namespace SuperHaxagon {
 		 * Completely draws all patterns in a live level. Can also be used to create
 		 * an "Explosion" effect if you use "offset". (for game overs)
 		 */
-		void drawPatterns(const Color& color, const Point& focus, const std::deque<std::unique_ptr<Pattern>>& patterns, double rotation, double sides, double offset, double scale) const;
+		void drawPatterns(const Color& color, const Point& focus, const std::deque<Pattern>& patterns, double rotation, double sides, double offset, double scale) const;
 
 		/**
 		 * Draws a single moving wall based on a live wall, a color, some rotational value, and the total

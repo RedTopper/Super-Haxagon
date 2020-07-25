@@ -7,6 +7,7 @@
 #include <deque>
 
 #include "Core/Structs.hpp"
+#include "Factories/Pattern.hpp"
 
 namespace SuperHaxagon {
 	enum class Location {
@@ -16,7 +17,6 @@ namespace SuperHaxagon {
 
 	class Game;
 	class LevelFactory;
-	class Pattern;
 	class PatternFactory;
 	class Twist;
 
@@ -33,7 +33,7 @@ namespace SuperHaxagon {
 		~Level();
 
 		void update(Twist& rng, double patternDistDelete, double patternDistCreate, double dilation);
-		void draw(Game& game, const double scale, const double offset, const double beat) const;
+		void draw(Game& game, const double scale, const double offsetWall, const double offsetPulse) const;
 		Movement collision(double cursorDistance, double dilation) const;
 
 		void increaseMultiplier();
@@ -48,7 +48,7 @@ namespace SuperHaxagon {
 	private:
 		const LevelFactory& _factory;
 
-		std::deque<std::unique_ptr<Pattern>> _patterns;
+		std::deque<Pattern> _patterns;
 
 		double _multiplierRot = 0.9; // Current direction and speed of rotation
 		double _multiplierWalls = 0.85; // Current speed of the walls flying at you
@@ -118,10 +118,10 @@ namespace SuperHaxagon {
 		Location _location = Location::INTERNAL;
 
 		int _highScore = 0;
-		int _speedPulse;
-		float _speedWall;
-		float _speedRotation;
-		float _speedCursor;
+		int _speedPulse = 0;
+		float _speedWall = 0;
+		float _speedRotation = 0;
+		float _speedCursor = 0;
 		bool _loaded = false;
 	};
 }

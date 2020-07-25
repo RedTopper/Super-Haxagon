@@ -18,7 +18,7 @@ namespace SuperHaxagon {
 		void play() override;
 		void pause() override {};
 		bool isDone() override;
-		double getVelocity() override;
+		double getTime() override;
 
 		u8* _data;
 		u32 _sampleRate;

@@ -32,11 +32,18 @@ namespace SuperHaxagon {
 			}
 
 			if (event.type == sf::Event::Resized) {
+				const auto width = event.size.width > 400 ? event.size.width : 400;
+				const auto height = event.size.height > 240 ? event.size.height : 240;
+
+				if (width != event.size.width || height != event.size.height) {
+					_window->setSize({ width, height });
+				}
+				
 				sf::FloatRect visibleArea(
 					0.0f, 
 					0.0f, 
-					static_cast<float>(event.size.width), 
-					static_cast<float>(event.size.height)
+					static_cast<float>(width), 
+					static_cast<float>(height)
 				);
 
 				_window->setView(sf::View(visibleArea));
@@ -83,8 +90,8 @@ namespace SuperHaxagon {
 		_bgm->play();
 	}
 
-	double PlatformSFML::getBgmVelocity() {
-		return _bgm ? _bgm->getVelocity() : 0.0;
+	double PlatformSFML::getBGMTime() {
+		return _bgm ? _bgm->getTime() : 0.0;
 	}
 
 	std::string PlatformSFML::getButtonName(const Buttons& button) {

@@ -90,11 +90,11 @@ namespace SuperHaxagon {
 		if(_side >= maxSides) _side = maxSides - 1;
 	}
 
-	std::unique_ptr<Wall> WallFactory::instantiate(const double offsetDistance, const int offsetSide, const int sides) const {
+	Wall WallFactory::instantiate(const double offsetDistance, const int offsetSide, const int sides) const {
 		auto newSide = _side + offsetSide;
 		newSide = newSide >= sides ? newSide - sides : newSide;
-		auto newDistance = _distance + offsetDistance;
-		double newHeight = _height;
-		return std::make_unique<Wall>(newDistance, newHeight, newSide);
+		const auto newDistance = _distance + offsetDistance;
+		const double newHeight = _height;
+		return {newDistance, newHeight, newSide};
 	}
 }

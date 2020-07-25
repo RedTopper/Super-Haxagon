@@ -31,7 +31,7 @@ namespace SuperHaxagon {
 
 	static constexpr double SCALE_MENU = 4.0;
 	static constexpr double SCALE_BASE_DISTANCE = 300.0;
-	static constexpr double SCALE_HEX_LENGTH = 20.0;
+	static constexpr double SCALE_HEX_LENGTH = 22.0;
 	static constexpr double SCALE_HEX_BORDER = 4.0;
 	static constexpr double SCALE_HUMAN_PADDING = 5.0;
 	static constexpr double SCALE_HUMAN_HEIGHT = 5.0;

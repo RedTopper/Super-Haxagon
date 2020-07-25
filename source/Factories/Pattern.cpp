@@ -6,7 +6,7 @@ namespace SuperHaxagon {
 	const char* PatternFactory::PATTERN_HEADER = "PTN1.1";
 	const char* PatternFactory::PATTERN_FOOTER = "ENDPTN";
 
-	Pattern::Pattern(std::vector<Wall> walls, const int sides) : _walls(std::move(walls)), _sides(sides) {}
+	Pattern::Pattern(std::vector<Wall>& walls, const int sides) : _walls(std::move(walls)), _sides(sides) {}
 
 	double Pattern::getFurthestWallDistance() const {
 		double maxDistance = 0;

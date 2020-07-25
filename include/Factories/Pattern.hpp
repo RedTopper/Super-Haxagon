@@ -3,7 +3,6 @@
 
 #include <vector>
 #include <string>
-#include <memory>
 
 #include "Factories/Wall.hpp"
 
@@ -11,7 +10,7 @@ namespace SuperHaxagon {
 	class Twist;
 	class Pattern {
 	public:
-		Pattern(std::vector<Wall> walls, int sides);
+		Pattern(std::vector<Wall>& walls, int sides);
 
 		const std::vector<Wall>& getWalls() const {return _walls;}
 		int getSides() const {return _sides;}

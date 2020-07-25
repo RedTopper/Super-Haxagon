@@ -5,7 +5,7 @@
 #include "Driver/3DS/PlayerOgg3DS.hpp"
 
 namespace SuperHaxagon {
-	const int BUFFER_MS = 100;
+	const int BUFFER_MS = 200;
 
 	LightEvent PlayerOgg3DS::_event{};
 
@@ -79,7 +79,7 @@ namespace SuperHaxagon {
 		int32_t priority = 0x30;
 		svcGetThreadPriority(&priority, CUR_THREAD_HANDLE);
 
-		priority -= 1; // Set higher priority and clamp
+		priority += 1; // Set LOWER priority and clamp
 		priority = priority < 0x18 ? 0x18 : priority;
 		priority = priority > 0x3F ? 0x3F : priority;
 
@@ -102,8 +102,8 @@ namespace SuperHaxagon {
 
 		// If we set diff (paused), we are frozen in time. Otherwise, the current timestamp is
 		// the system minus the start of the song.
-		auto ticks = _diff ? _diff - _start : svcGetSystemTick() - _start;
-		auto timeMs = static_cast<double>(ticks) / CPU_TICKS_PER_MSEC;
+		const auto ticks = _diff ? _diff - _start : svcGetSystemTick() - _start;
+		const auto timeMs = static_cast<double>(ticks) / CPU_TICKS_PER_MSEC;
 		return timeMs / 1000.0;
 	}
 
@@ -136,9 +136,9 @@ namespace SuperHaxagon {
 		if (!pointer) return;
 
 		while(!pointer->_quit) {
-			for (auto& _waveBuff : pointer->_waveBuffs) {
-				if (_waveBuff.status != NDSP_WBUF_DONE) continue;
-				if (!audioDecode(pointer->_oggFile, &_waveBuff, pointer->_channel)) {
+			for (auto& waveBuff : pointer->_waveBuffs) {
+				if (waveBuff.status != NDSP_WBUF_DONE) continue;
+				if (!audioDecode(pointer->_oggFile, &waveBuff, pointer->_channel)) {
 					if (!pointer->_loop) {
 						pointer->_quit = true;
 						return;

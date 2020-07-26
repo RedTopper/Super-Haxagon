@@ -3,11 +3,9 @@
 #include "Driver/Platform.hpp"
 
 #include <cmath>
-#include <fstream> // CLion I PROMISE this header is used.
 #include <iomanip>
 #include <sstream>
 #include <string>
-
 
 namespace SuperHaxagon {
 	Color interpolateColor(const Color& one, const Color& two, const double percent) {

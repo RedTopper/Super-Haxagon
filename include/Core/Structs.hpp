@@ -2,7 +2,7 @@
 #define SUPER_HAXAGON_STRUCTS_HPP
 
 #include <cstdint>
-#include <iostream>
+#include <fstream>
 #include <string>
 
 namespace SuperHaxagon {

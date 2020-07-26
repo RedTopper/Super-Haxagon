@@ -27,9 +27,9 @@ namespace SuperHaxagon {
 		static constexpr double FLIP_FRAMES_MIN = 120;
 		static constexpr double FLIP_FRAMES_MAX = 600;
 		static constexpr double FRAMES_PER_CHANGE_SIDE = 50;
-		static constexpr double FRAMES_PER_SPIN = 100;
+		static constexpr double FRAMES_PER_SPIN = 90;
 		static constexpr double FRAMES_PER_PULSE = 10;
-		static constexpr double SPIN_SPEED = TAU / 80.0;
+		static constexpr double SPIN_SPEED = TAU / 160.0;
 		static constexpr double PULSE_DISTANCE = 4.0;
 
 		Level(const LevelFactory& factory, Twist& rng, double patternDistCreate);
@@ -50,7 +50,7 @@ namespace SuperHaxagon {
 		// Effects
 		void spin();
 		void invertBG();
-		void pulse();
+		void pulse(double scale);
 
 		const LevelFactory& getLevelFactory() const {return _factory;}
 

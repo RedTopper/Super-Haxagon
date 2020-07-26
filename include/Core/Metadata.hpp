@@ -15,7 +15,7 @@ namespace SuperHaxagon {
 		bool getMetadata(double time, const std::string& label);
 
 	private:
-		double _time;
+		double _time = 0;
 		std::map<std::string, std::vector<double>> _timestamps;
 		std::map<std::string, size_t> _indices;
 	};

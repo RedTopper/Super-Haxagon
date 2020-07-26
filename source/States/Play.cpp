@@ -53,7 +53,8 @@ namespace SuperHaxagon {
 		// Apply effects. More can be added here if needed.
 		if (metadata.getMetadata(time, "S")) _level->spin();
 		if (metadata.getMetadata(time, "I")) _level->invertBG();
-		if (metadata.getMetadata(time, "B")) _level->pulse();
+		if (metadata.getMetadata(time, "BL")) _level->pulse(1.0);
+		if (metadata.getMetadata(time, "BS")) _level->pulse(0.5);
 
 		// Update level
 		_level->update(_game.getTwister(), SCALE_HEX_LENGTH, maxRenderDistance, dilation);
@@ -138,7 +139,7 @@ namespace SuperHaxagon {
 
 		// Draw the current score
 		const auto textScore = "TIME: " + getTime(_score);
-		const Point scorePosText = { width - pad - _scoreWidth, pad};
+		const Point scorePosText = {width - pad - _scoreWidth, pad};
 		const Point scoreBkgPos = {scorePosText.x - pad, 0};
 		Point scoreBkgSize = {
 			width - scoreBkgPos.x,

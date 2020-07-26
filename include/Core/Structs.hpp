@@ -30,7 +30,7 @@ namespace SuperHaxagon {
 	static constexpr double PI = 3.14159265358979323846;
 	static constexpr double TAU = PI * 2;
 
-	static constexpr double SCALE_MENU = 4.0;
+	static constexpr double SCALE_MENU = 3.5;
 	static constexpr double SCALE_BASE_DISTANCE = 300.0;
 	static constexpr double SCALE_HEX_LENGTH = 24.0;
 	static constexpr double SCALE_HEX_BORDER = 4.0;

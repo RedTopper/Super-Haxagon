@@ -184,8 +184,8 @@ namespace SuperHaxagon {
 		_bgInverted = !_bgInverted;
 	}
 	
-	void Level::pulse() {
-		_pulse = PULSE_DISTANCE;
+	void Level::pulse(const double scale) {
+		_pulse = PULSE_DISTANCE * scale;
 	}
 
 	LevelFactory::LevelFactory(std::ifstream& file, std::vector<std::shared_ptr<PatternFactory>>& shared, const Location location, Platform& platform) {

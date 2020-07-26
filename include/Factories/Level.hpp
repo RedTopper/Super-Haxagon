@@ -30,7 +30,7 @@ namespace SuperHaxagon {
 		static constexpr double FRAMES_PER_SPIN = 90;
 		static constexpr double FRAMES_PER_PULSE = 10;
 		static constexpr double SPIN_SPEED = TAU / 160.0;
-		static constexpr double PULSE_DISTANCE = 4.0;
+		static constexpr double PULSE_DISTANCE = 5.0;
 
 		Level(const LevelFactory& factory, Twist& rng, double patternDistCreate);
 		Level(Level&) = delete;

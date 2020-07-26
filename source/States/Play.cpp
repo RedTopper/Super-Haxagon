@@ -54,7 +54,7 @@ namespace SuperHaxagon {
 		if (metadata.getMetadata(time, "S")) _level->spin();
 		if (metadata.getMetadata(time, "I")) _level->invertBG();
 		if (metadata.getMetadata(time, "BL")) _level->pulse(1.0);
-		if (metadata.getMetadata(time, "BS")) _level->pulse(0.5);
+		if (metadata.getMetadata(time, "BS")) _level->pulse(0.4);
 
 		// Update level
 		_level->update(_game.getTwister(), SCALE_HEX_LENGTH, maxRenderDistance, dilation);

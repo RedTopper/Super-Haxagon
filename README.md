@@ -85,8 +85,13 @@ were taken on actual hardware.
 
 ### Cross Platform
 
+#### ... on Windows
 ![In Game Windows](./media/screenshots/Windows_2020-07-10_014324.png "In Game Windows")
+
+#### ... on the 3DS
 ![In Game 3DS](./media/screenshots/luma-2020-07-11-06-48-44-586.png "In Game 3DS")
+
+#### ... on the Switch
 ![In Game Switch Video](./media/screenshots/switch.gif "In Game Switch (GIF)")
 
 <details><summary>More Screenshots</summary>

@@ -23,13 +23,13 @@ namespace SuperHaxagon {
 	class Level {
 	public:
 		static constexpr double DIFFICULTY_SCALAR_WALLS = 0.04;
-		static constexpr double DIFFICULTY_SCALAR_ROT = 0.09;
+		static constexpr double DIFFICULTY_SCALAR_ROT = 0.1;
 		static constexpr double FLIP_FRAMES_MIN = 120;
 		static constexpr double FLIP_FRAMES_MAX = 600;
 		static constexpr double FRAMES_PER_CHANGE_SIDE = 50;
 		static constexpr double FRAMES_PER_SPIN = 90;
 		static constexpr double FRAMES_PER_PULSE = 10;
-		static constexpr double SPIN_SPEED = TAU / 160.0;
+		static constexpr double SPIN_SPEED = TAU / 130.0;
 		static constexpr double PULSE_DISTANCE = 5.0;
 
 		Level(const LevelFactory& factory, Twist& rng, double patternDistCreate);

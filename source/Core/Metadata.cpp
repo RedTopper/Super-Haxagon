@@ -1,7 +1,7 @@
+#include "Core/Metadata.hpp"
+
 #include <fstream>
 #include <sstream>
-
-#include "Core/Metadata.hpp"
 
 namespace SuperHaxagon {
 	Metadata::Metadata(const std::string& path) {
@@ -24,6 +24,8 @@ namespace SuperHaxagon {
 			_timestamps[label].push_back(time);
 		}
 	}
+
+	Metadata::~Metadata() = default;
 
 	bool Metadata::getMetadata(const double time, const std::string& label) {
 		if (_timestamps.find(label) == _timestamps.end()) return false; // no data

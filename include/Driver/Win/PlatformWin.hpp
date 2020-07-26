@@ -1,7 +1,7 @@
 #ifndef SUPER_HAXAGON_PLATFORM_WIN_HPP
 #define SUPER_HAXAGON_PLATFORM_WIN_HPP
 
-#include <Driver/SFML/PlatformSFML.hpp>
+#include "Driver/SFML/PlatformSFML.hpp"
 
 namespace SuperHaxagon {
 	class PlatformWin : public PlatformSFML {

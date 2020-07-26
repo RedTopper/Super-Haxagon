@@ -1,9 +1,9 @@
 #ifndef SUPER_HAXAGON_FONT_3DS_HPP
 #define SUPER_HAXAGON_FONT_3DS_HPP
 
-#include <citro2d.h>
-
 #include "Driver/Font.hpp"
+
+#include <citro2d.h>
 
 namespace SuperHaxagon {
 	class Font3DS : public Font {

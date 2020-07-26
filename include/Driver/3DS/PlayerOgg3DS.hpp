@@ -1,12 +1,13 @@
 #ifndef SUPER_HAXAGON_PLAYER_OGG_3DS_HPP
 #define SUPER_HAXAGON_PLAYER_OGG_3DS_HPP
 
-#include <string>
-#include <array>
+#include "Driver/Player.hpp"
+
 #include <3ds.h>
 #include <3ds/synchronization.h>
 
-#include "Driver/Player.hpp"
+#include <array>
+#include <string>
 
 struct stb_vorbis;
 

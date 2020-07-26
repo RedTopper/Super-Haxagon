@@ -1,7 +1,8 @@
-#include <sstream>
+#include "Driver/3DS/Font3DS.hpp"
 
 #include "Core/Structs.hpp"
-#include "Driver/3DS/Font3DS.hpp"
+
+#include <sstream>
 
 namespace SuperHaxagon {
 	Font3DS::Font3DS(const std::string& path, const int size, C2D_TextBuf& buff) : _size(size), _buff(buff) {

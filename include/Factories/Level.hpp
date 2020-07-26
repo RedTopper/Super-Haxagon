@@ -1,13 +1,13 @@
 #ifndef SUPER_HAXAGON_LEVEL_HPP
 #define SUPER_HAXAGON_LEVEL_HPP
 
+#include "Core/Structs.hpp"
+#include "Factories/Pattern.hpp"
+
 #include <memory>
 #include <string>
 #include <vector>
 #include <deque>
-
-#include "Core/Structs.hpp"
-#include "Factories/Pattern.hpp"
 
 namespace SuperHaxagon {
 	enum class Location {
@@ -27,9 +27,9 @@ namespace SuperHaxagon {
 		static constexpr double FLIP_FRAMES_MIN = 120;
 		static constexpr double FLIP_FRAMES_MAX = 600;
 		static constexpr double FRAMES_PER_CHANGE_SIDE = 50;
-		static constexpr double FRAMES_PER_SPIN = 90;
+		static constexpr double FRAMES_PER_SPIN = 100;
 		static constexpr double FRAMES_PER_PULSE = 10;
-		static constexpr double SPIN_MULTIPLIER = 1.5;
+		static constexpr double SPIN_SPEED = TAU / 80.0;
 		static constexpr double PULSE_DISTANCE = 4.0;
 
 		Level(const LevelFactory& factory, Twist& rng, double patternDistCreate);

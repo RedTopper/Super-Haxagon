@@ -2,7 +2,8 @@
 #define SUPER_HAXAGON_STRUCTS_HPP
 
 #include <cstdint>
-#include <stdexcept>
+#include <iostream>
+#include <string>
 
 namespace SuperHaxagon {
 	class Platform;

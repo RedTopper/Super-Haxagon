@@ -1,10 +1,13 @@
-#include <memory>
-
 #include "Core/Game.hpp"
-#include "Factories/Wall.hpp"
+
+#include "Core/Metadata.hpp"
+#include "Core/Twist.hpp"
+#include "Driver/Font.hpp"
+#include "Driver/Platform.hpp"
 #include "Factories/Pattern.hpp"
-#include "States/State.hpp"
 #include "States/Load.hpp"
+
+#include <cmath>
 
 namespace SuperHaxagon {
 
@@ -193,6 +196,27 @@ namespace SuperHaxagon {
 			point.y = ((point.y / screen.y - 0.5) * (1.0 - _skew) + 0.5) * screen.y;
 		}
 	}
+
+	double Game::getScreenDimMax() const {
+		const auto size = _platform.getScreenDim();
+		return std::max(size.x, size.y);
+	}
+
+	double Game::getScreenDimMin() const {
+		const auto size = _platform.getScreenDim();
+		return std::min(size.x, size.y);
+	}
+
+	void Game::setBGMMetadata(std::unique_ptr<Metadata> metadata) {
+		_bgmMetadata = std::move(metadata);
+	}
+
+	void Game::setBGMAudio(std::unique_ptr<Audio> bgmAudio) {
+		if (_bgmAudio) _platform.stopBGM();
+		_bgmAudio = std::move(bgmAudio);
+	}
+
+
 }
 
 

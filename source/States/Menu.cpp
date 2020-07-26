@@ -1,11 +1,15 @@
-#include <array>
+#include "States/Menu.hpp"
 
 #include "Core/Game.hpp"
 #include "Core/Metadata.hpp"
+#include "Driver/Font.hpp"
+#include "Driver/Platform.hpp"
 #include "Factories/Level.hpp"
-#include "States/Quit.hpp"
 #include "States/Play.hpp"
-#include "States/Menu.hpp"
+#include "States/Quit.hpp"
+
+#include <array>
+#include <algorithm>
 
 namespace SuperHaxagon {
 	Menu::Menu(Game& game, const int levelIndex) :

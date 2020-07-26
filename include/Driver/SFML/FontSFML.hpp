@@ -1,10 +1,10 @@
 #ifndef SUPER_HAXAGON_FONT_SFML_HPP
 #define SUPER_HAXAGON_FONT_SFML_HPP
 
-#include <SFML/Graphics/Text.hpp>
-#include <SFML/Graphics/Font.hpp>
-
 #include "Driver/Font.hpp"
+
+#include <SFML/Graphics/Font.hpp>
+#include <SFML/Graphics/Text.hpp>
 
 namespace SuperHaxagon {
 	class PlatformSFML;

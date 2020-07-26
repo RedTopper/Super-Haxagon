@@ -9,7 +9,7 @@ namespace SuperHaxagon {
 	class Metadata {
 	public:
 		explicit Metadata(const std::string& path);
-		~Metadata() = default;
+		~Metadata();
 		Metadata& operator=(const Metadata&) = delete;
 		
 		bool getMetadata(double time, const std::string& label);

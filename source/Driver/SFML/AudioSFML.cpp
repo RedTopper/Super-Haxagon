@@ -1,8 +1,7 @@
-#include <SFML/Audio/Sound.hpp>
-
 #include "Driver/SFML/AudioSFML.hpp"
-#include "Driver/SFML/PlayerSoundSFML.hpp"
+
 #include "Driver/SFML/PlayerMusicSFML.hpp"
+#include "Driver/SFML/PlayerSoundSFML.hpp"
 
 namespace SuperHaxagon {
 	AudioSFML::AudioSFML(const std::string& path, const Stream stream) {

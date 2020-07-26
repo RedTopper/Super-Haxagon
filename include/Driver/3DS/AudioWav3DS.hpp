@@ -1,10 +1,12 @@
 #ifndef SUPER_HAXAGON_AUDIO_WAV_3DS_HPP
 #define SUPER_HAXAGON_AUDIO_WAV_3DS_HPP
 
-#include <3ds.h>
-#include <memory>
-
 #include "Driver/Audio.hpp"
+
+#include <3ds.h>
+
+#include <memory>
+#include <string>
 
 namespace SuperHaxagon {
 	class AudioWav3DS : public Audio {

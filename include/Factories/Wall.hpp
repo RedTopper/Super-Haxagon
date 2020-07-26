@@ -1,9 +1,9 @@
 #ifndef SUPER_HAXAGON_WALL_HPP
 #define SUPER_HAXAGON_WALL_HPP
 
-#include <array>
-
 #include "Core/Structs.hpp"
+
+#include <array>
 
 namespace SuperHaxagon {
 	class Wall {

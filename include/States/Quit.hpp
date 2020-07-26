@@ -1,7 +1,7 @@
 #ifndef SUPER_HAXAGON_QUIT_HPP
 #define SUPER_HAXAGON_QUIT_HPP
 
-#include "States/State.hpp"
+#include "State.hpp"
 
 namespace SuperHaxagon {
 	class Game;

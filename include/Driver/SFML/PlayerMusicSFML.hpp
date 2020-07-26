@@ -1,10 +1,11 @@
 #ifndef SUPER_HAXAGON_PLAYER_MUSIC_SFML_HPP
 #define SUPER_HAXAGON_PLAYER_MUSIC_SFML_HPP
 
-#include <memory>
+#include "Driver/Player.hpp"
+
 #include <SFML/Audio/Music.hpp>
 
-#include "Driver/Player.hpp"
+#include <memory>
 
 namespace SuperHaxagon {
 	class PlayerMusicSFML : public Player {

@@ -1,15 +1,14 @@
 #ifndef SUPER_HAXAGON_PLATFORM_SFML_HPP
 #define SUPER_HAXAGON_PLATFORM_SFML_HPP
 
+#include "Driver/Platform.hpp"
+
 #include <SFML/Graphics.hpp>
+
 #include <deque>
 
-#include "Driver/Audio.hpp"
-#include "Driver/Platform.hpp"
-#include "Driver/Player.hpp"
-
 namespace SuperHaxagon {
-
+	class Audio;
 	class PlatformSFML : public Platform {
 	public:
 		PlatformSFML(Dbg dbg, sf::VideoMode video);

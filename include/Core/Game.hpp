@@ -3,11 +3,10 @@
 
 #include <deque>
 #include <memory>
-
-#include "Core/Metadata.hpp"
-#include "Driver/Platform.hpp"
+#include <vector>
 
 namespace SuperHaxagon {
+	// Maybe I went a bit overboard with PImpl...
 	struct Point;
 	struct Color;
 	class LevelFactory;
@@ -15,6 +14,10 @@ namespace SuperHaxagon {
 	class State;
 	class Pattern;
 	class Wall;
+	class Platform;
+	class Twist;
+	class Font;
+	class Metadata;
 
 	class Game {
 	public:
@@ -33,28 +36,16 @@ namespace SuperHaxagon {
 		Audio& getSFXLevelUp() const {return *_sfxLevelUp;}
 		Audio& getBGMAudio() const {return *_bgmAudio;}
 		Metadata& getBGMMetadata() const {return *_bgmMetadata;}
-
 		Font& getFontSmall() const {return *_small;}
 		Font& getFontLarge() const {return *_large;}
-
-		double getScreenDimMax() const {
-			const auto size = _platform.getScreenDim();
-			return std::max(size.x, size.y);
-		}
-
-		double getScreenDimMin() const {
-			const auto size = _platform.getScreenDim();
-			return std::min(size.x, size.y);
-		}
+		double getScreenDimMax() const;
+		double getScreenDimMin() const;
 
 		void setRunning(const bool running) {_running = running;}
 		void setSkew(const double skew) {_skew = skew;}
 		void setShadowAuto(const bool shadowAuto) {_shadowAuto = shadowAuto;}
-		void setBGMMetadata(std::unique_ptr<Metadata> metadata) {_bgmMetadata = std::move(metadata);}
-		void setBGMAudio(std::unique_ptr<Audio> bgmAudio) {
-			if (_bgmAudio) _platform.stopBGM();
-			_bgmAudio = std::move(bgmAudio);
-		}
+		void setBGMAudio(std::unique_ptr<Audio> bgmAudio);
+		void setBGMMetadata(std::unique_ptr<Metadata> metadata);
 
 		/**
 		 * Runs the game
@@ -122,7 +113,6 @@ namespace SuperHaxagon {
 
 		std::unique_ptr<Twist> _twister;
 		std::unique_ptr<State> _state;
-
 		std::unique_ptr<Audio> _sfxBegin;
 		std::unique_ptr<Audio> _sfxHexagon;
 		std::unique_ptr<Audio> _sfxOver;
@@ -130,7 +120,6 @@ namespace SuperHaxagon {
 		std::unique_ptr<Audio> _sfxLevelUp;
 		std::unique_ptr<Audio> _bgmAudio;
 		std::unique_ptr<Metadata> _bgmMetadata;
-
 		std::unique_ptr<Font> _small;
 		std::unique_ptr<Font> _large;
 

@@ -1,10 +1,11 @@
 #ifndef SUPER_HAXAGON_RENDER_TARGET_HPP
 #define SUPER_HAXAGON_RENDER_TARGET_HPP
 
-#include <glad/glad.h>
-#include <vector>
-
 #include "Core/Structs.hpp"
+
+#include <glad/glad.h>
+
+#include <vector>
 
 namespace SuperHaxagon {
 	static constexpr int BUFFER_RESIZE_STEP = 500;
@@ -28,7 +29,7 @@ namespace SuperHaxagon {
 		RenderTarget<T>(Platform& platform, bool transparent, const std::string& shaderVertex, const std::string& shaderFragment, const std::string& label);
 		~RenderTarget<T>();
 
-		void bind();
+		void bind() const;
 		void insert(const T& vertex);
 		void reference(unsigned int index);
 		void advance(unsigned int indices);
@@ -37,7 +38,7 @@ namespace SuperHaxagon {
 
 	private:
 		void init(Platform& platform, const char* shaderVertex, const char* shaderFragment);
-		GLuint compile(Platform& platform, GLenum type, const char* source);
+		static GLuint compile(Platform& platform, GLenum type, const char* source);
 
 		std::string _label;
 

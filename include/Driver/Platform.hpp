@@ -1,15 +1,18 @@
 #ifndef SUPER_HAXAGON_PLATFORM_HPP
 #define SUPER_HAXAGON_PLATFORM_HPP
 
+#include "Audio.hpp"
+#include "Player.hpp"
+
 #include <memory>
 #include <string>
 
-#include "Driver/Audio.hpp"
-#include "Driver/Player.hpp"
-#include "Driver/Font.hpp"
-#include "Core/Twist.hpp"
-
 namespace SuperHaxagon {
+	struct Point;
+	struct Color;
+	class Twist;
+	class Font;
+
 	enum class Dbg {
 		INFO,
 		WARN,
@@ -23,9 +26,6 @@ namespace SuperHaxagon {
 		bool left : 1;
 		bool right : 1;
 	};
-
-	struct Point;
-	struct Color;
 
 	class Platform {
 	public:
@@ -63,7 +63,7 @@ namespace SuperHaxagon {
 
 	protected:
 		Dbg _dbg;
-		std::unique_ptr<Player> _bgm = nullptr;
+		std::unique_ptr<Player> _bgm;
 	};
 }
 

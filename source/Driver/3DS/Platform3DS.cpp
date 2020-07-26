@@ -1,15 +1,16 @@
-#include <3ds.h>
-#include <string>
-#include <memory>
+#include "Driver/3DS/Platform3DS.hpp"
+
+#include "Core/Structs.hpp"
+#include "Core/Twist.hpp"
+#include "Driver/3DS/AudioOgg3DS.hpp"
+#include "Driver/3DS/AudioWav3DS.hpp"
+#include "Driver/3DS/Font3DS.hpp"
+#include "Driver/3DS/PlayerOgg3DS.hpp"
+
 #include <array>
 #include <iostream>
+#include <memory>
 #include <sys/stat.h>
-
-#include "Driver/3DS/PlayerOgg3DS.hpp"
-#include "Driver/3DS/AudioWav3DS.hpp"
-#include "Driver/3DS/AudioOgg3DS.hpp"
-#include "Driver/3DS/Font3DS.hpp"
-#include "Driver/3DS/Platform3DS.hpp"
 
 namespace SuperHaxagon {
 	Platform3DS::Platform3DS(const Dbg dbg) : Platform(dbg) {

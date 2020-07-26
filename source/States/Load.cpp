@@ -1,13 +1,15 @@
-#include <memory>
-#include <fstream>
-#include <climits>
+#include "States/Load.hpp"
 
 #include "Core/Game.hpp"
+#include "Driver/Platform.hpp"
 #include "Factories/Level.hpp"
 #include "Factories/Pattern.hpp"
 #include "States/Menu.hpp"
-#include "States/Load.hpp"
 #include "States/Quit.hpp"
+
+#include <memory>
+#include <fstream>
+#include <climits>
 
 namespace SuperHaxagon {
 	const char* Load::PROJECT_HEADER = "HAX1.1";

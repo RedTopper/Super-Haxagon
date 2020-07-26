@@ -1,9 +1,9 @@
 #ifndef SUPER_HAXAGON_PLAYER_SFX_SWITCH_H
 #define SUPER_HAXAGON_PLAYER_SFX_SWITCH_H
 
-#include <SDL2/SDL_mixer.h>
-
 #include "Driver/Player.hpp"
+
+#include <SDL2/SDL_mixer.h>
 
 namespace SuperHaxagon {
 	class PlayerSfxSwitch : public Player {

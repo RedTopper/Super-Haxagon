@@ -1,18 +1,18 @@
-#include <switch.h>
-#include <sys/stat.h>
-#include <iostream>
-#include <sstream>
+#include "Driver/Switch/PlatformSwitch.hpp"
 
-#include <EGL/egl.h>
-#include <EGL/eglext.h>
-#include <glad/glad.h>
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_mixer.h>
-
+#include "Core/Twist.hpp"
 #include "Driver/Switch/AudioSwitch.hpp"
 #include "Driver/Switch/FontSwitch.hpp"
-#include "Driver/Switch/PlatformSwitch.hpp"
 #include "Driver/Switch/PlayerMusSwitch.hpp"
+
+#include <EGL/eglext.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_mixer.h>
+#include <glad/glad.h>
+
+#include <iostream>
+#include <sstream>
+#include <sys/stat.h>
 
 static const char* vertex_shader = R"text(
 #version 330 core

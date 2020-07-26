@@ -1,9 +1,12 @@
-#include "Driver/Platform.hpp"
 #include "Driver/Switch/RenderTarget.hpp"
+
+#include "Driver/Platform.hpp"
+
+#include <algorithm>
 
 namespace SuperHaxagon {
 	template<>
-	RenderTarget<Vertex>::RenderTarget(Platform& platform, bool transparent, const std::string& shaderVertex, const std::string& shaderFragment, const std::string& label) :
+	RenderTarget<Vertex>::RenderTarget(Platform& platform, const bool transparent, const std::string& shaderVertex, const std::string& shaderFragment, const std::string& label) :
 		_label(label),
 		_transparent(transparent) {
 		init(platform, shaderVertex.c_str(), shaderFragment.c_str());
@@ -12,13 +15,13 @@ namespace SuperHaxagon {
 		glEnableVertexAttribArray(1);
 		glEnableVertexAttribArray(2);
 
-		glVertexAttribPointer(0, 2, GL_DOUBLE, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, p));
-		glVertexAttribPointer(1, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(Vertex), (void*)offsetof(Vertex, c));
-		glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, z));
+		glVertexAttribPointer(0, 2, GL_DOUBLE, GL_FALSE, sizeof(Vertex), reinterpret_cast<void*>(offsetof(Vertex, p)));
+		glVertexAttribPointer(1, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(Vertex), reinterpret_cast<void*>(offsetof(Vertex, c)));
+		glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void*>(offsetof(Vertex, z)));
 	}
 
 	template<>
-	RenderTarget<VertexUV>::RenderTarget(Platform& platform, bool transparent, const std::string& shaderVertex, const std::string& shaderFragment, const std::string& label) :
+	RenderTarget<VertexUV>::RenderTarget(Platform& platform, const bool transparent, const std::string& shaderVertex, const std::string& shaderFragment, const std::string& label) :
 		_label(label),
 		_transparent(transparent) {
 		init(platform, shaderVertex.c_str(), shaderFragment.c_str());
@@ -37,10 +40,10 @@ namespace SuperHaxagon {
 		glEnableVertexAttribArray(2);
 		glEnableVertexAttribArray(3);
 
-		glVertexAttribPointer(0, 2, GL_DOUBLE, GL_FALSE, sizeof(VertexUV), (void*)offsetof(VertexUV, p));
-		glVertexAttribPointer(1, 2, GL_DOUBLE, GL_FALSE, sizeof(VertexUV), (void*)offsetof(VertexUV, uv));
-		glVertexAttribPointer(2, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(VertexUV), (void*)offsetof(VertexUV, c));
-		glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, sizeof(VertexUV), (void*)offsetof(VertexUV, z));
+		glVertexAttribPointer(0, 2, GL_DOUBLE, GL_FALSE, sizeof(VertexUV), reinterpret_cast<void*>(offsetof(VertexUV, p)));
+		glVertexAttribPointer(1, 2, GL_DOUBLE, GL_FALSE, sizeof(VertexUV), reinterpret_cast<void*>(offsetof(VertexUV, uv)));
+		glVertexAttribPointer(2, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(VertexUV), reinterpret_cast<void*>(offsetof(VertexUV, c)));
+		glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, sizeof(VertexUV), reinterpret_cast<void*>(offsetof(VertexUV, z)));
 	}
 
 	template<class T>
@@ -53,7 +56,7 @@ namespace SuperHaxagon {
 	}
 
 	template<class T>
-	void RenderTarget<T>::bind() {
+	void RenderTarget<T>::bind() const {
 		glUseProgram(_program);
 		glBindVertexArray(_vao);
 		glBindBuffer(GL_ARRAY_BUFFER, _vbo);
@@ -71,12 +74,12 @@ namespace SuperHaxagon {
 	}
 
 	template<class T>
-	void RenderTarget<T>::reference(unsigned int index) {
+	void RenderTarget<T>::reference(const unsigned int index) {
 		_indices.push_back(_iboLastIndex + index);
 	}
 
 	template<class T>
-	void RenderTarget<T>::advance(unsigned int indices) {
+	void RenderTarget<T>::advance(const unsigned int indices) {
 		_iboLastIndex += indices;
 	}
 
@@ -92,7 +95,7 @@ namespace SuperHaxagon {
 
 		// glUniform ignores all invalid glGetUniformLocation results, so if the shader doesn't
 		// have these variables then they will be ignored.
-		Point screen = platform.getScreenDim();
+		const auto screen = platform.getScreenDim();
 		glUniform1f(glGetUniformLocation(_program, "s_width"), static_cast<float>(screen.x));
 		glUniform1f(glGetUniformLocation(_program, "s_height"), static_cast<float>(screen.y));
 		glUniform1i(glGetUniformLocation(_program, "f_tex"), 0);
@@ -144,7 +147,7 @@ namespace SuperHaxagon {
 		GLint success;
 		GLchar msg[512];
 
-		GLuint handle = glCreateShader(type);
+		const auto handle = glCreateShader(type);
 		if (!handle) {
 			platform.message(Dbg::INFO, "compile",  "failed to create shader");
 			return 0;

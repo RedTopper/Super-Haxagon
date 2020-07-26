@@ -1,10 +1,10 @@
 #ifndef SUPER_HAXAGON_AUDIO_OGG_3DS_HPP
 #define SUPER_HAXAGON_AUDIO_OGG_3DS_HPP
 
+#include "Driver/Audio.hpp"
+
 #include <memory>
 #include <string>
-
-#include "Driver/Audio.hpp"
 
 namespace SuperHaxagon {
 	class AudioOgg3DS : public Audio {

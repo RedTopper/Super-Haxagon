@@ -1,9 +1,9 @@
 #ifndef SUPER_HAXAGON_PLAYER_3DS_HPP
 #define SUPER_HAXAGON_PLAYER_3DS_HPP
 
-#include <3ds.h>
-
 #include "Driver/Player.hpp"
+
+#include <3ds.h>
 
 namespace SuperHaxagon {
 	class PlayerWav3DS : public Player {

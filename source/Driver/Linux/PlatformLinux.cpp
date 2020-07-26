@@ -1,7 +1,7 @@
+#include "Driver/Linux/PlatformLinux.hpp"
+
 #include <iostream>
 #include <sys/stat.h>
-
-#include "Driver/Linux/PlatformLinux.hpp"
 
 namespace SuperHaxagon {
 	PlatformLinux::PlatformLinux(Dbg dbg) : PlatformSFML(dbg, sf::VideoMode(

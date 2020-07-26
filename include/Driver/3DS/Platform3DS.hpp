@@ -1,12 +1,11 @@
 #ifndef SUPER_HAXAGON_PLATFORM_3DS_HPP
 #define SUPER_HAXAGON_PLATFORM_3DS_HPP
 
-#include <citro2d.h>
-#include <deque>
-
-#include "Driver/Audio.hpp"
 #include "Driver/Platform.hpp"
-#include "Driver/Player.hpp"
+
+#include <citro2d.h>
+
+#include <deque>
 
 static const int MAX_TRACKS = 4;
 

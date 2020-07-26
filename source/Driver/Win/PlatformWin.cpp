@@ -1,9 +1,10 @@
-#define NOMINMAX
-#include <windows.h>
+#include "Driver/Win/PlatformWin.hpp"
+
+#include "Core/Twist.hpp"
+
 #include <direct.h>
 #include <iostream>
-
-#include "Driver/Win/PlatformWin.hpp"
+#include <windows.h>
 
 namespace SuperHaxagon {
 	PlatformWin::PlatformWin(const Dbg dbg) : PlatformSFML(dbg, sf::VideoMode(

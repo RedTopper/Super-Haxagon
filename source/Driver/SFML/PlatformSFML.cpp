@@ -1,10 +1,12 @@
-#include <string>
-#include <array>
-
 #include "Driver/SFML/PlatformSFML.hpp"
-#include "Driver/SFML/PlayerSoundSFML.hpp"
+
+#include "Core/Structs.hpp"
 #include "Driver/SFML/AudioSFML.hpp"
 #include "Driver/SFML/FontSFML.hpp"
+#include "Driver/SFML/PlayerSoundSFML.hpp"
+
+#include <array>
+#include <string>
 
 namespace SuperHaxagon {
 	PlatformSFML::PlatformSFML(const Dbg dbg, sf::VideoMode video) : Platform(dbg) {

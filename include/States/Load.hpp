@@ -2,6 +2,7 @@
 #define SUPER_HAXAGON_LOAD_HPP
 
 #include "State.hpp"
+
 #include "Factories/Level.hpp"
 
 namespace SuperHaxagon {

@@ -1,12 +1,12 @@
 #ifndef SUPER_HAXAGON_FONT_SWITCH_HPP
 #define SUPER_HAXAGON_FONT_SWITCH_HPP
 
-#include <glad/glad.h>
-#include <memory>
-
 #include "Driver/Font.hpp"
+
 #include "Core/Structs.hpp"
 #include "RenderTarget.hpp"
+
+#include <memory>
 
 namespace SuperHaxagon {
 	static constexpr int GLYPH_START = 32;

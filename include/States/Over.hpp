@@ -2,6 +2,7 @@
 #define SUPER_HAXAGON_OVER_HPP
 
 #include "State.hpp"
+
 #include "Core/Structs.hpp"
 
 namespace SuperHaxagon {

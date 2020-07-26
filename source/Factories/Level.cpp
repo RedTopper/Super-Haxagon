@@ -1,8 +1,8 @@
-#include "Core/Twist.hpp"
-#include "Core/Game.hpp"
 #include "Factories/Level.hpp"
-#include "Factories/Pattern.hpp"
-#include "Factories/Wall.hpp"
+
+#include "Core/Game.hpp"
+#include "Core/Twist.hpp"
+#include "Driver/Platform.hpp"
 
 namespace SuperHaxagon {
 	const char* LevelFactory::LEVEL_HEADER = "LEV2.1";
@@ -85,7 +85,7 @@ namespace SuperHaxagon {
 
 		// Update effect timings
 		_flipFrame -= dilation;
-		_spin -= _factory.getSpeedRotation() * SPIN_MULTIPLIER / FRAMES_PER_SPIN * dilation;
+		_spin -= SPIN_SPEED / FRAMES_PER_SPIN * dilation;
 		_pulse -= PULSE_DISTANCE / FRAMES_PER_PULSE * dilation;
 		if (_spin < 0) _spin = 0;
 		if (_pulse < 0) _pulse = 0;
@@ -177,7 +177,7 @@ namespace SuperHaxagon {
 	}
 
 	void Level::spin() {
-		_spin = _factory.getSpeedRotation() * SPIN_MULTIPLIER;
+		_spin = SPIN_SPEED;
 	}
 	
 	void Level::invertBG() {

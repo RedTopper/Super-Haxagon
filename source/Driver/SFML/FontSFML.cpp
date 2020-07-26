@@ -1,4 +1,6 @@
 #include "Driver/SFML/FontSFML.hpp"
+
+#include "Core/Structs.hpp"
 #include "Driver/SFML/PlatformSFML.hpp"
 
 namespace SuperHaxagon {

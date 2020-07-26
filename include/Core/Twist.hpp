@@ -1,11 +1,11 @@
 #ifndef SUPER_HAXAGON_TWIST_HPP
 #define SUPER_HAXAGON_TWIST_HPP
 
-#include <random>
+#include "Structs.hpp"
+
 #include <algorithm>
 #include <memory>
-
-#include "Structs.hpp"
+#include <random>
 
 namespace SuperHaxagon {
 

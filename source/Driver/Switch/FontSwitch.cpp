@@ -1,8 +1,9 @@
+#include "Driver/Switch/FontSwitch.hpp"
+
+#include "Driver/Switch/PlatformSwitch.hpp"
+
 #include <ft2build.h>
 #include FT_FREETYPE_H
-
-#include "Driver/Switch/FontSwitch.hpp"
-#include "Driver/Switch/PlatformSwitch.hpp"
 
 static auto* vertex_shader = R"text(
 #version 330 core

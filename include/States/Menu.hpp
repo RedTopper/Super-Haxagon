@@ -2,10 +2,12 @@
 #define SUPER_HAXAGON_MENU_HPP
 
 #include "State.hpp"
-#include "Driver/Platform.hpp"
+
+#include "Core/Structs.hpp"
 
 namespace SuperHaxagon {
 	class Game;
+	class Platform;
 
 	class Menu : public State {
 	public:

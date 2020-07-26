@@ -1,17 +1,21 @@
 #ifndef SUPER_HAXAGON_PLATFORM_SWITCH_HPP
 #define SUPER_HAXAGON_PLATFORM_SWITCH_HPP
 
-#include <fstream>
-#include <deque>
-#include <array>
-#include <EGL/egl.h>
-#include <switch/display/native_window.h>
-
 #include "Driver/Platform.hpp"
-#include "Driver/Player.hpp"
+
 #include "RenderTarget.hpp"
 
+#include <EGL/egl.h>
+#include <switch.h>
+#include <switch/display/native_window.h>
+
+#include <array>
+#include <deque>
+#include <fstream>
+
 namespace SuperHaxagon {
+	class Font;
+
 	class PlatformSwitch : public Platform {
 	public:
 		explicit PlatformSwitch(Dbg dbg);

@@ -1,5 +1,6 @@
-#include "Core/Game.hpp"
 #include "States/Quit.hpp"
+
+#include "Core/Game.hpp"
 
 namespace SuperHaxagon {
 	Quit::Quit(Game& game) : _game(game) {}

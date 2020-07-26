@@ -1,14 +1,17 @@
+#include "States/Over.hpp"
+
+#include "Core/Game.hpp"
+#include "Driver/Platform.hpp"
+#include "Driver/Font.hpp"
+#include "Factories/Level.hpp"
+#include "States/Load.hpp"
+#include "States/Menu.hpp"
+#include "States/Play.hpp"
+#include "States/Quit.hpp"
+
 #include <cstring>
 #include <ostream>
 #include <fstream>
-
-#include "Core/Game.hpp"
-#include "Factories/Level.hpp"
-#include "States/Quit.hpp"
-#include "States/Over.hpp"
-#include "States/Play.hpp"
-#include "States/Menu.hpp"
-#include "States/Load.hpp"
 
 namespace SuperHaxagon {
 

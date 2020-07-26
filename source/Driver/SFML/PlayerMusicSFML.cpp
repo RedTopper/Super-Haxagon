@@ -1,6 +1,3 @@
-#include <SFML/Audio/Sound.hpp>
-#include <SFML/Audio/Music.hpp>
-
 #include "Driver/SFML/PlayerMusicSFML.hpp"
 
 namespace SuperHaxagon {

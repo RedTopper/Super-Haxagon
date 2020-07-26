@@ -1,7 +1,8 @@
+#include "Driver/Switch/AudioSwitch.hpp"
+
+#include "Driver/Platform.hpp"
 #include "Driver/Switch/PlayerMusSwitch.hpp"
 #include "Driver/Switch/PlayerSfxSwitch.hpp"
-#include "Driver/Switch/AudioSwitch.hpp"
-#include "Driver/Platform.hpp"
 
 namespace SuperHaxagon {
 

@@ -187,7 +187,7 @@ namespace SuperHaxagon {
 				textColor = interpolateColor(PULSE_LOW, PULSE_HIGH, percent);
 			}
 
-			small.draw(textColor, posBest, Alignment::RIGHT,  "NEW RECORD!");
+			small.draw(textColor, posBest, Alignment::RIGHT, "NEW RECORD!");
 		}
 	}
 }

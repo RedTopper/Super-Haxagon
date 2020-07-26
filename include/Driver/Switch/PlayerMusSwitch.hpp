@@ -18,11 +18,15 @@ namespace SuperHaxagon {
 		void pause() override;
 		bool isDone() const override;
 		double getTime() const override;
+		double getNow() const;
 
 	private:
 		bool _loop = false;
-		bool _launched = false;
 		Mix_Music* _music;
+
+		// Timing controls
+		double _start = 0;
+		double _diff = 0;
 	};
 }
 

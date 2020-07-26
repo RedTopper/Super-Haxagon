@@ -146,6 +146,9 @@ namespace SuperHaxagon {
 	bool PlatformSwitch::loop() {
 		if (!_loaded) return false;
 
+		// Check up on the audio status
+		if (_bgm && _bgm->isDone()) _bgm->play();
+
 		const double width = _width;
 		const double height = _height;
 		switch (appletGetOperationMode()) {

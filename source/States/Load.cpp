@@ -23,6 +23,9 @@ namespace SuperHaxagon {
 	bool Load::loadFile(std::ifstream& file, LocLevel location) const {
 		std::vector<std::shared_ptr<PatternFactory>> patterns;
 
+		// Used to make sure that external levels link correctly.
+		const auto levelIndexOffset = _game.getLevels().size();
+
 		if(!readCompare(file, PROJECT_HEADER)) {
 			_platform.message(Dbg::WARN, "file", "file header invalid!");
 			return false;
@@ -47,7 +50,7 @@ namespace SuperHaxagon {
 
 		const auto numLevels = read32(file, 1, 300, _platform, "number of levels");
 		for (auto i = 0; i < numLevels; i++) {
-			auto level = std::make_unique<LevelFactory>(file, patterns, location, _platform);
+			auto level = std::make_unique<LevelFactory>(file, patterns, location, _platform, levelIndexOffset);
 			if (!level->isLoaded()) {
 				_platform.message(Dbg::WARN, "file", "a level failed to load");
 				return false;
@@ -108,7 +111,7 @@ namespace SuperHaxagon {
 			const auto loc = location.first;
 			std::ifstream file(path, std::ios::in | std::ios::binary);
 			if (!file) continue;
-			if (!loadFile(file, loc)) continue;
+			loadFile(file, loc);
 		}
 
 		if (_game.getLevels().empty()) {

@@ -34,6 +34,7 @@ namespace SuperHaxagon {
 		Audio& getSFXOver() const {return *_sfxOver;}
 		Audio& getSFXSelect() const {return *_sfxSelect;}
 		Audio& getSFXLevelUp() const {return *_sfxLevelUp;}
+		Audio& getSFXWonderful() const {return *_sfxWonderful;}
 		Audio* getBGMAudio() const {return _bgmAudio.get();}
 		Metadata* getBGMMetadata() const {return _bgmMetadata.get();}
 		Font& getFontSmall() const;
@@ -113,13 +114,18 @@ namespace SuperHaxagon {
 
 		std::unique_ptr<Twist> _twister;
 		std::unique_ptr<State> _state;
+
+		// Should really be an array of sfx
 		std::unique_ptr<Audio> _sfxBegin;
 		std::unique_ptr<Audio> _sfxHexagon;
 		std::unique_ptr<Audio> _sfxOver;
 		std::unique_ptr<Audio> _sfxSelect;
 		std::unique_ptr<Audio> _sfxLevelUp;
+		std::unique_ptr<Audio> _sfxWonderful;
+		
 		std::unique_ptr<Audio> _bgmAudio;
 		std::unique_ptr<Metadata> _bgmMetadata;
+		
 		std::unique_ptr<Font> _small;
 		std::unique_ptr<Font> _large;
 

@@ -20,7 +20,7 @@ namespace SuperHaxagon {
 	Transition::~Transition() = default;
 
 	void Transition::enter() {
-		_platform.playSFX(_game.getSFXSelect());
+		_platform.playSFX(_game.getSFXWonderful());
 	}
 
 	std::unique_ptr<State> Transition::update(const double dilation) {

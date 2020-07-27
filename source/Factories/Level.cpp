@@ -50,7 +50,7 @@ namespace SuperHaxagon {
 				_color[location] = _colorNext[location];
 				_colorNextIndex[location] = _colorNextIndex[location] + 1 < availableColors.size() ? _colorNextIndex[location] + 1 : 0;
 				_colorNext[location] = availableColors[_colorNextIndex[location]];
-				if (_frame > 60.0 * 60.0 && (location == LocColor::BG1 || location == LocColor::BG2)) {
+				if (_frame > 60.0 * 60.0) {
 					_colorNext[location] = rotateColor(_colorNext[location], 180);
 				} 
 			}
@@ -200,7 +200,7 @@ namespace SuperHaxagon {
 		_pulse = PULSE_DISTANCE * scale;
 	}
 
-	LevelFactory::LevelFactory(std::ifstream& file, std::vector<std::shared_ptr<PatternFactory>>& shared, const LocLevel location, Platform& platform) {
+	LevelFactory::LevelFactory(std::ifstream& file, std::vector<std::shared_ptr<PatternFactory>>& shared, const LocLevel location, Platform& platform, const size_t levelIndexOffset) {
 		_location = location;
 
 		if (!readCompare(file, LEVEL_HEADER)) {
@@ -231,6 +231,9 @@ namespace SuperHaxagon {
 		_speedCursor = readFloat(file);
 		_speedPulse = read32(file, 4, 8192, platform, "level pulse");
 		_nextIndex = read32(file, -1, 8192, platform, "next index");
+
+		// Negative numbers should remain invalid. -1 usually means load no other level.
+		if (_nextIndex >= 0) _nextIndex += static_cast<int>(levelIndexOffset);
 
 		const auto numPatterns = read32(file, 1, 512, platform, "level pattern count");
 		for (auto i = 0; i < numPatterns; i++) {

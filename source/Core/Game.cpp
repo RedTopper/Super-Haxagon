@@ -19,6 +19,7 @@ namespace SuperHaxagon {
 		_sfxOver = platform.loadAudio(platform.getPathRom("/sound/over"), Stream::DIRECT);
 		_sfxSelect = platform.loadAudio(platform.getPathRom("/sound/select"), Stream::DIRECT);
 		_sfxLevelUp = platform.loadAudio(platform.getPathRom("/sound/level"), Stream::DIRECT);
+		_sfxWonderful = platform.loadAudio(platform.getPathRom("/sound/wonderful"), Stream::DIRECT);
 
 		_small = platform.loadFont(platform.getPathRom("/bump-it-up"), 16);
 		_large = platform.loadFont(platform.getPathRom("/bump-it-up"), 32);

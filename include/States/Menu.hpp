@@ -5,6 +5,8 @@
 
 #include "Core/Structs.hpp"
 
+#include <map>
+
 namespace SuperHaxagon {
 	class Game;
 	class Platform;
@@ -28,22 +30,14 @@ namespace SuperHaxagon {
 		Game& _game;
 		Platform& _platform;
 
-		double _transitionFrame = FRAMES_PER_TRANSITION;
-		double _colorFrame = FRAMES_PER_COLOR;
+		double _frameRotation = FRAMES_PER_TRANSITION;
+		double _frameBackgroundColor = FRAMES_PER_COLOR;
 		int _transitionDirection = 0;
 		int _level = 0;
 
-		Color _fg{};
-		Color _bg1{};
-		Color _bg2{};
-
-		size_t _fgIndex = 0;
-		size_t _bg1Index = 0;
-		size_t _bg2Index = 0;
-
-		size_t _fgIndexLast = 0;
-		size_t _bg1IndexLast = 0;
-		size_t _bg2IndexLast = 0;
+		std::map<LocColor, Color> _color;
+		std::map<LocColor, Color> _colorNext;
+		std::map<LocColor, size_t> _colorNextIndex;
 	};
 }
 

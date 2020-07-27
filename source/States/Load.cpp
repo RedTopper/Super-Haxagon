@@ -20,7 +20,7 @@ namespace SuperHaxagon {
 	Load::Load(Game& game) : _game(game), _platform(game.getPlatform()) {}
 	Load::~Load() = default;
 
-	bool Load::loadFile(std::ifstream& file, Location location) const {
+	bool Load::loadFile(std::ifstream& file, LocLevel location) const {
 		std::vector<std::shared_ptr<PatternFactory>> patterns;
 
 		if(!readCompare(file, PROJECT_HEADER)) {
@@ -28,7 +28,7 @@ namespace SuperHaxagon {
 			return false;
 		}
 
-		const int numPatterns = read32(file, 1, 300, _platform, "number of patterns");
+		const auto numPatterns = read32(file, 1, 300, _platform, "number of patterns");
 		patterns.reserve(numPatterns);
 		for (auto i = 0; i < numPatterns; i++) {
 			auto pattern = std::make_shared<PatternFactory>(file, _platform);
@@ -45,7 +45,7 @@ namespace SuperHaxagon {
 			return false;
 		}
 
-		const int numLevels = read32(file, 1, 300, _platform, "number of levels");
+		const auto numLevels = read32(file, 1, 300, _platform, "number of levels");
 		for (auto i = 0; i < numLevels; i++) {
 			auto level = std::make_unique<LevelFactory>(file, patterns, location, _platform);
 			if (!level->isLoaded()) {
@@ -75,13 +75,13 @@ namespace SuperHaxagon {
 			return true; // If there is no score database silently fail.
 		}
 
-		const int numScores = read32(file, 1, 300, _platform, "number of scores");
+		const auto numScores = read32(file, 1, 300, _platform, "number of scores");
 		for (auto i = 0; i < numScores; i++) {
 			auto name = readString(file, _platform, "score level name");
 			auto difficulty = readString(file, _platform, "score level difficulty");
 			auto mode = readString(file, _platform, "score level mode");
 			auto creator = readString(file, _platform, "score level creator");
-			const int score = read32(file, 0, INT_MAX, _platform, "score");
+			const auto score = read32(file, 0, INT_MAX, _platform, "score");
 			for (const auto& level : _game.getLevels()) {
 				if (level->getName() == name && level->getDifficulty() == difficulty && level->getMode() == mode && level->getCreator() == creator) {
 					level->setHighScore(score);
@@ -99,9 +99,9 @@ namespace SuperHaxagon {
 
 	void Load::enter() {
 		// Maybe use a glob or something someday
-		std::vector<std::pair<Location, std::string>> locations;
-		locations.emplace_back(std::pair<Location, std::string>(Location::INTERNAL, _platform.getPathRom("/levels.haxagon")));
-		locations.emplace_back(std::pair<Location, std::string>(Location::EXTERNAL, _platform.getPath("/levels.haxagon")));
+		std::vector<std::pair<LocLevel, std::string>> locations;
+		locations.emplace_back(std::pair<LocLevel, std::string>(LocLevel::INTERNAL, _platform.getPathRom("/levels.haxagon")));
+		locations.emplace_back(std::pair<LocLevel, std::string>(LocLevel::EXTERNAL, _platform.getPath("/levels.haxagon")));
 
 		for (const auto& location : locations) {
 			const auto& path = location.second;
@@ -123,10 +123,7 @@ namespace SuperHaxagon {
 	}
 
 	std::unique_ptr<State> Load::update(double) {
-		if (_loaded) {
-			return std::make_unique<Menu>(_game, 0);
-		} else {
-			return std::make_unique<Quit>(_game);
-		}
+		if (_loaded) return std::make_unique<Menu>(_game, 0);
+		return std::make_unique<Quit>(_game);
 	}
 }

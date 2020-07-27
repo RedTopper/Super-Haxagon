@@ -8,13 +8,9 @@
 #include <string>
 #include <vector>
 #include <deque>
+#include <map>
 
-namespace SuperHaxagon {
-	enum class Location {
-		INTERNAL,
-		EXTERNAL
-	};
-
+namespace SuperHaxagon {	
 	class Game;
 	class LevelFactory;
 	class PatternFactory;
@@ -22,8 +18,8 @@ namespace SuperHaxagon {
 
 	class Level {
 	public:
-		static constexpr double DIFFICULTY_SCALAR_WALLS = 0.04;
-		static constexpr double DIFFICULTY_SCALAR_ROT = 0.1;
+		static constexpr double DIFFICULTY_SCALAR_WALLS = 0.0375;
+		static constexpr double DIFFICULTY_SCALAR_ROT = 0.08;
 		static constexpr double FLIP_FRAMES_MIN = 120;
 		static constexpr double FLIP_FRAMES_MAX = 600;
 		static constexpr double FRAMES_PER_CHANGE_SIDE = 50;
@@ -52,6 +48,9 @@ namespace SuperHaxagon {
 		void invertBG();
 		void pulse(double scale);
 
+		// Time
+		double getFrame() const {return _frame;}
+
 		const LevelFactory& getLevelFactory() const {return _factory;}
 
 	private:
@@ -67,17 +66,15 @@ namespace SuperHaxagon {
 		int _lastSides{};
 		int _currentSides{};
 
+		double _frame{}; // Frame this level is on
 		double _delayFrame{}; // Tween between side switches
 		double _delayMax{};   // When a delay starts, this is the initial value of _delayFrame
 		double _tweenFrame{}; // Tween colors
 		double _flipFrame = FLIP_FRAMES_MAX; // Amount of frames left until flip
 
-		int _indexBg1{};
-		int _indexBg2{};
-		int _indexFg{};
-		int _nextIndexBg1{};
-		int _nextIndexBg2{};
-		int _nextIndexFg{};
+		std::map<LocColor, Color> _color;
+		std::map<LocColor, Color> _colorNext;
+		std::map<LocColor, size_t> _colorNextIndex;
 
 		bool _bgInverted = false;
 		double _pulse = 0.0;
@@ -89,7 +86,7 @@ namespace SuperHaxagon {
 		static const char* LEVEL_HEADER;
 		static const char* LEVEL_FOOTER;
 
-		LevelFactory(std::ifstream& file, std::vector<std::shared_ptr<PatternFactory>>& shared, Location location, Platform& platform);
+		LevelFactory(std::ifstream& file, std::vector<std::shared_ptr<PatternFactory>>& shared, LocLevel location, Platform& platform);
 		LevelFactory(const LevelFactory&) = delete;
 
 		std::unique_ptr<Level> instantiate(Twist& rng, double renderDistance) const;
@@ -97,9 +94,7 @@ namespace SuperHaxagon {
 		bool isLoaded() const {return _loaded;}
 
 		const std::vector<std::shared_ptr<PatternFactory>>& getPatterns() const {return _patterns;}
-		const std::vector<Color>& getColorsFG() const {return _colorsFg;}
-		const std::vector<Color>& getColorsBG1() const {return _colorsBg1;}
-		const std::vector<Color>& getColorsBG2() const {return _colorsBg2;}
+		const std::map<LocColor, std::vector<Color>>& getColors() const {return _colors;}
 
 		const std::string& getName() const {return _name;}
 		const std::string& getDifficulty() const {return _difficulty;}
@@ -107,20 +102,19 @@ namespace SuperHaxagon {
 		const std::string& getCreator() const {return _creator;}
 		const std::string& getMusic() const {return _music;}
 
-		Location getLocation() const {return _location;}
+		LocLevel getLocation() const {return _location;}
 		int getHighScore() const {return _highScore;}
 		int getSpeedPulse() const {return _speedPulse;}
 		float getSpeedCursor() const {return _speedCursor;}
 		float getSpeedRotation() const {return _speedRotation;}
 		float getSpeedWall() const {return _speedWall;}
+		int getNextIndex() const {return _nextIndex;}
 
 		bool setHighScore(int score);
 
 	private:
 		std::vector<std::shared_ptr<PatternFactory>> _patterns;
-		std::vector<Color> _colorsFg;
-		std::vector<Color> _colorsBg1;
-		std::vector<Color> _colorsBg2;
+		std::map<LocColor, std::vector<Color>> _colors;
 
 		std::string _name;
 		std::string _difficulty;
@@ -128,10 +122,11 @@ namespace SuperHaxagon {
 		std::string _creator;
 		std::string _music;
 
-		Location _location = Location::INTERNAL;
+		LocLevel _location = LocLevel::INTERNAL;
 
 		int _highScore = 0;
 		int _speedPulse = 0;
+		int _nextIndex = -1;
 		float _speedWall = 0;
 		float _speedRotation = 0;
 		float _speedCursor = 0;

@@ -1,0 +1,82 @@
+#include "States/Transition.hpp"
+
+#include "Core/Game.hpp"
+#include "Driver/Platform.hpp"
+#include "Driver/Font.hpp"
+#include "Factories/Level.hpp"
+#include "States/Play.hpp"
+#include "States/Quit.hpp"
+
+namespace SuperHaxagon {
+
+	Transition::Transition(Game& game, std::unique_ptr<Level> level, const double score, const int levelIndex) :
+		_game(game),
+		_platform(game.getPlatform()),
+		_level(std::move(level)),
+		_score(score),
+		_levelIndex(levelIndex)
+	{}
+
+	Transition::~Transition() = default;
+
+	void Transition::enter() {
+		_platform.playSFX(_game.getSFXSelect());
+	}
+
+	std::unique_ptr<State> Transition::update(const double dilation) {
+		_frames += dilation;
+		_level->rotate(_level->getLevelFactory().getSpeedRotation(), dilation);
+		_level->clamp();
+
+		const auto press = _platform.getPressed();
+		if (press.quit) return std::make_unique<Quit>(_game);
+
+		if (_frames <= TRANSITION_FRAMES) {
+			_offset *= TRANSITION_ACCELERATION_RATE * dilation + 1.0;
+		}
+
+		if (_frames >= TRANSITION_FRAMES) {
+			const auto next = _level->getLevelFactory().getNextIndex();
+			auto& factory = *_game.getLevels()[next];
+			_game.loadBGMAudio(factory);
+			return std::make_unique<Play>(_game, factory, _levelIndex, _score);
+		}
+
+		return nullptr;
+	}
+
+	void Transition::drawTop(const double scale) {
+		_level->draw(_game, scale, _offset);
+	}
+
+	void Transition::drawBot(const double scale) {
+		auto& large = _game.getFontLarge();
+		large.setScale(scale);
+		const auto* const text = "WONDERFUL";
+		const auto pad = 6 * scale;
+		const auto width = large.getWidth(text);
+		const auto center = _platform.getScreenDim().x / 2;
+
+		const Point posText = {center, pad};
+		const Point bkgPos = {center - width / 2 - pad, 0 };
+		const Point bkgSize = {width + pad * 2, large.getHeight() + pad * 2};
+		const std::array<Point, 3> triangleLeft = {
+			Point{bkgPos.x, 0},
+			Point{bkgPos.x, bkgSize.y},
+			Point{bkgPos.x - bkgSize.y / 2, 0}
+		};
+
+		const std::array<Point, 3> triangleRight = {
+			Point{bkgPos.x + bkgSize.x, 0},
+			Point{bkgPos.x + bkgSize.x + bkgSize.y / 2, 0},
+			Point{bkgPos.x + bkgSize.x, bkgSize.y},
+		};
+
+		const auto percent = getPulse(_frames, Play::PULSE_TIME, 0);
+		const auto pulse = interpolateColor(PULSE_LOW, PULSE_HIGH, percent);
+		_platform.drawRect(COLOR_TRANSPARENT, bkgPos, bkgSize);
+		_platform.drawTriangle(COLOR_TRANSPARENT, triangleLeft);
+		_platform.drawTriangle(COLOR_TRANSPARENT, triangleRight);
+		large.draw(pulse, posText, Alignment::CENTER, text);
+	}
+}

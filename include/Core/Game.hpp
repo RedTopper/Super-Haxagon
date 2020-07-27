@@ -34,18 +34,18 @@ namespace SuperHaxagon {
 		Audio& getSFXOver() const {return *_sfxOver;}
 		Audio& getSFXSelect() const {return *_sfxSelect;}
 		Audio& getSFXLevelUp() const {return *_sfxLevelUp;}
-		Audio& getBGMAudio() const {return *_bgmAudio;}
-		Metadata& getBGMMetadata() const {return *_bgmMetadata;}
-		Font& getFontSmall() const {return *_small;}
-		Font& getFontLarge() const {return *_large;}
+		Audio* getBGMAudio() const {return _bgmAudio.get();}
+		Metadata* getBGMMetadata() const {return _bgmMetadata.get();}
+		Font& getFontSmall() const;
+		Font& getFontLarge() const;
 		double getScreenDimMax() const;
 		double getScreenDimMin() const;
+		void loadBGMAudio(const LevelFactory& factory);
+		void setBGMAudio(std::unique_ptr<Audio> audio);
 
 		void setRunning(const bool running) {_running = running;}
 		void setSkew(const double skew) {_skew = skew;}
 		void setShadowAuto(const bool shadowAuto) {_shadowAuto = shadowAuto;}
-		void setBGMAudio(std::unique_ptr<Audio> bgmAudio);
-		void setBGMMetadata(std::unique_ptr<Metadata> metadata);
 
 		/**
 		 * Runs the game

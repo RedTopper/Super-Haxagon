@@ -8,6 +8,12 @@
 #include <string>
 
 namespace SuperHaxagon {
+	uint8_t clamp(const double v) {
+		if (v < 0) return 0;
+		if (v > 255) return 255;
+		return static_cast<uint8_t>(v);
+	}
+	
 	Color interpolateColor(const Color& one, const Color& two, const double percent) {
 		Color result{};
 		result.r = static_cast<uint8_t>(linear(one.r, two.r, percent));
@@ -15,6 +21,28 @@ namespace SuperHaxagon {
 		result.b = static_cast<uint8_t>(linear(one.b, two.b, percent));
 		result.a = static_cast<uint8_t>(linear(one.a, two.a, percent));
 		return result;
+	}
+
+	// Source: https://stackoverflow.com/a/30488508
+	Color rotateColor(const Color& in, const double degrees) {
+		Color out{};
+		const auto cosA = cos(degrees * PI / 180.0);
+		const auto sinA = sin(degrees * PI / 180.0);
+
+		// Calculate the rotation matrix, only depends on Hue
+		// This means I COULD cache it, but I won't.
+		double matrix[3][3] = {
+			{cosA + (1.0 - cosA) / 3.0, 1.0 / 3.0 * (1.0 - cosA) - sqrt(1.0 / 3.0) * sinA, 1.0 / 3.0 * (1.0 - cosA) + sqrt(1.0 / 3.0) * sinA},
+			{1.0 / 3.0 * (1.0 - cosA) + sqrt(1.0 / 3.0) * sinA, cosA + 1.0 / 3.0 * (1.0 - cosA), 1.0 / 3.0 * (1.0 - cosA) - sqrt(1.0 / 3.0) * sinA},
+			{1.0 / 3.0 * (1.0 - cosA) - sqrt(1.0 / 3.0) * sinA, 1.0 / 3.0 * (1.0 - cosA) + sqrt(1.0 / 3.0) * sinA, cosA + 1.0 / 3.0 * (1.0 - cosA)}
+		};
+
+		// Use the rotation matrix to convert the RGB directly
+		out.r = clamp(in.r * matrix[0][0] + in.g * matrix[0][1] + in.b * matrix[0][2]);
+		out.g = clamp(in.r * matrix[1][0] + in.g * matrix[1][1] + in.b * matrix[1][2]);
+		out.b = clamp(in.r * matrix[2][0] + in.g * matrix[2][1] + in.b * matrix[2][2]);
+		out.a = in.a;
+		return out;
 	}
 
 	double linear(const double start, const double end, const double percent) {
@@ -48,23 +76,16 @@ namespace SuperHaxagon {
 	}
 
 	const char* getScoreText(const int score, const bool reduced) {
-		if (reduced) {
-			if (score < 10 * 60) return "SPACE";
-			if (score < 20 * 60) return "POINT";
-			if (score < 30 * 60) return "LINE";
-			if (score < 40 * 60) return "TRI";
-			if (score < 50 * 60) return "QUAD";
-			if (score < 60 * 60) return "PENTA";
-			return "HEXA";
-		}
-		
-		if (score < 10 * 60) return "SPACE";
-		if (score < 20 * 60) return "POINT";
+	
+		if (score < 15 * 60) return "POINT";
 		if (score < 30 * 60) return "LINE";
 		if (score < 40 * 60) return "TRIANGLE";
 		if (score < 50 * 60) return "SQUARE";
-		if (score < 60 * 60) return "PENTAGON";
-		return "HEXAGON";
+		if (score < 60 * 60) return reduced ? "PENTA" : "PENTAGON";
+		if (score < 70 * 60) return reduced ? "HEXA"  : "HEXAGON";
+		if (score < 80 * 60) return reduced ? "HEPTA" : "HEPTAGON";
+		if (score < 90 * 60 + 10) return reduced ? "OCTA" : "OCTAGON";
+		return "WONDERFUL";
 	}
 
 	bool readCompare(std::ifstream& file, const std::string& str) {
@@ -74,8 +95,8 @@ namespace SuperHaxagon {
 		return read.get() == str;
 	}
 
-	uint32_t read32(std::ifstream& file, const uint32_t min, const uint32_t max, Platform& platform, const std::string& noun) {
-		uint32_t num;
+	int32_t read32(std::ifstream& file, const int32_t min, const int32_t max, Platform& platform, const std::string& noun) {
+		int32_t num;
 		file.read(reinterpret_cast<char*>(&num), sizeof(num));
 
 		if (num < min) {
@@ -91,8 +112,8 @@ namespace SuperHaxagon {
 		return num;
 	}
 
-	uint16_t read16(std::ifstream& file) {
-		uint16_t num;
+	int16_t read16(std::ifstream& file) {
+		int16_t num;
 		file.read(reinterpret_cast<char*>(&num), sizeof(num));
 		return num;
 	}

@@ -4,6 +4,7 @@
 #include "Core/Twist.hpp"
 #include "Driver/Font.hpp"
 #include "Driver/Platform.hpp"
+#include "Factories/Level.hpp"
 #include "Factories/Pattern.hpp"
 #include "States/Load.hpp"
 
@@ -60,7 +61,7 @@ namespace SuperHaxagon {
 		_levels.emplace_back(std::move(level));
 	}
 
-	void Game::drawBackground(const Color& color1, const Color& color2, const Point& focus, double multiplier, double rotation, double sides) const {
+	void Game::drawBackground(const Color& color1, const Color& color2, const Point& focus, const double multiplier, const double rotation, const double sides) const {
 		// The game used to be based off a 3DS which has a bottom screen of 240px
 		const auto maxRenderDistance = SCALE_BASE_DISTANCE * (getScreenDimMax() / 240);
 		const auto exactSides = static_cast<int>(std::ceil(sides));
@@ -187,14 +188,23 @@ namespace SuperHaxagon {
 		if (_shadowAuto) {
 			return {0, min/180 + min/15 * _skew};
 		}
+
 		return {min/60, min/60};
 	}
 
 	void Game::skew(std::array<Point, 3>& skew) const {
 		const auto screen = _platform.getScreenDim();
-		for (Point& point : skew) {
+		for (auto& point : skew) {
 			point.y = ((point.y / screen.y - 0.5) * (1.0 - _skew) + 0.5) * screen.y;
 		}
+	}
+
+	Font& Game::getFontSmall() const {
+		return *_small;
+	}
+	
+	Font& Game::getFontLarge() const {
+		return *_large;
 	}
 
 	double Game::getScreenDimMax() const {
@@ -207,16 +217,26 @@ namespace SuperHaxagon {
 		return std::min(size.x, size.y);
 	}
 
-	void Game::setBGMMetadata(std::unique_ptr<Metadata> metadata) {
-		_bgmMetadata = std::move(metadata);
+	void Game::loadBGMAudio(const LevelFactory& factory) {
+		const auto base = "/bgm" + factory.getMusic();
+		std::string path;
+		std::string pathMeta;
+
+		if (factory.getLocation() == LocLevel::INTERNAL) {
+			path = _platform.getPathRom(base);
+			pathMeta = _platform.getPathRom(base + ".txt");
+		}
+		else if (factory.getLocation() == LocLevel::EXTERNAL) {
+			path = _platform.getPath(base);
+			pathMeta = _platform.getPath(base + ".txt");
+		}
+
+		_bgmAudio = _platform.loadAudio(path, Stream::INDIRECT);
+		_bgmMetadata = std::make_unique<Metadata>(pathMeta);
+		_platform.playBGM(*getBGMAudio());
 	}
 
-	void Game::setBGMAudio(std::unique_ptr<Audio> bgmAudio) {
-		if (_bgmAudio) _platform.stopBGM();
-		_bgmAudio = std::move(bgmAudio);
+	void Game::setBGMAudio(std::unique_ptr<Audio> audio) {
+		_bgmAudio = std::move(audio);
 	}
-
-
 }
-
-

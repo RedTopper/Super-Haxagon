@@ -15,8 +15,12 @@ namespace SuperHaxagon {
 	Menu::Menu(Game& game, const int levelIndex) :
 		_game(game),
 		_platform(game.getPlatform()),
-		_level(levelIndex)
-	{}
+		_level(levelIndex) {
+		for (auto i = COLOR_LOCATION_FIRST; i != COLOR_LOCATION_LAST; i++) {
+			_color[static_cast<LocColor>(i)] = COLOR_BLACK;
+			_colorNext[static_cast<LocColor>(i)] = COLOR_BLACK;
+		}
+	}
 
 	Menu::~Menu() = default;
 
@@ -25,7 +29,7 @@ namespace SuperHaxagon {
 		_game.setShadowAuto(false);
 		_game.setBGMAudio(_platform.loadAudio(_platform.getPathRom("/bgm/pamgaea"), SuperHaxagon::Stream::INDIRECT));
 		_platform.playSFX(_game.getSFXHexagon());
-		_platform.playBGM(_game.getBGMAudio());
+		_platform.playBGM(*_game.getBGMAudio());
 	}
 
 	std::unique_ptr<State> Menu::update(const double dilation) {
@@ -36,74 +40,75 @@ namespace SuperHaxagon {
 		if (!_transitionDirection) {
 			if (press.select) {
 				auto& levelFactory = *_game.getLevels()[_level];
-				const auto base = "/bgm" + levelFactory.getMusic();
-				std::string path;
-				std::string pathMeta;
-				
-				if (levelFactory.getLocation() == Location::INTERNAL) {
-					path = _platform.getPathRom(base);
-					pathMeta = _platform.getPathRom(base + ".txt");
-				} else if (levelFactory.getLocation() == Location::EXTERNAL) {
-					path = _platform.getPath(base);
-					pathMeta = _platform.getPath(base + ".txt");
-				}
-
-				_game.setBGMAudio(_platform.loadAudio(path, Stream::INDIRECT));
-				_game.setBGMMetadata(std::make_unique<Metadata>(pathMeta));
-				_platform.playBGM(_game.getBGMAudio());
-
-				return std::make_unique<Play>(_game, levelFactory, _level);
+				_game.loadBGMAudio(levelFactory);
+				return std::make_unique<Play>(_game, levelFactory, _level, 0.0);
 			}
 
 			if (press.right) {
 				_transitionDirection = 1;
 				_level++;
-				_platform.playSFX(_game.getSFXSelect());
-			}
-
-			if (press.left) {
+			} else if (press.left) {
 				_transitionDirection = -1;
 				_level--;
+			}
+
+			if (_transitionDirection) {
 				_platform.playSFX(_game.getSFXSelect());
+				for (auto i = COLOR_LOCATION_FIRST; i != COLOR_LOCATION_LAST; i++) {
+					const auto location = static_cast<LocColor>(i);
+
+					// Save the current frames color into the current color
+					_color[location] = interpolateColor(_color[location], _colorNext[location], _frameBackgroundColor / FRAMES_PER_COLOR);
+				}
 			}
 		}
 
-		if (_transitionDirection) {
-			_fgIndex = 0;
-			_bg1Index = 0;
-			_bg2Index = 0;
-			_fgIndexLast = 0;
-			_bg1IndexLast = 0;
-			_bg2IndexLast = 0;
-			_colorFrame = FRAMES_PER_COLOR;
-		}
-
+		// Wrap levels within bounds
 		if(_level >=  static_cast<int>(_game.getLevels().size())) _level = 0;
 		if(_level < 0) _level = static_cast<int>(_game.getLevels().size()) - 1;
-		if(_transitionDirection) _transitionFrame += dilation;
-		if(_transitionFrame >= FRAMES_PER_TRANSITION) {
-			_transitionFrame = 0;
+
+		// The user probably just started transitioning to the next or previous
+		// level from the last block, or the screen is still transitioning.
+		// We'll hold the background color frame at its max until it's done.
+		if (_transitionDirection) {
+			auto& levelCur = *_game.getLevels()[_level];
+			for (auto i = COLOR_LOCATION_FIRST; i != COLOR_LOCATION_LAST; i++) {
+				const auto location = static_cast<LocColor>(i);
+				// Set the next color to be the first one of the level we are going to
+				_colorNextIndex[location] = 0;
+				_colorNext[location] = levelCur.getColors().at(location)[0];
+			}
+
+			_frameBackgroundColor = FRAMES_PER_COLOR;
+			_frameRotation += dilation;
+		}
+
+		// End transition
+		if(_frameRotation >= FRAMES_PER_TRANSITION) {
+			_frameRotation = 0;
 			_transitionDirection = 0;
 		}
 
-		if(!_transitionDirection && _colorFrame >= FRAMES_PER_COLOR) {
-			_colorFrame = 0;
-			_fgIndexLast = _fgIndex++;
-			_bg1IndexLast = _bg1Index++;
-			_bg2IndexLast = _bg2Index++;
+		// Next background color logic
+		if(!_transitionDirection && _frameBackgroundColor >= FRAMES_PER_COLOR) {
+			_frameBackgroundColor = 0;
 			auto& levelCur = *_game.getLevels()[_level];
-			if (_fgIndex >= levelCur.getColorsFG().size()) _fgIndex = 0;
-			if (_bg1Index >= levelCur.getColorsBG1().size()) _bg1Index = 0;
-			if (_bg2Index >= levelCur.getColorsBG2().size()) _bg2Index = 0;
+			for (auto i = COLOR_LOCATION_FIRST; i != COLOR_LOCATION_LAST; i++) {
+				const auto location = static_cast<LocColor>(i);
+				const auto& availableColors = levelCur.getColors().at(location);
+				_color[location] = _colorNext[location];
+				_colorNextIndex[location] = _colorNextIndex[location] + 1 < availableColors.size() ? _colorNextIndex[location] + 1 : 0;
+				_colorNext[location] = availableColors[_colorNextIndex[location]];
+			}
 		} else {
-			_colorFrame += dilation;
+			_frameBackgroundColor += dilation;
 		}
 
 		return nullptr;
 	}
 
 	void Menu::drawTop(double scale) {
-		auto percentRotated = _transitionFrame / FRAMES_PER_TRANSITION;
+		auto percentRotated = _frameRotation / FRAMES_PER_TRANSITION;
 		auto rotation = percentRotated * TAU/6.0;
 
 		// If the user is going to the left, flip the radians so the animation plays backwards.
@@ -116,22 +121,17 @@ namespace SuperHaxagon {
 		Color bg1{};
 		Color bg2{};
 		Color bg3{};
-
 		auto& levelCur = *_game.getLevels()[_level];
-
 		if(_transitionDirection) {
-			fg = interpolateColor(_fg, levelCur.getColorsFG()[0], percentRotated);
-			bg1 = interpolateColor(_bg1, levelCur.getColorsBG2()[0], percentRotated);
-			bg2 = interpolateColor(_bg2, levelCur.getColorsBG1()[0], percentRotated);
-			bg3 = interpolateColor(_bg2, levelCur.getColorsBG2()[0], percentRotated); //Real BG2 transition
+			fg = interpolateColor(_color[LocColor::FG], _colorNext[LocColor::FG], percentRotated);
+			bg1 = interpolateColor(_color[LocColor::BG1], _colorNext[LocColor::BG2], percentRotated); // Note: BG1 to BG2
+			bg2 = interpolateColor(_color[LocColor::BG2], _colorNext[LocColor::BG1], percentRotated); // Note: BG2 to BG1
+			bg3 = interpolateColor(_color[LocColor::BG2], _colorNext[LocColor::BG2], percentRotated); // Note: BG2 transition
 		} else {
-			_fg = interpolateColor(levelCur.getColorsFG()[_fgIndexLast], levelCur.getColorsFG()[_fgIndex], _colorFrame / FRAMES_PER_COLOR);
-			_bg1 = interpolateColor(levelCur.getColorsBG1()[_bg1IndexLast], levelCur.getColorsBG1()[_bg1Index], _colorFrame / FRAMES_PER_COLOR);
-			_bg2 = interpolateColor(levelCur.getColorsBG2()[_bg2IndexLast], levelCur.getColorsBG2()[_bg2Index], _colorFrame / FRAMES_PER_COLOR);
-			fg = _fg;
-			bg1 = _bg1;
-			bg2 = _bg2;
-			bg3 = _bg2;
+			fg = interpolateColor(_color[LocColor::FG], _colorNext[LocColor::FG], _frameBackgroundColor / FRAMES_PER_COLOR);
+			bg1 = interpolateColor(_color[LocColor::BG1], _colorNext[LocColor::BG1], _frameBackgroundColor / FRAMES_PER_COLOR);
+			bg2 = interpolateColor(_color[LocColor::BG2], _colorNext[LocColor::BG2], _frameBackgroundColor / FRAMES_PER_COLOR);
+			bg3 = bg2;
 		}
 
 		auto screen = _platform.getScreenDim();
@@ -165,7 +165,7 @@ namespace SuperHaxagon {
 		auto diff = "DIFF: " + levelCur.getDifficulty();
 		auto mode = "MODE: " + levelCur.getMode();
 		auto auth = "AUTH: " + levelCur.getCreator();
-		auto renderCreator = levelCur.getLocation() == Location::EXTERNAL;
+		auto renderCreator = levelCur.getLocation() == LocLevel::EXTERNAL;
 		large.setScale(scale);
 		small.setScale(scale);
 

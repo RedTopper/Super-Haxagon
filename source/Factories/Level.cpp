@@ -5,13 +5,17 @@
 #include "Driver/Platform.hpp"
 
 namespace SuperHaxagon {
-	const char* LevelFactory::LEVEL_HEADER = "LEV2.1";
+	const char* LevelFactory::LEVEL_HEADER = "LEV2.2";
 	const char* LevelFactory::LEVEL_FOOTER = "ENDLEV";
 
 	Level::Level(const LevelFactory& factory, Twist& rng, const double patternDistCreate) : _factory(factory) {
-		_nextIndexBg1 = (factory.getColorsBG1().size() > 1 ? 1 : 0);
-		_nextIndexBg2 = (factory.getColorsBG2().size() > 1 ? 1 : 0);
-		_nextIndexFg = (factory.getColorsFG().size() > 1 ? 1 : 0);
+		for (auto i = COLOR_LOCATION_FIRST; i != COLOR_LOCATION_LAST; i++) {
+			const auto location = static_cast<LocColor>(i);
+			const auto& colors = factory.getColors().at(location);
+			_color[location] = colors[0];
+			_colorNextIndex[location] = colors.size() > 1 ? 1 : 0;
+			_colorNext[location] = colors[_colorNextIndex[location]];
+		}
 
 		//fetch some random starting patterns
 		auto distance = patternDistCreate;
@@ -32,16 +36,24 @@ namespace SuperHaxagon {
 	Level::~Level() = default;
 
 	void Level::update(Twist& rng, const double patternDistDelete, const double patternDistCreate, const double dilation) {
+		// Update frame
+		_frame += dilation;
+		
 		// Update color frame and clamp
 		_tweenFrame += dilation;
 		if(_tweenFrame >= _factory.getSpeedPulse()) {
 			_tweenFrame = 0;
-			_indexBg1 = _nextIndexBg1;
-			_indexBg2 = _nextIndexBg2;
-			_indexFg = _nextIndexFg;
-			_nextIndexBg1 = _indexBg1 + 1 < static_cast<int>(_factory.getColorsBG1().size()) ? _indexBg1 + 1 : 0;
-			_nextIndexBg2 = _indexBg2 + 1 < static_cast<int>(_factory.getColorsBG2().size()) ? _indexBg2 + 1 : 0;
-			_nextIndexFg = _indexFg + 1 < static_cast<int>(_factory.getColorsFG().size()) ? _indexFg + 1 : 0;
+			for (auto i = COLOR_LOCATION_FIRST; i != COLOR_LOCATION_LAST; i++) {
+				const auto location = static_cast<LocColor>(i);
+				const auto& availableColors = _factory.getColors().at(location);
+
+				_color[location] = _colorNext[location];
+				_colorNextIndex[location] = _colorNextIndex[location] + 1 < availableColors.size() ? _colorNextIndex[location] + 1 : 0;
+				_colorNext[location] = availableColors[_colorNextIndex[location]];
+				if (_frame > 60.0 * 60.0 && (location == LocColor::BG1 || location == LocColor::BG2)) {
+					_colorNext[location] = rotateColor(_colorNext[location], 180);
+				} 
+			}
 		}
 
 		// Bring walls forward if we are not delaying
@@ -102,9 +114,9 @@ namespace SuperHaxagon {
 
 		// Calculate colors
 		const auto percentTween = _tweenFrame / _factory.getSpeedPulse();
-		const auto fg = interpolateColor(_factory.getColorsFG()[_indexFg], _factory.getColorsFG()[_nextIndexFg], percentTween);
-		const auto bg1 = interpolateColor(_factory.getColorsBG1()[_indexBg1], _factory.getColorsBG1()[_nextIndexBg1], percentTween);
-		const auto bg2 = interpolateColor(_factory.getColorsBG2()[_indexBg2], _factory.getColorsBG2()[_nextIndexBg2], percentTween);
+		const auto fg = interpolateColor(_color.at(LocColor::FG), _colorNext.at(LocColor::FG), percentTween);
+		const auto bg1 = interpolateColor(_color.at(LocColor::BG1), _colorNext.at(LocColor::BG1), percentTween);
+		const auto bg2 = interpolateColor(_color.at(LocColor::BG2), _colorNext.at(LocColor::BG2), percentTween);
 
 		// Fix for triangle levels
 		const double diagonal = _sidesTween >= 3 && _sidesTween < 4 ?  2 : 1;
@@ -188,7 +200,7 @@ namespace SuperHaxagon {
 		_pulse = PULSE_DISTANCE * scale;
 	}
 
-	LevelFactory::LevelFactory(std::ifstream& file, std::vector<std::shared_ptr<PatternFactory>>& shared, const Location location, Platform& platform) {
+	LevelFactory::LevelFactory(std::ifstream& file, std::vector<std::shared_ptr<PatternFactory>>& shared, const LocLevel location, Platform& platform) {
 		_location = location;
 
 		if (!readCompare(file, LEVEL_HEADER)) {
@@ -202,24 +214,25 @@ namespace SuperHaxagon {
 		_creator = readString(file, platform, _name + " level creator");
 		_music = "/" + readString(file, platform, _name + " level music");
 
-		const int numColorsBG1 = read32(file, 1, 512, platform, "level background 1");
-		_colorsBg1.reserve(numColorsBG1);
-		for (auto i = 0; i < numColorsBG1; i++) _colorsBg1.emplace_back(readColor(file));
+		const auto numColorsBG1 = read32(file, 1, 512, platform, "level background 1");
+		_colors[LocColor::BG1].reserve(numColorsBG1);
+		for (auto i = 0; i < numColorsBG1; i++) _colors[LocColor::BG1].emplace_back(readColor(file));
 
-		const int numColorsBG2 = read32(file, 1, 512, platform, "level background 2");
-		_colorsBg2.reserve(numColorsBG2);
-		for (auto i = 0; i < numColorsBG2; i++) _colorsBg2.emplace_back(readColor(file));
+		const auto numColorsBG2 = read32(file, 1, 512, platform, "level background 2");
+		_colors[LocColor::BG2].reserve(numColorsBG2);
+		for (auto i = 0; i < numColorsBG2; i++) _colors[LocColor::BG2].emplace_back(readColor(file));
 
-		const int numColorsFG = read32(file, 1, 512, platform, "level foreground");
-		_colorsFg.reserve(numColorsFG);
-		for (auto i = 0; i < numColorsFG; i++) _colorsFg.emplace_back(readColor(file));
+		const auto numColorsFG = read32(file, 1, 512, platform, "level foreground");
+		_colors[LocColor::FG].reserve(numColorsFG);
+		for (auto i = 0; i < numColorsFG; i++) _colors[LocColor::FG].emplace_back(readColor(file));
 
 		_speedWall = readFloat(file);
 		_speedRotation = readFloat(file);
 		_speedCursor = readFloat(file);
 		_speedPulse = read32(file, 4, 8192, platform, "level pulse");
+		_nextIndex = read32(file, -1, 8192, platform, "next index");
 
-		const int numPatterns = read32(file, 1, 512, platform, "level pattern count");
+		const auto numPatterns = read32(file, 1, 512, platform, "level pattern count");
 		for (auto i = 0; i < numPatterns; i++) {
 			auto found = false;
 			auto search = readString(file, platform, "level pattern name match");

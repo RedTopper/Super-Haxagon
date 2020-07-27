@@ -17,7 +17,7 @@ namespace SuperHaxagon {
 		static constexpr double SKEW_MAX = 0.3;
 		static constexpr double SKEW_MIN_FRAMES = 120.0;
 
-		Play(Game& game, LevelFactory& factory, int levelIndex);
+		Play(Game& game, LevelFactory& factory, int levelIndex, double startScore);
 		Play(Play&) = delete;
 		~Play() override;
 

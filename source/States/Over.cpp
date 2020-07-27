@@ -15,14 +15,14 @@
 
 namespace SuperHaxagon {
 
-	Over::Over(Game& game, LevelFactory& factory, std::unique_ptr<Level> level, const double score, int levelIndex) :
+	Over::Over(Game& game, std::unique_ptr<Level> level, const double score, const int levelIndex) :
 		_game(game),
 		_platform(game.getPlatform()),
-		_factory(factory),
+		_originallySelectedFactory(*_game.getLevels()[levelIndex]),
 		_level(std::move(level)),
 		_score(score),
 		_levelIndex(levelIndex) {
-		_high = factory.setHighScore(static_cast<int>(score));
+		_high = _originallySelectedFactory.setHighScore(static_cast<int>(score));
 	}
 
 	Over::~Over() = default;
@@ -65,7 +65,14 @@ namespace SuperHaxagon {
 		if(_frames >= FRAMES_PER_GAME_OVER) {
 			_level->clearPatterns();
 			if (press.select) {
-				return std::make_unique<Play>(_game, _factory, _levelIndex);
+				// If the level we are playing is not the same as the index, we need to load
+				// the original music
+				if (&_originallySelectedFactory != &_level->getLevelFactory()) {
+					_game.loadBGMAudio(_originallySelectedFactory);
+				}
+
+				// Go back to the original level
+				return std::make_unique<Play>(_game, _originallySelectedFactory, _levelIndex, 0.0);
 			}
 
 			if (press.back) {
@@ -108,7 +115,8 @@ namespace SuperHaxagon {
 			const auto pulse = interpolateColor(PULSE_LOW, PULSE_HIGH, percent);
 			small.draw(pulse, posBest, Alignment::CENTER, "NEW RECORD!");
 		} else {
-			const auto textBest = std::string("BEST: ") + getTime(_factory.getHighScore());
+			const auto score = _originallySelectedFactory.getHighScore();
+			const auto textBest = std::string("BEST: ") + getTime(score);
 			small.draw(COLOR_WHITE, posBest, Alignment::CENTER, textBest);
 		}
 
@@ -116,6 +124,7 @@ namespace SuperHaxagon {
 			Buttons a{};
 			a.select = true;
 			small.draw(COLOR_WHITE, posA, Alignment::CENTER, "PRESS (" + _platform.getButtonName(a) + ") TO PLAY");
+
 			Buttons b{};
 			b.back = true;
 			small.draw(COLOR_WHITE, posB, Alignment::CENTER, "PRESS (" + _platform.getButtonName(b) + ") TO QUIT");

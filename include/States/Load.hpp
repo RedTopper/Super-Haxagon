@@ -3,7 +3,7 @@
 
 #include "State.hpp"
 
-#include "Factories/Level.hpp"
+#include "Core/Structs.hpp"
 
 namespace SuperHaxagon {
 	class Game;
@@ -20,7 +20,7 @@ namespace SuperHaxagon {
 		Load(Load&) = delete;
 		~Load() override;
 
-		bool loadFile(std::ifstream& file, Location location) const;
+		bool loadFile(std::ifstream& file, LocLevel location) const;
 		bool loadScores(std::ifstream& file) const;
 
 		std::unique_ptr<State> update(double dilation) override;

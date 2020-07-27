@@ -16,6 +16,20 @@ namespace SuperHaxagon {
 	Platform3DS::Platform3DS(const Dbg dbg) : Platform(dbg) {
 		romfsInit();
 		gfxInitDefault();
+
+		// Production mode enables wide-screen
+		// Check Main.cpp to enable and disable debug modes
+		if (dbg == Dbg::FATAL) {
+			const auto res = cfguInit();
+			u8 consoleModel = 0;
+			if (R_SUCCEEDED(res)) {
+				CFGU_GetSystemModel(&consoleModel);
+				cfguExit();
+			}
+
+			gfxSetWide(consoleModel != 3);
+		}
+
 		C3D_Init(C3D_DEFAULT_CMDBUF_SIZE);
 		C2D_Init(C2D_DEFAULT_MAX_OBJECTS);
 		C2D_Prepare();

@@ -2,7 +2,7 @@
 
 # ![Icon](./media/icon-3ds.png "Icon") Super-Haxagon
 
-Super Haxagon is an cross platform, open source [Super Hexagon](http://superhexagon.com/) clone for the Nintendo 3DS, Nintendo Switch, Windows, and Linux. It is developed in C++ and uses no additional libraries for the core logic, making it easy (in theory) to port to new platforms. It also has a GUI based level editor called [Haxa Editor](https://github.com/RedInquisitive/Haxa-Editor).
+Super Haxagon is a cross platform, open source [Super Hexagon](http://superhexagon.com/) clone for the Nintendo 3DS, Nintendo Switch, Windows, and Linux. It is developed in C++ and uses no additional libraries for the core logic, making it easy (in theory) to port to new platforms. It also has a GUI based level editor called [Haxa Editor](https://github.com/RedInquisitive/Haxa-Editor).
 
 ## Download
 
@@ -19,7 +19,7 @@ You can download the latest build on [the releases page](https://github.com/RedI
 
 ## Building
 
-Super Haxagon can build for 3DS, Switch, Windows (MinGW + MSVC), and Linux. For desktop platforms, it uses a cross platform library called SFML, so it will probably also compile on other platforms that support it.
+Super Haxagon targets the 3DS, Switch, Windows (MinGW + MSVC), and Linux. For desktop platforms, it uses a cross platform library called SFML, so it will probably also compile on other platforms that support it.
 
 1. Clone this repository with `git clone https://github.com/RedInquisitive/Super-Haxagon.git --recursive`
 
@@ -67,7 +67,7 @@ Thanks everyone for:
  * The toolchain by [devkitPro](https://github.com/devkitPro)
  * The 3DS 2D engine by fincs at [devkitPro/citro2D](https://github.com/devkitPro/citro2d)
  * The CTR User library by Smea at [devkitPro/libctru](https://github.com/devkitPro/libctru)
- * the Switch User library by Switchbrew at [switchbrew/libnx](https://github.com/switchbrew/libnx)
+ * The Switch User library by Switchbrew at [switchbrew/libnx](https://github.com/switchbrew/libnx)
  * The font Bump IT UP by aaronamar at [fontstruct.com](http://fontstruct.com/fontstructions/show/155156/bump_it_up)
  * Steveice10 for the build tools at [Steveice10/buildtools](https://github.com/Steveice10/buildtools)
  * Sean T. Barrett for OGG decoding at [nothings/stb](https://github.com/nothings/stb)
@@ -78,23 +78,13 @@ Thanks everyone for:
 
 ## Cross Platform
 
-Below are a few screenshots featuring both the Windows and 3DS platform. 3DS screenshots
-were taken on actual hardware.
+Below are a few screenshots featuring the various platforms that Super Haxagon compiles on. The 3DS version is packaged with a custom 3D banner to make it look official. Additionally, the gif was recorded on actual Nintendo Switch hardware.
 
-#### Banner
-![3D Banner](./media/screenshots/HNI_0013.JPG "Banner")
-
-#### Windows
-![In Game Windows](./media/screenshots/Windows_2020-07-10_014324.png "In Game Windows")
-
-#### 3DS
-![In Game 3DS](./media/screenshots/luma-2020-07-11-06-48-44-586.png "In Game 3DS")
-
-#### Switch
-![In Game Switch Video](./media/screenshots/switch.gif "In Game Switch (GIF)")
-
-#### Hardware
-![Hardware](./media/screenshots/20200727_015021.jpg "Hardware")
+<img width="500" src="./media/screenshots/HNI_0013.JPG"                     alt="3D Banner"            title="3D Banner"/>
+<img width="500" src="./media/screenshots/Windows_2020-07-10_014324.png"    alt="In Game Windows"      title="Windows"/>
+<img width="500" src="./media/screenshots/luma-2020-07-11-06-48-44-586.png" alt="In Game 3DS"          title="3DS"/>
+<img width="500" src="./media/screenshots/switch.gif"                       alt="In Game Switch (GIF)" title="In Game Switch (GIF)"/>
+<img width="500" src="./media/screenshots/20200727_015021.jpg"              alt="Hardware"             title="Hardware"/>
 
 <details><summary>More Screenshots</summary>
 

@@ -76,23 +76,25 @@ Thanks everyone for:
  * ...and Kevin MacLeod for more music at [incompetech.com](http://incompetech.com/) under [Creative Commons: By Attribution 3.0](http://creativecommons.org/licenses/by/3.0/)
  * and all of the people on the [contributors page](https://github.com/RedInquisitive/Super-Haxagon/graphs/contributors) (seriously, you guys rock!)
 
-## Screenshots
+## Cross Platform
 
 Below are a few screenshots featuring both the Windows and 3DS platform. 3DS screenshots
 were taken on actual hardware.
 
+#### Banner
 ![3D Banner](./media/screenshots/HNI_0013.JPG "Banner")
 
-### Cross Platform
-
-#### ... on Windows
+#### Windows
 ![In Game Windows](./media/screenshots/Windows_2020-07-10_014324.png "In Game Windows")
 
-#### ... on the 3DS
+#### 3DS
 ![In Game 3DS](./media/screenshots/luma-2020-07-11-06-48-44-586.png "In Game 3DS")
 
-#### ... on the Switch
+#### Switch
 ![In Game Switch Video](./media/screenshots/switch.gif "In Game Switch (GIF)")
+
+#### Hardware
+![Hardware](./media/screenshots/20200727_015021.jpg "Hardware")
 
 <details><summary>More Screenshots</summary>
 

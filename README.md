@@ -78,22 +78,22 @@ Thanks everyone for:
 
 <details><summary>Music Attribution</summary>
 
-Werq by Kevin MacLeod
-Link: https://incompetech.filmmusic.io/song/4616-werq
-License: http://creativecommons.org/licenses/by/4.0/
+Werq by Kevin MacLeod  
+Link: https://incompetech.filmmusic.io/song/4616-werq  
+License: http://creativecommons.org/licenses/by/4.0/  
 
-Screen Saver by Kevin MacLeod
-Link: https://incompetech.filmmusic.io/song/5715-screen-saver
-License: http://creativecommons.org/licenses/by/4.0/
+Screen Saver by Kevin MacLeod  
+Link: https://incompetech.filmmusic.io/song/5715-screen-saver  
+License: http://creativecommons.org/licenses/by/4.0/  
 
-Call Me Katla, Baby by Dunderpatrullen
-Captain Cool by Bossfight
-Commando Steve by Bossfight
-Dr. Finkelfracken's Cure by Bossfight
-Jack Russel by Bossfight
-The Maze Of Mayonnaise by Bossfight
-Link: https://github.com/SuperV1234/SSVOpenHexagonAssets
-License: ᵖˡᵉᵃˢᵉ ᵈᵒⁿ'ᵗ ˢᵘᵉ ᵐᵉ
+Call Me Katla, Baby by Dunderpatrullen  
+Captain Cool by Bossfight  
+Commando Steve by Bossfight  
+Dr. Finkelfracken's Cure by Bossfight  
+Jack Russel by Bossfight  
+The Maze Of Mayonnaise by Bossfight  
+Link: https://github.com/SuperV1234/SSVOpenHexagonAssets  
+License: ᵖˡᵉᵃˢᵉ ᵈᵒⁿ'ᵗ ˢᵘᵉ ᵐᵉ  
 
 </details>
 

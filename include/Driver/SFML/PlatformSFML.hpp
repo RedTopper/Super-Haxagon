@@ -44,6 +44,7 @@ namespace SuperHaxagon {
 
 	private:
 		bool _loaded = false;
+		bool _focus = true;
 		double _delta = 0.0;
 		sf::Clock _clock;
 		std::unique_ptr<sf::RenderWindow> _window;

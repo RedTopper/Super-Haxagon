@@ -6,17 +6,19 @@
 #include "Core/Structs.hpp"
 
 #include <map>
+#include <vector>
 
 namespace SuperHaxagon {
 	class Game;
 	class Platform;
+	class LevelFactory;
 
 	class Menu : public State {
 	public:
 		const int FRAMES_PER_TRANSITION = 12;
 		const int FRAMES_PER_COLOR = 60;
 
-		explicit Menu(Game& game, int levelIndex);
+		Menu(Game& game, LevelFactory& selected);
 		Menu(Menu&) = delete;
 		~Menu() override;
 
@@ -33,8 +35,8 @@ namespace SuperHaxagon {
 		double _frameRotation = FRAMES_PER_TRANSITION;
 		double _frameBackgroundColor = FRAMES_PER_COLOR;
 		int _transitionDirection = 0;
-		int _level = 0;
 
+		std::vector<std::unique_ptr<LevelFactory>>::const_iterator _selected;
 		std::map<LocColor, Color> _color;
 		std::map<LocColor, Color> _colorNext;
 		std::map<LocColor, size_t> _colorNextIndex;

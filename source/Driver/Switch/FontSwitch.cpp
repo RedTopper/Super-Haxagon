@@ -5,6 +5,8 @@
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
+#include <cmath>
+
 static auto* vertex_shader = R"text(
 #version 330 core
 
@@ -158,8 +160,8 @@ namespace SuperHaxagon {
 
 			const auto i = static_cast<int>(c);
 			const Point draw = {
-				cursor.x + _chars[i].pxOffset.x,
-				cursor.y - _chars[i].pxOffset.y
+				std::round(cursor.x + _chars[i].pxOffset.x),
+				std::round(cursor.y - _chars[i].pxOffset.y)
 			};
 
 			const auto dim = _chars[i].pxDim;

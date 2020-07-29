@@ -119,6 +119,7 @@ namespace SuperHaxagon {
 
 		glEnable(GL_DEBUG_OUTPUT);
 		glEnable(GL_DEPTH_TEST);
+		glEnable(GL_FRAMEBUFFER_SRGB);
 		//glEnable(GL_CULL_FACE);
 		glDepthMask(GL_TRUE);
 		glDepthFunc(GL_GREATER);

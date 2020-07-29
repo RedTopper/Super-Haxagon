@@ -73,8 +73,29 @@ Thanks everyone for:
  * Sean T. Barrett for OGG decoding at [nothings/stb](https://github.com/nothings/stb)
  * The SFML developers for, well, [SFML](https://www.sfml-dev.org/)
  * Audio from Open Hexagon at [SuperV1234/SSVOpenHexagon](https://github.com/SuperV1234/SSVOpenHexagon)
- * ...and Kevin MacLeod for more music at [incompetech.com](http://incompetech.com/) under [Creative Commons: By Attribution 3.0](http://creativecommons.org/licenses/by/3.0/)
+ * ...and Kevin MacLeod for more music at [incompetech.com](http://incompetech.com/)
  * and all of the people on the [contributors page](https://github.com/RedInquisitive/Super-Haxagon/graphs/contributors) (seriously, you guys rock!)
+
+<details><summary>Music Attribution</summary>
+
+Werq by Kevin MacLeod
+Link: https://incompetech.filmmusic.io/song/4616-werq
+License: http://creativecommons.org/licenses/by/4.0/
+
+Screen Saver by Kevin MacLeod
+Link: https://incompetech.filmmusic.io/song/5715-screen-saver
+License: http://creativecommons.org/licenses/by/4.0/
+
+Call Me Katla, Baby by Dunderpatrullen
+Captain Cool by Bossfight
+Commando Steve by Bossfight
+Dr. Finkelfracken's Cure by Bossfight
+Jack Russel by Bossfight
+The Maze Of Mayonnaise by Bossfight
+Link: https://github.com/SuperV1234/SSVOpenHexagonAssets
+License: ᵖˡᵉᵃˢᵉ ᵈᵒⁿ'ᵗ ˢᵘᵉ ᵐᵉ
+
+</details>
 
 ## Cross Platform
 

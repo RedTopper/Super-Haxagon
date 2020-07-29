@@ -11,6 +11,7 @@ namespace SuperHaxagon {
 		static_cast<int>(sf::VideoMode::getDesktopMode().width * 0.75),
 		static_cast<int>(sf::VideoMode::getDesktopMode().height * 0.75)
 	)) {
+		SetForegroundWindow(getWindow().getSystemHandle());
 		_mkdir(".\\sdmc");
 	}
 

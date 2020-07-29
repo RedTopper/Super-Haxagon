@@ -29,10 +29,9 @@ namespace SuperHaxagon {
 		_clock.restart();
 		sf::Event event{};
 		while (_window->pollEvent(event)) {
-			if (event.type == sf::Event::Closed) {
-				_window->close();
-			}
-
+			if (event.type == sf::Event::Closed) _window->close();
+			if (event.type == sf::Event::GainedFocus) _focus = true;
+			if (event.type == sf::Event::LostFocus) _focus = false;
 			if (event.type == sf::Event::Resized) {
 				const auto width = event.size.width > 400 ? event.size.width : 400;
 				const auto height = event.size.height > 240 ? event.size.height : 240;
@@ -103,6 +102,7 @@ namespace SuperHaxagon {
 
 	Buttons PlatformSFML::getPressed() {
 		Buttons buttons{};
+		if (!_focus) return buttons;
 		buttons.select = sf::Keyboard::isKeyPressed(sf::Keyboard::Enter);
 		buttons.back = sf::Keyboard::isKeyPressed(sf::Keyboard::Escape);
 		buttons.quit = sf::Keyboard::isKeyPressed(sf::Keyboard::Delete);

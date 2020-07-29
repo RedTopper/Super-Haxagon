@@ -15,14 +15,13 @@
 
 namespace SuperHaxagon {
 
-	Over::Over(Game& game, std::unique_ptr<Level> level, const double score, const int levelIndex) :
+	Over::Over(Game& game, std::unique_ptr<Level> level, LevelFactory& selected, const double score) :
 		_game(game),
 		_platform(game.getPlatform()),
-		_originallySelectedFactory(*_game.getLevels()[levelIndex]),
+		_selected(selected),
 		_level(std::move(level)),
-		_score(score),
-		_levelIndex(levelIndex) {
-		_high = _originallySelectedFactory.setHighScore(static_cast<int>(score));
+		_score(score) {
+		_high = _selected.setHighScore(static_cast<int>(score));
 	}
 
 	Over::~Over() = default;
@@ -67,16 +66,16 @@ namespace SuperHaxagon {
 			if (press.select) {
 				// If the level we are playing is not the same as the index, we need to load
 				// the original music
-				if (&_originallySelectedFactory != &_level->getLevelFactory()) {
-					_game.loadBGMAudio(_originallySelectedFactory);
+				if (&_selected != &_level->getLevelFactory()) {
+					_game.loadBGMAudio(_selected);
 				}
 
 				// Go back to the original level
-				return std::make_unique<Play>(_game, _originallySelectedFactory, _levelIndex, 0.0);
+				return std::make_unique<Play>(_game, _selected, _selected, 0.0);
 			}
 
 			if (press.back) {
-				return std::make_unique<Menu>(_game, _levelIndex);
+				return std::make_unique<Menu>(_game, _selected);
 			}
 		}
 
@@ -106,7 +105,7 @@ namespace SuperHaxagon {
 		const Point posB = {width / 2, height - margin - heightSmall};
 		const Point posA = {width / 2, posB.y - heightSmall - padText};
 
-		const auto textScore = std::string("SCORE: ") + getTime(_score);
+		const auto textScore = std::string("TIME: ") + getTime(_score);
 		large.draw(COLOR_WHITE, posGameOver, Alignment::CENTER,  "GAME OVER");
 		small.draw(COLOR_WHITE, posTime, Alignment::CENTER, textScore);
 
@@ -115,7 +114,7 @@ namespace SuperHaxagon {
 			const auto pulse = interpolateColor(PULSE_LOW, PULSE_HIGH, percent);
 			small.draw(pulse, posBest, Alignment::CENTER, "NEW RECORD!");
 		} else {
-			const auto score = _originallySelectedFactory.getHighScore();
+			const auto score = _selected.getHighScore();
 			const auto textBest = std::string("BEST: ") + getTime(score);
 			small.draw(COLOR_WHITE, posBest, Alignment::CENTER, textBest);
 		}

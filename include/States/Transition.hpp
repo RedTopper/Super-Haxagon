@@ -16,7 +16,7 @@ namespace SuperHaxagon {
 		static constexpr double TRANSITION_ACCELERATION_RATE = 0.1;
 		static constexpr int TRANSITION_FRAMES = 120;
 		
-		Transition(Game& game, std::unique_ptr<Level> level, double score, int levelIndex);
+		Transition(Game& game, std::unique_ptr<Level> level, LevelFactory& selected, double score);
 		Transition(Transition&) = delete;
 		~Transition() override;
 
@@ -28,6 +28,7 @@ namespace SuperHaxagon {
 	private:
 		Game& _game;
 		Platform& _platform;
+		LevelFactory& _selected;
 		std::unique_ptr<Level> _level;
 
 		double _score = 0;

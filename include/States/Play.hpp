@@ -17,7 +17,7 @@ namespace SuperHaxagon {
 		static constexpr double SKEW_MAX = 0.3;
 		static constexpr double SKEW_MIN_FRAMES = 120.0;
 
-		Play(Game& game, LevelFactory& factory, int levelIndex, double startScore);
+		Play(Game& game, LevelFactory& factory, LevelFactory& selected, double startScore);
 		Play(Play&) = delete;
 		~Play() override;
 
@@ -31,13 +31,12 @@ namespace SuperHaxagon {
 		Game& _game;
 		Platform& _platform;
 		LevelFactory& _factory;
+		LevelFactory& _selected;
 		std::unique_ptr<Level> _level;
 
 		double _scalePrev = 0;
 		double _scoreWidth = 0;
 		double _score = 0;
-		int _levelIndex = 0;
-
 		double _skewFrame = 0.0;
 		double _skewDirection = 1.0;
 	};

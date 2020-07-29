@@ -9,12 +9,12 @@
 
 namespace SuperHaxagon {
 
-	Transition::Transition(Game& game, std::unique_ptr<Level> level, const double score, const int levelIndex) :
+	Transition::Transition(Game& game, std::unique_ptr<Level> level, LevelFactory& selected, const double score) :
 		_game(game),
 		_platform(game.getPlatform()),
+		_selected(selected),
 		_level(std::move(level)),
-		_score(score),
-		_levelIndex(levelIndex)
+		_score(score)
 	{}
 
 	Transition::~Transition() = default;
@@ -36,10 +36,13 @@ namespace SuperHaxagon {
 		}
 
 		if (_frames >= TRANSITION_FRAMES) {
+			// In order to get here _game.getLevels()[next] must be valid,
+			// as the previous state verified this. If it does not exist, the
+			// game just keeps going
 			const auto next = _level->getLevelFactory().getNextIndex();
 			auto& factory = *_game.getLevels()[next];
 			_game.loadBGMAudio(factory);
-			return std::make_unique<Play>(_game, factory, _levelIndex, _score);
+			return std::make_unique<Play>(_game, factory, _selected, _score);
 		}
 
 		return nullptr;
@@ -56,10 +59,10 @@ namespace SuperHaxagon {
 		const auto pad = 6 * scale;
 		const auto width = large.getWidth(text);
 		const auto center = _platform.getScreenDim().x / 2;
-
 		const Point posText = {center, pad};
 		const Point bkgPos = {center - width / 2 - pad, 0 };
 		const Point bkgSize = {width + pad * 2, large.getHeight() + pad * 2};
+
 		const std::array<Point, 3> triangleLeft = {
 			Point{bkgPos.x, 0},
 			Point{bkgPos.x, bkgSize.y},

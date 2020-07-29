@@ -16,13 +16,13 @@
 
 namespace SuperHaxagon {
 
-	Play::Play(Game& game, LevelFactory& factory, const int levelIndex, const double startScore) :
+	Play::Play(Game& game, LevelFactory& factory, LevelFactory& selected, const double startScore) :
 		_game(game),
 		_platform(game.getPlatform()),
 		_factory(factory),
+		_selected(selected),
 		_level(factory.instantiate(game.getTwister(), SCALE_BASE_DISTANCE)),
-		_score(startScore),
-		_levelIndex(levelIndex)
+		_score(startScore)
 	{}
 
 	Play::~Play() = default;
@@ -76,7 +76,7 @@ namespace SuperHaxagon {
 
 		// Keys
 		if(pressed.back || hit == Movement::DEAD) {
-			return std::make_unique<Over>(_game, std::move(_level), _score, _levelIndex);
+			return std::make_unique<Over>(_game, std::move(_level), _selected, _score);
 		}
 
 		if (pressed.quit) {
@@ -86,7 +86,7 @@ namespace SuperHaxagon {
 		// Go to the next level
 		const auto next = _factory.getNextIndex();
 		if (next >= 0 && static_cast<size_t>(next) < _game.getLevels().size() && _level->getFrame() > 60.0 * TIME_UNTIL_TRANSITION_NEXT_LEVEL) {
-			return std::make_unique<Transition>(_game, std::move(_level), _score, _levelIndex);
+			return std::make_unique<Transition>(_game, std::move(_level), _selected, _score);
 		}
 
 		// Process movement
@@ -166,8 +166,9 @@ namespace SuperHaxagon {
 		auto drawHigh = false;
 		const auto originalY = scoreBkgSize.y;
 		const auto heightBar = 2 * scale;
-		if (_factory.getHighScore() > 0) {
-			if (_score < _factory.getHighScore()) {
+		const auto highScore = _selected.getHighScore();
+		if (highScore > 0) {
+			if (_score < highScore) {
 				scoreBkgSize.y += heightBar + pad;
 				drawBar = true;
 			} else {
@@ -189,7 +190,7 @@ namespace SuperHaxagon {
 		if (drawBar) {
 			const Point barPos = {scorePosText.x, originalY};
 			const Point barWidth = {_scoreWidth, heightBar};
-			const Point barWidthScore = {_scoreWidth * (_score / _factory.getHighScore()), heightBar};
+			const Point barWidthScore = {_scoreWidth * (_score / highScore), heightBar};
 			_platform.drawRect(COLOR_BLACK, barPos, barWidth);
 			_platform.drawRect(COLOR_WHITE, barPos, barWidthScore);
 		}
@@ -197,8 +198,8 @@ namespace SuperHaxagon {
 		if (drawHigh) {
 			auto textColor = COLOR_WHITE;
 			const Point posBest = {width - pad, originalY};
-			if (_score - _factory.getHighScore() <= PULSE_TIMES * PULSE_TIME) {
-				const auto percent = getPulse(_score, PULSE_TIME, _factory.getHighScore());
+			if (_score - highScore <= PULSE_TIMES * PULSE_TIME) {
+				const auto percent = getPulse(_score, PULSE_TIME, highScore);
 				textColor = interpolateColor(PULSE_LOW, PULSE_HIGH, percent);
 			}
 

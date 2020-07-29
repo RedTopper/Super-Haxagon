@@ -40,7 +40,9 @@ namespace SuperHaxagon {
 		if (alignment == Alignment::LEFT) temp.x = position.x;
 		if (alignment == Alignment::CENTER) temp.x = position.x - width / 2;
 		if (alignment == Alignment::RIGHT) temp.x = position.x - width;
-		C2D_DrawText(&text, C2D_WithColor, static_cast<float>(temp.x), static_cast<float>(temp.y), 0, 1, 1, c);
+		const auto x = static_cast<float>(std::round(temp.x));
+		const auto y = static_cast<float>(std::round(temp.y));
+		C2D_DrawText(&text, C2D_WithColor, x, y, 0, 1, 1, c);
 		C2D_TextBufClear(_buff);
 	}
 }

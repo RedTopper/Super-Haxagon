@@ -26,7 +26,7 @@ namespace SuperHaxagon {
 	template<class T>
 	class RenderTarget {
 	public:
-		RenderTarget<T>(Platform& platform, bool transparent, const std::string& shaderVertex, const std::string& shaderFragment, const std::string& label);
+		RenderTarget<T>(Platform& platform, bool transparent, const std::string& shaderVertex, const std::string& shaderFragment, std::string label);
 		~RenderTarget<T>();
 
 		void bind() const;
@@ -40,7 +40,7 @@ namespace SuperHaxagon {
 		void init(Platform& platform, const char* shaderVertex, const char* shaderFragment);
 		static GLuint compile(Platform& platform, GLenum type, const char* source);
 
-		std::string _label;
+		const std::string _label;
 
 		bool _transparent;
 		unsigned int _iboLastIndex = 0;

@@ -62,7 +62,7 @@ namespace SuperHaxagon {
 		buffer << std::fixed << std::setfill('0')
 			<< std::setprecision(3) << std::setw(3)
 			<< scoreInt
-			<< ":"
+			<< "."
 			<< std::setprecision(2) << std::setw(2)
 			<< decimalPart;
 		return buffer.str();
@@ -79,7 +79,7 @@ namespace SuperHaxagon {
 	
 		if (score < 15 * 60) return "POINT";
 		if (score < 30 * 60) return "LINE";
-		if (score < 40 * 60) return "TRIANGLE";
+		if (score < 40 * 60) return reduced ? "TRI" : "TRIANGLE";
 		if (score < 50 * 60) return "SQUARE";
 		if (score < 60 * 60) return reduced ? "PENTA" : "PENTAGON";
 		if (score < 70 * 60) return reduced ? "HEXA"  : "HEXAGON";

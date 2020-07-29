@@ -6,8 +6,8 @@
 
 namespace SuperHaxagon {
 	template<>
-	RenderTarget<Vertex>::RenderTarget(Platform& platform, const bool transparent, const std::string& shaderVertex, const std::string& shaderFragment, const std::string& label) :
-		_label(label),
+	RenderTarget<Vertex>::RenderTarget(Platform& platform, const bool transparent, const std::string& shaderVertex, const std::string& shaderFragment, std::string label) :
+		_label(std::move(label)),
 		_transparent(transparent) {
 		init(platform, shaderVertex.c_str(), shaderFragment.c_str());
 
@@ -21,8 +21,8 @@ namespace SuperHaxagon {
 	}
 
 	template<>
-	RenderTarget<VertexUV>::RenderTarget(Platform& platform, const bool transparent, const std::string& shaderVertex, const std::string& shaderFragment, const std::string& label) :
-		_label(label),
+	RenderTarget<VertexUV>::RenderTarget(Platform& platform, const bool transparent, const std::string& shaderVertex, const std::string& shaderFragment, std::string label) :
+		_label(std::move(label)),
 		_transparent(transparent) {
 		init(platform, shaderVertex.c_str(), shaderFragment.c_str());
 
@@ -143,7 +143,7 @@ namespace SuperHaxagon {
 	}
 
 	template<class T>
-	GLuint RenderTarget<T>::compile(Platform& platform, GLenum type, const char* source) {
+	GLuint RenderTarget<T>::compile(Platform& platform, const GLenum type, const char* source) {
 		GLint success;
 		GLchar msg[512];
 
@@ -168,7 +168,7 @@ namespace SuperHaxagon {
 	}
 
 	template<class T>
-	void resize(Platform& platform, GLuint type, unsigned int& size, std::vector<T>& vector, const std::string& label) {
+	void resize(Platform& platform, const GLuint type, unsigned int& size, std::vector<T>& vector, const std::string& label) {
 		if (size < vector.size() || size == 0) {
 			if (size == 0) size = BUFFER_RESIZE_STEP;
 			while (size < vector.size()) size *= 2;

@@ -2,11 +2,11 @@
 
 # ![Icon](./media/icon-3ds.png "Icon") Super-Haxagon
 
-Super Haxagon is a cross platform, open source [Super Hexagon](http://superhexagon.com/) clone for the Nintendo 3DS, Nintendo Switch, Windows, and Linux. It is developed in C++ and uses no additional libraries for the core logic, making it easy (in theory) to port to new platforms. It also has a GUI based level editor called [Haxa Editor](https://github.com/RedInquisitive/Haxa-Editor).
+Super Haxagon is a cross platform, open source [Super Hexagon](http://superhexagon.com/) clone for the Nintendo 3DS, Nintendo Switch, Windows, and Linux. It is developed in C++ and uses no additional libraries for the core logic, making it easy (in theory) to port to new platforms. It also has a GUI based level editor called [Haxa Editor](https://github.com/RedTopper/Haxa-Editor).
 
 ## Download
 
-You can download the latest build on [the releases page](https://github.com/RedInquisitive/Super-Haxagon/releases) to the right.
+You can download the latest build on [the releases page](https://github.com/RedTopper/Super-Haxagon/releases) to the right.
 
 ## Features
 
@@ -21,7 +21,7 @@ You can download the latest build on [the releases page](https://github.com/RedI
 
 Super Haxagon targets the 3DS, Switch, Windows (MinGW + MSVC), and Linux. For desktop platforms, it uses a cross platform library called SFML, so it will probably also compile on other platforms that support it.
 
-1. Clone this repository with `git clone https://github.com/RedInquisitive/Super-Haxagon.git --recursive`
+1. Clone this repository with `git clone https://github.com/RedTopper/Super-Haxagon.git --recursive`
 
 ### 3DS Build
 
@@ -74,7 +74,7 @@ Thanks everyone for:
  * The SFML developers for, well, [SFML](https://www.sfml-dev.org/)
  * Audio from Open Hexagon at [SuperV1234/SSVOpenHexagon](https://github.com/SuperV1234/SSVOpenHexagon)
  * ...and Kevin MacLeod for more music at [incompetech.com](http://incompetech.com/)
- * and all of the people on the [contributors page](https://github.com/RedInquisitive/Super-Haxagon/graphs/contributors) (seriously, you guys rock!)
+ * and all of the people on the [contributors page](https://github.com/RedTopper/Super-Haxagon/graphs/contributors) (seriously, you guys rock!)
 
 <details><summary>Music Attribution</summary>
 

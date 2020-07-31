@@ -11,7 +11,7 @@ namespace SuperHaxagon {
 
 	/**
 	 * Note: This class was taken from
-	 * https://github.com/RedInquisitive/Adventure-Commander
+	 * https://github.com/RedTopper/Adventure-Commander
 	 */
 	class Twist {
 	public:

@@ -41,7 +41,7 @@ namespace SuperHaxagon {
 		if (alignment == Alignment::CENTER) temp.x = position.x - width / 2;
 		if (alignment == Alignment::RIGHT) temp.x = position.x - width;
 		const auto x = static_cast<float>(std::round(temp.x));
-		const auto y = static_cast<float>(std::round(temp.y));
+		const auto y = static_cast<float>(std::round(temp.y) - _size / 16);
 		C2D_DrawText(&text, C2D_WithColor, x, y, 0, 1, 1, c);
 		C2D_TextBufClear(_buff);
 	}

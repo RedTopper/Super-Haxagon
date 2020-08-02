@@ -60,26 +60,17 @@ namespace SuperHaxagon {
 		const auto width = large.getWidth(text);
 		const auto center = _platform.getScreenDim().x / 2;
 		const Point posText = {center, pad};
-		const Point bkgPos = {center - width / 2 - pad, 0 };
 		const Point bkgSize = {width + pad * 2, large.getHeight() + pad * 2};
-
-		const std::array<Point, 3> triangleLeft = {
-			Point{bkgPos.x, 0},
-			Point{bkgPos.x, bkgSize.y},
-			Point{bkgPos.x - bkgSize.y / 2, 0}
-		};
-
-		const std::array<Point, 3> triangleRight = {
-			Point{bkgPos.x + bkgSize.x, 0},
-			Point{bkgPos.x + bkgSize.x + bkgSize.y / 2, 0},
-			Point{bkgPos.x + bkgSize.x, bkgSize.y},
+		const std::vector<Point> trap = {
+			{center - bkgSize.x / 2 - bkgSize.y / 2, 0},
+			{center + bkgSize.x / 2 + bkgSize.y / 2, 0},
+			{center + bkgSize.x/2, bkgSize.y},
+			{center - bkgSize.x/2, bkgSize.y},
 		};
 
 		const auto percent = getPulse(_frames, Play::PULSE_TIME, 0);
 		const auto pulse = interpolateColor(PULSE_LOW, PULSE_HIGH, percent);
-		_platform.drawRect(COLOR_TRANSPARENT, bkgPos, bkgSize);
-		_platform.drawTriangle(COLOR_TRANSPARENT, triangleLeft);
-		_platform.drawTriangle(COLOR_TRANSPARENT, triangleRight);
+		_platform.drawPoly(COLOR_TRANSPARENT, trap);
 		large.draw(pulse, posText, Alignment::CENTER, text);
 	}
 }

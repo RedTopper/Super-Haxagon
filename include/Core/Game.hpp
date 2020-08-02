@@ -59,6 +59,12 @@ namespace SuperHaxagon {
 		void addLevel(std::unique_ptr<LevelFactory> level);
 
 		/**
+		 * Draws a rectangle at position with the size of size.
+		 * Position is the top left.
+		 */
+		void drawRect(Color color, Point position, Point size) const;
+
+		/**
 		 * Draws the background of the screen (the radiating colors part)
 		 */
 		void drawBackground(const Color& color1, const Color& color2, const Point& focus, double multiplier, double rotation, double sides) const;
@@ -87,12 +93,6 @@ namespace SuperHaxagon {
 		void drawWalls(const Color& color, const Point& focus, const Wall& wall, double rotation, double sides, double offset, double scale) const;
 
 		/**
-		 * Draws a trapezoid using an array of points and a color.
-		 * The array must have 4 points.
-		 */
-		void drawTrap(Color color, const std::array<Point, 4>& points) const;
-
-		/**
 		 * Gets the center of the screen from the platform
 		 */
 		Point getScreenCenter() const;
@@ -105,7 +105,7 @@ namespace SuperHaxagon {
 		/**
 		 * Skews the screen to give a 3D effect. Modifies the incoming triangle
 		 */
-		void skew(std::array<Point, 3>& skew) const;
+		void skew(std::vector<Point>& skew) const;
 
 	private:
 		Platform& _platform;

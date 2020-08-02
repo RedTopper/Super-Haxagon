@@ -53,8 +53,8 @@ namespace SuperHaxagon {
 		return Movement::CAN_MOVE;
 	}
 
-	std::array<Point, 4> Wall::calcPoints(const Point& focus, const double rotation, const double sides, const double offset, const double scale) const {
-		std::array<Point, 4> quad{};
+	std::vector<Point> Wall::calcPoints(const Point& focus, const double rotation, const double sides, const double offset, const double scale) const {
+		
 		auto tHeight = _height;
 		auto tDistance = _distance + offset;
 		if(tDistance < SCALE_HEX_LENGTH) {//so the distance is never negative as it enters.
@@ -64,10 +64,13 @@ namespace SuperHaxagon {
 
 		tDistance *= scale;
 		tHeight *= scale;
-		quad[0] = calcPoint(focus, rotation, WALL_OVERFLOW, tDistance, sides, _side + 1);
-		quad[1] = calcPoint(focus, rotation, WALL_OVERFLOW, tDistance + tHeight, sides, _side + 1);
-		quad[2] = calcPoint(focus, rotation, -WALL_OVERFLOW, tDistance + tHeight, sides, _side);
-		quad[3] = calcPoint(focus, rotation, -WALL_OVERFLOW, tDistance, sides, _side);
+		std::vector<Point> quad{
+			calcPoint(focus, rotation, -WALL_OVERFLOW, tDistance, sides, _side),
+			calcPoint(focus, rotation, -WALL_OVERFLOW, tDistance + tHeight, sides, _side),
+			calcPoint(focus, rotation, WALL_OVERFLOW, tDistance + tHeight, sides, _side + 1),
+			calcPoint(focus, rotation, WALL_OVERFLOW, tDistance, sides, _side + 1)
+		};
+
 		return quad;
 	}
 

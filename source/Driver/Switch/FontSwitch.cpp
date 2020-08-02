@@ -173,15 +173,16 @@ namespace SuperHaxagon {
 			// Cannot render empty characters
 			if(!dim.x || !dim.y) continue;
 
+			_surface->insert({ {draw.x, draw.y + dim.y}, {uv.x, uv.y}, color, z }); // BL
 			_surface->insert({{draw.x, draw.y}, {uv.x, 0}, color, z}); // TL
 			_surface->insert({{draw.x + dim.x, draw.y}, {uv.x + dim.x / _texWidth, 0}, color, z}); // TR
-			_surface->insert({{draw.x, draw.y + dim.y}, {uv.x, uv.y}, color, z}); // BL
 			_surface->insert({{draw.x + dim.x, draw.y + dim.y}, {uv.x + dim.x / _texWidth, uv.y}, color, z}); // BR
 
+			// Insert clockwise
 			_surface->reference(0);
 			_surface->reference(1);
 			_surface->reference(2);
-			_surface->reference(1);
+			_surface->reference(0);
 			_surface->reference(2);
 			_surface->reference(3);
 

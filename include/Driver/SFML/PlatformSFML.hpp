@@ -32,8 +32,7 @@ namespace SuperHaxagon {
 		void screenBegin() override;
 		void screenSwap() override;
 		void screenFinalize() override;
-		void drawRect(const Color& color, const Point& point, const Point& size) override;
-		void drawTriangle(const Color& color, const std::array<Point, 3>& points) override;
+		void drawPoly(const Color& color, const std::vector<Point>& points) override;
 
 		std::unique_ptr<Twist> getTwister() override = 0;
 

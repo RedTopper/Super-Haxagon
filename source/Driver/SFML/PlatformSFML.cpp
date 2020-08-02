@@ -130,22 +130,16 @@ namespace SuperHaxagon {
 		_window->display();
 	}
 
-	void PlatformSFML::drawRect(const Color& color, const Point& point, const Point& size) {
-		sf::RectangleShape rectangle(sf::Vector2f(static_cast<float>(size.x), static_cast<float>(size.y)));
-		const sf::Color sfColor{color.r, color.g, color.b, color.a};
-		rectangle.setFillColor(sfColor);
-		rectangle.setPosition(static_cast<float>(point.x), static_cast<float>(point.y));
-		_window->draw(rectangle);
-	}
-
-	void PlatformSFML::drawTriangle(const Color& color, const std::array<Point, 3>& points) {
+	void PlatformSFML::drawPoly(const Color& color, const std::vector<Point>& points) {
 		const sf::Color sfColor{ color.r, color.g, color.b, color.a };
-		sf::ConvexShape convex(3);
+		sf::ConvexShape convex(points.size());
 		convex.setPosition(0, 0);
 		convex.setFillColor(sfColor);
-		convex.setPoint(0, sf::Vector2f(static_cast<float>(points[0].x), static_cast<float>(points[0].y)));
-		convex.setPoint(1, sf::Vector2f(static_cast<float>(points[1].x), static_cast<float>(points[1].y)));
-		convex.setPoint(2, sf::Vector2f(static_cast<float>(points[2].x), static_cast<float>(points[2].y)));
+		auto index = 0;
+		for (const auto& point : points) {
+			convex.setPoint(index++, sf::Vector2f(static_cast<float>(point.x), static_cast<float>(point.y)));
+		}
+
 		_window->draw(convex);
 	}
 }

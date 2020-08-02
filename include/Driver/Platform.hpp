@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 namespace SuperHaxagon {
 	struct Point;
@@ -53,8 +54,7 @@ namespace SuperHaxagon {
 		virtual void screenBegin() = 0;
 		virtual void screenSwap() = 0;
 		virtual void screenFinalize() = 0;
-		virtual void drawRect(const Color& color, const Point& point, const Point& size) = 0;
-		virtual void drawTriangle(const Color& color, const std::array<Point, 3>& points) = 0;
+		virtual void drawPoly(const Color& color, const std::vector<Point>& points) = 0;
 
 		virtual std::unique_ptr<Twist> getTwister() = 0;
 

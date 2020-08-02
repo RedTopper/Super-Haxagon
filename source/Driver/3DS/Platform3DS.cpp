@@ -9,6 +9,8 @@
 
 #include <array>
 #include <iostream>
+#include <locale>
+#include <codecvt>
 #include <memory>
 #include <sys/stat.h>
 
@@ -19,15 +21,30 @@ namespace SuperHaxagon {
 
 		// Production mode enables wide-screen
 		// Check Main.cpp to enable and disable debug modes
-		if (dbg == Dbg::FATAL) {
-			const auto res = cfguInit();
+
+		std::string country;
+		if (dbg == Dbg::INFO) {
 			u8 consoleModel = 0;
+			auto citra = false;
+
+			const auto res = cfguInit();
 			if (R_SUCCEEDED(res)) {
+				const auto countryNameBlockID = 0x000B0001;
+				const auto countryNameBlockSize = 0x800; // in bytes
+				const auto countryNameBlockOffset = 0x80; // in bytes
+				const auto buffer = std::make_unique<char16_t[]>(countryNameBlockSize / sizeof(char16_t));
 				CFGU_GetSystemModel(&consoleModel);
+				CFGU_GetConfigInfoBlk2(countryNameBlockSize, countryNameBlockID, buffer.get());
 				cfguExit();
+
+				// Citra cannot use wide mode, so to make emulation of the game more accessible we'll check for it
+				// This is a shitty hack, either the Citra developers should fix wide mode or this should be done right
+				std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> convert;
+				country = convert.to_bytes(buffer.get() + countryNameBlockOffset / sizeof(char16_t) * CFG_LANGUAGE_EN);
+				citra = country == "Gensokyo";
 			}
 
-			gfxSetWide(consoleModel != 3);
+			gfxSetWide(consoleModel != 3 && !citra);
 		}
 
 		C3D_Init(C3D_DEFAULT_CMDBUF_SIZE);
@@ -37,13 +54,16 @@ namespace SuperHaxagon {
 		_buff = C2D_TextBufNew(4096);
 		_top = C2D_CreateScreenTarget(GFX_TOP, GFX_LEFT);
 
-		if (_dbg == Dbg::FATAL) {
+		if (dbg == Dbg::FATAL) {
 			// Use the bottom screen for drawing
 			_bot = C2D_CreateScreenTarget(GFX_BOTTOM, GFX_LEFT);
 		} else {
 			// Otherwise create console on bottom if we want more messages
 			consoleInit(GFX_BOTTOM, nullptr);
 		}
+
+		// Output the country for debugging
+		Platform3DS::message(Dbg::INFO, "location", country);
 
 		// Setup NDSP
 		ndspInit();
@@ -180,25 +200,16 @@ namespace SuperHaxagon {
 		C3D_FrameEnd(0);
 	}
 
-	void Platform3DS::drawRect(const Color& color, const Point& point, const Point& size) {
+	void Platform3DS::drawPoly(const Color& color, const std::vector<Point>& points) {
 		const auto c = C2D_Color32(color.r, color.g, color.b, color.a);
-		C2D_DrawRectangle(
-			static_cast<float>(point.x), 
-			static_cast<float>(point.y), 0, 
-			static_cast<float>(size.x), 
-			static_cast<float>(size.y), 
-			c, c, c, c
-		);
-	}
-
-	void Platform3DS::drawTriangle(const Color& color, const std::array<Point, 3>& points) {
-		const auto c = C2D_Color32(color.r, color.g, color.b, color.a);
-		C2D_DrawTriangle(
-			static_cast<float>(points[0].x), static_cast<float>(points[0].y), c,
-			static_cast<float>(points[1].x), static_cast<float>(points[1].y), c,
-			static_cast<float>(points[2].x), static_cast<float>(points[2].y), c,
-			0
-		);
+		for (size_t i = 1; i < points.size() - 1; i++) {
+			C2D_DrawTriangle(
+				static_cast<float>(points[0].x), static_cast<float>(points[0].y), c,
+				static_cast<float>(points[i].x), static_cast<float>(points[i].y), c,
+				static_cast<float>(points[i + 1].x), static_cast<float>(points[i + 1].y), c,
+				0
+			);
+		}
 	}
 
 	std::unique_ptr<Twist> Platform3DS::getTwister() {

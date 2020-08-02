@@ -62,81 +62,78 @@ namespace SuperHaxagon {
 		_levels.emplace_back(std::move(level));
 	}
 
+	void Game::drawRect(const Color color, const Point position, const Point size) const {
+		const std::vector<Point> points{
+			{position.x, position.y + size.y},
+			{position.x + size.x, position.y + size.y},
+			{position.x + size.x, position.y},
+			{position.x, position.y},
+		};
+
+		_platform.drawPoly(color, points);
+	}
+
 	void Game::drawBackground(const Color& color1, const Color& color2, const Point& focus, const double multiplier, const double rotation, const double sides) const {
 		// The game used to be based off a 3DS which has a bottom screen of 240px
 		const auto maxRenderDistance = SCALE_BASE_DISTANCE * (getScreenDimMax() / 240);
-		const auto exactSides = static_cast<int>(std::ceil(sides));
+		const auto exactSides = static_cast<size_t>(std::ceil(sides));
 
 		//solid background.
 		const Point position = {0,0};
 		const auto size = _platform.getScreenDim();
-		_platform.drawRect(color1, position, size);
+		drawRect(color1, position, size);
 
 		//This draws the main background.
 		std::vector<Point> edges;
 		edges.resize(exactSides);
 
-		for(auto i = 0; i < exactSides; i++) {
+		for(size_t i = 0; i < exactSides; i++) {
 			edges[i].x = multiplier * maxRenderDistance * cos(rotation + i * TAU / sides) + focus.x;
 			edges[i].y = multiplier * maxRenderDistance * sin(rotation + i * TAU / sides + PI) + focus.y;
 		}
 
-		std::array<Point, 3> triangle{};
+		std::vector<Point> triangle;
+		triangle.resize(3);
 
 		//if the sides is odd we need to "make up a color" to put in the gap between the last and first color
 		if(exactSides % 2) {
 			triangle[0] = focus;
-			triangle[1] = edges[static_cast<size_t>(exactSides) - 1];
+			triangle[1] = edges[exactSides - 1];
 			triangle[2] = edges[0];
 			skew(triangle);
-			_platform.drawTriangle(interpolateColor(color1, color2, 0.5f), triangle);
+			_platform.drawPoly(interpolateColor(color1, color2, 0.5f), triangle);
 		}
 
 		//Draw the rest of the triangles
-		for(auto i = 0; i < exactSides - 1; i = i + 2) {
+		for(size_t i = 0; i < exactSides - 1; i = i + 2) {
 			triangle[0] = focus;
 			triangle[1] = edges[i];
-			triangle[2] = edges[static_cast<size_t>(i) + 1];
+			triangle[2] = edges[i + 1];
 			skew(triangle);
-			_platform.drawTriangle(color2, triangle);
+			_platform.drawPoly(color2, triangle);
 		}
 	}
 
 	void Game::drawRegular(const Color& color, const Point& focus, const double height, const double rotation, const double sides) const {
-		const auto exactSides = static_cast<int>(std::ceil(sides));
+		const auto exactSides = static_cast<size_t>(std::ceil(sides));
 
 		std::vector<Point> edges;
 		edges.resize(exactSides);
 
 		// Calculate the triangle backwards so it overlaps correctly.
-		for(auto i = 0; i < exactSides; i++) {
+		for(size_t i = 0; i < exactSides; i++) {
 			edges[i].x = height * cos(rotation + i * TAU/sides) + focus.x;
 			edges[i].y = height * sin(rotation + i * TAU/sides + PI) + focus.y;
 		}
 
-		std::array<Point, 3> triangle{};
-
-		// Connect last triangle edge to first
-		triangle[0] = focus;
-		triangle[1] = edges[static_cast<size_t>(exactSides) - 1];
-		triangle[2] = edges[0];
-		skew(triangle);
-		_platform.drawTriangle(color, triangle);
-
-		// Draw rest of regular polygon
-
-		for(auto i = 0; i < exactSides - 1; i++) {
-			triangle[0] = focus;
-			triangle[1] = edges[i];
-			triangle[2] = edges[static_cast<size_t>(i) + 1];
-			skew(triangle);
-			_platform.drawTriangle(color, triangle);
-		}
+		skew(edges);
+		_platform.drawPoly(color, edges);
 	}
 
 	void Game::drawCursor(const Color& color, const Point& focus, const double cursor, const double rotation, const double offset, const double scale) const {
 		// Note: A cursor and rotation of zero points to the left
-		std::array<Point, 3> triangle{};
+		std::vector<Point> triangle;
+		triangle.resize(3);
 		triangle[0] = {offset * scale, -SCALE_HUMAN_WIDTH/2 * scale};
 		triangle[1] = {offset * scale, SCALE_HUMAN_WIDTH/2 * scale};
 		triangle[2] = {(SCALE_HUMAN_HEIGHT + offset) * scale, 0};
@@ -147,7 +144,7 @@ namespace SuperHaxagon {
 		}
 
 		skew(triangle);
-		_platform.drawTriangle(color, triangle);
+		_platform.drawPoly(color, triangle);
 	}
 
 	void Game::drawPatterns(const Color& color, const Point& focus, const std::deque<Pattern>& patterns, const double rotation, const double sides, const double offset, const double scale) const {
@@ -162,21 +159,10 @@ namespace SuperHaxagon {
 		const auto distance = wall.getDistance() + offset;
 		if(distance + wall.getHeight() < SCALE_HEX_LENGTH) return; //TOO_CLOSE;
 		if(wall.getSide() >= sides) return; //NOT_IN_RANGE
-		drawTrap(color, wall.calcPoints(focus, rotation, sides, offset, scale));
-	}
+		auto trap = wall.calcPoints(focus, rotation, sides, offset, scale);
 
-	void Game::drawTrap(const Color color, const std::array<Point, 4>& points) const {
-		std::array<Point, 3> triangle{};
-		triangle[0] = points[0];
-		triangle[1] = points[1];
-		triangle[2] = points[2];
-		skew(triangle);
-		_platform.drawTriangle(color, triangle);
-		triangle[0] = points[0];
-		triangle[1] = points[2];
-		triangle[2] = points[3];
-		skew(triangle);
-		_platform.drawTriangle(color, triangle);
+		skew(trap);
+		_platform.drawPoly(color, trap);
 	}
 
 	Point Game::getScreenCenter() const {
@@ -193,7 +179,7 @@ namespace SuperHaxagon {
 		return {min/60, min/60};
 	}
 
-	void Game::skew(std::array<Point, 3>& skew) const {
+	void Game::skew(std::vector<Point>& skew) const {
 		const auto screen = _platform.getScreenDim();
 		for (auto& point : skew) {
 			point.y = ((point.y / screen.y - 0.5) * (1.0 - _skew) + 0.5) * screen.y;

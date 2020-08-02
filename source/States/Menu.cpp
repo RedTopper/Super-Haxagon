@@ -166,55 +166,53 @@ namespace SuperHaxagon {
 		auto diff = "DIFF: " + level.getDifficulty();
 		auto mode = "MODE: " + level.getMode();
 		auto auth = "AUTH: " + level.getCreator();
-		auto renderCreator = level.getLocation() == LocLevel::EXTERNAL;
+		auto renderCreator = level.getCreator() != "REDHAT";
 		large.setScale(scale);
 		small.setScale(scale);
 
 		// Text positions
-		Point posTitle = {pad, pad};
-		Point posDifficulty = {pad, posTitle.y + large.getHeight() + pad};
-		Point posMode = {pad, posDifficulty.y + small.getHeight() + pad};
-		Point posCreator = {pad, posMode.y + (renderCreator ? small.getHeight() + pad : 0)};
-		Point posTime = {pad, screen.y - small.getHeight() - pad};
+		const Point posTitle = {pad, pad};
+		const Point posDifficulty = {pad, posTitle.y + pad + large.getHeight()};
+		const Point posMode = {pad, posDifficulty.y + pad + small.getHeight()};
+		const Point posCreator = {pad, posMode.y + (renderCreator ? pad + small.getHeight() : 0)};
+		const Point posTime = {pad, screen.y - small.getHeight() - pad};
 
-		// Triangle positions
-		Point infoPos = {0, 0};
+		// Text background for information at top left of screen
 		Point infoSize = {std::max({
 			large.getWidth(level.getName()),
 			small.getWidth(diff),
 			small.getWidth(mode),
 			small.getWidth(auth),
-		}) + pad, posCreator.y + small.getHeight() + pad};
+		}) + pad * 2, posCreator.y + pad + small.getHeight()};
 
-		// It looks like the original game had triangles flipped....
-		std::array<Point, 3> infoTriangle = {
-			Point{infoSize.x, infoSize.y},
-			Point{infoSize.x, 0},
-			Point{infoSize.x + infoSize.y/2, 0}
+		// Clockwise, from Top Left
+		std::vector<Point> info{
+			{0, 0},
+			{infoSize.x + infoSize.y / 2, 0},
+			{infoSize.x, infoSize.y},
+			{0, infoSize.y}
 		};
 
-		_platform.drawRect(COLOR_TRANSPARENT, infoPos, infoSize);
-		_platform.drawTriangle(COLOR_TRANSPARENT, infoTriangle);
+		_platform.drawPoly(COLOR_TRANSPARENT, info);
 
 		// Score block with triangle
-		Point timePos = {0, posTime.y - pad};
 		Point timeSize = {small.getWidth(scoreTime) + pad * 2, small.getHeight() + pad * 2};
-		std::array<Point, 3> timeTriangle = {
-			Point{timeSize.x,  _platform.getScreenDim().y - timeSize.y},
-			Point{timeSize.x,  _platform.getScreenDim().y},
-			Point{timeSize.x + timeSize.y/2,  _platform.getScreenDim().y}
+
+		// Clockwise, from Top Left
+		const auto screenHeight = _platform.getScreenDim().y;
+		std::vector<Point> time = {
+			{0, screenHeight - timeSize.y},
+			{timeSize.x,  screenHeight - timeSize.y},
+			{timeSize.x + timeSize.y / 2, screenHeight},
+			{0,  screenHeight},
 		};
 
-		_platform.drawRect(COLOR_TRANSPARENT, timePos, timeSize);
-		_platform.drawTriangle(COLOR_TRANSPARENT, timeTriangle);
+		_platform.drawPoly(COLOR_TRANSPARENT, time);
 
 		large.draw(COLOR_WHITE, posTitle, Alignment::LEFT, level.getName());
 		small.draw(COLOR_GREY, posDifficulty, Alignment::LEFT, diff);
 		small.draw(COLOR_GREY, posMode, Alignment::LEFT, mode);
-
-		if (renderCreator)
-			small.draw(COLOR_GREY, posCreator, Alignment::LEFT, auth);
-
+		if (renderCreator) small.draw(COLOR_GREY, posCreator, Alignment::LEFT, auth);
 		small.draw(COLOR_WHITE, posTime, Alignment::LEFT, scoreTime);
 	}
 

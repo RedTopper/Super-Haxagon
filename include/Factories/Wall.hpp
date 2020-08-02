@@ -3,7 +3,7 @@
 
 #include "Core/Structs.hpp"
 
-#include <array>
+#include <vector>
 
 namespace SuperHaxagon {
 	class Wall {
@@ -17,7 +17,7 @@ namespace SuperHaxagon {
 
 		void advance(double speed);
 		Movement collision(double cursorHeight, double cursorPos, double cursorStep, int sides) const;
-		std::array<Point, 4> calcPoints(const Point& focus, double rotation, double sides, double offset, double scale) const;
+		std::vector<Point> calcPoints(const Point& focus, double rotation, double sides, double offset, double scale) const;
 		static Point calcPoint(const Point& focus, double rotation, double overflow, double distance, double sides, int side);
 
 		double getDistance() const {return _distance;}

@@ -127,7 +127,6 @@ namespace SuperHaxagon {
 			_scoreWidth = small.getWidth("TIME: " + getTime(0));
 		}
 
-		const auto width = _platform.getScreenDim().x;
 		const auto pad = 3 * scale;
 
 		small.setScale(scale);
@@ -136,30 +135,27 @@ namespace SuperHaxagon {
 		// Note, 400 is kind of arbitrary. Perhaps it's needed to update this later.
 		const auto* levelUp = getScoreText(static_cast<int>(_level->getFrame()), _platform.getScreenDim().x <= 400);
 		const Point levelUpPosText = {pad, pad};
-		const Point levelUpBkgPos = {0, 0};
 		const Point levelUpBkgSize = {
-			levelUpPosText.x + small.getWidth(levelUp) + pad,
-			levelUpPosText.y + small.getHeight() + pad
+			small.getWidth(levelUp) + pad * 2,
+			small.getHeight() + pad * 2
 		};
 
-		const std::array<Point, 3> levelUpBkgTri = {
-			Point{levelUpBkgSize.x, levelUpBkgSize.y},
-			Point{levelUpBkgSize.x, 0},
-			Point{levelUpBkgSize.x + levelUpBkgSize.y/2, 0}
+		// Clockwise, from top left
+		const std::vector<Point> levelUpBkg = {
+			{0, 0},
+			{levelUpBkgSize.x + levelUpBkgSize.y / 2, 0},
+			{levelUpBkgSize.x, levelUpBkgSize.y},
+			{0, levelUpBkgSize.y},
 		};
 
-		_platform.drawRect(COLOR_TRANSPARENT, levelUpBkgPos, levelUpBkgSize);
-		_platform.drawTriangle(COLOR_TRANSPARENT, levelUpBkgTri);
+		_platform.drawPoly(COLOR_TRANSPARENT, levelUpBkg);
 		small.draw(COLOR_WHITE, levelUpPosText, Alignment::LEFT, levelUp);
 
 		// Draw the current score
+		const auto screenWidth = _platform.getScreenDim().x;
 		const auto textScore = "TIME: " + getTime(_score);
-		const Point scorePosText = {width - pad - _scoreWidth, pad};
-		const Point scoreBkgPos = {scorePosText.x - pad, 0};
-		Point scoreBkgSize = {
-			width - scoreBkgPos.x,
-			scorePosText.y + small.getHeight() + pad
-		};
+		const Point scorePosText = {screenWidth - pad - _scoreWidth, pad};
+		Point scoreBkgSize = {_scoreWidth + pad * 2, small.getHeight() + pad * 2};
 
 		// Before we draw the score, compute the best time graph.
 		auto drawBar = false;
@@ -167,6 +163,8 @@ namespace SuperHaxagon {
 		const auto originalY = scoreBkgSize.y;
 		const auto heightBar = 2 * scale;
 		const auto highScore = _selected.getHighScore();
+
+		// Adjust background size to accommodate for new record or bar
 		if (highScore > 0) {
 			if (_score < highScore) {
 				scoreBkgSize.y += heightBar + pad;
@@ -177,27 +175,28 @@ namespace SuperHaxagon {
 			}
 		}
 
-		const std::array<Point, 3> scoreBkgTri = {
-			Point{scoreBkgPos.x, scoreBkgSize.y},
-			Point{scoreBkgPos.x, 0},
-			Point{scoreBkgPos.x - scoreBkgSize.y/2, 0}
+		// Clockwise, from top left
+		const std::vector<Point> scoreBkg = {
+			{screenWidth - scoreBkgSize.x - scoreBkgSize.y / 2, 0},
+			{screenWidth, 0},
+			{screenWidth, scoreBkgSize.y},
+			{screenWidth - scoreBkgSize.x, scoreBkgSize.y}
 		};
 
-		_platform.drawTriangle(COLOR_TRANSPARENT, scoreBkgTri);
-		_platform.drawRect(COLOR_TRANSPARENT, scoreBkgPos, scoreBkgSize);
+		_platform.drawPoly(COLOR_TRANSPARENT, scoreBkg);
 		small.draw(COLOR_WHITE, scorePosText, Alignment::LEFT, textScore);
 
 		if (drawBar) {
 			const Point barPos = {scorePosText.x, originalY};
 			const Point barWidth = {_scoreWidth, heightBar};
 			const Point barWidthScore = {_scoreWidth * (_score / highScore), heightBar};
-			_platform.drawRect(COLOR_BLACK, barPos, barWidth);
-			_platform.drawRect(COLOR_WHITE, barPos, barWidthScore);
+			_game.drawRect(COLOR_BLACK, barPos, barWidth);
+			_game.drawRect(COLOR_WHITE, barPos, barWidthScore);
 		}
 
 		if (drawHigh) {
 			auto textColor = COLOR_WHITE;
-			const Point posBest = {width - pad, originalY};
+			const Point posBest = {screenWidth - pad, originalY};
 			if (_score - highScore <= PULSE_TIMES * PULSE_TIME) {
 				const auto percent = getPulse(_score, PULSE_TIME, highScore);
 				textColor = interpolateColor(PULSE_LOW, PULSE_HIGH, percent);

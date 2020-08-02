@@ -120,7 +120,6 @@ namespace SuperHaxagon {
 		glEnable(GL_DEBUG_OUTPUT);
 		glEnable(GL_DEPTH_TEST);
 		glEnable(GL_FRAMEBUFFER_SRGB);
-		//glEnable(GL_CULL_FACE);
 		glDepthMask(GL_TRUE);
 		glDepthFunc(GL_GREATER);
 		glDepthRange(0.0f, 1.0f);
@@ -253,34 +252,20 @@ namespace SuperHaxagon {
 		eglSwapBuffers(_display, _surface);
 	}
 
-	void PlatformSwitch::drawRect(const Color& color, const Point& point, const Point& size) {
-		const auto z = getAndIncrementZ();
-		auto& buffer = color.a == 0xFF || color.a == 0 ? _opaque : _transparent;
-		buffer->insert({point, color, z});
-		buffer->insert({{point.x + size.x, point.y}, color, z});
-		buffer->insert({{point.x, point.y + size.y}, color, z});
-		buffer->insert({{point.x + size.x, point.y + size.y}, color, z});
-
-		buffer->reference(0);
-		buffer->reference(1);
-		buffer->reference(2);
-		buffer->reference(1);
-		buffer->reference(2);
-		buffer->reference(3);
-
-		buffer->advance(4);
-	}
-
-	void PlatformSwitch::drawTriangle(const Color& color, const std::array<Point, 3>& points) {
-		auto last = 0;
+	void PlatformSwitch::drawPoly(const Color& color, const std::vector<Point>& points) {
 		const auto z = getAndIncrementZ();
 		auto& buffer = color.a == 0xFF || color.a == 0 ? _opaque : _transparent;
 		for (const auto& point : points) {
 			buffer->insert({point, color, z});
-			buffer->reference(last++);
 		}
 
-		buffer->advance(last);
+		for (size_t i = 1; i < points.size() - 1; i++) {
+			buffer->reference(0);
+			buffer->reference(i);
+			buffer->reference(i + 1);
+		}
+
+		buffer->advance(points.size());
 	}
 	
 	std::unique_ptr<Twist> PlatformSwitch::getTwister() {

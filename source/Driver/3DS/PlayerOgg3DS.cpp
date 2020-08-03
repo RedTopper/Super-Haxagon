@@ -40,7 +40,9 @@ namespace SuperHaxagon {
 
 		if (_thread) {
 			LightEvent_Signal(&_event);
-			threadJoin(_thread, UINT64_MAX);
+			threadJoin(_thread, 100000000);
+			LightEvent_Signal(&_event);
+			threadJoin(_thread, 100000000);
 			threadFree(_thread);
 		}
 
@@ -148,6 +150,7 @@ namespace SuperHaxagon {
 				}
 			}
 
+			if (pointer->_quit) return;
 			LightEvent_Wait(&_event);
 		}
 	}

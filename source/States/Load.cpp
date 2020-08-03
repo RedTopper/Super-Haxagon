@@ -6,7 +6,6 @@
 #include "Factories/Pattern.hpp"
 #include "States/Menu.hpp"
 #include "States/Quit.hpp"
-#include "States/Win.hpp"
 
 #include <memory>
 #include <fstream>

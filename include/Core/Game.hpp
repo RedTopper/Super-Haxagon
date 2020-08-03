@@ -43,6 +43,7 @@ namespace SuperHaxagon {
 		double getScreenDimMin() const;
 		void loadBGMAudio(const LevelFactory& factory);
 		void setBGMAudio(std::unique_ptr<Audio> audio);
+		void setBGMMetadata(std::unique_ptr<Metadata> metadata);
 
 		void setRunning(const bool running) {_running = running;}
 		void setSkew(const double skew) {_skew = skew;}

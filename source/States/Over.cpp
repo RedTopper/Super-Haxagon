@@ -15,11 +15,12 @@
 
 namespace SuperHaxagon {
 
-	Over::Over(Game& game, std::unique_ptr<Level> level, LevelFactory& selected, const double score) :
+	Over::Over(Game& game, std::unique_ptr<Level> level, LevelFactory& selected, const double score, std::string text) :
 		_game(game),
 		_platform(game.getPlatform()),
 		_selected(selected),
 		_level(std::move(level)),
+		_text(std::move(text)),
 		_score(score) {
 		_high = _selected.setHighScore(static_cast<int>(score));
 	}
@@ -106,7 +107,7 @@ namespace SuperHaxagon {
 		const Point posA = {width / 2, posB.y - heightSmall - padText};
 
 		const auto textScore = std::string("TIME: ") + getTime(_score);
-		large.draw(COLOR_WHITE, posGameOver, Alignment::CENTER,  "GAME OVER");
+		large.draw(COLOR_WHITE, posGameOver, Alignment::CENTER,  _text);
 		small.draw(COLOR_WHITE, posTime, Alignment::CENTER, textScore);
 
 		if(_high) {

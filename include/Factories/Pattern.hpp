@@ -16,6 +16,7 @@ namespace SuperHaxagon {
 		int getSides() const {return _sides;}
 
 		double getFurthestWallDistance() const;
+		double getClosestWallDistance() const;
 		void advance(double speed);
 
 	private:

@@ -8,11 +8,10 @@
 #include "Factories/Level.hpp"
 #include "States/Over.hpp"
 #include "States/Quit.hpp"
-
-#include <array>
-#include <cmath>
-
 #include "States/Transition.hpp"
+#include "States/Win.hpp"
+
+#include <cmath>
 
 namespace SuperHaxagon {
 
@@ -76,7 +75,25 @@ namespace SuperHaxagon {
 
 		// Keys
 		if(pressed.back || hit == Movement::DEAD) {
-			return std::make_unique<Over>(_game, std::move(_level), _selected, _score);
+			if (&_factory != &_selected &&
+			    _factory.getCreator() == "REDHAT" && 
+			    _factory.getName() == "VOID" &&
+			    _factory.getDifficulty() == "???" &&
+			    _factory.getMode() == "???") {
+				// Play the super special win animation if you are on the last level without selecting it
+				// Congrats, you just won the game!
+				return std::make_unique<Win>(_game, std::move(_level), _selected, _score, "WONDERFUL");
+			}
+
+			if (_factory.getCreator() == "REDHAT" &&
+			    _factory.getName() == "CREDITS" &&
+			    _factory.getDifficulty() == "SPOILERS" &&
+			    _factory.getMode() == "(DUH)") {
+				// Cheater
+				return std::make_unique<Win>(_game, std::move(_level), _selected, 0, "CHEATER");
+			}
+
+			return std::make_unique<Over>(_game, std::move(_level), _selected, _score, "GAME OVER");
 		}
 
 		if (pressed.quit) {
@@ -85,7 +102,9 @@ namespace SuperHaxagon {
 
 		// Go to the next level
 		const auto next = _factory.getNextIndex();
-		if (next >= 0 && static_cast<size_t>(next) < _game.getLevels().size() && _level->getFrame() > 60.0 * TIME_UNTIL_TRANSITION_NEXT_LEVEL) {
+		if (next >= 0 && 
+		    static_cast<size_t>(next) < _game.getLevels().size() && 
+		    _level->getFrame() > 60.0 * _level->getLevelFactory().getNextTime()) {
 			return std::make_unique<Transition>(_game, std::move(_level), _selected, _score);
 		}
 

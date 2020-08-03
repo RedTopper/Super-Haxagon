@@ -55,15 +55,17 @@ namespace SuperHaxagon {
 	void Transition::drawBot(const double scale) {
 		auto& large = _game.getFontLarge();
 		large.setScale(scale);
+
 		const auto* const text = "WONDERFUL";
 		const auto pad = 6 * scale;
 		const auto width = large.getWidth(text);
 		const auto center = _platform.getScreenDim().x / 2;
+
 		const Point posText = {center, pad};
 		const Point bkgSize = {width + pad * 2, large.getHeight() + pad * 2};
 		const std::vector<Point> trap = {
-			{center - bkgSize.x / 2 - bkgSize.y / 2, 0},
-			{center + bkgSize.x / 2 + bkgSize.y / 2, 0},
+			{center - bkgSize.x/2 - bkgSize.y/2, 0},
+			{center + bkgSize.x/2 + bkgSize.y/2, 0},
 			{center + bkgSize.x/2, bkgSize.y},
 			{center - bkgSize.x/2, bkgSize.y},
 		};

@@ -53,6 +53,7 @@ add_executable(SuperHaxagon WIN32 ${DRIVER}
     source/States/Play.cpp
     source/States/Quit.cpp
     source/States/Transition.cpp
+    source/States/Win.cpp
 
     source/Factories/Level.cpp
     source/Factories/Pattern.cpp

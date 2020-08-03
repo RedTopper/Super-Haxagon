@@ -226,4 +226,8 @@ namespace SuperHaxagon {
 	void Game::setBGMAudio(std::unique_ptr<Audio> audio) {
 		_bgmAudio = std::move(audio);
 	}
+
+	void Game::setBGMMetadata(std::unique_ptr<Metadata> metadata) {
+		_bgmMetadata = std::move(metadata);
+	}
 }

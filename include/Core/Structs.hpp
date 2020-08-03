@@ -46,14 +46,12 @@ namespace SuperHaxagon {
 	static constexpr double TAU = PI * 2;
 
 	static constexpr double SCALE_MENU = 3.5;
-	static constexpr double SCALE_BASE_DISTANCE = 300.0;
+	static constexpr double SCALE_BASE_DISTANCE = 400.0;
 	static constexpr double SCALE_HEX_LENGTH = 24.0;
 	static constexpr double SCALE_HEX_BORDER = 4.0;
 	static constexpr double SCALE_HUMAN_PADDING = 5.0;
 	static constexpr double SCALE_HUMAN_HEIGHT = 5.0;
 	static constexpr double SCALE_HUMAN_WIDTH = 5.0;
-
-	static constexpr double TIME_UNTIL_TRANSITION_NEXT_LEVEL = 90.0;
 
 	static const Color COLOR_SHADOW = {0, 0, 0, 0xC0};
 	static const Color COLOR_TRANSPARENT = {0, 0, 0, 0xA0};

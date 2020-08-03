@@ -210,7 +210,7 @@ namespace SuperHaxagon {
 
 	std::unique_ptr<Twist> Platform3DS::getTwister() {
 		// Kind of a shitty way to do this but it's the best I got.
-		const auto a = new std::seed_seq{svcGetSystemTick()};
+		const auto a = new std::seed_seq{svcGetSystemTick(), static_cast<u64>(time(nullptr))};
 		return std::make_unique<Twist>(
 			std::unique_ptr<std::seed_seq>(a)
 		);

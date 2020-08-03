@@ -26,6 +26,7 @@ namespace SuperHaxagon {
 		static constexpr double FRAMES_PER_SPIN = 90;
 		static constexpr double FRAMES_PER_PULSE = 10;
 		static constexpr double SPIN_SPEED = TAU / 130.0;
+		static constexpr double ROTATE_ZERO_SPEED = TAU / 200.0;
 		static constexpr double PULSE_DISTANCE = 5.0;
 
 		Level(const LevelFactory& factory, Twist& rng, double patternDistCreate);
@@ -51,13 +52,32 @@ namespace SuperHaxagon {
 		// Time
 		double getFrame() const {return _frame;}
 
-		const LevelFactory& getLevelFactory() const {return _factory;}
+		const LevelFactory& getLevelFactory() const {return *_factory;}
+
+		// Stuff for Win control
+		std::deque<Pattern>& getPatterns() {return _patterns;}
+		void setWinMultiplierRot(const double multiplier) {_multiplierRot = multiplier;}
+		void setWinMultiplierWalls(const double multiplier) {_multiplierWalls = multiplier;}
+		void setWinAutoPatternCreate(const bool autoPatternCreate) {_autoPatternCreate = autoPatternCreate;}
+		void setWinShowCursor(const bool show) {_showCursor = show;}
+		void setWinFrame(const double frame) {_frame = frame;}
+		void setWinRotationToZero() {_rotateToZero = true;}
+		void setWinFactory(const LevelFactory* factory);
+		void setWinSides(int sides);
+		void resetColors();
 
 	private:
-		const LevelFactory& _factory;
+		void advanceWalls(Twist& rng, double patternDistDelete, double patternDistCreate);
+		void reverseWalls(Twist& rng, double patternDistDelete, double patternDistCreate);
+		
+		const LevelFactory* _factory;
 
 		std::deque<Pattern> _patterns;
 
+		bool _autoPatternCreate = false;
+		bool _showCursor = true;
+		bool _rotateToZero = false;
+		
 		double _multiplierRot = 0.9; // Current direction and speed of rotation
 		double _multiplierWalls = 0.85; // Current speed of the walls flying at you
 		double _cursorPos{};
@@ -79,6 +99,7 @@ namespace SuperHaxagon {
 		bool _bgInverted = false;
 		double _pulse = 0.0;
 		double _spin = 0.0;
+		double _frontGap = 0.0;
 	};
 
 	class LevelFactory {
@@ -109,6 +130,7 @@ namespace SuperHaxagon {
 		float getSpeedRotation() const {return _speedRotation;}
 		float getSpeedWall() const {return _speedWall;}
 		int getNextIndex() const {return _nextIndex;}
+		float getNextTime() const {return _nextTime;}
 
 		bool setHighScore(int score);
 
@@ -130,6 +152,7 @@ namespace SuperHaxagon {
 		float _speedWall = 0;
 		float _speedRotation = 0;
 		float _speedCursor = 0;
+		float _nextTime = 0;
 		bool _loaded = false;
 	};
 }

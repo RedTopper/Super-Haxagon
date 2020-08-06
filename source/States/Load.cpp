@@ -10,6 +10,7 @@
 #include <memory>
 #include <fstream>
 #include <climits>
+#include <filesystem>
 
 namespace SuperHaxagon {
 	const char* Load::PROJECT_HEADER = "HAX1.1";
@@ -101,10 +102,15 @@ namespace SuperHaxagon {
 	}
 
 	void Load::enter() {
-		// Maybe use a glob or something someday
 		std::vector<std::pair<LocLevel, std::string>> locations;
 		locations.emplace_back(std::pair<LocLevel, std::string>(LocLevel::INTERNAL, _platform.getPathRom("/levels.haxagon")));
-		locations.emplace_back(std::pair<LocLevel, std::string>(LocLevel::EXTERNAL, _platform.getPath("/levels.haxagon")));
+
+		auto files = std::filesystem::directory_iterator(_platform.getPath("/"));
+		for (const auto& file : files) {
+			if (file.path().extension() != ".haxagon") continue;
+			_platform.message(Dbg::INFO, "load", "found " + file.path().string());
+			locations.emplace_back(std::pair<LocLevel, std::string>(LocLevel::EXTERNAL, file.path().string()));
+		}
 
 		for (const auto& location : locations) {
 			const auto& path = location.second;

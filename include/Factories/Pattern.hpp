@@ -36,7 +36,7 @@ namespace SuperHaxagon {
 		Pattern instantiate(Twist& rng, double distance) const;
 
 		bool isLoaded() const {return _loaded;}
-
+		int getSides() const {return _sides;}
 		std::string getName() const {return _name;}
 
 	private:

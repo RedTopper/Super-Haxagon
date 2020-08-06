@@ -13,7 +13,7 @@ VERSION_MICRO := $(word 3, $(VERSION_PARTS))
 AUTHOR := RedHat
 DESCRIPTION := A Super Hexagon Clone
 
-BUILD_FLAGS_CXX := -std=gnu++14
+BUILD_FLAGS_CXX := -std=gnu++17
 
 ROMFS_DIR := romfs
 

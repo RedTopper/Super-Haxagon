@@ -41,8 +41,6 @@ namespace SuperHaxagon {
 		if (_thread) {
 			LightEvent_Signal(&_event);
 			threadJoin(_thread, 100000000);
-			LightEvent_Signal(&_event);
-			threadJoin(_thread, 100000000);
 			threadFree(_thread);
 		}
 

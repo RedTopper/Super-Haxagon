@@ -18,14 +18,11 @@ namespace SuperHaxagon {
 		}
 
 		//fetch a starting pattern
-		const auto pCount = static_cast<int>(factory.getPatterns().size());
-		const auto pSelected = rng.rand(pCount - 1);
-		const auto& pattern = factory.getPatterns()[pSelected];
-		_patterns.emplace_back(pattern->instantiate(rng, patternDistCreate));
+		_patterns.emplace_back(getRandomPattern(rng).instantiate(rng, patternDistCreate));
 
 		//set up the amount of sides the level should have.
-		_lastSides = _patterns.front().getSides();
-		_currentSides = _patterns.front().getSides();
+		_sidesLast = _patterns.front().getSides();
+		_sidesCurrent = _patterns.front().getSides();
 		_cursorPos = TAU/4.0 + (factory.getSpeedCursor() / 2.0);
 	}
 
@@ -55,13 +52,13 @@ namespace SuperHaxagon {
 		// Bring walls forward if we are not delaying
 		// Otherwise tween from one shape to another.
 		if (_delayFrame <= 0) {
-			_sidesTween = _currentSides;
+			_sidesTween = _sidesCurrent;
 			for (auto& pattern : _patterns) {
 				pattern.advance(_factory->getSpeedWall() * dilation * _multiplierWalls);
 			}
 		} else {
 			const auto percent = _delayFrame / _delayMax;
-			_sidesTween = linear(_currentSides, _lastSides, percent);
+			_sidesTween = linear(_sidesCurrent, _sidesLast, percent);
 			_delayFrame -= dilation;
 		}
 
@@ -197,10 +194,10 @@ namespace SuperHaxagon {
 	}
 
 	void Level::setWinSides(const int sides) {
-		_lastSides = _currentSides;
-		_currentSides = sides;
+		_sidesLast = _sidesCurrent;
+		_sidesCurrent = sides;
 
-		if (_lastSides != _currentSides) {
+		if (_sidesLast != _sidesCurrent) {
 			_delayMax = FRAMES_PER_CHANGE_SIDE;
 			_delayFrame = _delayMax;
 		}
@@ -215,23 +212,20 @@ namespace SuperHaxagon {
 	void Level::advanceWalls(Twist& rng, const double patternDistDelete, const double patternDistCreate) {
 		// Shift patterns forward
 		if (_patterns.front().getFurthestWallDistance() < patternDistDelete) {
-			_lastSides = _patterns.front().getSides();
+			_sidesLast = _patterns.front().getSides();
 			_patterns.pop_front();
-			_currentSides = _patterns.front().getSides();
+			_sidesCurrent = _patterns.front().getSides();
 
 			// Delay the level if the shifted pattern does  not have the same sides as the last.
-			if (_lastSides != _currentSides) {
-				_delayMax = FRAMES_PER_CHANGE_SIDE / _factory->getSpeedWall() * static_cast<double>(std::abs(_currentSides - _lastSides));
+			if (_sidesLast != _sidesCurrent) {
+				_delayMax = FRAMES_PER_CHANGE_SIDE / _factory->getSpeedWall() * static_cast<double>(std::abs(_sidesCurrent - _sidesLast));
 				_delayFrame = _delayMax;
 			}
 		}
 
 		// Create new pattern if needed
 		if (_patterns.size() < 2 || _patterns.back().getFurthestWallDistance() < patternDistCreate) {
-			const auto pCount = static_cast<int>(_factory->getPatterns().size());
-			const auto pSelected = rng.rand(pCount - 1);
-			const auto& pattern = _factory->getPatterns()[pSelected];
-			_patterns.emplace_back(pattern->instantiate(rng, _patterns.back().getFurthestWallDistance()));
+			_patterns.emplace_back(getRandomPattern(rng).instantiate(rng, _patterns.back().getFurthestWallDistance()));
 		}
 	}
 
@@ -243,15 +237,44 @@ namespace SuperHaxagon {
 		// Create a new pattern at the front.
 		// We need to advance it so the last wall is where we create the patterns
 		if (_patterns.front().getClosestWallDistance() > patternDistCreate + _frontGap && _autoPatternCreate) {
-			const auto pCount = static_cast<int>(_factory->getPatterns().size());
-			const auto pSelected = rng.rand(pCount - 1);
-			const auto& temp = _factory->getPatterns()[pSelected];
-			auto pattern = temp->instantiate(rng, patternDistCreate);
+			auto pattern = getRandomPattern(rng).instantiate(rng, patternDistCreate);
 			_frontGap = pattern.getClosestWallDistance() * 1.5; // Too small of a gap otherwise
 			pattern.advance(pattern.getFurthestWallDistance());
 			_patterns.emplace_front(pattern);
-			if (pattern.getSides() != _currentSides) setWinSides(pattern.getSides());
+			if (pattern.getSides() != _sidesCurrent) setWinSides(pattern.getSides());
 		}
+	}
+
+	const PatternFactory& Level::getRandomPattern(Twist& rng) {
+		const auto& patterns = _factory->getPatterns();
+		if (_sameCount <= 0) {
+			const auto& pattern = *patterns[rng.rand(static_cast<int>(patterns.size()) - 1)];
+			if (pattern.getSides() != _sameSides) {
+				_sameSides = pattern.getSides();
+				_sameCount = rng.rand(MIN_SAME_SIDES, MAX_SAME_SIDES);
+			}
+
+			return pattern;
+		}
+
+		_sameCount--;
+		std::vector<std::shared_ptr<PatternFactory>> selectable;
+		for (const auto& pattern : patterns) {
+			if (pattern->getSides() == _sameSides) {
+				selectable.push_back(pattern);
+			}
+		}
+
+		// While this never should be hit, it's possible to change the factory
+		// during runtime so a new factory might not have levels with the same
+		// amount of sides as the last one
+		if (selectable.empty()) {
+			_sameCount = 0;
+			_sameSides = 0;
+			return *patterns[rng.rand(static_cast<int>(patterns.size()) - 1)];
+		} 
+
+		return *selectable[rng.rand(static_cast<int>(selectable.size()) - 1)];
 	}
 
 	LevelFactory::LevelFactory(std::ifstream& file, std::vector<std::shared_ptr<PatternFactory>>& shared, const LocLevel location, Platform& platform, const size_t levelIndexOffset) {

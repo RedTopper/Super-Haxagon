@@ -1,3 +1,5 @@
+#include "States/Win.hpp"
+
 #include "Core/Game.hpp"
 #include "Core/Metadata.hpp"
 #include "Driver/Font.hpp"
@@ -5,7 +7,6 @@
 #include "Factories/Level.hpp"
 #include "States/Over.hpp"
 #include "States/Quit.hpp"
-#include "States/Win.hpp"
 
 namespace SuperHaxagon {
 	static constexpr int LEVEL_VOID = 6;
@@ -19,6 +20,7 @@ namespace SuperHaxagon {
 		_level(std::move(level)),
 		_score(score),
 		_text(std::move(text)) {
+
 		// First make sure that all of the levels exist
 		for (auto i = LEVEL_HARD; i <= LEVEL_VOID; i++) {
 			if (_game.getLevels()[i] == nullptr) return;
@@ -104,21 +106,21 @@ namespace SuperHaxagon {
 
 		// Check for level transition labels
 		for (auto i = LEVEL_HARD; i <= LEVEL_VOID; i++) {
-			if (metadata.getMetadata(time, "L" + std::to_string(i))) {
-				const auto& factory = _game.getLevels()[i].get();
-				_level->setWinFactory(factory);
-				_level->setWinMultiplierRot(1.0);
-				_level->setWinMultiplierWalls(factory->getSpeedWall() / 2.0 * -1.0);
-				_level->setWinAutoPatternCreate(i != LEVEL_VOID);
-				_level->setWinFrame(0);
-				_level->resetColors();
-				if (i == LEVEL_VOID) {
-					_level->setWinRotationToZero();
-					_level->setWinMultiplierWalls(-0.5);
-					_level->setWinSides(6);
-				} else {
-					_level->spin();
-				}
+			if (!metadata.getMetadata(time, "L" + std::to_string(i))) continue;
+
+			const auto& factory = _game.getLevels()[i].get();
+			_level->setWinFactory(factory);
+			_level->setWinMultiplierRot(1.0);
+			_level->setWinMultiplierWalls(factory->getSpeedWall() / 2.0 * -1.0);
+			_level->setWinAutoPatternCreate(i != LEVEL_VOID);
+			_level->setWinFrame(0);
+			_level->resetColors();
+			if (i == LEVEL_VOID) {
+				_level->setWinRotationToZero();
+				_level->setWinMultiplierWalls(-0.5);
+				_level->setWinSides(6);
+			} else {
+				_level->spin();
 			}
 		}
 

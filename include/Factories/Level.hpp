@@ -28,6 +28,8 @@ namespace SuperHaxagon {
 		static constexpr double SPIN_SPEED = TAU / 130.0;
 		static constexpr double ROTATE_ZERO_SPEED = TAU / 200.0;
 		static constexpr double PULSE_DISTANCE = 5.0;
+		static constexpr int MIN_SAME_SIDES = 3;
+		static constexpr int MAX_SAME_SIDES = 5;
 
 		Level(const LevelFactory& factory, Twist& rng, double patternDistCreate);
 		Level(Level&) = delete;
@@ -69,6 +71,7 @@ namespace SuperHaxagon {
 	private:
 		void advanceWalls(Twist& rng, double patternDistDelete, double patternDistCreate);
 		void reverseWalls(Twist& rng, double patternDistDelete, double patternDistCreate);
+		const PatternFactory& getRandomPattern(Twist& rng);
 		
 		const LevelFactory* _factory;
 
@@ -83,19 +86,24 @@ namespace SuperHaxagon {
 		double _cursorPos{};
 		double _rotation{};
 		double _sidesTween{};
-		int _lastSides{};
-		int _currentSides{};
 
+		// Side change mechanics
+		int _sidesLast{}; // The sides that we are transitioning FROM
+		int _sidesCurrent{}; // The sides we are transitioning TO
+
+		// Event timings
 		double _frame{}; // Frame this level is on
 		double _delayFrame{}; // Tween between side switches
 		double _delayMax{};   // When a delay starts, this is the initial value of _delayFrame
 		double _tweenFrame{}; // Tween colors
-		double _flipFrame = FLIP_FRAMES_MAX; // Amount of frames left until flip
+		double _flipFrame = FLIP_FRAMES_MAX; // Amount of frames left until it rotates in the opposite direction
 
 		std::map<LocColor, Color> _color;
 		std::map<LocColor, Color> _colorNext;
 		std::map<LocColor, size_t> _colorNextIndex;
 
+		int _sameCount = 0; // When 0, allows the level to select any pattern instead of currentSides
+		int _sameSides = 0; // Sides of the last selected pattern
 		bool _bgInverted = false;
 		double _pulse = 0.0;
 		double _spin = 0.0;

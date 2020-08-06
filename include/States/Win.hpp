@@ -3,9 +3,15 @@
 
 #include "State.hpp"
 
+#include <string>
+#include <vector>
+
 namespace SuperHaxagon {
 	class Game;
 	class Level;
+	class LevelFactory;
+	class Platform;
+	class Pattern;
 
 	struct Credits {
 		std::string name;

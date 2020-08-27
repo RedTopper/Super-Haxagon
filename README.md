@@ -122,3 +122,5 @@ Below are a few screenshots featuring the various platforms that Super Haxagon c
 ![Humble Beginnings](./media/screenshots/scr_1_MERGED.png "The First Test")
 
 </details>
+
+(Signature Verification)

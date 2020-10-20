@@ -39,6 +39,7 @@ Super Haxagon targets the 3DS, Switch, Windows (MinGW + MSVC), and Linux. For de
 
 #### ... with MSVC on Windows
 
+1. Note: you may need the [Visual C++ Runtime](https://support.microsoft.com/en-gb/help/2977003/the-latest-supported-visual-c-downloads)
 1. Download SFML for your MSVC version
 1. Rename the SFML folder to `SFML-MSVC` and place it in libraries
 1. Use Visual Studio to open a folder with the CMake file
@@ -47,6 +48,7 @@ Super Haxagon targets the 3DS, Switch, Windows (MinGW + MSVC), and Linux. For de
 
 #### ... with MinGW/msys on Windows
 
+1. Note: you may need the [Visual C++ Runtime](https://support.microsoft.com/en-gb/help/2977003/the-latest-supported-visual-c-downloads)
 1. Download SFML for your MinGW version
 1. Rename the SFML folder to `SFML-MinGW` and place it in libraries
 1. Use the provided Makefile with the command `make TARGET:=WIN64` OR use the CMake file

@@ -8,13 +8,17 @@
 #include <time.h>
 #include <iostream>
 #include <libndls.h>
-#include "gldrawarray.h"
+
 
 namespace SuperHaxagon {
 	PlatformNSpire::PlatformNSpire(const Dbg dbg) : Platform(dbg) {
-		nglInit();
-		_framebuffer = std::make_unique<COLOR[]>(SCREEN_WIDTH * SCREEN_HEIGHT);
-		nglSetBuffer(_framebuffer.get());
+		Gc gc = gui_gc_global_GC();
+		gui_gc_begin(gc);
+		//gui_gc_setRegion(gc, 0, 0, 320, 240, 0, 0, 320, 240);
+		gui_gc_setColorRGB(gc, 0, 0, 0);
+		gui_gc_fillRect(gc, 0, 0, 320, 240);
+		gui_gc_finish(gc);
+		gui_gc_blit_to_screen(gc);
 	}
 
 	std::string PlatformNSpire::getPath(const std::string& partial) {
@@ -46,7 +50,7 @@ namespace SuperHaxagon {
 		Buttons buttons{};
 		buttons.select = isKeyPressed(KEY_NSPIRE_ENTER) > 0;
 		buttons.back = isKeyPressed(KEY_NSPIRE_ESC) > 0;
-		buttons.quit = isKeyPressed(KEY_NSPIRE_HOME) > 0;
+		buttons.quit = isKeyPressed(KEY_NSPIRE_HOME) > 0 || isKeyPressed(KEY_NSPIRE_MENU) > 0;
 		buttons.left = isKeyPressed(KEY_NSPIRE_4) > 0;
 		buttons.right = isKeyPressed(KEY_NSPIRE_6)  > 0;
 		return buttons;
@@ -57,59 +61,31 @@ namespace SuperHaxagon {
 	}
 
 	void PlatformNSpire::screenBegin() {
-		// The depth is arbitrary, but needed for triangle stacking.
-		// If this is updated, the scale factor in drawPoly will
-		// also need to be updated
-		//
-		// This is only an issue since nGL forces perspective even though
-		// the game really should be isometric
-		_z = 5000;
-		glPushMatrix();
-		glColor3f(0.4f, 0.7f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		auto gc = gui_gc_global_GC();
+		gui_gc_begin(gc);
+		gui_gc_setColorRGB(gc, 0, 0, 0);
+		gui_gc_fillRect(gc, 0, 0, 320, 240);
 	}
 
 	void PlatformNSpire::screenFinalize() {
-		glPopMatrix();
-		nglDisplay();
+		auto gc = gui_gc_global_GC();
+		gui_gc_blit_to_screen(gc);
 	}
 
 	void PlatformNSpire::drawPoly(const Color& color, const std::vector<Point>& points) {
-		const COLOR c = ((color.r & 0b11111000) << 8) | ((color.g & 0b11111100) << 3) | (color.b >> 3);
-		const auto dim = getScreenDim();
-		const auto pos = std::make_unique<VECTOR3[]>(points.size());
-		const auto proc = std::make_unique<ProcessedPosition[]>(points.size());
-		const auto index = std::make_unique<IndexedVertex[]>((points.size() - 2) * 3);
-
-		const auto scale = 20;
-
+		auto gc = gui_gc_global_GC();
+		gui_gc_setColorRGB(gc, color.r, color.g, color.b);
+		const auto pos = std::make_unique<Point2D[]>(points.size());
 		for (size_t i = 0; i < points.size(); i++) {
-			// Note the flipping of the y value with -SCALE!
-			pos[i] = {static_cast<int>((points[i].x - dim.x / 2) * scale), static_cast<int>((points[i].y - dim.y / 2) * -scale), _z};
+			pos[i] = { points[i].x, points[i].y };
 		}
-
-		// This is a hack - The game calculates the triangles
-		// "backwards" after flipping the screen upside down
-		// using -SCALE and nGL backface culls them away. Instead
-		// of being reasonable and fixing the logic elsewhere, we can
-		// flip the index of two points to reverse the triangle.
-		for (size_t i = 1; i < points.size() - 1; i++) {
-			const auto pa = VERTEX(pos[0].x, pos[0].y, 0, 0, 0, 0);
-			const auto pb = VERTEX(pos[i].x, pos[i].y, 0, 0, 0, 0);
-			const auto pc = VERTEX(pos[i + 1].x, pos[i + 1].y, 0, 0, 0, 0);
-			const auto isBack = nglIsBackface(&pa, &pb, &pc);
-
-			index[i*3 - 3] = {0, 0, 0, c};
-			index[i*3 - 2] = {i + (isBack ? 0 : 1), 0, 0, c};
-			index[i*3 - 1] = {i + (isBack ? 1 : 0), 0, 0, c};
-		}
-
-		nglDrawArray(index.get(), (points.size() - 2) * 3, pos.get(), points.size(), proc.get(), GL_TRIANGLES);
-		_z--;
+		
+		gui_gc_fillPoly(gc, reinterpret_cast<unsigned*>(pos.get()), points.size());
 	}
 
 	void PlatformNSpire::shutdown() {
-		nglUninit();
+		auto gc = gui_gc_global_GC();
+		gui_gc_finish(gc);
 	}
 
 	void PlatformNSpire::message(const Dbg dbg, const std::string& where, const std::string& message) {

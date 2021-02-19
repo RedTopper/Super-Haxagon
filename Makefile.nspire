@@ -14,7 +14,7 @@ EXE = haxagon
 
 # Directories
 SOURCE_DIRS := source/Core source/Factories source/States source/Driver/NSpire
-INCLUDE_DIRS := include libraries/nGL
+INCLUDE_DIRS := include
 BUILD_DIR := build
 OUTPUT_DIR := output
 
@@ -42,7 +42,7 @@ TARGET_OUTPUT_DIR := $(OUTPUT_DIR)/nspire-arm
 rwildcard=$(wildcard $1/$2) $(foreach d,$(wildcard $1/*),$(call rwildcard,$d,$2))
 
 OUTPUT_FILES := $(TARGET_OUTPUT_DIR)/$(EXE).tns $(TARGET_OUTPUT_DIR)/$(EXE).elf
-OBJECT_FILES := $(call rwildcard,libraries/nGL,*.o) $(foreach dir,$(SOURCE_DIRS), \
+OBJECT_FILES := $(foreach dir,$(SOURCE_DIRS), \
 			$(patsubst %.bin,$(TARGET_BUILD_DIR)/%.bin.o,$(call rwildcard,$(dir),*.bin)) \
 			$(patsubst %.c,$(TARGET_BUILD_DIR)/%.o,$(call rwildcard,$(dir),*.c)) \
 			$(patsubst %.cpp,$(TARGET_BUILD_DIR)/%.o,$(call rwildcard,$(dir),*.cpp)) \

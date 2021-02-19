@@ -7,6 +7,3 @@
 [submodule "libraries/stb"]
 	path = libraries/stb
 	url = https://github.com/nothings/stb.git
-[submodule "libraries/nGL"]
-	path = libraries/nGL
-	url = git@github.com:Vogtinator/nGL.git

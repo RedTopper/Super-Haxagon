@@ -3,9 +3,12 @@
 
 #include "Driver/Platform.hpp"
 
-#include "gl.h"
-
 namespace SuperHaxagon {
+	typedef struct {
+		int x;
+		int y;
+	} Point2D;
+	
 	class PlatformNSpire : public Platform {
 	public:
 		explicit PlatformNSpire(Dbg dbg);
@@ -36,10 +39,6 @@ namespace SuperHaxagon {
 		void message(Dbg dbg, const std::string& where, const std::string& message) override;
 
 		std::unique_ptr<Twist> getTwister() override;
-
-	private:
-		std::unique_ptr<COLOR[]> _framebuffer = nullptr;
-		int _z = 0;
 	};
 }
 

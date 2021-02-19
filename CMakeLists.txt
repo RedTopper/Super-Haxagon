@@ -31,6 +31,8 @@ if(MSVC)
     set(SFML_DIR "${CMAKE_CURRENT_SOURCE_DIR}/libraries/SFML-MSVC/lib/cmake/SFML")
 endif()
 
+include_directories(SYSTEM "${CMAKE_CURRENT_SOURCE_DIR}/../Ndless/ndless-sdk/include")
+include_directories(SYSTEM "${CMAKE_CURRENT_SOURCE_DIR}/libraries/nGL")
 include_directories(SYSTEM "$ENV{DEVKITPRO}/libctru/include")
 include_directories(SYSTEM "$ENV{DEVKITPRO}/libnx/include")
 include_directories(SYSTEM "$ENV{DEVKITPRO}/portlibs/switch/include")

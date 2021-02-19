@@ -1,7 +1,9 @@
 #include "Driver/NSpire/FontNSpire.hpp"
 
+#include "Core/Structs.hpp"
+
 namespace SuperHaxagon {
-	FontNSpire::FontNSpire() {
+	FontNSpire::FontNSpire(int) {
 
 	}
 
@@ -16,4 +18,8 @@ namespace SuperHaxagon {
 	void FontNSpire::draw(const Color&, const Point&, const Alignment, const std::string&) {
 
 	}
+
+	void FontNSpire::setScale(double) {}
+
+	double FontNSpire::getHeight() const {return 4;}
 }

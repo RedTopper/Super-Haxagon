@@ -141,9 +141,9 @@ namespace SuperHaxagon {
 		Point offsetFocus = {focus.x + shadow.x, focus.y + shadow.y};
 
 		// Home screen always has 6 sides.
-		// Use a multiplier of 2 because the view is shifted down
+		// Use a multiplier of 1.5 because the view is shifted down
 		// Note: Draw cursor TAU/4 = Up, no rotation
-		_game.drawBackground(bg1, bg2, focus, 2, rotation, 6.0);
+		_game.drawBackground(bg1, bg2, focus, 1.5, rotation, 6.0);
 
 		// Shadows
 		_game.drawRegular(COLOR_SHADOW, offsetFocus, SCALE_HEX_LENGTH * SCALE_MENU * scale, rotation, 6.0);

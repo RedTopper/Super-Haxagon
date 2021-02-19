@@ -6,17 +6,6 @@
 #include "gl.h"
 
 namespace SuperHaxagon {
-	const VERTEX triangle[] =
-			{
-					{0, 0, 0, 0, 0, 0xFFFF}, // 1
-					{0, 100, 0, 0, 0, 0xFFFF}, // 2
-					{100, 0, 0, 0, 0, 0xFFFF}, // 3
-
-					{0, 100, 0, 0, 0, 0xFFFF}, // 2
-					{0, 0, 0, 0, 0, 0xFFFF}, // 1
-					{100, 0, 0, 0, 0, 0xFFFF}, //3
-			};
-
 	class PlatformNSpire : public Platform {
 	public:
 		explicit PlatformNSpire(Dbg dbg);
@@ -50,7 +39,7 @@ namespace SuperHaxagon {
 
 	private:
 		std::unique_ptr<COLOR[]> _framebuffer = nullptr;
-		GLFix _angle = 0;
+		int _z = 0;
 	};
 }
 

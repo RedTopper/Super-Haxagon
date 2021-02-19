@@ -8,6 +8,7 @@
 #include <time.h>
 #include <iostream>
 #include <libndls.h>
+#include "gldrawarray.h"
 
 namespace SuperHaxagon {
 	PlatformNSpire::PlatformNSpire(const Dbg dbg) : Platform(dbg) {
@@ -56,16 +57,16 @@ namespace SuperHaxagon {
 	}
 
 	void PlatformNSpire::screenBegin() {
+		// The depth is arbitrary, but needed for triangle stacking.
+		// If this is updated, the scale factor in drawPoly will
+		// also need to be updated
+		//
+		// This is only an issue since nGL forces perspective even though
+		// the game really should be isometric
+		_z = 5000;
 		glPushMatrix();
 		glColor3f(0.4f, 0.7f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		glTranslatef(0, 0, 1000);
-		_angle += 1;
-		nglRotateY(_angle.normaliseAngle());
-		glBegin(GL_TRIANGLES);
-		nglAddVertices(_angle < GLFix(90) || _angle > GLFix(270) ? triangle : (triangle + 3), 3);
-		glEnd();
 	}
 
 	void PlatformNSpire::screenFinalize() {
@@ -73,8 +74,38 @@ namespace SuperHaxagon {
 		nglDisplay();
 	}
 
-	void PlatformNSpire::drawPoly(const Color&, const std::vector<Point>&) {
+	void PlatformNSpire::drawPoly(const Color& color, const std::vector<Point>& points) {
+		COLOR c = ((color.r & 0b11111000) << 8) | ((color.g & 0b11111100) << 3) | (color.b >> 3);
+		auto dim = getScreenDim();
+		auto pos = std::make_unique<VECTOR3[]>(points.size());
+		auto proc = std::make_unique<ProcessedPosition[]>(points.size());
+		auto index = std::make_unique<IndexedVertex[]>((points.size() - 2) * 3);
 
+		const auto SCALE = 20;
+
+		for (size_t i = 0; i < points.size(); i++) {
+			// Note the flipping of the y value with -SCALE!
+			pos[i] = {(int)((points[i].x - dim.x/2) * SCALE), (int)((points[i].y - dim.y/2) * -SCALE), _z};
+		}
+
+		// This is a hack - The game calculates the triangles
+		// "backwards" after flipping the screen upside down
+		// using -SCALE and nGL backface culls them away. Instead
+		// of being reasonable and fixing the logic elsewhere, we can
+		// flip the index of two points to reverse the triangle.
+		for (size_t i = 1; i < points.size() - 1; i++) {
+			const auto pa = VERTEX(pos[0].x, pos[0].y, 0, 0, 0, 0);
+			const auto pb = VERTEX(pos[i].x, pos[i].y, 0, 0, 0, 0);
+			const auto pc = VERTEX(pos[i + 1].x, pos[i + 1].y, 0, 0, 0, 0);
+			auto isBackface = nglIsBackface(&pa, &pb, &pc);
+
+			index[i*3 - 3] = {0, 0, 0, c};
+			index[i*3 - 2] = {i + (isBackface ? 0 : 1), 0, 0, c};
+			index[i*3 - 1] = {i + (isBackface ? 1 : 0), 0, 0, c};
+		}
+
+		nglDrawArray(index.get(), (points.size() - 2) * 3, pos.get(), points.size(), proc.get(), GL_TRIANGLES);
+		_z--;
 	}
 
 	void PlatformNSpire::shutdown() {

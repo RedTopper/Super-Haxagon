@@ -1,0 +1,85 @@
+# Note to future self:
+#
+# This file is pretty much a minimal copy of make_base modified to build for the
+# TI nSpire. Since the original project is archived, it would make more sense
+# to simply fork the original and merge them together. For now, I'll just keep
+# using this separate Makefile.
+
+# ------------
+# Configurable
+# ------------
+
+# Project name
+EXE = haxagon
+
+# Directories
+SOURCE_DIRS := source/Core source/Factories source/States source/Driver/NSpire
+INCLUDE_DIRS := include
+BUILD_DIR := build
+OUTPUT_DIR := output
+
+# Compilers
+CC = nspire-gcc
+CXX = nspire-g++
+LD = nspire-ld
+GENZEHN = genzehn
+OPTIMIZE ?= fast
+
+# Flags
+COMMONFLAGS := -O$(OPTIMIZE) $(patsubst %,-I%,$(INCLUDE_DIRS)) -D_nspire
+COMMONFLAGS += -Wall -W -marm -ffast-math -mcpu=arm926ej-s -fno-math-errno -fomit-frame-pointer -flto -fgcse-sm -fgcse-las -funsafe-loop-optimizations -fno-fat-lto-objects -frename-registers -fprefetch-loop-arrays -Wno-narrowing
+CCFLAGS := $(COMMONFLAGS)
+CXXFLAGS := $(COMMONFLAGS) -fno-rtti -std=gnu++17
+LDFLAGS = -lm -lnspireio
+ZEHNFLAGS = --name "Super-Haxagon" --version 00
+
+# --------
+# Internal
+# --------
+TARGET_BUILD_DIR := $(BUILD_DIR)/nspire-arm
+TARGET_OUTPUT_DIR := $(OUTPUT_DIR)/nspire-arm
+
+rwildcard=$(wildcard $1/$2) $(foreach d,$(wildcard $1/*),$(call rwildcard,$d,$2))
+
+OUTPUT_FILES := $(TARGET_OUTPUT_DIR)/$(EXE).tns $(TARGET_OUTPUT_DIR)/$(EXE).elf
+OBJECT_FILES := $(foreach dir,$(SOURCE_DIRS), \
+			$(patsubst %.bin,$(TARGET_BUILD_DIR)/%.bin.o,$(call rwildcard,$(dir),*.bin)) \
+			$(patsubst %.c,$(TARGET_BUILD_DIR)/%.o,$(call rwildcard,$(dir),*.c)) \
+			$(patsubst %.cpp,$(TARGET_BUILD_DIR)/%.o,$(call rwildcard,$(dir),*.cpp)) \
+			$(patsubst %.s,$(TARGET_BUILD_DIR)/%.o,$(call rwildcard,$(dir),*.s)) \
+		)
+
+all: $(OUTPUT_FILES)
+
+$(TARGET_BUILD_DIR)/%.o: %.c
+	$(CC) $(CCFLAGS) -c $< -o $@
+
+$(TARGET_BUILD_DIR)/%.o: %.cpp
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+%.elf: $(OBJECT_FILES)
+	+$(LD) $^ -o $@ $(COMMONFLAGS) $(LDFLAGS)
+
+%.tns: $(TARGET_BUILD_DIR)/$(EXE).elf
+	+$(GENZEHN) --input $^ --output $@.zehn
+	+make-prg $@.zehn $@
+	+rm $@.zehn
+
+.PHONY: clean
+clean:
+	@rm -rf $(TARGET_BUILD_DIR) $(TARGET_OUTPUT_DIR)
+	@echo "Cleaned."
+
+define createdirrule
+$(1): | $(dir $(1))
+
+ifndef $(dir $(1))_DIRECTORY_RULE_IS_DEFINED
+$(dir $(1)):
+	@mkdir -p $$@
+
+$(dir $(1))_DIRECTORY_RULE_IS_DEFINED := 1
+endif
+endef
+
+$(foreach file,$(OBJECT_FILES),$(eval $(call createdirrule,$(file))))
+$(foreach file,$(OUTPUT_FILES),$(eval $(call createdirrule,$(file))))

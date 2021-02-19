@@ -9,6 +9,8 @@
 #include "Driver/Win/PlatformWin.hpp"
 #elif defined __linux__
 #include "Driver/Linux/PlatformLinux.hpp"
+#elif defined _nspire
+#include "Driver/NSpire/PlatformNSpire.hpp"
 #else
 #error "Target platform is not supported by any driver."
 #endif
@@ -23,6 +25,8 @@ namespace SuperHaxagon {
 		return std::make_unique<PlatformWin>(Dbg::INFO);
 		#elif defined __linux__
 		return std::make_unique<PlatformLinux>(Dbg::INFO);
+		#elif defined _nspire
+		return std::make_unique<PlatformNSpire>(Dbg::INFO);
 		#else
 		return nullptr;
 		#endif

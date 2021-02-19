@@ -172,7 +172,7 @@ namespace SuperHaxagon {
 
 		// Draw the current score
 		const auto screenWidth = _platform.getScreenDim().x;
-		const auto textScore = "TIME: " + getTime(_platform.getBGM()->getTime() * 60.0f);
+		const auto textScore = "TIME: " + getTime(_score);
 		const Point scorePosText = {screenWidth - pad - _scoreWidth, pad};
 		Point scoreBkgSize = {_scoreWidth + pad * 2, small.getHeight() + pad * 2};
 

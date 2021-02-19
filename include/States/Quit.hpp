@@ -12,9 +12,9 @@ namespace SuperHaxagon {
 		Quit(Quit&) = delete;
 		~Quit() override = default;
 
-		std::unique_ptr<State> update(double) override;
-		void drawTop(double) override {}
-		void drawBot(double) override {}
+		std::unique_ptr<State> update(float) override;
+		void drawTop(float) override {}
+		void drawBot(float) override {}
 
 	private:
 		Game& _game;

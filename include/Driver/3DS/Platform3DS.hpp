@@ -17,7 +17,7 @@ namespace SuperHaxagon {
 		~Platform3DS() override;
 
 		bool loop() override;
-		double getDilation() override;
+		float getDilation() override;
 
 		std::string getPath(const std::string& partial) override;
 		std::string getPathRom(const std::string& partial) override;
@@ -52,7 +52,7 @@ namespace SuperHaxagon {
 		C2D_TextBuf _buff;
 
 		bool _drawingOnTop = true;
-		double _delta = 0.0;
+		float _delta = 0.0f;
 		uint64_t _last = 0;
 	};
 }

@@ -15,7 +15,7 @@ namespace SuperHaxagon {
 		~PlatformSFML() override;
 
 		bool loop() override;
-		double getDilation() override;
+		float getDilation() override;
 
 		std::string getPath(const std::string& partial) override = 0;
 		std::string getPathRom(const std::string& partial) override = 0;
@@ -44,7 +44,7 @@ namespace SuperHaxagon {
 	private:
 		bool _loaded = false;
 		bool _focus = true;
-		double _delta = 0.0;
+		float _delta = 0.0;
 		sf::Clock _clock;
 		std::unique_ptr<sf::RenderWindow> _window;
 		std::deque<std::unique_ptr<Player>> _sfx;

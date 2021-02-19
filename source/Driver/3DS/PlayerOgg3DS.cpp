@@ -95,14 +95,14 @@ namespace SuperHaxagon {
 		return !_quit;
 	}
 
-	double PlayerOgg3DS::getTime() const {
+	float PlayerOgg3DS::getTime() const {
 		if (!_loaded) return 0;
 
 		// If we set diff (paused), we are frozen in time. Otherwise, the current timestamp is
 		// the system minus the start of the song.
 		const auto ticks = _diff ? _diff - _start : svcGetSystemTick() - _start;
-		const auto timeMs = static_cast<double>(ticks) / CPU_TICKS_PER_MSEC;
-		return timeMs / 1000.0;
+		const auto timeMs = static_cast<float>(ticks) / static_cast<float>(CPU_TICKS_PER_MSEC);
+		return timeMs / 1000.0f;
 	}
 
 	bool PlayerOgg3DS::audioDecode(stb_vorbis* file, ndspWaveBuf* buff, const int channel) {

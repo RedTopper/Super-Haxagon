@@ -15,7 +15,7 @@ namespace SuperHaxagon {
 		glEnableVertexAttribArray(1);
 		glEnableVertexAttribArray(2);
 
-		glVertexAttribPointer(0, 2, GL_DOUBLE, GL_FALSE, sizeof(Vertex), reinterpret_cast<void*>(offsetof(Vertex, p)));
+		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void*>(offsetof(Vertex, p)));
 		glVertexAttribPointer(1, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(Vertex), reinterpret_cast<void*>(offsetof(Vertex, c)));
 		glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void*>(offsetof(Vertex, z)));
 	}
@@ -40,8 +40,8 @@ namespace SuperHaxagon {
 		glEnableVertexAttribArray(2);
 		glEnableVertexAttribArray(3);
 
-		glVertexAttribPointer(0, 2, GL_DOUBLE, GL_FALSE, sizeof(VertexUV), reinterpret_cast<void*>(offsetof(VertexUV, p)));
-		glVertexAttribPointer(1, 2, GL_DOUBLE, GL_FALSE, sizeof(VertexUV), reinterpret_cast<void*>(offsetof(VertexUV, uv)));
+		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(VertexUV), reinterpret_cast<void*>(offsetof(VertexUV, p)));
+		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(VertexUV), reinterpret_cast<void*>(offsetof(VertexUV, uv)));
 		glVertexAttribPointer(2, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(VertexUV), reinterpret_cast<void*>(offsetof(VertexUV, c)));
 		glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, sizeof(VertexUV), reinterpret_cast<void*>(offsetof(VertexUV, z)));
 	}
@@ -109,7 +109,7 @@ namespace SuperHaxagon {
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		}
 
-		glDrawElements(GL_TRIANGLES, _indices.size(), GL_UNSIGNED_INT, nullptr);
+		glDrawElements(GL_TRIANGLES, static_cast<uint32_t>(_indices.size()), GL_UNSIGNED_INT, nullptr);
 
 		if (_transparent) {
 			glDepthMask(GL_TRUE);

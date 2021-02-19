@@ -15,16 +15,16 @@ namespace SuperHaxagon {
 
 	class Menu : public State {
 	public:
-		const int FRAMES_PER_TRANSITION = 12;
-		const int FRAMES_PER_COLOR = 60;
+		const float FRAMES_PER_TRANSITION = 12.0f;
+		const float FRAMES_PER_COLOR = 60.0f;
 
 		Menu(Game& game, LevelFactory& selected);
 		Menu(Menu&) = delete;
 		~Menu() override;
 
-		std::unique_ptr<State> update(double dilation) override;
-		void drawTop(double scale) override;
-		void drawBot(double scale) override;
+		std::unique_ptr<State> update(float dilation) override;
+		void drawTop(float scale) override;
+		void drawBot(float scale) override;
 		void enter() override;
 		void exit() override {};
 
@@ -32,8 +32,8 @@ namespace SuperHaxagon {
 		Game& _game;
 		Platform& _platform;
 
-		double _frameRotation = FRAMES_PER_TRANSITION;
-		double _frameBackgroundColor = FRAMES_PER_COLOR;
+		float _frameRotation = FRAMES_PER_TRANSITION;
+		float _frameBackgroundColor = FRAMES_PER_COLOR;
 		int _transitionDirection = 0;
 
 		std::vector<std::unique_ptr<LevelFactory>>::const_iterator _selected;

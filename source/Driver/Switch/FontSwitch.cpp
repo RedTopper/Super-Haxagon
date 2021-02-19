@@ -46,7 +46,7 @@ void main() {
 )text";
 
 namespace SuperHaxagon {
-	FontSwitch::FontSwitch(PlatformSwitch& platform, const std::string& path, const double size) : _platform(platform) {
+	FontSwitch::FontSwitch(PlatformSwitch& platform, const std::string& path, const float size) : _platform(platform) {
 		const auto filename = path + ".ttf";
 
 		// Use a new FreeType2 library per font
@@ -98,23 +98,23 @@ namespace SuperHaxagon {
 
 			glTexSubImage2D(GL_TEXTURE_2D, 0, x, 0, g->bitmap.width, g->bitmap.rows,  GL_RED, GL_UNSIGNED_BYTE, g->bitmap.buffer);
 			_chars[i].pxAdvance = {
-				g->advance.x / 64.0,
-				g->advance.y / 64.0
+				g->advance.x / 64.0f,
+				g->advance.y / 64.0f
 			};
 
 			_chars[i].pxOffset = {
-				static_cast<double>(g->bitmap_left),
-				static_cast<double>(g->bitmap_top)
+				static_cast<float>(g->bitmap_left),
+				static_cast<float>(g->bitmap_top)
 			};
 
 			_chars[i].pxDim = {
-				g->bitmap.width + 0.0,
-				g->bitmap.rows + 0.0
+				static_cast<float>(g->bitmap.width),
+				static_cast<float>(g->bitmap.rows)
 			};
 
 			_chars[i].uv = {
-				(x + 0.0) / _texWidth,
-				_chars[i].pxDim.y / _texHeight
+				static_cast<float>(x) / static_cast<float>(_texWidth),
+				_chars[i].pxDim.y / static_cast<float>(_texHeight)
 			};
 
 			x += g->bitmap.width + 1;
@@ -128,11 +128,11 @@ namespace SuperHaxagon {
 
 	FontSwitch::~FontSwitch() = default;
 
-	double FontSwitch::getHeight() const {
-		return _top;
+	float FontSwitch::getHeight() const {
+		return static_cast<float>(_top);
 	}
 
-	double FontSwitch::getWidth(const std::string& text) const {
+	float FontSwitch::getWidth(const std::string& text) const {
 		auto width = 0.0;
 		for (auto c : text) {
 			const auto i = static_cast<int>(c);
@@ -147,7 +147,7 @@ namespace SuperHaxagon {
 
 		Point cursor = {
 			position.x,
-			position.y + _top
+			position.y + static_cast<float>(_top)
 		};
 
 		const auto width = getWidth(text);

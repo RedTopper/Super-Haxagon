@@ -11,9 +11,9 @@
 namespace SuperHaxagon {
 	static constexpr int LEVEL_VOID = 6;
 	static constexpr int LEVEL_HARD = 0;
-	static constexpr double CREDITS_TIMER = 60.0 * 3.0;
+	static constexpr float CREDITS_TIMER = 60.0 * 3.0;
 	
-	Win::Win(Game& game, std::unique_ptr<Level> level, LevelFactory& selected, const double score, std::string text) :
+	Win::Win(Game& game, std::unique_ptr<Level> level, LevelFactory& selected, const float score, std::string text) :
 		_game(game),
 		_platform(game.getPlatform()),
 		_selected(selected),
@@ -29,7 +29,7 @@ namespace SuperHaxagon {
 		const auto sides = 6;
 		std::vector<Wall> walls;
 		walls.reserve(sides);
-		for (auto i = 0; i < sides; i++) walls.emplace_back(0, 16, i);
+		for (auto i = 0; i < sides; i++) walls.emplace_back(0.0f, 16.0f, i);
 		_surround = std::make_unique<Pattern>(walls, sides);
 
 		// Create our game over level
@@ -77,7 +77,7 @@ namespace SuperHaxagon {
 		_game.setShadowAuto(true);
 	}
 	
-	std::unique_ptr<State> Win::update(const double dilation) {
+	std::unique_ptr<State> Win::update(const float dilation) {
 		if (!_level) {
 			_platform.message(Dbg::FATAL, "win", "not all levels exist");
 			return std::make_unique<Quit>(_game);
@@ -94,8 +94,8 @@ namespace SuperHaxagon {
 		// Get effect data
 		auto& metadata = *_game.getBGMMetadata();
 		const auto* bgm = _platform.getBGM();
-		const auto time = bgm ? bgm->getTime() : 0.0;
-		if (time < _lastTime - 10.0 || pressed.back) {
+		const auto time = bgm ? bgm->getTime() : 0.0f;
+		if (time < _lastTime - 10.0f || pressed.back) {
 			_level->setWinShowCursor(true);
 			_platform.stopBGM();
 			return std::make_unique<Over>(_game, std::move(_level), _selected, _score, _text);
@@ -111,7 +111,7 @@ namespace SuperHaxagon {
 			const auto& factory = _game.getLevels()[i].get();
 			_level->setWinFactory(factory);
 			_level->setWinMultiplierRot(1.0);
-			_level->setWinMultiplierWalls(factory->getSpeedWall() / 2.0 * -1.0);
+			_level->setWinMultiplierWalls(factory->getSpeedWall() / 2.0f * -1.0f);
 			_level->setWinAutoPatternCreate(i != LEVEL_VOID);
 			_level->setWinFrame(0);
 			_level->resetColors();
@@ -149,11 +149,11 @@ namespace SuperHaxagon {
 		return nullptr;
 	}
 
-	void Win::drawTop(const double scale) {
+	void Win::drawTop(const float scale) {
 		_level->draw(_game, scale, 0);
 	}
 
-	void Win::drawBot(const double scale) {
+	void Win::drawBot(const float scale) {
 		auto& large = _game.getFontLarge();
 		auto& small = _game.getFontSmall();
 		large.setScale(scale);
@@ -169,7 +169,7 @@ namespace SuperHaxagon {
 		const Point posB = { width / 2, height - margin - heightSmall };
 		const Point posA = { width / 2, posB.y - heightSmall - padText };
 
-		if (_timer > 0.0) {
+		if (_timer > 0.0f) {
 			large.draw(COLOR_WHITE, posCredits, Alignment::CENTER, _credits[_index].name);
 			small.draw(COLOR_WHITE, posA, Alignment::CENTER, _credits[_index].line1);
 			small.draw(COLOR_WHITE, posB, Alignment::CENTER, _credits[_index].line2);

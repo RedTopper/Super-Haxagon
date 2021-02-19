@@ -15,7 +15,7 @@
 
 namespace SuperHaxagon {
 
-	Over::Over(Game& game, std::unique_ptr<Level> level, LevelFactory& selected, const double score, std::string text) :
+	Over::Over(Game& game, std::unique_ptr<Level> level, LevelFactory& selected, const float score, std::string text) :
 		_game(game),
 		_platform(game.getPlatform()),
 		_selected(selected),
@@ -50,7 +50,7 @@ namespace SuperHaxagon {
 		scores.write(Load::SCORE_FOOTER, strlen(Load::SCORE_FOOTER));
 	}
 
-	std::unique_ptr<State> Over::update(const double dilation) {
+	std::unique_ptr<State> Over::update(const float dilation) {
 		_frames += dilation;
 		_level->rotate(GAME_OVER_ROT_SPEED, dilation);
 		_level->clamp();
@@ -59,7 +59,7 @@ namespace SuperHaxagon {
 		if(press.quit) return std::make_unique<Quit>(_game);
 
 		if(_frames <= FRAMES_PER_GAME_OVER) {
-			_offset *= GAME_OVER_ACCELERATION_RATE * dilation + 1.0;
+			_offset *= GAME_OVER_ACCELERATION_RATE * dilation + 1.0f;
 		}
 
 		if(_frames >= FRAMES_PER_GAME_OVER) {
@@ -72,7 +72,7 @@ namespace SuperHaxagon {
 				}
 
 				// Go back to the original level
-				return std::make_unique<Play>(_game, _selected, _selected, 0.0);
+				return std::make_unique<Play>(_game, _selected, _selected, 0.0f);
 			}
 
 			if (press.back) {
@@ -83,11 +83,11 @@ namespace SuperHaxagon {
 		return nullptr;
 	}
 
-	void Over::drawTop(const double scale) {
+	void Over::drawTop(const float scale) {
 		_level->draw(_game, scale, _offset);
 	}
 
-	void Over::drawBot(const double scale) {
+	void Over::drawBot(const float scale) {
 		auto& large = _game.getFontLarge();
 		auto& small = _game.getFontSmall();
 		large.setScale(scale);
@@ -116,7 +116,7 @@ namespace SuperHaxagon {
 			small.draw(pulse, posBest, Alignment::CENTER, "NEW RECORD!");
 		} else {
 			const auto score = _selected.getHighScore();
-			const auto textBest = std::string("BEST: ") + getTime(score);
+			const auto textBest = std::string("BEST: ") + getTime(static_cast<float>(score));
 			small.draw(COLOR_WHITE, posBest, Alignment::CENTER, textBest);
 		}
 

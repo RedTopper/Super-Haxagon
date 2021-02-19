@@ -19,7 +19,7 @@ namespace SuperHaxagon {
 		return _sound->getStatus() == sf::SoundSource::Stopped;
 	}
 
-	double PlayerSoundSFML::getTime() const {
+	float PlayerSoundSFML::getTime() const {
 		return 0;
 	}
 }

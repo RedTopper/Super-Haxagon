@@ -22,7 +22,7 @@ namespace SuperHaxagon {
 		~PlatformSwitch() override;
 
 		bool loop() override;
-		double getDilation() override;
+		float getDilation() override;
 
 		std::string getPath(const std::string& partial) override;
 		std::string getPathRom(const std::string& partial) override;
@@ -62,6 +62,7 @@ namespace SuperHaxagon {
 		unsigned int _height = 720;
 
 		float _z = 0.0f;
+		PadState _pad{};
 
 		std::shared_ptr<RenderTarget<Vertex>> _opaque;
 		std::shared_ptr<RenderTarget<Vertex>> _transparent;

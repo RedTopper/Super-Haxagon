@@ -53,18 +53,18 @@ namespace SuperHaxagon {
 		return _loaded && _window->isOpen();
 	}
 
-	double PlatformSFML::getDilation() {
+	float PlatformSFML::getDilation() {
 		// The game was originally designed with 60FPS in mind
-		const auto dilation = _delta / (1.0 / 60.0);
-		return dilation > 4.0 ? 4.0 : (dilation < 0.05 ? 0.05 : dilation);
+		const auto dilation = _delta / (1.0f / 60.0f);
+		return dilation > 4.0f ? 4.0f : (dilation < 0.05f ? 0.05f : dilation);
 	}
 
 	std::unique_ptr<Audio> PlatformSFML::loadAudio(const std::string& path, Stream stream) {
 		return std::make_unique<AudioSFML>(path, stream);
 	}
 
-	std::unique_ptr<Font> PlatformSFML::loadFont(const std::string& path, int size) {
-		return std::make_unique<FontSFML>(*this, path, size);
+	std::unique_ptr<Font> PlatformSFML::loadFont(const std::string& path, const int size) {
+		return std::make_unique<FontSFML>(*this, path, static_cast<float>(size));
 	}
 
 	void PlatformSFML::playSFX(Audio& audio) {
@@ -113,8 +113,8 @@ namespace SuperHaxagon {
 
 	Point PlatformSFML::getScreenDim() const {
 		Point point{};
-		point.x = _window->getSize().x;
-		point.y = _window->getSize().y;
+		point.x = static_cast<float>(_window->getSize().x);
+		point.y = static_cast<float>(_window->getSize().y);
 		return point;
 	}
 

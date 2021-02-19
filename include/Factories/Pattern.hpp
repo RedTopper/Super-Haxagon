@@ -15,9 +15,9 @@ namespace SuperHaxagon {
 		const std::vector<Wall>& getWalls() const {return _walls;}
 		int getSides() const {return _sides;}
 
-		double getFurthestWallDistance() const;
-		double getClosestWallDistance() const;
-		void advance(double speed);
+		float getFurthestWallDistance() const;
+		float getClosestWallDistance() const;
+		void advance(float speed);
 
 	private:
 		std::vector<Wall> _walls;
@@ -33,7 +33,7 @@ namespace SuperHaxagon {
 		PatternFactory(std::ifstream& file, Platform& platform);
 		~PatternFactory();
 
-		Pattern instantiate(Twist& rng, double distance) const;
+		Pattern instantiate(Twist& rng, float distance) const;
 
 		bool isLoaded() const {return _loaded;}
 		int getSides() const {return _sides;}

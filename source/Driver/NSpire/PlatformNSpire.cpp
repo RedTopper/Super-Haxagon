@@ -75,17 +75,17 @@ namespace SuperHaxagon {
 	}
 
 	void PlatformNSpire::drawPoly(const Color& color, const std::vector<Point>& points) {
-		COLOR c = ((color.r & 0b11111000) << 8) | ((color.g & 0b11111100) << 3) | (color.b >> 3);
-		auto dim = getScreenDim();
-		auto pos = std::make_unique<VECTOR3[]>(points.size());
-		auto proc = std::make_unique<ProcessedPosition[]>(points.size());
-		auto index = std::make_unique<IndexedVertex[]>((points.size() - 2) * 3);
+		const COLOR c = ((color.r & 0b11111000) << 8) | ((color.g & 0b11111100) << 3) | (color.b >> 3);
+		const auto dim = getScreenDim();
+		const auto pos = std::make_unique<VECTOR3[]>(points.size());
+		const auto proc = std::make_unique<ProcessedPosition[]>(points.size());
+		const auto index = std::make_unique<IndexedVertex[]>((points.size() - 2) * 3);
 
-		const auto SCALE = 20;
+		const auto scale = 20;
 
 		for (size_t i = 0; i < points.size(); i++) {
 			// Note the flipping of the y value with -SCALE!
-			pos[i] = {(int)((points[i].x - dim.x/2) * SCALE), (int)((points[i].y - dim.y/2) * -SCALE), _z};
+			pos[i] = {static_cast<int>((points[i].x - dim.x / 2) * scale), static_cast<int>((points[i].y - dim.y / 2) * -scale), _z};
 		}
 
 		// This is a hack - The game calculates the triangles
@@ -97,11 +97,11 @@ namespace SuperHaxagon {
 			const auto pa = VERTEX(pos[0].x, pos[0].y, 0, 0, 0, 0);
 			const auto pb = VERTEX(pos[i].x, pos[i].y, 0, 0, 0, 0);
 			const auto pc = VERTEX(pos[i + 1].x, pos[i + 1].y, 0, 0, 0, 0);
-			auto isBackface = nglIsBackface(&pa, &pb, &pc);
+			const auto isBack = nglIsBackface(&pa, &pb, &pc);
 
 			index[i*3 - 3] = {0, 0, 0, c};
-			index[i*3 - 2] = {i + (isBackface ? 0 : 1), 0, 0, c};
-			index[i*3 - 1] = {i + (isBackface ? 1 : 0), 0, 0, c};
+			index[i*3 - 2] = {i + (isBack ? 0 : 1), 0, 0, c};
+			index[i*3 - 1] = {i + (isBack ? 1 : 0), 0, 0, c};
 		}
 
 		nglDrawArray(index.get(), (points.size() - 2) * 3, pos.get(), points.size(), proc.get(), GL_TRIANGLES);

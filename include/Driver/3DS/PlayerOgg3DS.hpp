@@ -29,7 +29,7 @@ namespace SuperHaxagon {
 		void play() override;
 		void pause() override;
 		bool isDone() const override;
-		double getTime() const override;
+		float getTime() const override;
 
 	private:
 		static bool audioDecode(stb_vorbis* file, ndspWaveBuf* buff, int channel);

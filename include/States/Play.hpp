@@ -13,17 +13,17 @@ namespace SuperHaxagon {
 	class Play : public State {
 	public:
 		static constexpr int PULSE_TIME = 75;
-		static constexpr double PULSE_TIMES = 2.0;
-		static constexpr double SKEW_MAX = 0.3;
-		static constexpr double SKEW_MIN_FRAMES = 120.0;
+		static constexpr float PULSE_TIMES = 2.0f;
+		static constexpr float SKEW_MAX = 0.3f;
+		static constexpr float SKEW_MIN_FRAMES = 120.0f;
 
-		Play(Game& game, LevelFactory& factory, LevelFactory& selected, double startScore);
+		Play(Game& game, LevelFactory& factory, LevelFactory& selected, float startScore);
 		Play(Play&) = delete;
 		~Play() override;
 
-		std::unique_ptr<State> update(double dilation) override;
-		void drawTop(double scale) override;
-		void drawBot(double scale) override;
+		std::unique_ptr<State> update(float dilation) override;
+		void drawTop(float scale) override;
+		void drawBot(float scale) override;
 		void enter() override;
 		void exit() override;
 
@@ -34,11 +34,11 @@ namespace SuperHaxagon {
 		LevelFactory& _selected;
 		std::unique_ptr<Level> _level;
 
-		double _scalePrev = 0;
-		double _scoreWidth = 0;
-		double _score = 0;
-		double _skewFrame = 0.0;
-		double _skewDirection = 1.0;
+		float _scalePrev = 0;
+		float _scoreWidth = 0;
+		float _score = 0;
+		float _skewFrame = 0.0;
+		float _skewDirection = 1.0;
 	};
 }
 

@@ -21,14 +21,14 @@ namespace SuperHaxagon {
 
 	class Win : public State {
 	public:
-		Win(Game& game, std::unique_ptr<Level> level, LevelFactory& selected, double score, std::string text);
+		Win(Game& game, std::unique_ptr<Level> level, LevelFactory& selected, float score, std::string text);
 		Win(Win&) = delete;
 		~Win() override = default;
 
-		std::unique_ptr<State> update(double dilation) override;
+		std::unique_ptr<State> update(float dilation) override;
 		void enter() override;
-		void drawTop(double scale) override;
-		void drawBot(double scale) override;
+		void drawTop(float scale) override;
+		void drawBot(float scale) override;
 
 	private:
 		Game& _game;
@@ -39,11 +39,11 @@ namespace SuperHaxagon {
 		std::unique_ptr<Pattern> _surround;
 		std::vector<Credits> _credits;
 		
-		double _score = 0.0;
-		double _lastTime = 0.0;
+		float _score = 0.0;
+		float _lastTime = 0.0;
 		
 		size_t _index = 0;
-		double _timer = 0.0;
+		float _timer = 0.0;
 
 		std::string _text = "GAME OVER";
 	};

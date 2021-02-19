@@ -12,7 +12,7 @@ namespace SuperHaxagon {
 		while (std::getline(metadata, line)) {
 			std::stringstream values(line);
 			std::string label;
-			double time;
+			float time;
 
 			// time gets repeated by Audacity for the label's
 			// duration. We can ignore it.
@@ -27,7 +27,7 @@ namespace SuperHaxagon {
 
 	Metadata::~Metadata() = default;
 
-	bool Metadata::getMetadata(const double time, const std::string& label) {
+	bool Metadata::getMetadata(const float time, const std::string& label) {
 		if (_timestamps.find(label) == _timestamps.end()) return false; // no data
 
 		// If more than 10 seconds behind, reset

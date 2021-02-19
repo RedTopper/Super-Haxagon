@@ -17,19 +17,19 @@ namespace SuperHaxagon {
 		Point pxOffset;
 		Point pxDim;
 		Point uv;
-		double x;
+		float x;
 	};
 
 	class PlatformSwitch;
 
 	class FontSwitch : public Font {
 	public:
-		FontSwitch(SuperHaxagon::PlatformSwitch& platform, const std::string& path, double size);
+		FontSwitch(SuperHaxagon::PlatformSwitch& platform, const std::string& path, float size);
 		~FontSwitch() override;
 
-		void setScale(double) override {};
-		double getHeight() const override;
-		double getWidth(const std::string& text) const override;
+		void setScale(float) override {};
+		float getHeight() const override;
+		float getWidth(const std::string& text) const override;
 		void draw(const Color& color, const Point& position, Alignment alignment, const std::string& text) override;
 
 	private:

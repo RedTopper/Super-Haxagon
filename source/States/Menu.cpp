@@ -37,7 +37,7 @@ namespace SuperHaxagon {
 		_platform.playBGM(*_game.getBGMAudio());
 	}
 
-	std::unique_ptr<State> Menu::update(const double dilation) {
+	std::unique_ptr<State> Menu::update(const float dilation) {
 		const auto press = _platform.getPressed();
 
 		if (press.quit) return std::make_unique<Quit>(_game);
@@ -46,7 +46,7 @@ namespace SuperHaxagon {
 			if (press.select) {
 				auto& level = **_selected;
 				_game.loadBGMAudio(level);
-				return std::make_unique<Play>(_game, level, level, 0.0);
+				return std::make_unique<Play>(_game, level, level, 0.0f);
 			}
 
 			if (press.right) {
@@ -108,13 +108,13 @@ namespace SuperHaxagon {
 		return nullptr;
 	}
 
-	void Menu::drawTop(double scale) {
+	void Menu::drawTop(float scale) {
 		auto percentRotated = _frameRotation / FRAMES_PER_TRANSITION;
-		auto rotation = percentRotated * TAU/6.0;
+		auto rotation = percentRotated * TAU/6.0f;
 
 		// If the user is going to the left, flip the radians so the animation plays backwards.
 		if(_transitionDirection == -1) {
-			rotation *= -1.0;
+			rotation *= -1.0f;
 		}
 
 		// Colors
@@ -147,12 +147,12 @@ namespace SuperHaxagon {
 
 		// Shadows
 		_game.drawRegular(COLOR_SHADOW, offsetFocus, SCALE_HEX_LENGTH * SCALE_MENU * scale, rotation, 6.0);
-		_game.drawCursor(COLOR_SHADOW, offsetFocus, TAU / 4.0, 0, SCALE_HEX_LENGTH + SCALE_HUMAN_PADDING + 4, scale * SCALE_MENU * 0.75);
+		_game.drawCursor(COLOR_SHADOW, offsetFocus, TAU / 4.0f, 0, SCALE_HEX_LENGTH + SCALE_HUMAN_PADDING + 4, scale * SCALE_MENU * 0.75f);
 
 		// Geometry
 		_game.drawRegular(fg, focus,SCALE_HEX_LENGTH * SCALE_MENU * scale, rotation, 6.0);
 		_game.drawRegular(bg3, focus, (SCALE_HEX_LENGTH - SCALE_HEX_BORDER / 2) * SCALE_MENU * scale, rotation, 6.0);
-		_game.drawCursor(fg, focus, TAU / 4.0, 0, SCALE_HEX_LENGTH + SCALE_HUMAN_PADDING + 4, scale * SCALE_MENU * 0.75);
+		_game.drawCursor(fg, focus, TAU / 4.0f, 0, SCALE_HEX_LENGTH + SCALE_HUMAN_PADDING + 4, scale * SCALE_MENU * 0.75f);
 
 		auto& large = _game.getFontLarge();
 		auto& small = _game.getFontSmall();
@@ -162,7 +162,7 @@ namespace SuperHaxagon {
 
 		// Actual text
 		auto& level = **_selected;
-		auto scoreTime = "BEST: " + getTime(level.getHighScore());
+		auto scoreTime = "BEST: " + getTime(static_cast<float>(level.getHighScore()));
 		auto diff = "DIFF: " + level.getDifficulty();
 		auto mode = "MODE: " + level.getMode();
 		auto auth = "AUTH: " + level.getCreator();
@@ -216,5 +216,5 @@ namespace SuperHaxagon {
 		small.draw(COLOR_WHITE, posTime, Alignment::LEFT, scoreTime);
 	}
 
-	void Menu::drawBot(double) {}
+	void Menu::drawBot(float) {}
 }

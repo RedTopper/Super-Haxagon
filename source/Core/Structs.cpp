@@ -8,13 +8,13 @@
 #include <string>
 
 namespace SuperHaxagon {
-	uint8_t clamp(const double v) {
+	uint8_t clamp(const float v) {
 		if (v < 0) return 0;
 		if (v > 255) return 255;
 		return static_cast<uint8_t>(v);
 	}
 	
-	Color interpolateColor(const Color& one, const Color& two, const double percent) {
+	Color interpolateColor(const Color& one, const Color& two, const float percent) {
 		Color result{};
 		result.r = static_cast<uint8_t>(linear(one.r, two.r, percent));
 		result.g = static_cast<uint8_t>(linear(one.g, two.g, percent));
@@ -24,17 +24,20 @@ namespace SuperHaxagon {
 	}
 
 	// Source: https://stackoverflow.com/a/30488508
-	Color rotateColor(const Color& in, const double degrees) {
+	Color rotateColor(const Color& in, const float degrees) {
 		Color out{};
-		const auto cosA = cos(degrees * PI / 180.0);
-		const auto sinA = sin(degrees * PI / 180.0);
+		// Note: Some platforms seem to have a float/float sin/cos, and others
+		// only accept doubles.
+		const auto cosA = static_cast<float>(cos(degrees * PI / 180.0f));
+		const auto sinA = static_cast<float>(sin(degrees * PI / 180.0f));
+		const auto sqrt1d3 = static_cast<float>(sqrt(1.0f / 3.0f));
 
 		// Calculate the rotation matrix, only depends on Hue
 		// This means I COULD cache it, but I won't.
-		double matrix[3][3] = {
-			{cosA + (1.0 - cosA) / 3.0, 1.0 / 3.0 * (1.0 - cosA) - sqrt(1.0 / 3.0) * sinA, 1.0 / 3.0 * (1.0 - cosA) + sqrt(1.0 / 3.0) * sinA},
-			{1.0 / 3.0 * (1.0 - cosA) + sqrt(1.0 / 3.0) * sinA, cosA + 1.0 / 3.0 * (1.0 - cosA), 1.0 / 3.0 * (1.0 - cosA) - sqrt(1.0 / 3.0) * sinA},
-			{1.0 / 3.0 * (1.0 - cosA) - sqrt(1.0 / 3.0) * sinA, 1.0 / 3.0 * (1.0 - cosA) + sqrt(1.0 / 3.0) * sinA, cosA + 1.0 / 3.0 * (1.0 - cosA)}
+		float matrix[3][3] = {
+			{cosA + (1.0f - cosA) / 3.0f, 1.0f / 3.0f * (1.0f - cosA) - sqrt1d3 * sinA, 1.0f / 3.0f * (1.0f - cosA) + sqrt1d3 * sinA},
+			{1.0f / 3.0f * (1.0f - cosA) + sqrt1d3 * sinA, cosA + 1.0f / 3.0f * (1.0f - cosA), 1.0f / 3.0f * (1.0f - cosA) - sqrt1d3 * sinA},
+			{1.0f / 3.0f * (1.0f - cosA) - sqrt1d3 * sinA, 1.0f / 3.0f * (1.0f - cosA) + sqrt1d3 * sinA, cosA + 1.0f / 3.0f * (1.0f - cosA)}
 		};
 
 		// Use the rotation matrix to convert the RGB directly
@@ -45,20 +48,20 @@ namespace SuperHaxagon {
 		return out;
 	}
 
-	double linear(const double start, const double end, const double percent) {
+	float linear(const float start, const float end, const float percent) {
 		return (end - start) * percent + start;
 	}
 
-	Point rotateAroundOrigin(const Point& point, const double rotation) {
-		const auto c = cos(rotation);
-		const auto s = sin(rotation + PI);
+	Point rotateAroundOrigin(const Point& point, const float rotation) {
+		const auto c = static_cast<float>(cos(rotation));
+		const auto s = static_cast<float>(sin(rotation + PI));
 		return { point.x * c - point.y * s,  point.x * s + point.y * c };
 	}
 
-	std::string getTime(const double score) {
+	std::string getTime(const float score) {
 		std::stringstream buffer;
-		const auto scoreInt = static_cast<int>(score / 60.0);
-		const auto decimalPart = static_cast<int>((score / 60.0 - scoreInt) * 100.0);
+		const auto scoreInt = static_cast<int>(score / 60.0f);
+		const auto decimalPart = static_cast<int>((score / 60.0f - scoreInt) * 100.0f);
 		buffer << std::fixed << std::setfill('0')
 			<< std::setprecision(3) << std::setw(3)
 			<< scoreInt
@@ -68,10 +71,10 @@ namespace SuperHaxagon {
 		return buffer.str();
 	}
 
-	double getPulse(double frame, const double range, const double start) {
+	float getPulse(float frame, const float range, const float start) {
 		frame -= start;
 		// Alternate algorithm:
-		//double percent = sin((double)frame * <speed>) / 2.0 + 0.5;
+		//float percent = sin((float)frame * <speed>) / 2.0 + 0.5;
 		return fabs(((frame - floor(frame / (range * 2)) * range * 2) - range) / range);
 	}
 

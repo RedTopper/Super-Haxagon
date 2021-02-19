@@ -1,6 +1,6 @@
 #include "Driver/Switch/PlayerMusSwitch.hpp"
 
-#include <ctime>
+#include <switch/arm/counter.h>
 
 namespace SuperHaxagon {
 	PlayerMusSwitch::PlayerMusSwitch(Mix_Music* music) : _music(music) {}
@@ -40,22 +40,18 @@ namespace SuperHaxagon {
 		return !Mix_PlayingMusic();
 	}
 
-	double PlayerMusSwitch::getTime() const {
+	float PlayerMusSwitch::getTime() const {
 		// If we set diff (paused), we are frozen in time. Otherwise, the current timestamp is
 		// the system minus the start of the song.
 		return _diff > 0 ? _diff - _start : getNow() - _start;
 	}
 
-	double PlayerMusSwitch::getNow() const {
+	float PlayerMusSwitch::getNow() const {
 		// Note that this is kind of a shitty way to do this: if the user presses the
 		// home button while the game is running (and not at a game over screen) the
 		// clock will get offset from the music. I personally am not going to fix this,
 		// but if someone ever stumbles across this comment feel free to do something
 		// about it.
-		timespec time{};
-		clock_gettime(CLOCK_MONOTONIC, &time);
-		double seconds = time.tv_sec;
-		seconds += time.tv_nsec / 1.0e9;
-		return seconds;
+		return armTicksToNs(armGetSystemTick()) / 1.0e9;
 	}
 }

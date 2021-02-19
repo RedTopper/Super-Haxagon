@@ -11,7 +11,7 @@ namespace SuperHaxagon {
 
 	}
 
-	double FontNSpire::getWidth(const std::string&) const {
+	float FontNSpire::getWidth(const std::string&) const {
 		return 1;
 	}
 
@@ -19,7 +19,7 @@ namespace SuperHaxagon {
 
 	}
 
-	void FontNSpire::setScale(double) {}
+	void FontNSpire::setScale(float) {}
 
-	double FontNSpire::getHeight() const {return 4;}
+	float FontNSpire::getHeight() const {return 4;}
 }

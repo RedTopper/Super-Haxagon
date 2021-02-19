@@ -15,7 +15,7 @@
 
 namespace SuperHaxagon {
 
-	Play::Play(Game& game, LevelFactory& factory, LevelFactory& selected, const double startScore) :
+	Play::Play(Game& game, LevelFactory& factory, LevelFactory& selected, const float startScore) :
 		_game(game),
 		_platform(game.getPlatform()),
 		_factory(factory),
@@ -38,14 +38,14 @@ namespace SuperHaxagon {
 		if (bgm) bgm->pause();
 	}
 
-	std::unique_ptr<State> Play::update(const double dilation) {
+	std::unique_ptr<State> Play::update(const float dilation) {
 		const auto maxRenderDistance = SCALE_BASE_DISTANCE * (_game.getScreenDimMax() / 400);
 
 		// Render the level with a skewed 3D look
-		auto skewFrameMax = _level->getLevelFactory().getSpeedPulse() * 2.5;
+		auto skewFrameMax = static_cast<float>(_level->getLevelFactory().getSpeedPulse()) * 2.5f;
 		skewFrameMax = skewFrameMax < SKEW_MIN_FRAMES ? SKEW_MIN_FRAMES : skewFrameMax;
-		_skewFrame += dilation * _skewDirection * (_level->getLevelFactory().getSpeedRotation() > 0 ? 1 : 0);
-		_game.setSkew((-cos(_skewFrame / skewFrameMax * PI) + 1.0) / 2.0 * SKEW_MAX);
+		_skewFrame += dilation * _skewDirection * (_level->getLevelFactory().getSpeedRotation() > 0 ? 1.0f : 0);
+		_game.setSkew((-cos(_skewFrame / skewFrameMax * PI) + 1.0f) / 2.0f * SKEW_MAX);
 
 		// It's technically possible that the BGM metadata was not set
 		if (_game.getBGMMetadata()) {
@@ -53,13 +53,13 @@ namespace SuperHaxagon {
 			// Get effect data
 			auto& metadata = *_game.getBGMMetadata();
 			const auto* bgm = _platform.getBGM();
-			const auto time = bgm ? bgm->getTime() : 0.0;
+			const auto time = bgm ? bgm->getTime() : 0.0f;
 
 			// Apply effects. More can be added here if needed.
 			if (metadata.getMetadata(time, "S")) _level->spin();
 			if (metadata.getMetadata(time, "I")) _level->invertBG();
-			if (metadata.getMetadata(time, "BL")) _level->pulse(1.0);
-			if (metadata.getMetadata(time, "BS")) _level->pulse(0.5);
+			if (metadata.getMetadata(time, "BL")) _level->pulse(1.0f);
+			if (metadata.getMetadata(time, "BS")) _level->pulse(0.5f);
 		}
 
 		// Update level
@@ -90,7 +90,7 @@ namespace SuperHaxagon {
 			    _factory.getDifficulty() == "SPOILERS" &&
 			    _factory.getMode() == "(DUH)") {
 				// Cheater
-				return std::make_unique<Win>(_game, std::move(_level), _selected, 0, "CHEATER");
+				return std::make_unique<Win>(_game, std::move(_level), _selected, 0.0f, "CHEATER");
 			}
 
 			return std::make_unique<Over>(_game, std::move(_level), _selected, _score, "GAME OVER");
@@ -104,7 +104,7 @@ namespace SuperHaxagon {
 		const auto next = _factory.getNextIndex();
 		if (next >= 0 && 
 		    static_cast<size_t>(next) < _game.getLevels().size() && 
-		    _level->getFrame() > 60.0 * _level->getLevelFactory().getNextTime()) {
+		    _level->getFrame() > 60.0f * _level->getLevelFactory().getNextTime()) {
 			return std::make_unique<Transition>(_game, std::move(_level), _selected, _score);
 		}
 
@@ -130,11 +130,11 @@ namespace SuperHaxagon {
 		return nullptr;
 	}
 
-	void Play::drawTop(const double scale) {
+	void Play::drawTop(const float scale) {
 		_level->draw(_game, scale, 0);
 	}
 
-	void Play::drawBot(const double scale) {
+	void Play::drawBot(const float scale) {
 		auto& small = _game.getFontSmall();
 
 		// Makes it so the score text doesn't freak out
@@ -172,7 +172,7 @@ namespace SuperHaxagon {
 
 		// Draw the current score
 		const auto screenWidth = _platform.getScreenDim().x;
-		const auto textScore = "TIME: " + getTime(_score);
+		const auto textScore = "TIME: " + getTime(_platform.getBGM()->getTime() * 60.0f);
 		const Point scorePosText = {screenWidth - pad - _scoreWidth, pad};
 		Point scoreBkgSize = {_scoreWidth + pad * 2, small.getHeight() + pad * 2};
 
@@ -181,7 +181,7 @@ namespace SuperHaxagon {
 		auto drawHigh = false;
 		const auto originalY = scoreBkgSize.y;
 		const auto heightBar = 2 * scale;
-		const auto highScore = _selected.getHighScore();
+		const auto highScore = static_cast<float>(_selected.getHighScore());
 
 		// Adjust background size to accommodate for new record or bar
 		if (highScore > 0) {

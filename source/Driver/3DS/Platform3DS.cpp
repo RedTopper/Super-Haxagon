@@ -97,13 +97,13 @@ namespace SuperHaxagon {
 	}
 
 	bool Platform3DS::loop() {
-		_delta = (svcGetSystemTick() - _last) / CPU_TICKS_PER_MSEC / 1000.0;
+		_delta = (svcGetSystemTick() - _last) / CPU_TICKS_PER_MSEC / 1000.0f;
 		_last = svcGetSystemTick();
 		return aptMainLoop();
 	}
 
-	double Platform3DS::getDilation() {
-		return _delta / (1.0 / 60.0);
+	float Platform3DS::getDilation() {
+		return _delta / (1.0f / 60.0f);
 	}
 
 	std::string Platform3DS::getPath(const std::string& partial) {
@@ -173,7 +173,7 @@ namespace SuperHaxagon {
 	}
 
 	Point Platform3DS::getScreenDim() const {
-		return {static_cast<double>(_drawingOnTop ? 400 : 320), 240};
+		return {static_cast<float>(_drawingOnTop ? 400 : 320), 240};
 	}
 
 	void Platform3DS::screenBegin() {

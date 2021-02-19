@@ -23,7 +23,7 @@ namespace SuperHaxagon {
 		return _music->getStatus() == sf::SoundSource::Stopped;
 	}
 
-	double PlayerMusicSFML::getTime() const {
+	float PlayerMusicSFML::getTime() const {
 		return _music->getPlayingOffset().asSeconds();
 	}
 }

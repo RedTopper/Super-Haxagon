@@ -19,7 +19,7 @@ namespace SuperHaxagon {
 		void play() override;
 		void pause() override;
 		bool isDone() const override;
-		double getTime() const override;
+		float getTime() const override;
 
 	private:
 		std::unique_ptr<sf::Music> _music;

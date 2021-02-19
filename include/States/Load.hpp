@@ -23,10 +23,10 @@ namespace SuperHaxagon {
 		bool loadFile(std::ifstream& file, LocLevel location) const;
 		bool loadScores(std::ifstream& file) const;
 
-		std::unique_ptr<State> update(double dilation) override;
+		std::unique_ptr<State> update(float dilation) override;
 		void enter() override;
-		void drawTop(double) override {};
-		void drawBot(double) override {};
+		void drawTop(float) override {};
+		void drawBot(float) override {};
 
 	private:
 		Game& _game;

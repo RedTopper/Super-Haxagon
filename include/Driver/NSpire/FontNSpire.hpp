@@ -10,9 +10,9 @@ namespace SuperHaxagon {
 		FontNSpire(int size);
 		~FontNSpire() override;
 
-		void setScale(double) override;
-		double getHeight() const override;
-		double getWidth(const std::string& text) const override;
+		void setScale(float) override;
+		float getHeight() const override;
+		float getWidth(const std::string& text) const override;
 		void draw(const Color& color, const Point& position, Alignment alignment, const std::string& text) override;
 	};
 }

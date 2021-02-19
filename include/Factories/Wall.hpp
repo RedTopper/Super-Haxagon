@@ -11,22 +11,22 @@ namespace SuperHaxagon {
 
 		//Overflow so you don't get glitched lines between hexagons.
 		//This is really just some arbitrary number so yeah...
-		static constexpr double WALL_OVERFLOW = TAU/1200.0;
+		static constexpr float WALL_OVERFLOW = TAU/1200.0f;
 
-		Wall(double distance, double height, int side);
+		Wall(float distance, float height, int side);
 
-		void advance(double speed);
-		Movement collision(double cursorHeight, double cursorPos, double cursorStep, int sides) const;
-		std::vector<Point> calcPoints(const Point& focus, double rotation, double sides, double offset, double scale) const;
-		static Point calcPoint(const Point& focus, double rotation, double overflow, double distance, double sides, int side);
+		void advance(float speed);
+		Movement collision(float cursorHeight, float cursorPos, float cursorStep, int sides) const;
+		std::vector<Point> calcPoints(const Point& focus, float rotation, float sides, float offset, float scale) const;
+		static Point calcPoint(const Point& focus, float rotation, float overflow, float distance, float sides, int side);
 
-		double getDistance() const {return _distance;}
-		double getHeight() const {return _height;}
+		float getDistance() const {return _distance;}
+		float getHeight() const {return _height;}
 		int getSide() const {return _side;}
 
 	private:
-		double _distance;
-		double _height;
+		float _distance;
+		float _height;
 		int _side;
 	};
 
@@ -36,7 +36,7 @@ namespace SuperHaxagon {
 
 		WallFactory(std::ifstream& file, int maxSides);
 
-		Wall instantiate(double offsetDistance, int offsetSide, int sides) const;
+		Wall instantiate(float offsetDistance, int offsetSide, int sides) const;
 
 	private:
 		uint16_t _distance = 0;

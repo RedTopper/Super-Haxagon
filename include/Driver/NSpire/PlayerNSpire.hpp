@@ -15,8 +15,8 @@ namespace SuperHaxagon {
 		void play() override {}
 		void pause() override {}
 		bool isDone() const override {return false;}
-		double getTime() const override {return 0;}
-		double getNow() const {return 0;}
+		float getTime() const override {return 0;}
+		float getNow() const {return 0;}
 	};
 }
 

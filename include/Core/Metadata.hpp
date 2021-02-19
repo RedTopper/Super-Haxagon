@@ -12,11 +12,11 @@ namespace SuperHaxagon {
 		~Metadata();
 		Metadata& operator=(const Metadata&) = delete;
 		
-		bool getMetadata(double time, const std::string& label);
+		bool getMetadata(float time, const std::string& label);
 
 	private:
-		double _time = 0;
-		std::map<std::string, std::vector<double>> _timestamps;
+		float _time = 0;
+		std::map<std::string, std::vector<float>> _timestamps;
 		std::map<std::string, size_t> _indices;
 	};
 }

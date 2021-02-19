@@ -9,7 +9,7 @@
 
 namespace SuperHaxagon {
 
-	Transition::Transition(Game& game, std::unique_ptr<Level> level, LevelFactory& selected, const double score) :
+	Transition::Transition(Game& game, std::unique_ptr<Level> level, LevelFactory& selected, const float score) :
 		_game(game),
 		_platform(game.getPlatform()),
 		_selected(selected),
@@ -23,7 +23,7 @@ namespace SuperHaxagon {
 		_platform.playSFX(_game.getSFXWonderful());
 	}
 
-	std::unique_ptr<State> Transition::update(const double dilation) {
+	std::unique_ptr<State> Transition::update(const float dilation) {
 		_frames += dilation;
 		_level->rotate(_level->getLevelFactory().getSpeedRotation(), dilation);
 		_level->clamp();
@@ -32,7 +32,7 @@ namespace SuperHaxagon {
 		if (press.quit) return std::make_unique<Quit>(_game);
 
 		if (_frames <= TRANSITION_FRAMES) {
-			_offset *= TRANSITION_ACCELERATION_RATE * dilation + 1.0;
+			_offset *= TRANSITION_ACCELERATION_RATE * dilation + 1.0f;
 		}
 
 		if (_frames >= TRANSITION_FRAMES) {
@@ -48,11 +48,11 @@ namespace SuperHaxagon {
 		return nullptr;
 	}
 
-	void Transition::drawTop(const double scale) {
+	void Transition::drawTop(const float scale) {
 		_level->draw(_game, scale, _offset);
 	}
 
-	void Transition::drawBot(const double scale) {
+	void Transition::drawBot(const float scale) {
 		auto& large = _game.getFontLarge();
 		large.setScale(scale);
 

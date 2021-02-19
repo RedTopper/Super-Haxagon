@@ -11,13 +11,13 @@ namespace SuperHaxagon {
 		Font3DS(const std::string& path, int size, C2D_TextBuf& buff);
 		~Font3DS() override;
 
-		void setScale(double) override {};
-		double getHeight() const override;
-		double getWidth(const std::string& str) const override;
+		void setScale(float) override {};
+		float getHeight() const override;
+		float getWidth(const std::string& str) const override;
 		void draw(const Color& color, const Point& position, Alignment alignment, const std::string& str) override;
 
 	private:
-		int _size;
+		float _size;
 
 		C2D_Font _font;
 		C2D_TextBuf& _buff;

@@ -13,7 +13,7 @@ namespace SuperHaxagon {
 		~PlatformNSpire() override = default;
 		
 		bool loop() override;
-		double getDilation() override {return 1.0;}
+		float getDilation() override {return 1.0;}
 		
 		std::string getPath(const std::string& partial) override;
 		std::string getPathRom(const std::string& partial) override;

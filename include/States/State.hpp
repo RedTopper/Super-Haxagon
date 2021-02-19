@@ -8,9 +8,9 @@ namespace SuperHaxagon {
 	public:
 		virtual ~State() = default;
 
-		virtual std::unique_ptr<State> update(double dilation) = 0;
-		virtual void drawTop(double scale) = 0;
-		virtual void drawBot(double scale) = 0;
+		virtual std::unique_ptr<State> update(float dilation) = 0;
+		virtual void drawTop(float scale) = 0;
+		virtual void drawBot(float scale) = 0;
 		virtual void enter() {};
 		virtual void exit() {};
 	};

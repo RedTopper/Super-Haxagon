@@ -6,7 +6,7 @@
 #include <sys/stat.h>
 
 namespace SuperHaxagon {
-	PlatformLinux::PlatformLinux(Dbg dbg) : PlatformSFML(dbg, sf::VideoMode(
+	PlatformLinux::PlatformLinux(const Dbg dbg) : PlatformSFML(dbg, sf::VideoMode(
 		static_cast<int>(sf::VideoMode::getDesktopMode().width * 0.75),
 		static_cast<int>(sf::VideoMode::getDesktopMode().height * 0.75)
 	)) {
@@ -21,7 +21,7 @@ namespace SuperHaxagon {
 		return std::string("./romfs") + partial;
 	}
 
-	void PlatformLinux::message(Dbg dbg, const std::string& where, const std::string& message) {
+	void PlatformLinux::message(const Dbg dbg, const std::string& where, const std::string& message) {
 		if (dbg == Dbg::INFO) {
 			std::cout << "[linux:info] " + where + ": " + message << std::endl;
 		} else if (dbg == Dbg::WARN) {

@@ -5,7 +5,7 @@
 #include <sstream>
 
 namespace SuperHaxagon {
-	Font3DS::Font3DS(const std::string& path, const int size, C2D_TextBuf& buff) : _size(size), _buff(buff) {
+	Font3DS::Font3DS(const std::string& path, const int size, C2D_TextBuf& buff) : _size(static_cast<float>(size)), _buff(buff) {
 		std::stringstream s;
 		s << path << "-" << size << ".bcfnt";
 		_font = C2D_FontLoad(s.str().c_str());
@@ -16,7 +16,7 @@ namespace SuperHaxagon {
 		C2D_TextBufDelete(_buff);
 	}
 
-	double Font3DS::getWidth(const std::string& str) const {
+	float Font3DS::getWidth(const std::string& str) const {
 		float width, height;
 		C2D_Text text;
 		C2D_TextFontParse(&text, _font, _buff, str.c_str());
@@ -25,8 +25,8 @@ namespace SuperHaxagon {
 		return width;
 	}
 
-	double Font3DS::getHeight() const {
-		return _size + _size * 4.0/32.0;
+	float Font3DS::getHeight() const {
+		return _size + _size * 4.0f/32.0f;
 	}
 
 	void Font3DS::draw(const Color& color, const Point& position, const Alignment alignment, const std::string& str) {

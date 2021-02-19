@@ -13,7 +13,7 @@ namespace SuperHaxagon {
 		virtual void play() = 0;
 		virtual void pause() = 0;
 		virtual bool isDone() const = 0;
-		virtual double getTime() const = 0;
+		virtual float getTime() const = 0;
 	};
 }
 

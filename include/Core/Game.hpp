@@ -39,14 +39,14 @@ namespace SuperHaxagon {
 		Metadata* getBGMMetadata() const {return _bgmMetadata.get();}
 		Font& getFontSmall() const;
 		Font& getFontLarge() const;
-		double getScreenDimMax() const;
-		double getScreenDimMin() const;
+		float getScreenDimMax() const;
+		float getScreenDimMin() const;
 		void loadBGMAudio(const LevelFactory& factory);
 		void setBGMAudio(std::unique_ptr<Audio> audio);
 		void setBGMMetadata(std::unique_ptr<Metadata> metadata);
 
 		void setRunning(const bool running) {_running = running;}
-		void setSkew(const double skew) {_skew = skew;}
+		void setSkew(const float skew) {_skew = skew;}
 		void setShadowAuto(const bool shadowAuto) {_shadowAuto = shadowAuto;}
 
 		/**
@@ -68,30 +68,30 @@ namespace SuperHaxagon {
 		/**
 		 * Draws the background of the screen (the radiating colors part)
 		 */
-		void drawBackground(const Color& color1, const Color& color2, const Point& focus, double multiplier, double rotation, double sides) const;
+		void drawBackground(const Color& color1, const Color& color2, const Point& focus, float multiplier, float rotation, float sides) const;
 
 		/**
 		 * Draws a regular polygon at some point focus. Useful for generating
 		 * the regular polygon in the center of the screen.
 		 */
-		void drawRegular(const Color& color, const Point& focus, double height, double rotation, double sides) const;
+		void drawRegular(const Color& color, const Point& focus, float height, float rotation, float sides) const;
 
 		/**
 		 * Draws the little cursor in the center of the screen controlled by a human.
 		 */
-		void drawCursor(const Color& color, const Point& focus, const double cursor, const double rotation, const double offset, const double scale) const;
+		void drawCursor(const Color& color, const Point& focus, const float cursor, const float rotation, const float offset, const float scale) const;
 
 		/**
 		 * Completely draws all patterns in a live level. Can also be used to create
 		 * an "Explosion" effect if you use "offset". (for game overs)
 		 */
-		void drawPatterns(const Color& color, const Point& focus, const std::deque<Pattern>& patterns, double rotation, double sides, double offset, double scale) const;
+		void drawPatterns(const Color& color, const Point& focus, const std::deque<Pattern>& patterns, float rotation, float sides, float offset, float scale) const;
 
 		/**
 		 * Draws a single moving wall based on a live wall, a color, some rotational value, and the total
 		 * amount of sides that appears.
 		 */
-		void drawWalls(const Color& color, const Point& focus, const Wall& wall, double rotation, double sides, double offset, double scale) const;
+		void drawWalls(const Color& color, const Point& focus, const Wall& wall, float rotation, float sides, float offset, float scale) const;
 
 		/**
 		 * Gets the center of the screen from the platform
@@ -132,7 +132,7 @@ namespace SuperHaxagon {
 
 		bool _running = true;
 		bool _shadowAuto = false;
-		double _skew = 0.0;
+		float _skew = 0.0;
 	};
 }
 

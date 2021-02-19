@@ -8,7 +8,7 @@ namespace SuperHaxagon {
 	const char* LevelFactory::LEVEL_HEADER = "LEV3.0";
 	const char* LevelFactory::LEVEL_FOOTER = "ENDLEV";
 
-	Level::Level(const LevelFactory& factory, Twist& rng, const double patternDistCreate) : _factory(&factory) {
+	Level::Level(const LevelFactory& factory, Twist& rng, const float patternDistCreate) : _factory(&factory) {
 		for (auto i = COLOR_LOCATION_FIRST; i != COLOR_LOCATION_LAST; i++) {
 			const auto location = static_cast<LocColor>(i);
 			const auto& colors = factory.getColors().at(location);
@@ -23,18 +23,18 @@ namespace SuperHaxagon {
 		//set up the amount of sides the level should have.
 		_sidesLast = _patterns.front().getSides();
 		_sidesCurrent = _patterns.front().getSides();
-		_cursorPos = TAU/4.0 + (factory.getSpeedCursor() / 2.0);
+		_cursorPos = TAU/4.0f + (factory.getSpeedCursor() / 2.0f);
 	}
 
 	Level::~Level() = default;
 
-	void Level::update(Twist& rng, const double patternDistDelete, const double patternDistCreate, const double dilation) {
+	void Level::update(Twist& rng, const float patternDistDelete, const float patternDistCreate, const float dilation) {
 		// Update frame
 		_frame += dilation;
 		
 		// Update color frame and clamp
 		_tweenFrame += dilation;
-		if(_tweenFrame >= _factory->getSpeedPulse()) {
+		if(_tweenFrame >= static_cast<float>(_factory->getSpeedPulse())) {
 			_tweenFrame = 0;
 			for (auto i = COLOR_LOCATION_FIRST; i != COLOR_LOCATION_LAST; i++) {
 				const auto location = static_cast<LocColor>(i);
@@ -43,7 +43,7 @@ namespace SuperHaxagon {
 				_color[location] = _colorNext[location];
 				_colorNextIndex[location] = _colorNextIndex[location] + 1 < availableColors.size() ? _colorNextIndex[location] + 1 : 0;
 				_colorNext[location] = availableColors[_colorNextIndex[location]];
-				if (_frame > 60.0 * 60.0) {
+				if (_frame > 60.0f * 60.0f) {
 					_colorNext[location] = rotateColor(_colorNext[location], 180);
 				} 
 			}
@@ -52,13 +52,13 @@ namespace SuperHaxagon {
 		// Bring walls forward if we are not delaying
 		// Otherwise tween from one shape to another.
 		if (_delayFrame <= 0) {
-			_sidesTween = _sidesCurrent;
+			_sidesTween = static_cast<float>(_sidesCurrent);
 			for (auto& pattern : _patterns) {
 				pattern.advance(_factory->getSpeedWall() * dilation * _multiplierWalls);
 			}
 		} else {
 			const auto percent = _delayFrame / _delayMax;
-			_sidesTween = linear(_sidesCurrent, _sidesLast, percent);
+			_sidesTween = linear(static_cast<float>(_sidesCurrent), static_cast<float>(_sidesLast), percent);
 			_delayFrame -= dilation;
 		}
 
@@ -72,7 +72,7 @@ namespace SuperHaxagon {
 		// Rotate level
 		if (_rotateToZero) {
 			// Trying to snap back to zero
-			_rotation += ROTATE_ZERO_SPEED * (_rotation < PI ? -1 : 1);
+			_rotation += ROTATE_ZERO_SPEED * (_rotation < PI ? -1.0f : 1.0f);
 			if (_rotation <= 0 || _rotation >= TAU) {
 				_rotation = 0;
 				_rotateToZero = false;
@@ -93,22 +93,22 @@ namespace SuperHaxagon {
 
 		// Flip level if needed
 		// Cannot flip while spin effect is happening
-		if(_spin == 0 && _flipFrame <= 0) {
-			_multiplierRot *= -1.0;
+		if(static_cast<int>(_spin) == 0 && _flipFrame <= 0) {
+			_multiplierRot *= -1.0f;
 			_flipFrame = rng.rand(FLIP_FRAMES_MIN, FLIP_FRAMES_MAX);
 		}
 	}
 
-	void Level::draw(Game& game, const double scale, const double offsetWall) const {
+	void Level::draw(Game& game, const float scale, const float offsetWall) const {
 
 		// Calculate colors
-		const auto percentTween = _tweenFrame / _factory->getSpeedPulse();
+		const auto percentTween = _tweenFrame / static_cast<float>(_factory->getSpeedPulse());
 		const auto fg = interpolateColor(_color.at(LocColor::FG), _colorNext.at(LocColor::FG), percentTween);
 		const auto bg1 = interpolateColor(_color.at(LocColor::BG1), _colorNext.at(LocColor::BG1), percentTween);
 		const auto bg2 = interpolateColor(_color.at(LocColor::BG2), _colorNext.at(LocColor::BG2), percentTween);
 
 		// Fix for triangle levels
-		const double diagonal = _sidesTween >= 3 && _sidesTween < 4 ?  2 : 1;
+		const auto diagonal = _sidesTween >= 3.0f && _sidesTween < 4.0f ?  2.0f : 1.0f;
 
 		const auto center = game.getScreenCenter();
 		const auto shadow = game.getShadowOffset();
@@ -132,7 +132,7 @@ namespace SuperHaxagon {
 		if (_showCursor) game.drawCursor(fg, center, _cursorPos, _rotation, _pulse + cursorDistance, scale);
 	}
 
-	Movement Level::collision(const double cursorDistance, const double dilation) const {
+	Movement Level::collision(const float cursorDistance, const float dilation) const {
 		auto collision = Movement::CAN_MOVE;
 
 		// For all patterns (technically only need to check front two)
@@ -155,7 +155,7 @@ namespace SuperHaxagon {
 
 	void Level::increaseMultiplier() {
 		const auto dir = (_multiplierRot > 0 ? 1 : -1);
-		_multiplierRot += dir * DIFFICULTY_SCALAR_ROT;
+		_multiplierRot += static_cast<float>(dir) * DIFFICULTY_SCALAR_ROT;
 		_multiplierWalls += DIFFICULTY_SCALAR_WALLS;
 	}
 
@@ -163,15 +163,15 @@ namespace SuperHaxagon {
 		_patterns.clear();
 	}
 
-	void Level::rotate(const double distance, const double dilation) {
+	void Level::rotate(const float distance, const float dilation) {
 		_rotation += distance * dilation;
 	}
 
-	void Level::left(const double dilation) {
+	void Level::left(const float dilation) {
 		_cursorPos += _factory->getSpeedCursor() * dilation;
 	}
 
-	void Level::right(const double dilation) {
+	void Level::right(const float dilation) {
 		_cursorPos -= _factory->getSpeedCursor() * dilation;
 	}
 
@@ -188,7 +188,7 @@ namespace SuperHaxagon {
 		_bgInverted = !_bgInverted;
 	}
 	
-	void Level::pulse(const double scale) {
+	void Level::pulse(const float scale) {
 		_pulse = PULSE_DISTANCE * scale;
 	}
 
@@ -212,7 +212,7 @@ namespace SuperHaxagon {
 		}
 	}
 
-	void Level::advanceWalls(Twist& rng, const double patternDistDelete, const double patternDistCreate) {
+	void Level::advanceWalls(Twist& rng, const float patternDistDelete, const float patternDistCreate) {
 		// Shift patterns forward
 		if (_patterns.front().getFurthestWallDistance() < patternDistDelete) {
 			_sidesLast = _patterns.front().getSides();
@@ -221,7 +221,7 @@ namespace SuperHaxagon {
 
 			// Delay the level if the shifted pattern does  not have the same sides as the last.
 			if (_sidesLast != _sidesCurrent) {
-				_delayMax = FRAMES_PER_CHANGE_SIDE / _factory->getSpeedWall() * static_cast<double>(std::abs(_sidesCurrent - _sidesLast));
+				_delayMax = FRAMES_PER_CHANGE_SIDE / _factory->getSpeedWall() * static_cast<float>(std::abs(_sidesCurrent - _sidesLast));
 				_delayFrame = _delayMax;
 			}
 		}
@@ -232,7 +232,7 @@ namespace SuperHaxagon {
 		}
 	}
 
-	auto Level::reverseWalls(Twist& rng, const double patternDistDelete, const double patternDistCreate) -> void {
+	auto Level::reverseWalls(Twist& rng, const float patternDistDelete, const float patternDistCreate) -> void {
 		if (_patterns.back().getClosestWallDistance() > patternDistDelete && _patterns.size() > 1) {
 			_patterns.pop_back();
 		}
@@ -241,7 +241,7 @@ namespace SuperHaxagon {
 		// We need to advance it so the last wall is where we create the patterns
 		if (_patterns.front().getClosestWallDistance() > patternDistCreate + _frontGap && _autoPatternCreate) {
 			auto pattern = getRandomPattern(rng).instantiate(rng, patternDistCreate);
-			_frontGap = pattern.getClosestWallDistance() * 1.5; // Too small of a gap otherwise
+			_frontGap = pattern.getClosestWallDistance() * 1.5f; // Too small of a gap otherwise
 			pattern.advance(pattern.getFurthestWallDistance());
 			_patterns.emplace_front(pattern);
 			if (pattern.getSides() != _sidesCurrent) setWinSides(pattern.getSides());
@@ -342,7 +342,7 @@ namespace SuperHaxagon {
 		_loaded = true;
 	}
 
-	std::unique_ptr<Level> LevelFactory::instantiate(Twist& rng, double renderDistance) const {
+	std::unique_ptr<Level> LevelFactory::instantiate(Twist& rng, float renderDistance) const {
 		return std::make_unique<Level>(*this, rng, renderDistance);
 	}
 

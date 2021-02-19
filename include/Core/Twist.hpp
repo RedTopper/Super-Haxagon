@@ -23,8 +23,8 @@ namespace SuperHaxagon {
 		 * Generates a float between [0.0, 1.0)
 		 * @return a random float
 		 */
-		double rand() const {
-			return rand(1.0);
+		float rand() const {
+			return rand(1.0f);
 		}
 
 		/**
@@ -37,11 +37,11 @@ namespace SuperHaxagon {
 		}
 
 		/**
-		 * Generates a double between [0, max)
-		 * @param max The maximum double (Open)
-		 * @return a random double
+		 * Generates a float between [0, max)
+		 * @param max The maximum float (Open)
+		 * @return a random float
 		 */
-		double rand(const double max) const {
+		float rand(const float max) const {
 			return rand(0.0, max);
 		}
 
@@ -66,13 +66,13 @@ namespace SuperHaxagon {
 		}
 
 		/**
-		 * Generates a double between [min, max)
-		 * @param min The minimum double (Closed)
-		 * @param max The maximum double (Open)
-		 * @return a random double
+		 * Generates a float between [min, max)
+		 * @param min The minimum float (Closed)
+		 * @param max The maximum float (Open)
+		 * @return a random float
 		 */
-		double rand(const double min, const double max) const {
-			return std::uniform_real_distribution<>(min, max)(*_mt);
+		float rand(const float min, const float max) const {
+			return static_cast<float>(std::uniform_real_distribution<>(min, max)(*_mt));
 		}
 
 		/**
@@ -93,7 +93,7 @@ namespace SuperHaxagon {
 		 * @param probability A geometric probability
 		 * @return a random int
 		 */
-		int geom(const double probability) const {
+		int geom(const float probability) const {
 			return std::geometric_distribution<>(probability)(*_mt);
 		}
 
@@ -104,7 +104,7 @@ namespace SuperHaxagon {
 		 * @param max Upper bound (Closed)
 		 * @return a random int
 		 */
-		int geom(const double probability, const int min, const int max) const {
+		int geom(const float probability, const int min, const int max) const {
 			return std::min(geom(probability) + min, max);
 		}
 

@@ -17,16 +17,16 @@ namespace SuperHaxagon {
 		void play() override;
 		void pause() override;
 		bool isDone() const override;
-		double getTime() const override;
-		double getNow() const;
+		float getTime() const override;
+		float getNow() const;
 
 	private:
 		bool _loop = false;
 		Mix_Music* _music;
 
 		// Timing controls
-		double _start = 0;
-		double _diff = 0;
+		float _start = 0;
+		float _diff = 0;
 	};
 }
 

@@ -133,7 +133,7 @@ namespace SuperHaxagon {
 		_loaded = true;
 	}
 
-	std::unique_ptr<State> Load::update(double) {
+	std::unique_ptr<State> Load::update(float) {
 		if (_loaded) return std::make_unique<Menu>(_game, *_game.getLevels()[0]);
 		return std::make_unique<Quit>(_game);
 	}

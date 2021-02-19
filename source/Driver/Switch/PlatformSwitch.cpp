@@ -84,6 +84,9 @@ static void callback(const GLenum source, const GLenum type, const GLuint id, co
 
 namespace SuperHaxagon {
 	PlatformSwitch::PlatformSwitch(const Dbg dbg): Platform(dbg) {
+		padConfigureInput(8, HidNpadStyleSet_NpadStandard);
+		padInitializeAny(&_pad);
+		
 		romfsInit();
 		SDL_Init(SDL_INIT_AUDIO);
 		Mix_Init(MIX_INIT_OGG);
@@ -149,21 +152,21 @@ namespace SuperHaxagon {
 		// Check up on the audio status
 		if (_bgm && _bgm->isDone()) _bgm->play();
 
-		const double width = _width;
-		const double height = _height;
+		const auto width = static_cast<float>(_width);
+		const auto height = static_cast<float>(_height);
 		switch (appletGetOperationMode()) {
 			default:
 			case AppletOperationMode_Handheld:
 				_width = 1280;
 				_height = 720;
 				break;
-			case AppletOperationMode_Docked:
+			case AppletOperationMode_Console:
 				_width = 1920;
 				_height = 1080;
 				break;
 		}
 
-		if (width != _width || height != _height) {
+		if (static_cast<unsigned int>(width) != _width || static_cast<unsigned int>(height) != _height) {
 			nwindowSetCrop(_window, 0, 0, _width, _height);
 			glViewport(0, 1080 - _height, _width, _height);
 		}
@@ -171,7 +174,7 @@ namespace SuperHaxagon {
 		return appletMainLoop();
 	}
 
-	double PlatformSwitch::getDilation() {
+	float PlatformSwitch::getDilation() {
 		return 1.0;
 	}
 
@@ -214,20 +217,20 @@ namespace SuperHaxagon {
 	}
 
 	Buttons PlatformSwitch::getPressed() {
-		hidScanInput();
-		const auto kDown = hidKeysDown(CONTROLLER_P1_AUTO);
-		const auto kPressed = hidKeysHeld(CONTROLLER_P1_AUTO);
+		padUpdate(&_pad);
+		const auto kDown = padGetButtonsDown(&_pad);
+		const auto kPressed = padGetButtons(&_pad);
 		Buttons buttons{};
-		buttons.select = kDown & KEY_A;
-		buttons.back = kDown & KEY_B;
-		buttons.quit = kDown & KEY_PLUS;
-		buttons.left = kPressed & (KEY_L | KEY_ZL | KEY_DLEFT);
-		buttons.right = kPressed & (KEY_R | KEY_ZR | KEY_X);
+		buttons.select = kDown & HidNpadButton_A;
+		buttons.back = kDown & HidNpadButton_B;
+		buttons.quit = kDown & HidNpadButton_Plus;
+		buttons.left = kPressed & (HidNpadButton_L | HidNpadButton_ZL | HidNpadButton_AnyLeft);
+		buttons.right = kPressed & (HidNpadButton_R | HidNpadButton_ZR | HidNpadButton_AnyRight);
 		return buttons;
 	}
 
 	Point PlatformSwitch::getScreenDim() const {
-		return Point{static_cast<double>(_width), static_cast<double>(_height)};
+		return Point{static_cast<float>(_width), static_cast<float>(_height)};
 	}
 
 	void PlatformSwitch::screenBegin() {
@@ -309,9 +312,9 @@ namespace SuperHaxagon {
 
 			while (appletMainLoop()) {
 				consoleUpdate(nullptr);
-				hidScanInput();
-				const auto kDown = hidKeysDown(CONTROLLER_P1_AUTO);
-				if (kDown & KEY_PLUS) break;
+				padUpdate(&_pad);
+				const auto kDown = padGetButtonsDown(&_pad);
+				if (kDown & HidNpadButton_Plus) break;
 			}
 		}
 	}

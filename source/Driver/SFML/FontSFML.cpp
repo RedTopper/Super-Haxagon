@@ -6,7 +6,7 @@
 #include <cmath>
 
 namespace SuperHaxagon {
-	FontSFML::FontSFML(PlatformSFML& platform, const std::string& path, const double size) :
+	FontSFML::FontSFML(PlatformSFML& platform, const std::string& path, const float size) :
 		_platform(platform),
 		_scale(1),
 		_size(size) {
@@ -15,16 +15,16 @@ namespace SuperHaxagon {
 
 	FontSFML::~FontSFML() = default;
 
-	void FontSFML::setScale(const double scale) {
+	void FontSFML::setScale(const float scale) {
 		// scale up at half rate so it looks nice I guess?
 		_scale = (scale - 1) / 2 + 1;
 	}
 
-	double FontSFML::getHeight() const {
+	float FontSFML::getHeight() const {
 		return _size * _scale;
 	}
 
-	double FontSFML::getWidth(const std::string& text) const {
+	float FontSFML::getWidth(const std::string& text) const {
 		if (!_loaded) return 0;
 		sf::Text sfText;
 		sfText.setFont(_font);
@@ -44,9 +44,9 @@ namespace SuperHaxagon {
 		sfText.setString(text);
 
 		const auto width = sfText.getLocalBounds().width;
-		if (alignment == Alignment::LEFT) sfPosition.x = static_cast<float>(position.x);
-		if (alignment == Alignment::CENTER) sfPosition.x = static_cast<float>(position.x - width / 2);
-		if (alignment == Alignment::RIGHT) sfPosition.x = static_cast<float>(position.x - width);
+		if (alignment == Alignment::LEFT) sfPosition.x = position.x;
+		if (alignment == Alignment::CENTER) sfPosition.x = position.x - width / 2;
+		if (alignment == Alignment::RIGHT) sfPosition.x = position.x - width;
 		sfPosition.x = std::round(sfPosition.x);
 		sfPosition.y = std::round(sfPosition.y);
 		sfText.setPosition(sfPosition);

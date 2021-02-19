@@ -16,8 +16,8 @@ namespace SuperHaxagon {
 	};
 
 	struct Point {
-		double x;
-		double y;
+		float x;
+		float y;
 	};
 
 	enum class Movement {
@@ -42,16 +42,16 @@ namespace SuperHaxagon {
 	static constexpr int COLOR_LOCATION_FIRST = static_cast<int>(LocColor::FG);
 	static constexpr int COLOR_LOCATION_LAST = static_cast<int>(LocColor::LAST);
 
-	static constexpr double PI = 3.14159265358979323846;
-	static constexpr double TAU = PI * 2;
+	static constexpr float PI = 3.14159265358979f;
+	static constexpr float TAU = PI * 2.0f;
 
-	static constexpr double SCALE_MENU = 3.5;
-	static constexpr double SCALE_BASE_DISTANCE = 400.0;
-	static constexpr double SCALE_HEX_LENGTH = 24.0;
-	static constexpr double SCALE_HEX_BORDER = 4.0;
-	static constexpr double SCALE_HUMAN_PADDING = 5.0;
-	static constexpr double SCALE_HUMAN_HEIGHT = 5.0;
-	static constexpr double SCALE_HUMAN_WIDTH = 5.0;
+	static constexpr float SCALE_MENU = 3.5f;
+	static constexpr float SCALE_BASE_DISTANCE = 400.0f;
+	static constexpr float SCALE_HEX_LENGTH = 24.0f;
+	static constexpr float SCALE_HEX_BORDER = 4.0f;
+	static constexpr float SCALE_HUMAN_PADDING = 5.0f;
+	static constexpr float SCALE_HUMAN_HEIGHT = 5.0f;
+	static constexpr float SCALE_HUMAN_WIDTH = 5.0f;
 
 	static const Color COLOR_SHADOW = {0, 0, 0, 0xC0};
 	static const Color COLOR_TRANSPARENT = {0, 0, 0, 0xA0};
@@ -66,22 +66,22 @@ namespace SuperHaxagon {
 	/**
 	 * Linear interpolation between two colors
 	 */
-	Color interpolateColor(const Color& one, const Color& two, double percent);
+	Color interpolateColor(const Color& one, const Color& two, float percent);
 
 	/**
 	 * Rotates a color n degrees
 	 */
-	Color rotateColor(const Color& in, double degrees);
+	Color rotateColor(const Color& in, float degrees);
 
 	/**
-	 * Linear interpolation between two doubles
+	 * Linear interpolation between two floats
 	 */
-	double linear(double start, double end, double percent);
+	float linear(float start, float end, float percent);
 
 	/**
 	 * Rotates a cartesian point around the origin
 	 */
-	Point rotateAroundOrigin(const Point& point, double rotation);
+	Point rotateAroundOrigin(const Point& point, float rotation);
 
 	/**
 	 * Converts score into a string
@@ -89,13 +89,13 @@ namespace SuperHaxagon {
 	 * TTT:%% where  TTT is the current time in seconds, and %% is  the percent
 	 * through the current second.
 	 */
-	std::string getTime(double score);
+	std::string getTime(float score);
 
 	/**
 	 * Will pulse between 0.0 and 1.0 at the speed given (in tenths of a second).
 	 * start is when the pulse should (have) start(ed).
 	 */
-	double getPulse(double frame, double range, double start);
+	float getPulse(float frame, float range, float start);
 
 	/**
 	 * Gets the current level that the score represents (for example, point)

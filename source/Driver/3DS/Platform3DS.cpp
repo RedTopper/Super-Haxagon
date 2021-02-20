@@ -274,4 +274,8 @@ namespace SuperHaxagon {
 		_messages.emplace_back(dbg, format);
 		if (_messages.size() > 32) _messages.pop_front();
 	}
+
+	Supports Platform3DS::supports() {
+		return Supports::FILESYSTEM | Supports::SHADOWS;
+	}
 }

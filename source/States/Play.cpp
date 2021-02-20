@@ -184,12 +184,17 @@ namespace SuperHaxagon {
 		const auto highScore = static_cast<float>(_selected.getHighScore());
 
 		// Adjust background size to accommodate for new record or bar
+		const auto* const recordText = "NEW RECORD!";
 		if (highScore > 0) {
 			if (_score < highScore) {
 				scoreBkgSize.y += heightBar + pad;
 				drawBar = true;
 			} else {
+				// Makes sure that if the "New Record" text is longer than the
+				// score then we increase its width
+				const auto recordTextWidth = small.getWidth(recordText);
 				scoreBkgSize.y += small.getHeight() + pad;
+				scoreBkgSize.x += recordTextWidth > _scoreWidth ? recordTextWidth - _scoreWidth : 0;
 				drawHigh = true;
 			}
 		}
@@ -221,7 +226,7 @@ namespace SuperHaxagon {
 				textColor = interpolateColor(PULSE_LOW, PULSE_HIGH, percent);
 			}
 
-			small.draw(textColor, posBest, Alignment::RIGHT, "NEW RECORD!");
+			small.draw(textColor, posBest, Alignment::RIGHT, recordText);
 		}
 	}
 }

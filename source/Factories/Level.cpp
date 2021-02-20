@@ -117,13 +117,13 @@ namespace SuperHaxagon {
 
 		const auto cursorDistance = SCALE_HEX_LENGTH + SCALE_HUMAN_PADDING;
 
-#ifndef _nspire
-		// Draw shadows
-		const Point offsetFocus = {center.x + shadow.x, center.y + shadow.y};
-		game.drawPatterns(COLOR_SHADOW, offsetFocus, _patterns, _rotation, _sidesTween, offsetWall + _pulse, scale);
-		game.drawRegular(COLOR_SHADOW, offsetFocus, (SCALE_HEX_LENGTH + _pulse) * scale, _rotation, _sidesTween);
-		if (_showCursor) game.drawCursor(COLOR_SHADOW, offsetFocus, _cursorPos, _rotation, _pulse + cursorDistance, scale);
-#endif
+		// Draw shadows, if supported
+		if (static_cast<int>(game.getPlatform().supports() & Supports::SHADOWS)) {
+			const Point offsetFocus = { center.x + shadow.x, center.y + shadow.y };
+			game.drawPatterns(COLOR_SHADOW, offsetFocus, _patterns, _rotation, _sidesTween, offsetWall + _pulse, scale);
+			game.drawRegular(COLOR_SHADOW, offsetFocus, (SCALE_HEX_LENGTH + _pulse) * scale, _rotation, _sidesTween);
+			if (_showCursor) game.drawCursor(COLOR_SHADOW, offsetFocus, _cursorPos, _rotation, _pulse + cursorDistance, scale);
+		}
 
 		// Draw real thing
 		game.drawPatterns(fg, center, _patterns, _rotation, _sidesTween, offsetWall + _pulse, scale);

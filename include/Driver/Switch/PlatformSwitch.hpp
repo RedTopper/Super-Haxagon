@@ -45,6 +45,7 @@ namespace SuperHaxagon {
 
 		void shutdown() override;
 		void message(Dbg dbg, const std::string& where, const std::string& message) override;
+		Supports supports() override;
 
 		float getAndIncrementZ();
 		void addRenderTarget(std::shared_ptr<RenderTarget<Vertex>>& target) {_targetVertex.emplace_back(target);}

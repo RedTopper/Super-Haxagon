@@ -1,24 +1,40 @@
 #include "Driver/NSpire/PlatformNSpire.hpp"
 
-#include "Driver/NSpire/FontNSpire.hpp"
 #include "Driver/NSpire/AudioNSpire.hpp"
-
+#include "Driver/NSpire/FontNSpire.hpp"
+#include "Driver/NSpire/timer.h"
 #include "Core/Twist.hpp"
 
-#include <time.h>
+#include <ctime>
 #include <iostream>
 #include <libndls.h>
 
-
 namespace SuperHaxagon {
 	PlatformNSpire::PlatformNSpire(const Dbg dbg) : Platform(dbg) {
-		Gc gc = gui_gc_global_GC();
+		auto* const gc = gui_gc_global_GC();
 		gui_gc_begin(gc);
-		//gui_gc_setRegion(gc, 0, 0, 320, 240, 0, 0, 320, 240);
 		gui_gc_setColorRGB(gc, 0, 0, 0);
 		gui_gc_fillRect(gc, 0, 0, 320, 240);
 		gui_gc_finish(gc);
 		gui_gc_blit_to_screen(gc);
+
+		timer_init(0);
+		timer_load(0, TIMER_1S);
+	}
+
+	bool PlatformNSpire::loop() {
+		const auto timer = timer_read(0);
+
+		const auto elapsed = static_cast<float>(TIMER_1S - timer) / TIMER_1S;
+
+		timer_load(0, TIMER_1S);
+		_dilation = elapsed * 60.0f;
+		
+		return true;
+	}
+
+	float PlatformNSpire::getDilation() {
+		return _dilation;
 	}
 
 	std::string PlatformNSpire::getPath(const std::string& partial) {
@@ -61,19 +77,19 @@ namespace SuperHaxagon {
 	}
 
 	void PlatformNSpire::screenBegin() {
-		auto gc = gui_gc_global_GC();
+		auto* gc = gui_gc_global_GC();
 		gui_gc_begin(gc);
 		gui_gc_setColorRGB(gc, 0, 0, 0);
 		gui_gc_fillRect(gc, 0, 0, 320, 240);
 	}
 
 	void PlatformNSpire::screenFinalize() {
-		auto gc = gui_gc_global_GC();
+		auto* gc = gui_gc_global_GC();
 		gui_gc_blit_to_screen(gc);
 	}
 
 	void PlatformNSpire::drawPoly(const Color& color, const std::vector<Point>& points) {
-		auto gc = gui_gc_global_GC();
+		auto* gc = gui_gc_global_GC();
 		gui_gc_setColorRGB(gc, color.r, color.g, color.b);
 		const auto pos = std::make_unique<Point2D[]>(points.size());
 		for (size_t i = 0; i < points.size(); i++) {
@@ -84,8 +100,9 @@ namespace SuperHaxagon {
 	}
 
 	void PlatformNSpire::shutdown() {
-		auto gc = gui_gc_global_GC();
+		auto* gc = gui_gc_global_GC();
 		gui_gc_finish(gc);
+		timer_restore(0);
 	}
 
 	void PlatformNSpire::message(const Dbg dbg, const std::string& where, const std::string& message) {
@@ -98,14 +115,14 @@ namespace SuperHaxagon {
 		}
 	}
 
+	Supports PlatformNSpire::supports() {
+		return Supports::NOTHING;
+	}
+
 	std::unique_ptr<Twist> PlatformNSpire::getTwister() {
 		auto* a = new std::seed_seq{time(nullptr)};
 		return std::make_unique<Twist>(
 				std::unique_ptr<std::seed_seq>(a)
 		);
-	}
-
-	bool PlatformNSpire::loop() {
-		return true;
 	}
 }

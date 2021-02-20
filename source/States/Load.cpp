@@ -105,14 +105,14 @@ namespace SuperHaxagon {
 		std::vector<std::pair<LocLevel, std::string>> locations;
 		locations.emplace_back(std::pair<LocLevel, std::string>(LocLevel::INTERNAL, _platform.getPathRom("/levels.haxagon")));
 
-#ifndef _nspire
-		auto files = std::filesystem::directory_iterator(_platform.getPath("/"));
-		for (const auto& file : files) {
-			if (file.path().extension() != ".haxagon") continue;
-			_platform.message(Dbg::INFO, "load", "found " + file.path().string());
-			locations.emplace_back(std::pair<LocLevel, std::string>(LocLevel::EXTERNAL, file.path().string()));
+		if (static_cast<int>(_platform.supports() & Supports::FILESYSTEM)) {
+			auto files = std::filesystem::directory_iterator(_platform.getPath("/"));
+			for (const auto& file : files) {
+				if (file.path().extension() != ".haxagon") continue;
+				_platform.message(Dbg::INFO, "load", "found " + file.path().string());
+				locations.emplace_back(std::pair<LocLevel, std::string>(LocLevel::EXTERNAL, file.path().string()));
+			}
 		}
-#endif
 
 		for (const auto& location : locations) {
 			const auto& path = location.second;

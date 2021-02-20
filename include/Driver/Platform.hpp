@@ -28,6 +28,23 @@ namespace SuperHaxagon {
 		bool right : 1;
 	};
 
+	enum class Supports {
+		NOTHING = 0,
+		SHADOWS = 1,
+		FILESYSTEM = 1 << 1
+	};
+
+	inline Supports operator |(Supports lhs, Supports rhs) {
+		using T = std::underlying_type_t<Supports>;
+		return static_cast<Supports>(static_cast<T>(lhs) | static_cast<T>(rhs));
+	}
+
+	inline Supports operator &(Supports lhs, Supports rhs) {
+		using T = std::underlying_type_t<Supports>;
+		return static_cast<Supports>(static_cast<T>(lhs) & static_cast<T>(rhs));
+	}
+
+
 	class Platform {
 	public:
 		explicit Platform(const Dbg dbg) : _dbg(dbg) {}
@@ -60,10 +77,11 @@ namespace SuperHaxagon {
 
 		virtual void shutdown() = 0;
 		virtual void message(Dbg level, const std::string& where, const std::string& message) = 0;
+		virtual Supports supports() = 0;
 
 	protected:
 		Dbg _dbg;
-		std::unique_ptr<Player> _bgm;
+		std::unique_ptr<Player> _bgm{};
 	};
 }
 

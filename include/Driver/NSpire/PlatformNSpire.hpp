@@ -16,8 +16,8 @@ namespace SuperHaxagon {
 		~PlatformNSpire() override = default;
 		
 		bool loop() override;
-		float getDilation() override {return 1.0;}
-		
+		float getDilation() override;
+
 		std::string getPath(const std::string& partial) override;
 		std::string getPathRom(const std::string& partial) override;
 		std::unique_ptr<Audio> loadAudio(const std::string& path, SuperHaxagon::Stream stream) override;
@@ -37,8 +37,12 @@ namespace SuperHaxagon {
 
 		void shutdown() override;
 		void message(Dbg dbg, const std::string& where, const std::string& message) override;
+		Supports supports() override;
 
 		std::unique_ptr<Twist> getTwister() override;
+
+	private:
+		float _dilation = 1.0;
 	};
 }
 

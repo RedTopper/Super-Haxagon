@@ -342,6 +342,10 @@ namespace SuperHaxagon {
 		if (_messages.size() > 32) _messages.pop_front();
 	}
 
+	Supports PlatformSwitch::supports() {
+		return Supports::FILESYSTEM | Supports::SHADOWS;
+	}
+
 	bool PlatformSwitch::initEGL() {
 		eglInitialize(_display, nullptr, nullptr);
 

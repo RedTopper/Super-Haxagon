@@ -142,4 +142,8 @@ namespace SuperHaxagon {
 
 		_window->draw(convex);
 	}
+
+	Supports PlatformSFML::supports() {
+		return Supports::FILESYSTEM | Supports::SHADOWS;
+	}
 }

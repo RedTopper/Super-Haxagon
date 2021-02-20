@@ -145,9 +145,12 @@ namespace SuperHaxagon {
 		// Note: Draw cursor TAU/4 = Up, no rotation
 		_game.drawBackground(bg1, bg2, focus, 1.5, rotation, 6.0);
 
-		// Shadows
-		_game.drawRegular(COLOR_SHADOW, offsetFocus, SCALE_HEX_LENGTH * SCALE_MENU * scale, rotation, 6.0);
-		_game.drawCursor(COLOR_SHADOW, offsetFocus, TAU / 4.0f, 0, SCALE_HEX_LENGTH + SCALE_HUMAN_PADDING + 4, scale * SCALE_MENU * 0.75f);
+		
+		// Shadows, if supported
+		if (static_cast<int>(_platform.supports() & Supports::SHADOWS)) {
+			_game.drawRegular(COLOR_SHADOW, offsetFocus, SCALE_HEX_LENGTH * SCALE_MENU * scale, rotation, 6.0);
+			_game.drawCursor(COLOR_SHADOW, offsetFocus, TAU / 4.0f, 0, SCALE_HEX_LENGTH + SCALE_HUMAN_PADDING + 4, scale * SCALE_MENU * 0.75f);
+		}
 
 		// Geometry
 		_game.drawRegular(fg, focus,SCALE_HEX_LENGTH * SCALE_MENU * scale, rotation, 6.0);

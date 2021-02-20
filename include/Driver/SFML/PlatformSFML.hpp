@@ -38,6 +38,7 @@ namespace SuperHaxagon {
 
 		void shutdown() override = 0;
 		void message(Dbg dbg, const std::string& where, const std::string& message) override = 0;
+		Supports supports() override;
 
 		sf::RenderWindow& getWindow() const {return *_window;}
 

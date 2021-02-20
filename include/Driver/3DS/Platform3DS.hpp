@@ -39,8 +39,8 @@ namespace SuperHaxagon {
 		std::unique_ptr<Twist> getTwister() override;
 
 		void shutdown() override;
-
 		void message(Dbg dbg, const std::string& where, const std::string& message) override;
+		Supports supports() override;
 
 	private:
 		std::unique_ptr<Player> _sfx[MAX_TRACKS]{};

@@ -34,7 +34,6 @@ namespace SuperHaxagon {
 		float _score = 0;
 		float _frames = 0;
 		float _offset = 1.0;
-		int _levelIndex = 0;
 	};
 }
 

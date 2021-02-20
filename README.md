@@ -2,7 +2,7 @@
 
 # ![Icon](./media/icon-3ds.png "Icon") Super-Haxagon
 
-Super Haxagon is a cross platform, open source [Super Hexagon](http://superhexagon.com/) clone for the Nintendo 3DS, Nintendo Switch, Windows, and Linux. It is developed in C++ and uses no additional libraries for the core logic, making it easy (in theory) to port to new platforms. It also has a GUI based level editor called [Haxa Editor](https://github.com/RedTopper/Haxa-Editor).
+Super Haxagon is a cross platform, open source [Super Hexagon](http://superhexagon.com/) clone for the Nintendo 3DS, Nintendo Switch, Windows, Linux, and the [TI-Nspire](https://education.ti.com/en/products/calculators/graphing-calculators/ti-nspire-cx-cas) (yes, the calculator). It is developed in C++ and uses no additional libraries for the core logic, making it easy (in theory) to port to new platforms. It also has a GUI based level editor called [Haxa Editor](https://github.com/RedTopper/Haxa-Editor).
 
 ## Download
 
@@ -34,6 +34,13 @@ Super Haxagon targets the 3DS, Switch, Windows (MinGW + MSVC), and Linux. For de
 1. Get MinGW and DevkitPro and install dependencies listed in the Makefile
 1. Use the provided Makefile with the command `make TARGET:=SWITCH`
 1. Copy the .nro to `sdmc:/switch/SuperHaxagon/SuperHaxagon.nro` and launch it from the hbmenu
+
+### TI-Nspire Build
+
+1. On Linux (I use WSL/Ubuntu), get and build [Ndless](https://github.com/ndless-nspire/Ndless)
+1. Use the provided Makefile.nspire with the command `make -f Makefile.nspire`
+1. Copy `haxagon.tns` to the ndless folder
+1. Rename `levels.haxagon` to `levels.haxagon.tns` and copy it to the ndless folder
 
 ### PC Build
 
@@ -107,6 +114,7 @@ Below are a few screenshots featuring the various platforms that Super Haxagon c
 <img width="500" src="./media/screenshots/Windows_2020-07-10_014324.png"    alt="In Game Windows"      title="Windows"/>
 <img width="500" src="./media/screenshots/luma-2020-07-11-06-48-44-586.png" alt="In Game 3DS"          title="3DS"/>
 <img width="500" src="./media/screenshots/switch.gif"                       alt="In Game Switch (GIF)" title="In Game Switch (GIF)"/>
+<img width="500" src="./media/screenshots/nspire.png"                       alt="TI-Nspire"            title="TI-Nspire"/>
 <img width="500" src="./media/screenshots/20200727_015021.jpg"              alt="Hardware"             title="Hardware"/>
 
 <details><summary>More Screenshots</summary>

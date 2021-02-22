@@ -26,7 +26,7 @@ GENZEHN = genzehn
 OPTIMIZE ?= fast
 
 # Flags
-COMMONFLAGS := -O$(OPTIMIZE) $(patsubst %,-I%,$(INCLUDE_DIRS)) -D_nspire
+COMMONFLAGS := -O$(OPTIMIZE) $(patsubst %,-I%,$(INCLUDE_DIRS)) -D_nspire -DOLD_SCREEN_API
 COMMONFLAGS += -Wall -W -marm -ffast-math -mcpu=arm926ej-s -fno-math-errno -fomit-frame-pointer -flto -fgcse-sm -fgcse-las -funsafe-loop-optimizations -fno-fat-lto-objects -frename-registers -fprefetch-loop-arrays -Wno-narrowing
 CCFLAGS := $(COMMONFLAGS)
 CXXFLAGS := $(COMMONFLAGS) -fno-rtti -std=gnu++17

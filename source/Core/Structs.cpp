@@ -91,16 +91,16 @@ namespace SuperHaxagon {
 		return "WONDERFUL";
 	}
 
-	bool readCompare(std::ifstream& file, const std::string& str) {
+	bool readCompare(std::istream& stream, const std::string& str) {
 		const auto read = std::make_unique<char[]>(str.length() + 1);
-		file.read(read.get(), str.length());
+		stream.read(read.get(), str.length());
 		read[str.length()] = '\0';
 		return read.get() == str;
 	}
 
-	int32_t read32(std::ifstream& file, const int32_t min, const int32_t max, Platform& platform, const std::string& noun) {
+	int32_t read32(std::istream& stream, const int32_t min, const int32_t max, Platform& platform, const std::string& noun) {
 		int32_t num;
-		file.read(reinterpret_cast<char*>(&num), sizeof(num));
+		stream.read(reinterpret_cast<char*>(&num), sizeof(num));
 
 		if (num < min) {
 			num = min;
@@ -115,38 +115,38 @@ namespace SuperHaxagon {
 		return num;
 	}
 
-	int16_t read16(std::ifstream& file) {
+	int16_t read16(std::istream& stream) {
 		int16_t num;
-		file.read(reinterpret_cast<char*>(&num), sizeof(num));
+		stream.read(reinterpret_cast<char*>(&num), sizeof(num));
 		return num;
 	}
 
-	float readFloat(std::ifstream& file) {
+	float readFloat(std::istream& stream) {
 		float num;
-		file.read(reinterpret_cast<char*>(&num), sizeof(num));
+		stream.read(reinterpret_cast<char*>(&num), sizeof(num));
 		return num;
 	}
 
-	Color readColor(std::ifstream& file) {
+	Color readColor(std::istream& stream) {
 		Color color{};
-		file.read(reinterpret_cast<char*>(&color.r), sizeof(color.r));
-		file.read(reinterpret_cast<char*>(&color.g), sizeof(color.g));
-		file.read(reinterpret_cast<char*>(&color.b), sizeof(color.b));
+		stream.read(reinterpret_cast<char*>(&color.r), sizeof(color.r));
+		stream.read(reinterpret_cast<char*>(&color.g), sizeof(color.g));
+		stream.read(reinterpret_cast<char*>(&color.b), sizeof(color.b));
 		color.a = 0xFF;
 		return color;
 	}
 
-	std::string readString(std::ifstream& file, Platform& platform, const std::string& noun) {
-		const size_t length = read32(file, 1, 300, platform, noun + " string");
+	std::string readString(std::istream& stream, Platform& platform, const std::string& noun) {
+		const size_t length = read32(stream, 1, 300, platform, noun + " string");
 		const auto read = std::make_unique<char[]>(length + 1);
-		file.read(read.get(), length);
+		stream.read(read.get(), length);
 		read[length] = '\0';
 		return std::string(read.get());
 	}
 
-	void writeString(std::ofstream& file, const std::string& str) {
+	void writeString(std::ostream& stream, const std::string& str) {
 		auto len = static_cast<uint32_t>(str.length());
-		file.write(reinterpret_cast<char*>(&len), sizeof(len));
-		file.write(str.c_str(), str.length());
+		stream.write(reinterpret_cast<char*>(&len), sizeof(len));
+		stream.write(str.c_str(), str.length());
 	}
 }

@@ -107,37 +107,37 @@ namespace SuperHaxagon {
 	 * Compares a fixed length string to an expected string in a file.
 	 * (useful for checking both headers and footers)
 	 */
-	bool readCompare(std::ifstream& file, const std::string& str);
+	bool readCompare(std::istream& stream, const std::string& str);
 
 	/**
 	 * Reads an integer from a file advancing its internal pointer
 	 */
-	int32_t read32(std::ifstream& file, int32_t min, int32_t max, Platform& platform, const std::string& noun);
+	int32_t read32(std::istream& stream, int32_t min, int32_t max, Platform& platform, const std::string& noun);
 
 	/**
 	 * Reads a short from a file advancing its internal pointer
 	 */
-	int16_t read16(std::ifstream& file);
+	int16_t read16(std::istream& stream);
 
 	/**
 	 * Read a float from a file advancing its internal pointer
 	 */
-	float readFloat(std::ifstream& file);
+	float readFloat(std::istream& stream);
 
 	/**
 	 * Reads a color from a file advancing its internal pointer
 	 */
-	Color readColor(std::ifstream& file);
+	Color readColor(std::istream& stream);
 
 	/**
 	 * Reads a string from the binary file
 	 */
-	std::string readString(std::ifstream& file, Platform& platform, const std::string& noun);
+	std::string readString(std::istream& stream, Platform& platform, const std::string& noun);
 
 	/**
 	 * Writes a string with a length to a binary file
 	 */
-	void writeString(std::ofstream& file, const std::string& str);
+	void writeString(std::ostream& stream, const std::string& str);
 }
 
 #endif //SUPER_HAXAGON_STRUCTS_HPP

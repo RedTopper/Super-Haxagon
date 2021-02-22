@@ -30,7 +30,7 @@ namespace SuperHaxagon {
 		static const char* PATTERN_FOOTER;
 		static constexpr int MIN_PATTERN_SIDES = 3;
 
-		PatternFactory(std::ifstream& file, Platform& platform);
+		PatternFactory(std::istream& stream, Platform& platform);
 		~PatternFactory();
 
 		Pattern instantiate(Twist& rng, float distance) const;
@@ -41,7 +41,7 @@ namespace SuperHaxagon {
 
 	private:
 		std::vector<WallFactory> _walls;
-		std::string _name  = "";
+		std::string _name;
 		int _sides = 0;
 		bool _loaded = false;
 	};

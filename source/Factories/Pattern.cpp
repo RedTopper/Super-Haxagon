@@ -31,22 +31,22 @@ namespace SuperHaxagon {
 		}
 	}
 
-	PatternFactory::PatternFactory(std::ifstream& file, Platform& platform) {
-		_name = readString(file, platform, "pattern name");
+	PatternFactory::PatternFactory(std::istream& stream, Platform& platform) {
+		_name = readString(stream, platform, "pattern name");
 
-		if (!readCompare(file, PATTERN_HEADER)) {
+		if (!readCompare(stream, PATTERN_HEADER)) {
 			platform.message(Dbg::WARN, "pattern", _name + " pattern header invalid!");
 			return;
 		}
 
 		// This might be able to be increased later
-		_sides = read32(file, 0, 256, platform, _name + " pattern sides");
+		_sides = read32(stream, 0, 256, platform, _name + " pattern sides");
 		if(_sides < MIN_PATTERN_SIDES) _sides = MIN_PATTERN_SIDES;
 
-		const int numWalls = read32(file, 1, 1000, platform, _name + " pattern walls");
-		for (auto i = 0; i < numWalls; i++) _walls.emplace_back(file, _sides);
+		const int numWalls = read32(stream, 1, 1000, platform, _name + " pattern walls");
+		for (auto i = 0; i < numWalls; i++) _walls.emplace_back(stream, _sides);
 
-		if (!readCompare(file, PATTERN_FOOTER)) {
+		if (!readCompare(stream, PATTERN_FOOTER)) {
 			platform.message(Dbg::WARN, "pattern", _name + " pattern footer invalid!");
 			return;
 		}

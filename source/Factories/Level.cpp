@@ -280,46 +280,46 @@ namespace SuperHaxagon {
 		return *selectable[rng.rand(static_cast<int>(selectable.size()) - 1)];
 	}
 
-	LevelFactory::LevelFactory(std::ifstream& file, std::vector<std::shared_ptr<PatternFactory>>& shared, const LocLevel location, Platform& platform, const size_t levelIndexOffset) {
+	LevelFactory::LevelFactory(std::istream& stream, std::vector<std::shared_ptr<PatternFactory>>& shared, const LocLevel location, Platform& platform, const size_t levelIndexOffset) {
 		_location = location;
 
-		if (!readCompare(file, LEVEL_HEADER)) {
+		if (!readCompare(stream, LEVEL_HEADER)) {
 			platform.message(Dbg::WARN, "level", "level header invalid!");
 			return;
 		}
 
-		_name = readString(file, platform, "level name");
-		_difficulty = readString(file, platform, _name + " level difficulty");
-		_mode = readString(file, platform, _name + " level mode");
-		_creator = readString(file, platform, _name + " level creator");
-		_music = "/" + readString(file, platform, _name + " level music");
+		_name = readString(stream, platform, "level name");
+		_difficulty = readString(stream, platform, _name + " level difficulty");
+		_mode = readString(stream, platform, _name + " level mode");
+		_creator = readString(stream, platform, _name + " level creator");
+		_music = "/" + readString(stream, platform, _name + " level music");
 
-		const auto numColorsBG1 = read32(file, 1, 512, platform, "level background 1");
+		const auto numColorsBG1 = read32(stream, 1, 512, platform, "level background 1");
 		_colors[LocColor::BG1].reserve(numColorsBG1);
-		for (auto i = 0; i < numColorsBG1; i++) _colors[LocColor::BG1].emplace_back(readColor(file));
+		for (auto i = 0; i < numColorsBG1; i++) _colors[LocColor::BG1].emplace_back(readColor(stream));
 
-		const auto numColorsBG2 = read32(file, 1, 512, platform, "level background 2");
+		const auto numColorsBG2 = read32(stream, 1, 512, platform, "level background 2");
 		_colors[LocColor::BG2].reserve(numColorsBG2);
-		for (auto i = 0; i < numColorsBG2; i++) _colors[LocColor::BG2].emplace_back(readColor(file));
+		for (auto i = 0; i < numColorsBG2; i++) _colors[LocColor::BG2].emplace_back(readColor(stream));
 
-		const auto numColorsFG = read32(file, 1, 512, platform, "level foreground");
+		const auto numColorsFG = read32(stream, 1, 512, platform, "level foreground");
 		_colors[LocColor::FG].reserve(numColorsFG);
-		for (auto i = 0; i < numColorsFG; i++) _colors[LocColor::FG].emplace_back(readColor(file));
+		for (auto i = 0; i < numColorsFG; i++) _colors[LocColor::FG].emplace_back(readColor(stream));
 
-		_speedWall = readFloat(file);
-		_speedRotation = readFloat(file);
-		_speedCursor = readFloat(file);
-		_speedPulse = read32(file, 4, 8192, platform, "level pulse");
-		_nextIndex = read32(file, -1, 8192, platform, "next index");
-		_nextTime = readFloat(file);
+		_speedWall = readFloat(stream);
+		_speedRotation = readFloat(stream);
+		_speedCursor = readFloat(stream);
+		_speedPulse = read32(stream, 4, 8192, platform, "level pulse");
+		_nextIndex = read32(stream, -1, 8192, platform, "next index");
+		_nextTime = readFloat(stream);
 
 		// Negative numbers should remain invalid. -1 usually means load no other level.
 		if (_nextIndex >= 0) _nextIndex += static_cast<int>(levelIndexOffset);
 
-		const auto numPatterns = read32(file, 1, 512, platform, "level pattern count");
+		const auto numPatterns = read32(stream, 1, 512, platform, "level pattern count");
 		for (auto i = 0; i < numPatterns; i++) {
 			auto found = false;
-			auto search = readString(file, platform, "level pattern name match");
+			auto search = readString(stream, platform, "level pattern name match");
 			for (const auto& pattern : shared) {
 				if (pattern->getName() == search) {
 					_patterns.push_back(pattern);
@@ -334,7 +334,7 @@ namespace SuperHaxagon {
 			}
 		}
 
-		if (!readCompare(file, LEVEL_FOOTER)) {
+		if (!readCompare(stream, LEVEL_FOOTER)) {
 			platform.message(Dbg::WARN, "level", "level footer invalid!");
 			return;
 		}

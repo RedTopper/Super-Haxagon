@@ -84,10 +84,10 @@ namespace SuperHaxagon {
 	}
 
 
-	WallFactory::WallFactory(std::ifstream& file, const int maxSides) {
-		_distance = read16(file);
-		_height = read16(file);
-		_side = read16(file);
+	WallFactory::WallFactory(std::istream& stream, const int maxSides) {
+		_distance = read16(stream);
+		_height = read16(stream);
+		_side = read16(stream);
 
 		if(_height < MIN_WALL_HEIGHT) _height = MIN_WALL_HEIGHT;
 		if(_side >= maxSides) _side = static_cast<uint16_t>(maxSides) - 1;

@@ -34,7 +34,7 @@ namespace SuperHaxagon {
 	public:
 		static constexpr int MIN_WALL_HEIGHT = 4;
 
-		WallFactory(std::ifstream& file, int maxSides);
+		WallFactory(std::istream& stream, int maxSides);
 
 		Wall instantiate(float offsetDistance, int offsetSide, int sides) const;
 

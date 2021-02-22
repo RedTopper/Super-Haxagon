@@ -2,8 +2,8 @@
 
 #include "Core/Game.hpp"
 #include "Driver/Platform.hpp"
-#include "Factories/Level.hpp"
-#include "Factories/Pattern.hpp"
+#include "Factories/LevelFactory.hpp"
+#include "Factories/PatternFactory.hpp"
 #include "States/Menu.hpp"
 #include "States/Quit.hpp"
 

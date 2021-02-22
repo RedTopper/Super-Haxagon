@@ -57,9 +57,13 @@ add_executable(SuperHaxagon WIN32 ${DRIVER}
     source/States/Transition.cpp
     source/States/Win.cpp
 
-    source/Factories/Level.cpp
-    source/Factories/Pattern.cpp
-    source/Factories/Wall.cpp
+    source/Factories/LevelFactory.cpp
+    source/Factories/PatternFactory.cpp
+    source/Factories/WallFactory.cpp
+
+    source/Objects/Level.cpp
+    source/Objects/Pattern.cpp
+    source/Objects/Wall.cpp
 
     source/Core/Game.cpp
     source/Core/Metadata.cpp

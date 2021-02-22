@@ -1,29 +1,14 @@
-#ifndef SUPER_HAXAGON_PATTERN_HPP
-#define SUPER_HAXAGON_PATTERN_HPP
+#ifndef SUPER_HAXAGON_PATTERN_FACTORY_HPP
+#define SUPER_HAXAGON_PATTERN_FACTORY_HPP
 
-#include "Factories/Wall.hpp"
+#include "Factories/WallFactory.hpp"
+#include "Objects/Pattern.hpp"
 
 #include <vector>
 #include <string>
 
 namespace SuperHaxagon {
 	class Twist;
-	class Pattern {
-	public:
-		Pattern(std::vector<Wall>& walls, int sides);
-
-		const std::vector<Wall>& getWalls() const {return _walls;}
-		int getSides() const {return _sides;}
-
-		float getFurthestWallDistance() const;
-		float getClosestWallDistance() const;
-		void advance(float speed);
-
-	private:
-		std::vector<Wall> _walls;
-		int _sides;
-	};
-
 	class PatternFactory {
 	public:
 		static const char* PATTERN_HEADER;
@@ -47,4 +32,4 @@ namespace SuperHaxagon {
 	};
 }
 
-#endif //SUPER_HAXAGON_PATTERN_HPP
+#endif //SUPER_HAXAGON_PATTERN_FACTORY_HPP

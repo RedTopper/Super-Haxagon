@@ -1,4 +1,4 @@
-#include "Factories/Wall.hpp"
+#include "Objects/Wall.hpp"
 
 #include <cmath>
 
@@ -81,23 +81,5 @@ namespace SuperHaxagon {
 		point.x = distance * std::cos(rotation + width) + focus.x;
 		point.y = distance * std::sin(rotation + width + PI) + focus.y;
 		return point;
-	}
-
-
-	WallFactory::WallFactory(std::istream& stream, const int maxSides) {
-		_distance = read16(stream);
-		_height = read16(stream);
-		_side = read16(stream);
-
-		if(_height < MIN_WALL_HEIGHT) _height = MIN_WALL_HEIGHT;
-		if(_side >= maxSides) _side = static_cast<uint16_t>(maxSides) - 1;
-	}
-
-	Wall WallFactory::instantiate(const float offsetDistance, const int offsetSide, const int sides) const {
-		auto newSide = _side + offsetSide;
-		newSide = newSide >= sides ? newSide - sides : newSide;
-		const auto newDistance = static_cast<float>(_distance) + offsetDistance;
-		const float newHeight = _height;
-		return {newDistance, newHeight, newSide};
 	}
 }

@@ -4,8 +4,8 @@
 #include "Core/Twist.hpp"
 #include "Driver/Font.hpp"
 #include "Driver/Platform.hpp"
-#include "Factories/Level.hpp"
-#include "Factories/Pattern.hpp"
+#include "Factories/LevelFactory.hpp"
+#include "Factories/PatternFactory.hpp"
 #include "States/Load.hpp"
 
 #include <cmath>

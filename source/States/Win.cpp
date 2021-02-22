@@ -4,7 +4,8 @@
 #include "Core/Metadata.hpp"
 #include "Driver/Font.hpp"
 #include "Driver/Platform.hpp"
-#include "Factories/Level.hpp"
+#include "Factories/LevelFactory.hpp"
+#include "Objects/Level.hpp"
 #include "States/Over.hpp"
 #include "States/Quit.hpp"
 

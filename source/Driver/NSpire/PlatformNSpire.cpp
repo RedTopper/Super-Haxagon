@@ -101,6 +101,10 @@ namespace SuperHaxagon {
 			return std::make_unique<imemstream>(&romfs_bgm_jackRussel_txt[0], romfs_bgm_jackRussel_txt_len);
 		}
 
+		if (partial == "/bgm/mazeOfMayonnaise.txt") {
+			return std::make_unique<imemstream>(&romfs_bgm_mazeOfMayonnaise_txt[0], romfs_bgm_mazeOfMayonnaise_txt_len);
+		}
+
 		if (partial == "/bgm/screenSaver.txt") {
 			return std::make_unique<imemstream>(&romfs_bgm_screenSaver_txt[0], romfs_bgm_screenSaver_txt_len);
 		}

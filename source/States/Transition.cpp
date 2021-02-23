@@ -42,7 +42,7 @@ namespace SuperHaxagon {
 			// game just keeps going
 			const auto next = _level->getLevelFactory().getNextIndex();
 			auto& factory = *_game.getLevels()[next];
-			_game.loadBGMAudio(factory);
+			_game.loadBGMAudio(factory.getMusic(), factory.getLocation(), true);
 			return std::make_unique<Play>(_game, factory, _selected, _score);
 		}
 

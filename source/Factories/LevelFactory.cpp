@@ -10,7 +10,7 @@ namespace SuperHaxagon {
 	const char* LevelFactory::LEVEL_HEADER = "LEV3.0";
 	const char* LevelFactory::LEVEL_FOOTER = "ENDLEV";
 
-	LevelFactory::LevelFactory(std::istream& stream, std::vector<std::shared_ptr<PatternFactory>>& shared, const LocLevel location, Platform& platform, const size_t levelIndexOffset) {
+	LevelFactory::LevelFactory(std::istream& stream, std::vector<std::shared_ptr<PatternFactory>>& shared, const Location location, Platform& platform, const size_t levelIndexOffset) {
 		_location = location;
 
 		if (!readCompare(stream, LEVEL_HEADER)) {

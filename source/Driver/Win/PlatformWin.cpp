@@ -15,16 +15,17 @@ namespace SuperHaxagon {
 		_mkdir(".\\sdmc");
 	}
 
-	std::string PlatformWin::getPath(const std::string& partial) {
+	std::string PlatformWin::getPath(const std::string& partial, const Location location) {
 		auto path = partial;
 		std::replace(path.begin(), path.end(), '/', '\\');
-		return std::string(".\\sdmc") + path;
-	}
+		switch (location) {
+		case Location::ROM:
+			return std::string(".\\romfs") + path;
+		case Location::USER:
+			return std::string(".\\sdmc") + path;
+		}
 
-	std::string PlatformWin::getPathRom(const std::string& partial) {
-		auto path = partial;
-		std::replace(path.begin(), path.end(), '/', '\\');
-		return std::string(".\\romfs") + path;
+		return "";
 	}
 
 	void PlatformWin::message(const Dbg dbg, const std::string& where, const std::string& message) {

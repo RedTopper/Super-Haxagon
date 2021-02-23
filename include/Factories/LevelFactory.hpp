@@ -2,6 +2,7 @@
 #define SUPER_HAXAGON_LEVEL_FACTORY_HPP
 
 #include "Core/Structs.hpp"
+#include "Driver/Platform.hpp"
 
 #include <memory>
 #include <string>
@@ -20,7 +21,7 @@ namespace SuperHaxagon {
 		static const char* LEVEL_HEADER;
 		static const char* LEVEL_FOOTER;
 
-		LevelFactory(std::istream& stream, std::vector<std::shared_ptr<PatternFactory>>& shared, LocLevel location, Platform& platform, size_t levelIndexOffset);
+		LevelFactory(std::istream& stream, std::vector<std::shared_ptr<PatternFactory>>& shared, Location location, Platform& platform, size_t levelIndexOffset);
 		LevelFactory(const LevelFactory&) = delete;
 
 		std::unique_ptr<Level> instantiate(Twist& rng, float renderDistance) const;
@@ -36,7 +37,7 @@ namespace SuperHaxagon {
 		const std::string& getCreator() const {return _creator;}
 		const std::string& getMusic() const {return _music;}
 
-		LocLevel getLocation() const {return _location;}
+		Location getLocation() const {return _location;}
 		int getHighScore() const {return _highScore;}
 		int getSpeedPulse() const {return _speedPulse;}
 		float getSpeedCursor() const {return _speedCursor;}
@@ -57,7 +58,7 @@ namespace SuperHaxagon {
 		std::string _creator;
 		std::string _music;
 
-		LocLevel _location = LocLevel::INTERNAL;
+		Location _location = Location::ROM;
 
 		int _highScore = 0;
 		int _speedPulse = 0;

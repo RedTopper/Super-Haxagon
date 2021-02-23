@@ -18,20 +18,19 @@ namespace SuperHaxagon {
 		bool loop() override;
 		float getDilation() override;
 
-		std::string getPath(const std::string& partial) override;
-		std::string getPathRom(const std::string& partial) override;
-		std::unique_ptr<Audio> loadAudio(const std::string& path, SuperHaxagon::Stream stream) override;
-		std::unique_ptr<Font> loadFont(const std::string& path, int size) override;
+		std::string getPath(const std::string& partial, Location location) override;
+		std::unique_ptr<std::istream> openFile(const std::string& partial, Location location) override;
+		std::unique_ptr<Audio> loadAudio(const std::string& partial, Stream stream, Location location) override;
+		std::unique_ptr<Font> loadFont(const std::string& partial, int size) override;
 		
-		void playSFX(Audio&) override {};
-		void playBGM(Audio&) override {};
+		void playSFX(Audio&) override {}
+		void playBGM(Audio& audio) override;
 		
 		std::string getButtonName(const Buttons& button) override;
 		Buttons getPressed() override;
 		Point getScreenDim() const override;
 		
 		void screenBegin() override;
-		void screenSwap() override {}
 		void screenFinalize() override;
 		void drawPoly(const Color& color, const std::vector<Point>& points) override;
 

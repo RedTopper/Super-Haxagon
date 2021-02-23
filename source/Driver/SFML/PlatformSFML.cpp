@@ -59,8 +59,8 @@ namespace SuperHaxagon {
 		return dilation > 4.0f ? 4.0f : (dilation < 0.05f ? 0.05f : dilation);
 	}
 
-	std::unique_ptr<Audio> PlatformSFML::loadAudio(const std::string& path, Stream stream) {
-		return std::make_unique<AudioSFML>(path, stream);
+	std::unique_ptr<Audio> PlatformSFML::loadAudio(const std::string& path, Stream stream, Location location) {
+		return std::make_unique<AudioSFML>(getPath(path, location), stream);
 	}
 
 	std::unique_ptr<Font> PlatformSFML::loadFont(const std::string& path, const int size) {
@@ -122,10 +122,6 @@ namespace SuperHaxagon {
 		_window->clear(sf::Color::Black);
 	}
 
-	void PlatformSFML::screenSwap() {
-		// Do nothing, since there is no second screen on a PC
-	}
-
 	void PlatformSFML::screenFinalize() {
 		_window->display();
 	}
@@ -141,9 +137,5 @@ namespace SuperHaxagon {
 		}
 
 		_window->draw(convex);
-	}
-
-	Supports PlatformSFML::supports() {
-		return Supports::FILESYSTEM | Supports::SHADOWS;
 	}
 }

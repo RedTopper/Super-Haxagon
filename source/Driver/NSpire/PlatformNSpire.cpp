@@ -2,6 +2,7 @@
 
 #include "Driver/NSpire/AudioNSpire.hpp"
 #include "Driver/NSpire/FontNSpire.hpp"
+#include "Driver/NSpire/romfs.h"
 #include "Driver/NSpire/timer.h"
 #include "Core/Twist.hpp"
 
@@ -10,6 +11,20 @@
 #include <libndls.h>
 
 namespace SuperHaxagon {
+	struct membuf : std::streambuf {
+		membuf(unsigned char* base, const size_t size) {
+			auto* const p(reinterpret_cast<char*>(base));
+			this->setg(p, p, p + size);
+		}
+	};
+	
+	struct imemstream : virtual membuf, std::istream {
+		imemstream(unsigned char* base, const size_t size):
+			membuf(base, size),
+			std::istream(static_cast<std::streambuf*>(this)) {
+		}
+	};
+	
 	PlatformNSpire::PlatformNSpire(const Dbg dbg) : Platform(dbg) {
 		auto* const gc = gui_gc_global_GC();
 		gui_gc_begin(gc);
@@ -24,8 +39,13 @@ namespace SuperHaxagon {
 
 	bool PlatformNSpire::loop() {
 		const auto timer = timer_read(0);
-
 		const auto elapsed = static_cast<float>(TIMER_1S - timer) / TIMER_1S;
+		if (_bgm) {
+			// Trust me I know what I'm doing with my types, compiler.
+			auto* bgm = reinterpret_cast<PlayerNSpire*>(_bgm.get());
+			bgm->addTime(elapsed);
+			if (bgm->isDone()) bgm->play();
+		}
 
 		timer_load(0, TIMER_1S);
 		_dilation = elapsed * 60.0f;
@@ -37,20 +57,70 @@ namespace SuperHaxagon {
 		return _dilation;
 	}
 
-	std::string PlatformNSpire::getPath(const std::string& partial) {
-		return getPathRom(partial);
+	std::string PlatformNSpire::getPath(const std::string& partial, const Location location) {
+		switch (location) {
+		case Location::ROM:
+			return partial;
+		case Location::USER:
+			return std::string(get_documents_dir()) + "ndless" + partial + std::string(".tns");
+		}
+
+		return "";
 	}
 
-	std::string PlatformNSpire::getPathRom(const std::string& partial) {
-		return std::string("ndless") + partial + std::string(".tns");
+	std::unique_ptr<std::istream> PlatformNSpire::openFile(const std::string& partial, const Location location) {
+		if (location == Location::USER) {
+			return std::make_unique<std::ifstream>(getPath(partial, location), std::ios::in | std::ios::binary);
+		}
+
+		if (partial == "/levels.haxagon") {
+			return std::make_unique<imemstream>(&romfs_levels_haxagon[0], romfs_levels_haxagon_len);
+		}
+		
+		if (partial == "/bgm/callMeKatla.txt") {
+			return std::make_unique<imemstream>(&romfs_bgm_callMeKatla_txt[0], romfs_bgm_callMeKatla_txt_len);
+		}
+
+		if (partial == "/bgm/captainCool.txt") {
+			return std::make_unique<imemstream>(&romfs_bgm_captainCool_txt[0], romfs_bgm_captainCool_txt_len);
+		}
+
+		if (partial == "/bgm/commandoSteve.txt") {
+			return std::make_unique<imemstream>(&romfs_bgm_commandoSteve_txt[0], romfs_bgm_commandoSteve_txt_len);
+		}
+
+		if (partial == "/bgm/drFinkelfracken.txt") {
+			return std::make_unique<imemstream>(&romfs_bgm_drFinkelfracken_txt[0], romfs_bgm_drFinkelfracken_txt_len);
+		}
+
+		if (partial == "/bgm/esiannoyamFoEzam.txt") {
+			return std::make_unique<imemstream>(&romfs_bgm_esiannoyamFoEzam_txt[0], romfs_bgm_esiannoyamFoEzam_txt_len);
+		}
+
+		if (partial == "/bgm/jackRussel.txt") {
+			return std::make_unique<imemstream>(&romfs_bgm_jackRussel_txt[0], romfs_bgm_jackRussel_txt_len);
+		}
+
+		if (partial == "/bgm/screenSaver.txt") {
+			return std::make_unique<imemstream>(&romfs_bgm_screenSaver_txt[0], romfs_bgm_screenSaver_txt_len);
+		}
+
+		return nullptr;
 	}
 
-	std::unique_ptr<Audio> PlatformNSpire::loadAudio(const std::string&, SuperHaxagon::Stream) {
-		return std::make_unique<AudioNSpire>();
+	std::unique_ptr<Audio> PlatformNSpire::loadAudio(const std::string& partial, Stream, const Location location) {
+		return std::make_unique<AudioNSpire>(openFile(partial + ".txt", location));
 	}
 
 	std::unique_ptr<Font> PlatformNSpire::loadFont(const std::string&, int size) {
 		return std::make_unique<FontNSpire>(size);
+	}
+
+	void PlatformNSpire::playBGM(Audio& audio) {
+		_bgm = audio.instantiate();
+		if (!_bgm) return;
+		_bgm->setLoop(true);
+		_bgm->play();
 	}
 
 	std::string PlatformNSpire::getButtonName(const Buttons& button) {

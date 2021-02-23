@@ -34,6 +34,11 @@ namespace SuperHaxagon {
 		FILESYSTEM = 1 << 1
 	};
 
+	enum class Location {
+		ROM,
+		USER
+	};
+
 	inline Supports operator |(Supports lhs, Supports rhs) {
 		using T = std::underlying_type_t<Supports>;
 		return static_cast<Supports>(static_cast<T>(lhs) | static_cast<T>(rhs));
@@ -54,22 +59,22 @@ namespace SuperHaxagon {
 		virtual bool loop() = 0;
 		virtual float getDilation() = 0;
 
-		virtual std::string getPath(const std::string& partial) = 0;
-		virtual std::string getPathRom(const std::string& partial) = 0;
-		virtual std::unique_ptr<Audio> loadAudio(const std::string& path, Stream stream) = 0;
-		virtual std::unique_ptr<Font> loadFont(const std::string& path, int size) = 0;
+		virtual std::string getPath(const std::string& partial, Location location) = 0;
+		virtual std::unique_ptr<std::istream> openFile(const std::string& partial, Location location);
+		virtual std::unique_ptr<Audio> loadAudio(const std::string& partial, Stream stream, Location location) = 0;
+		virtual std::unique_ptr<Font> loadFont(const std::string& partial, int size) = 0;
 
 		virtual void playSFX(Audio& audio) = 0;
 		virtual void playBGM(Audio& audio) = 0;
-		virtual void stopBGM() {_bgm = nullptr;}
-		virtual Player* getBGM() {return _bgm.get();}
+		virtual void stopBGM();
+		virtual Player* getBGM();
 
 		virtual std::string getButtonName(const Buttons& button) = 0;
 		virtual Buttons getPressed() = 0;
 		virtual Point getScreenDim() const = 0;
 
 		virtual void screenBegin() = 0;
-		virtual void screenSwap() = 0;
+		virtual void screenSwap();
 		virtual void screenFinalize() = 0;
 		virtual void drawPoly(const Color& color, const std::vector<Point>& points) = 0;
 
@@ -77,7 +82,7 @@ namespace SuperHaxagon {
 
 		virtual void shutdown() = 0;
 		virtual void message(Dbg level, const std::string& where, const std::string& message) = 0;
-		virtual Supports supports() = 0;
+		virtual Supports supports();
 
 	protected:
 		Dbg _dbg;

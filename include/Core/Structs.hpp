@@ -27,11 +27,6 @@ namespace SuperHaxagon {
 		DEAD,
 	};
 
-	enum class LocLevel {
-		INTERNAL,
-		EXTERNAL
-	};
-
 	enum class LocColor {
 		FG = 0,
 		BG1,

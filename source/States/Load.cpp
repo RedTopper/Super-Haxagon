@@ -21,7 +21,7 @@ namespace SuperHaxagon {
 	Load::Load(Game& game) : _game(game), _platform(game.getPlatform()) {}
 	Load::~Load() = default;
 
-	bool Load::loadLevels(std::istream& stream, LocLevel location) const {
+	bool Load::loadLevels(std::istream& stream, Location location) const {
 		std::vector<std::shared_ptr<PatternFactory>> patterns;
 
 		// Used to make sure that external levels link correctly.
@@ -102,24 +102,24 @@ namespace SuperHaxagon {
 	}
 
 	void Load::enter() {
-		std::vector<std::pair<LocLevel, std::string>> locations;
-		locations.emplace_back(std::pair<LocLevel, std::string>(LocLevel::INTERNAL, _platform.getPathRom("/levels.haxagon")));
+		std::vector<std::pair<Location, std::string>> levels;
+		levels.emplace_back(std::pair<Location, std::string>(Location::ROM, "/levels.haxagon"));
 
 		if (static_cast<int>(_platform.supports() & Supports::FILESYSTEM)) {
-			auto files = std::filesystem::directory_iterator(_platform.getPath("/"));
+			auto files = std::filesystem::directory_iterator(_platform.getPath("/", Location::USER));
 			for (const auto& file : files) {
 				if (file.path().extension() != ".haxagon") continue;
 				_platform.message(Dbg::INFO, "load", "found " + file.path().string());
-				locations.emplace_back(std::pair<LocLevel, std::string>(LocLevel::EXTERNAL, file.path().string()));
+				levels.emplace_back(std::pair<Location, std::string>(Location::USER, file.path().string()));
 			}
 		}
 
-		for (const auto& location : locations) {
-			const auto& path = location.second;
-			const auto loc = location.first;
-			std::ifstream file(path, std::ios::in | std::ios::binary);
+		for (const auto& pair : levels) {
+			const auto& path = pair.second;
+			const auto location = pair.first;
+			auto file = _platform.openFile(path, location);
 			if (!file) continue;
-			loadLevels(file, loc);
+			loadLevels(*file, location);
 		}
 
 		if (_game.getLevels().empty()) {
@@ -127,7 +127,7 @@ namespace SuperHaxagon {
 			return;
 		}
 
-		std::ifstream scores(_platform.getPath("/scores.db"), std::ios::in | std::ios::binary);
+		std::ifstream scores(_platform.getPath("/scores.db", Location::USER), std::ios::in | std::ios::binary);
 		if (!loadScores(scores)) return;
 
 		_loaded = true;

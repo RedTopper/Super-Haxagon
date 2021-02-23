@@ -69,12 +69,7 @@ namespace SuperHaxagon {
 	}
 
 	void Win::enter() {
-		const std::string base = "/bgm/esiannoyamFoEzam";
-		const auto path = _platform.getPathRom(base);
-		const auto pathMeta = _platform.getPathRom(base + ".txt");
-		_game.setBGMAudio(_platform.loadAudio(path, Stream::INDIRECT));
-		_game.setBGMMetadata(std::make_unique<Metadata>(pathMeta));
-		_platform.playBGM(*_game.getBGMAudio());
+		_game.loadBGMAudio("/esiannoyamFoEzam", Location::ROM, true);
 		_game.setShadowAuto(true);
 	}
 	

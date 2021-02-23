@@ -106,24 +106,27 @@ namespace SuperHaxagon {
 		return _delta / (1.0f / 60.0f);
 	}
 
-	std::string Platform3DS::getPath(const std::string& partial) {
-		return std::string("sdmc:/3ds/data/haxagon") + partial;
+	std::string Platform3DS::getPath(const std::string& partial, const Location location) {
+		switch (location) {
+		case Location::ROM:
+			return std::string("romfs:") + partial;
+		case Location::USER:
+			return std::string("sdmc:/3ds/data/haxagon") + partial;
+		}
+
+		return "";
 	}
 
-	std::string Platform3DS::getPathRom(const std::string& partial) {
-		return std::string("romfs:") + partial;
-	}
-
-	std::unique_ptr<Audio> Platform3DS::loadAudio(const std::string& path, const Stream stream) {
+	std::unique_ptr<Audio> Platform3DS::loadAudio(const std::string& partial, const Stream stream, const Location location) {
 		if (stream == Stream::DIRECT) {
-			return std::make_unique<AudioWav3DS>(path);
+			return std::make_unique<AudioWav3DS>(getPath(partial, location));
 		}
 		
-		return std::make_unique<AudioOgg3DS>(path);
+		return std::make_unique<AudioOgg3DS>(getPath(partial, location));
 	}
 
-	std::unique_ptr<Font> Platform3DS::loadFont(const std::string& path, int size) {
-		return std::make_unique<Font3DS>(path, size, _buff);
+	std::unique_ptr<Font> Platform3DS::loadFont(const std::string& partial, int size) {
+		return std::make_unique<Font3DS>(getPath(partial, Location::ROM), size, _buff);
 	}
 
 	// Note: If there are no available channels the audio is silently discarded
@@ -273,9 +276,5 @@ namespace SuperHaxagon {
 
 		_messages.emplace_back(dbg, format);
 		if (_messages.size() > 32) _messages.pop_front();
-	}
-
-	Supports Platform3DS::supports() {
-		return Supports::FILESYSTEM | Supports::SHADOWS;
 	}
 }

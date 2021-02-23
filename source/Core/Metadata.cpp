@@ -1,15 +1,13 @@
 #include "Core/Metadata.hpp"
 
-#include <fstream>
 #include <sstream>
 
 namespace SuperHaxagon {
-	Metadata::Metadata(const std::string& path) {
-		std::ifstream metadata(path);
-		if (!metadata) return;
+	Metadata::Metadata(const std::unique_ptr<std::istream> stream) {
+		if (!stream || !*stream) return;
 		
 		std::string line;
-		while (std::getline(metadata, line)) {
+		while (std::getline(*stream, line)) {
 			std::stringstream values(line);
 			std::string label;
 			float time;
@@ -43,5 +41,18 @@ namespace SuperHaxagon {
 		}
 		
 		return event;
+	}
+
+	float Metadata::getMaxTime() {
+		auto max = 0.0f;
+		for (const auto& timestamp : _timestamps) {
+			for (auto time : timestamp.second) {
+				if (time > max) {
+					max = time;
+				}
+			}
+		}
+
+		return max;
 	}
 }

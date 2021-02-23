@@ -1,7 +1,7 @@
 # Note to future self:
 #
 # This file is pretty much a minimal copy of make_base modified to build for the
-# TI nSpire. Since the original project is archived, it would make more sense
+# TI-Nspire. Since the original project is archived, it would make more sense
 # to simply fork the original and merge them together. For now, I'll just keep
 # using this separate Makefile.
 
@@ -9,14 +9,18 @@
 # Configurable
 # ------------
 
-# Project name
+# Project Name
 EXE = haxagon
 
 # Directories
-SOURCE_DIRS := source/Core source/Factories source/States source/Driver/NSpire
+SOURCE_DIRS := source/Core source/Factories source/Objects source/States source/Driver/NSpire
 INCLUDE_DIRS := include
+ROMFS_DIR := romfs
 BUILD_DIR := build
 OUTPUT_DIR := output
+
+# RomFS Packable Extensions
+ROMFS_EXT = haxagon txt
 
 # Compilers
 CC = nspire-gcc
@@ -42,28 +46,35 @@ TARGET_OUTPUT_DIR := $(OUTPUT_DIR)/nspire-arm
 rwildcard=$(wildcard $1/$2) $(foreach d,$(wildcard $1/*),$(call rwildcard,$d,$2))
 
 OUTPUT_FILES := $(TARGET_OUTPUT_DIR)/$(EXE).tns $(TARGET_OUTPUT_DIR)/$(EXE).elf
-OBJECT_FILES := $(foreach dir,$(SOURCE_DIRS), \
-			$(patsubst %.bin,$(TARGET_BUILD_DIR)/%.bin.o,$(call rwildcard,$(dir),*.bin)) \
+ROMFS_OBJECT_FILES := $(foreach ext,$(ROMFS_EXT),$(patsubst %.$(ext),$(TARGET_BUILD_DIR)/%.o,$(call rwildcard,$(ROMFS_DIR),*.$(ext))))
+OBJECT_FILES := $(ROMFS_OBJECT_FILES) $(foreach dir,$(SOURCE_DIRS), \
 			$(patsubst %.c,$(TARGET_BUILD_DIR)/%.o,$(call rwildcard,$(dir),*.c)) \
 			$(patsubst %.cpp,$(TARGET_BUILD_DIR)/%.o,$(call rwildcard,$(dir),*.cpp)) \
-			$(patsubst %.s,$(TARGET_BUILD_DIR)/%.o,$(call rwildcard,$(dir),*.s)) \
 		)
 
 all: $(OUTPUT_FILES)
 
 $(TARGET_BUILD_DIR)/%.o: %.c
-	$(CC) $(CCFLAGS) -c $< -o $@
+	@echo $@
+	@$(CC) $(CCFLAGS) -c $< -o $@
+	
+$(TARGET_BUILD_DIR)/%.o: $(TARGET_BUILD_DIR)/%.cc
+	@echo $@
+	@$(CC) $(CCFLAGS) -x c -c $< -o $@
 
 $(TARGET_BUILD_DIR)/%.o: %.cpp
-	$(CXX) $(CXXFLAGS) -c $< -o $@
+	@echo $@
+	@$(CXX) $(CXXFLAGS) -c $< -o $@
 
 %.elf: $(OBJECT_FILES)
-	+$(LD) $^ -o $@ $(COMMONFLAGS) $(LDFLAGS)
+	@echo $@
+	@$(LD) $^ -o $@ $(COMMONFLAGS) $(LDFLAGS)
 
-%.tns: $(TARGET_BUILD_DIR)/$(EXE).elf
-	+$(GENZEHN) --input $^ --output $@.zehn
-	+make-prg $@.zehn $@
-	+rm $@.zehn
+%.tns: $(TARGET_OUTPUT_DIR)/$(EXE).elf
+	@echo $@
+	@$(GENZEHN) --input $^ --output $@.zehn
+	@make-prg $@.zehn $@
+	@rm $@.zehn
 
 .PHONY: clean
 clean:
@@ -81,5 +92,13 @@ $(dir $(1))_DIRECTORY_RULE_IS_DEFINED := 1
 endif
 endef
 
+define romfs
+.PRECIOUS: $$(TARGET_BUILD_DIR)/%.cc
+$$(TARGET_BUILD_DIR)/%.cc: %.$1
+	@echo $$@
+	@xxd -i $$< > $$@
+endef    
+
 $(foreach file,$(OBJECT_FILES),$(eval $(call createdirrule,$(file))))
 $(foreach file,$(OUTPUT_FILES),$(eval $(call createdirrule,$(file))))
+$(foreach extension,$(ROMFS_EXT),$(eval $(call romfs,$(extension))))

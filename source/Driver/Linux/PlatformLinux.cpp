@@ -13,12 +13,15 @@ namespace SuperHaxagon {
 		mkdir("./sdmc", 755);
 	}
 
-	std::string PlatformLinux::getPath(const std::string& partial) {
-		return std::string("./sdmc") + partial;
-	}
+	std::string PlatformLinux::getPath(const std::string& partial, const Location location) {
+		switch (location) {
+		case Location::ROM:
+			return std::string("./romfs") + partial;
+		case Location::USER:
+			return std::string("./sdmc") + partial;
+		}
 
-	std::string PlatformLinux::getPathRom(const std::string& partial) {
-		return std::string("./romfs") + partial;
+		return "";
 	}
 
 	void PlatformLinux::message(const Dbg dbg, const std::string& where, const std::string& message) {

@@ -2,17 +2,20 @@
 #define SUPER_HAXAGON_METADATA_HPP
 
 #include <map>
+#include <memory>
 #include <string>
 #include <vector>
 
 namespace SuperHaxagon {
 	class Metadata {
 	public:
-		explicit Metadata(const std::string& path);
+		explicit Metadata(std::unique_ptr<std::istream> stream);
 		~Metadata();
 		Metadata& operator=(const Metadata&) = delete;
 		
 		bool getMetadata(float time, const std::string& label);
+
+		float getMaxTime();
 
 	private:
 		float _time = 0;

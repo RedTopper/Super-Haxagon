@@ -3,7 +3,7 @@ NAME := Super Haxagon
 BUILD_DIR := build
 OUTPUT_DIR := output
 INCLUDE_DIRS := include
-SOURCE_DIRS := source/Core source/Factories source/States
+SOURCE_DIRS := source/Core source/Factories source/Objects source/States
 
 VERSION_PARTS := $(subst ., ,$(shell git describe --tags --abbrev=0))
 VERSION_MAJOR := $(word 1, $(VERSION_PARTS))

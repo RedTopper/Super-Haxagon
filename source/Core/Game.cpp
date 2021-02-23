@@ -14,15 +14,15 @@ namespace SuperHaxagon {
 
 	Game::Game(Platform& platform) : _platform(platform) {
 		// Audio loading
-		_sfxBegin = platform.loadAudio(platform.getPathRom("/sound/begin"), Stream::DIRECT);
-		_sfxHexagon = platform.loadAudio(platform.getPathRom("/sound/hexagon"), Stream::DIRECT);
-		_sfxOver = platform.loadAudio(platform.getPathRom("/sound/over"), Stream::DIRECT);
-		_sfxSelect = platform.loadAudio(platform.getPathRom("/sound/select"), Stream::DIRECT);
-		_sfxLevelUp = platform.loadAudio(platform.getPathRom("/sound/level"), Stream::DIRECT);
-		_sfxWonderful = platform.loadAudio(platform.getPathRom("/sound/wonderful"), Stream::DIRECT);
+		_sfxBegin = platform.loadAudio("/sound/begin", Stream::DIRECT, Location::ROM);
+		_sfxHexagon = platform.loadAudio("/sound/hexagon", Stream::DIRECT, Location::ROM);
+		_sfxOver = platform.loadAudio("/sound/over", Stream::DIRECT, Location::ROM);
+		_sfxSelect = platform.loadAudio("/sound/select", Stream::DIRECT, Location::ROM);
+		_sfxLevelUp = platform.loadAudio("/sound/level", Stream::DIRECT, Location::ROM);
+		_sfxWonderful = platform.loadAudio("/sound/wonderful", Stream::DIRECT, Location::ROM);
 
-		_small = platform.loadFont(platform.getPathRom("/bump-it-up"), 16);
-		_large = platform.loadFont(platform.getPathRom("/bump-it-up"), 32);
+		_small = platform.loadFont(platform.getPath("/bump-it-up", Location::ROM), 16);
+		_large = platform.loadFont(platform.getPath("/bump-it-up", Location::ROM), 32);
 
 		_twister = platform.getTwister();
 	}
@@ -204,30 +204,14 @@ namespace SuperHaxagon {
 		return std::min(size.x, size.y);
 	}
 
-	void Game::loadBGMAudio(const LevelFactory& factory) {
-		const auto base = "/bgm" + factory.getMusic();
-		std::string path;
-		std::string pathMeta;
+	void Game::loadBGMAudio(const std::string& music, const Location location, const bool loadMetadata) {
+		const auto base = "/bgm" + music;
 
-		if (factory.getLocation() == LocLevel::INTERNAL) {
-			path = _platform.getPathRom(base);
-			pathMeta = _platform.getPathRom(base + ".txt");
+		if (loadMetadata) {
+			_bgmMetadata = std::make_unique<Metadata>(_platform.openFile(base + ".txt", location));
 		}
-		else if (factory.getLocation() == LocLevel::EXTERNAL) {
-			path = _platform.getPath(base);
-			pathMeta = _platform.getPath(base + ".txt");
-		}
-
-		_bgmAudio = _platform.loadAudio(path, Stream::INDIRECT);
-		_bgmMetadata = std::make_unique<Metadata>(pathMeta);
+		
+		_bgmAudio = _platform.loadAudio(base, Stream::INDIRECT, location);
 		_platform.playBGM(*getBGMAudio());
-	}
-
-	void Game::setBGMAudio(std::unique_ptr<Audio> audio) {
-		_bgmAudio = std::move(audio);
-	}
-
-	void Game::setBGMMetadata(std::unique_ptr<Metadata> metadata) {
-		_bgmMetadata = std::move(metadata);
 	}
 }

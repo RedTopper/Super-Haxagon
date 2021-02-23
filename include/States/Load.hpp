@@ -6,6 +6,7 @@
 #include "Core/Structs.hpp"
 
 namespace SuperHaxagon {
+	enum class Location;
 	class Game;
 	class Platform;
 
@@ -20,7 +21,7 @@ namespace SuperHaxagon {
 		Load(Load&) = delete;
 		~Load() override;
 
-		bool loadLevels(std::istream& stream, LocLevel location) const;
+		bool loadLevels(std::istream& stream, Location location) const;
 		bool loadScores(std::istream& stream) const;
 
 		std::unique_ptr<State> update(float dilation) override;

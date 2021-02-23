@@ -4,6 +4,7 @@
 #include <deque>
 #include <memory>
 #include <vector>
+#include <string>
 
 namespace SuperHaxagon {
 	// Maybe I went a bit overboard with PImpl...
@@ -18,6 +19,7 @@ namespace SuperHaxagon {
 	class Twist;
 	class Font;
 	class Metadata;
+	enum class Location;
 
 	class Game {
 	public:
@@ -41,9 +43,7 @@ namespace SuperHaxagon {
 		Font& getFontLarge() const;
 		float getScreenDimMax() const;
 		float getScreenDimMin() const;
-		void loadBGMAudio(const LevelFactory& factory);
-		void setBGMAudio(std::unique_ptr<Audio> audio);
-		void setBGMMetadata(std::unique_ptr<Metadata> metadata);
+		void loadBGMAudio(const std::string& music, Location location, bool loadMetadata);
 
 		void setRunning(const bool running) {_running = running;}
 		void setSkew(const float skew) {_skew = skew;}

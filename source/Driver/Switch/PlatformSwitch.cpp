@@ -191,20 +191,23 @@ namespace SuperHaxagon {
 		_bgm->play();
 	}
 
-	std::string PlatformSwitch::getPath(const std::string& partial) {
-		return "sdmc:/switch/SuperHaxagon" + partial;
+	std::string PlatformSwitch::getPath(const std::string& partial, const Location location) {
+		switch (location) {
+		case Location::ROM:
+			return "romfs:" + partial;
+		case Location::USER:
+			return "sdmc:/switch/SuperHaxagon" + partial;
+		}
+
+		return "";
 	}
 
-	std::string PlatformSwitch::getPathRom(const std::string& partial) {
-		return "romfs:" + partial;
+	std::unique_ptr<Audio> PlatformSwitch::loadAudio(const std::string& partial, Stream stream, const Location location) {
+		return std::make_unique<AudioSwitch>(*this, getPath(partial, location), stream);
 	}
 
-	std::unique_ptr<Audio> PlatformSwitch::loadAudio(const std::string& path, Stream stream) {
-		return std::make_unique<AudioSwitch>(*this, path, stream);
-	}
-
-	std::unique_ptr<Font> PlatformSwitch::loadFont(const std::string& path, int size) {
-		return std::make_unique<FontSwitch>(*this, path, size);
+	std::unique_ptr<Font> PlatformSwitch::loadFont(const std::string& partial, int size) {
+		return std::make_unique<FontSwitch>(*this, getPath(partial, Location::ROM), size);
 	}
 
 	std::string PlatformSwitch::getButtonName(const Buttons& button) {
@@ -238,10 +241,6 @@ namespace SuperHaxagon {
 		glClearColor(0.2f, 0.3f, 0.8f, 1.0f);
 		glClearDepth(0.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	}
-
-	void PlatformSwitch::screenSwap() {
-		// Nothing to do, the switch only has one screen
 	}
 
 	void PlatformSwitch::screenFinalize() {
@@ -340,10 +339,6 @@ namespace SuperHaxagon {
 
 		_messages.emplace_back(dbg, format);
 		if (_messages.size() > 32) _messages.pop_front();
-	}
-
-	Supports PlatformSwitch::supports() {
-		return Supports::FILESYSTEM | Supports::SHADOWS;
 	}
 
 	bool PlatformSwitch::initEGL() {

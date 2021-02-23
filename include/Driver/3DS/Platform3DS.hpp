@@ -19,10 +19,9 @@ namespace SuperHaxagon {
 		bool loop() override;
 		float getDilation() override;
 
-		std::string getPath(const std::string& partial) override;
-		std::string getPathRom(const std::string& partial) override;
-		std::unique_ptr<Audio> loadAudio(const std::string& path, SuperHaxagon::Stream stream) override;
-		std::unique_ptr<Font> loadFont(const std::string& path, int size) override;
+		std::string getPath(const std::string& partial, Location location) override;
+		std::unique_ptr<Audio> loadAudio(const std::string& partial, Stream stream, Location location) override;
+		std::unique_ptr<Font> loadFont(const std::string& partial, int size) override;
 
 		void playSFX(Audio& audio) override;
 		void playBGM(Audio& audio) override;
@@ -40,7 +39,6 @@ namespace SuperHaxagon {
 
 		void shutdown() override;
 		void message(Dbg dbg, const std::string& where, const std::string& message) override;
-		Supports supports() override;
 
 	private:
 		std::unique_ptr<Player> _sfx[MAX_TRACKS]{};

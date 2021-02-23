@@ -2,10 +2,10 @@
 
 #include "Core/Structs.hpp"
 #include "Core/Twist.hpp"
-#include "Driver/3DS/AudioOgg3DS.hpp"
-#include "Driver/3DS/AudioWav3DS.hpp"
+#include "Driver/3DS/AudioLoaderOgg3DS.hpp"
+#include "Driver/3DS/AudioLoaderWav3DS.hpp"
+#include "Driver/3DS/AudioPlayerOgg3DS.hpp"
 #include "Driver/3DS/Font3DS.hpp"
-#include "Driver/3DS/PlayerOgg3DS.hpp"
 
 #include <array>
 #include <iostream>
@@ -64,8 +64,8 @@ namespace SuperHaxagon {
 		// Setup NDSP
 		ndspInit();
 		ndspSetOutputMode(NDSP_OUTPUT_STEREO);
-		ndspSetCallback(PlayerOgg3DS::audioCallback, nullptr);
-		LightEvent_Init(&PlayerOgg3DS::_event, RESET_ONESHOT);
+		ndspSetCallback(AudioPlayerOgg3DS::audioCallback, nullptr);
+		LightEvent_Init(&AudioPlayerOgg3DS::_event, RESET_ONESHOT);
 
 		mkdir("sdmc:/3ds", 0777);
 		mkdir("sdmc:/3ds/data", 0777);
@@ -117,12 +117,12 @@ namespace SuperHaxagon {
 		return "";
 	}
 
-	std::unique_ptr<Audio> Platform3DS::loadAudio(const std::string& partial, const Stream stream, const Location location) {
+	std::unique_ptr<AudioLoader> Platform3DS::loadAudio(const std::string& partial, const Stream stream, const Location location) {
 		if (stream == Stream::DIRECT) {
-			return std::make_unique<AudioWav3DS>(getPath(partial, location));
+			return std::make_unique<AudioLoaderWav3DS>(getPath(partial, location));
 		}
 		
-		return std::make_unique<AudioOgg3DS>(getPath(partial, location));
+		return std::make_unique<AudioLoaderOgg3DS>(getPath(partial, location));
 	}
 
 	std::unique_ptr<Font> Platform3DS::loadFont(const std::string& partial, int size) {
@@ -130,7 +130,7 @@ namespace SuperHaxagon {
 	}
 
 	// Note: If there are no available channels the audio is silently discarded
-	void Platform3DS::playSFX(Audio& audio) {
+	void Platform3DS::playSFX(AudioLoader& audio) {
 		auto channel = 1;
 		for (auto& player : _sfx) {
 			if (!player || player->isDone()) {
@@ -146,7 +146,7 @@ namespace SuperHaxagon {
 		}
 	}
 
-	void Platform3DS::playBGM(Audio& audio) {
+	void Platform3DS::playBGM(AudioLoader& audio) {
 		_bgm = audio.instantiate();
 		if (!_bgm) return;
 		_bgm->setChannel(0);

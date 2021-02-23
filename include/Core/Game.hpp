@@ -11,7 +11,7 @@ namespace SuperHaxagon {
 	struct Point;
 	struct Color;
 	class LevelFactory;
-	class Audio;
+	class AudioLoader;
 	class State;
 	class Pattern;
 	class Wall;
@@ -31,13 +31,13 @@ namespace SuperHaxagon {
 
 		Platform& getPlatform() const {return _platform;}
 		Twist& getTwister() const {return *_twister;}
-		Audio& getSFXBegin() const {return *_sfxBegin;}
-		Audio& getSFXHexagon() const {return *_sfxHexagon;}
-		Audio& getSFXOver() const {return *_sfxOver;}
-		Audio& getSFXSelect() const {return *_sfxSelect;}
-		Audio& getSFXLevelUp() const {return *_sfxLevelUp;}
-		Audio& getSFXWonderful() const {return *_sfxWonderful;}
-		Audio* getBGMAudio() const {return _bgmAudio.get();}
+		AudioLoader& getSFXBegin() const {return *_sfxBegin;}
+		AudioLoader& getSFXHexagon() const {return *_sfxHexagon;}
+		AudioLoader& getSFXOver() const {return *_sfxOver;}
+		AudioLoader& getSFXSelect() const {return *_sfxSelect;}
+		AudioLoader& getSFXLevelUp() const {return *_sfxLevelUp;}
+		AudioLoader& getSFXWonderful() const {return *_sfxWonderful;}
+		AudioLoader* getBGMAudio() const {return _bgmAudio.get();}
 		Metadata* getBGMMetadata() const {return _bgmMetadata.get();}
 		Font& getFontSmall() const;
 		Font& getFontLarge() const;
@@ -117,14 +117,14 @@ namespace SuperHaxagon {
 		std::unique_ptr<State> _state;
 
 		// Should really be an array of sfx
-		std::unique_ptr<Audio> _sfxBegin;
-		std::unique_ptr<Audio> _sfxHexagon;
-		std::unique_ptr<Audio> _sfxOver;
-		std::unique_ptr<Audio> _sfxSelect;
-		std::unique_ptr<Audio> _sfxLevelUp;
-		std::unique_ptr<Audio> _sfxWonderful;
+		std::unique_ptr<AudioLoader> _sfxBegin;
+		std::unique_ptr<AudioLoader> _sfxHexagon;
+		std::unique_ptr<AudioLoader> _sfxOver;
+		std::unique_ptr<AudioLoader> _sfxSelect;
+		std::unique_ptr<AudioLoader> _sfxLevelUp;
+		std::unique_ptr<AudioLoader> _sfxWonderful;
 		
-		std::unique_ptr<Audio> _bgmAudio;
+		std::unique_ptr<AudioLoader> _bgmAudio;
 		std::unique_ptr<Metadata> _bgmMetadata;
 		
 		std::unique_ptr<Font> _small;

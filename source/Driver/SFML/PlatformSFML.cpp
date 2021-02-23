@@ -1,9 +1,9 @@
 #include "Driver/SFML/PlatformSFML.hpp"
 
 #include "Core/Structs.hpp"
-#include "Driver/SFML/AudioSFML.hpp"
+#include "Driver/SFML/AudioLoaderSFML.hpp"
 #include "Driver/SFML/FontSFML.hpp"
-#include "Driver/SFML/PlayerSoundSFML.hpp"
+#include "Driver/SFML/AudioPlayerSoundSFML.hpp"
 
 #include <array>
 #include <string>
@@ -59,15 +59,15 @@ namespace SuperHaxagon {
 		return dilation > 4.0f ? 4.0f : (dilation < 0.05f ? 0.05f : dilation);
 	}
 
-	std::unique_ptr<Audio> PlatformSFML::loadAudio(const std::string& path, Stream stream, Location location) {
-		return std::make_unique<AudioSFML>(getPath(path, location), stream);
+	std::unique_ptr<AudioLoader> PlatformSFML::loadAudio(const std::string& path, Stream stream, Location location) {
+		return std::make_unique<AudioLoaderSFML>(getPath(path, location), stream);
 	}
 
 	std::unique_ptr<Font> PlatformSFML::loadFont(const std::string& path, const int size) {
 		return std::make_unique<FontSFML>(*this, path, static_cast<float>(size));
 	}
 
-	void PlatformSFML::playSFX(Audio& audio) {
+	void PlatformSFML::playSFX(AudioLoader& audio) {
 		for (auto it = _sfx.begin(); it != _sfx.end();) {
 			auto& playing = *it;
 			if (playing->isDone()) {
@@ -84,7 +84,7 @@ namespace SuperHaxagon {
 		_sfx.emplace_back(std::move(player));
 	}
 
-	void PlatformSFML::playBGM(Audio& audio) {
+	void PlatformSFML::playBGM(AudioLoader& audio) {
 		_bgm = audio.instantiate();
 		if (!_bgm) return;
 		_bgm->setLoop(true);

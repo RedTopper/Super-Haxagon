@@ -35,7 +35,7 @@ COMMONFLAGS += -Wall -W -marm -ffast-math -mcpu=arm926ej-s -fno-math-errno -fomi
 CCFLAGS := $(COMMONFLAGS)
 CXXFLAGS := $(COMMONFLAGS) -fno-rtti -std=gnu++17
 LDFLAGS = -lm -lnspireio
-ZEHNFLAGS = --name "Super-Haxagon" --version 00
+ZEHNFLAGS = --name "Super-Haxagon" --version 00 --240x320-support true
 
 # --------
 # Internal
@@ -72,7 +72,7 @@ $(TARGET_BUILD_DIR)/%.o: %.cpp
 
 %.tns: $(TARGET_OUTPUT_DIR)/$(EXE).elf
 	@echo $@
-	@$(GENZEHN) --input $^ --output $@.zehn
+	@$(GENZEHN) $(ZEHNFLAGS) --input $^ --output $@.zehn
 	@make-prg $@.zehn $@
 	@rm $@.zehn
 

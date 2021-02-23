@@ -1,15 +1,15 @@
-#ifndef SUPER_HAXAGON_PLAYER_SFX_SWITCH_H
-#define SUPER_HAXAGON_PLAYER_SFX_SWITCH_H
+#ifndef SUPER_HAXAGON_AUDIO_PLAYER_SFX_SWITCH_HPP
+#define SUPER_HAXAGON_AUDIO_PLAYER_SFX_SWITCH_HPP
 
-#include "Core/Player.hpp"
+#include "Core/AudioPlayer.hpp"
 
 #include <SDL2/SDL_mixer.h>
 
 namespace SuperHaxagon {
-	class PlayerSfxSwitch : public Player {
+	class AudioPlayerSfxSwitch : public AudioPlayer {
 	public:
-		explicit PlayerSfxSwitch(Mix_Chunk* sfx);
-		~PlayerSfxSwitch() override;
+		explicit AudioPlayerSfxSwitch(Mix_Chunk* sfx);
+		~AudioPlayerSfxSwitch() override;
 
 		void setChannel(int) override {};
 		void setLoop(bool) override {};
@@ -25,4 +25,4 @@ namespace SuperHaxagon {
 }
 
 
-#endif //SUPER_HAXAGON_PLAYER_SFX_SWITCH_H
+#endif //SUPER_HAXAGON_PLAYER_SFX_SWITCH_HPP

@@ -26,10 +26,10 @@ namespace SuperHaxagon {
 
 		std::string getPath(const std::string& partial, Location location) override;
 		std::unique_ptr<Font> loadFont(const std::string& partial, int size) override;
-		std::unique_ptr<Audio> loadAudio(const std::string& partial, Stream stream, Location location) override;
+		std::unique_ptr<AudioLoader> loadAudio(const std::string& partial, Stream stream, Location location) override;
 
-		void playSFX(Audio& audio) override;
-		void playBGM(Audio& audio) override;
+		void playSFX(AudioLoader& audio) override;
+		void playBGM(AudioLoader& audio) override;
 
 		std::string getButtonName(const Buttons& button) override;
 		Buttons getPressed() override;

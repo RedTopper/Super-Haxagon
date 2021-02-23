@@ -43,11 +43,11 @@ include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
 find_package(SFML 2 COMPONENTS system window graphics audio)
 
 add_executable(SuperHaxagon WIN32 ${DRIVER}
-    source/Driver/SFML/PlatformSFML.cpp
-    source/Driver/SFML/AudioSFML.cpp
+    source/Driver/SFML/AudioLoaderSFML.cpp
+    source/Driver/SFML/AudioPlayerSoundSFML.cpp
+    source/Driver/SFML/AudioPlayerMusicSFML.cpp
     source/Driver/SFML/FontSFML.cpp
-    source/Driver/SFML/PlayerSoundSFML.cpp
-    source/Driver/SFML/PlayerMusicSFML.cpp
+    source/Driver/SFML/PlatformSFML.cpp
 
     source/States/Load.cpp
     source/States/Menu.cpp

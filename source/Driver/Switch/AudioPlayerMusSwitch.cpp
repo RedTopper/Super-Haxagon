@@ -1,19 +1,19 @@
-#include "Driver/Switch/PlayerMusSwitch.hpp"
+#include "Driver/Switch/AudioPlayerMusSwitch.hpp"
 
 #include <switch/arm/counter.h>
 
 namespace SuperHaxagon {
-	PlayerMusSwitch::PlayerMusSwitch(Mix_Music* music) : _music(music) {}
+	AudioPlayerMusSwitch::AudioPlayerMusSwitch(Mix_Music* music) : _music(music) {}
 
-	PlayerMusSwitch::~PlayerMusSwitch() {
+	AudioPlayerMusSwitch::~AudioPlayerMusSwitch() {
 		Mix_HaltMusic();
 	}
 
-	void PlayerMusSwitch::setLoop(const bool loop) {
+	void AudioPlayerMusSwitch::setLoop(const bool loop) {
 		_loop = loop;
 	}
 
-	void PlayerMusSwitch::play() {
+	void AudioPlayerMusSwitch::play() {
 		if (isDone()) {
 			// For the switch, we only play the music once and restart it in the platform.
 			// This is because we need to detect when the music is over in order to reset the timers.
@@ -30,23 +30,23 @@ namespace SuperHaxagon {
 		Mix_ResumeMusic();
 	}
 
-	void PlayerMusSwitch::pause() {
+	void AudioPlayerMusSwitch::pause() {
 		_diff = getNow();
 		Mix_PauseMusic();
 	}
 
-	bool PlayerMusSwitch::isDone() const {
+	bool AudioPlayerMusSwitch::isDone() const {
 		// Note that Mix_PlayingMusic does not check if the channel is paused.
 		return !Mix_PlayingMusic();
 	}
 
-	float PlayerMusSwitch::getTime() const {
+	float AudioPlayerMusSwitch::getTime() const {
 		// If we set diff (paused), we are frozen in time. Otherwise, the current timestamp is
 		// the system minus the start of the song.
 		return _diff > 0 ? _diff - _start : getNow() - _start;
 	}
 
-	float PlayerMusSwitch::getNow() const {
+	float AudioPlayerMusSwitch::getNow() const {
 		// Note that this is kind of a shitty way to do this: if the user presses the
 		// home button while the game is running (and not at a game over screen) the
 		// clock will get offset from the music. I personally am not going to fix this,

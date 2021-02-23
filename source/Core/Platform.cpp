@@ -11,7 +11,7 @@ namespace SuperHaxagon {
 		_bgm = nullptr;
 	}
 	
-	Player* Platform::getBGM() {
+	AudioPlayer* Platform::getBGM() {
 		return _bgm.get();
 	}
 

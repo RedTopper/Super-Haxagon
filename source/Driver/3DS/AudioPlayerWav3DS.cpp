@@ -1,7 +1,7 @@
-#include "Driver/3DS/PlayerWav3DS.hpp"
+#include "Driver/3DS/AudioPlayerWav3DS.hpp"
 
 namespace SuperHaxagon {
-	PlayerWav3DS::PlayerWav3DS(u8* data, const u32 sampleRate, const u32 dataSize, const u16 channels, const u16 bitsPerSample, const u16 ndspFormat) :
+	AudioPlayerWav3DS::AudioPlayerWav3DS(u8* data, const u32 sampleRate, const u32 dataSize, const u16 channels, const u16 bitsPerSample, const u16 ndspFormat) :
 			_data(data),
 			_sampleRate(sampleRate),
 			_dataSize(dataSize),
@@ -10,11 +10,11 @@ namespace SuperHaxagon {
 			_ndspFormat(ndspFormat)
 	{}
 
-	PlayerWav3DS::~PlayerWav3DS() {
+	AudioPlayerWav3DS::~AudioPlayerWav3DS() {
 		ndspChnWaveBufClear(_channel);
 	}
 
-	void PlayerWav3DS::play() {
+	void AudioPlayerWav3DS::play() {
 		float mix[12]{};
 		mix[0] = 1.0;
 		mix[1] = 1.0;
@@ -32,11 +32,11 @@ namespace SuperHaxagon {
 		ndspChnWaveBufAdd(_channel, &_buffer);
 	}
 
-	bool PlayerWav3DS::isDone() const {
+	bool AudioPlayerWav3DS::isDone() const {
 		return _buffer.status == NDSP_WBUF_DONE;
 	}
 
-	float PlayerWav3DS::getTime() const {
+	float AudioPlayerWav3DS::getTime() const {
 		// Don't care about the time of WAV files
 		return 0;
 	}

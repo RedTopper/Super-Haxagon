@@ -1,7 +1,7 @@
-#ifndef SUPER_HAXAGON_PLAYER_OGG_3DS_HPP
-#define SUPER_HAXAGON_PLAYER_OGG_3DS_HPP
+#ifndef SUPER_HAXAGON_AUDIO_PLAYER_OGG_3DS_HPP
+#define SUPER_HAXAGON_AUDIO_PLAYER_OGG_3DS_HPP
 
-#include "Core/Player.hpp"
+#include "Core/AudioPlayer.hpp"
 
 #include <3ds.h>
 #include <3ds/synchronization.h>
@@ -12,13 +12,13 @@
 struct stb_vorbis;
 
 namespace SuperHaxagon {
-	class PlayerOgg3DS : public Player {
+	class AudioPlayerOgg3DS : public AudioPlayer {
 	public:
 		static constexpr int THREAD_AFFINITY = -1;
 		static constexpr int THREAD_STACK_SZ = 32 * 1024;
 
-		explicit PlayerOgg3DS(const std::string& path);
-		~PlayerOgg3DS() override;
+		explicit AudioPlayerOgg3DS(const std::string& path);
+		~AudioPlayerOgg3DS() override;
 
 		static void audioCallback(void*);
 		static LightEvent _event;
@@ -52,4 +52,4 @@ namespace SuperHaxagon {
 	};
 }
 
-#endif //SUPER_HAXAGON_PLAYER_OGG_3DS_HPP
+#endif //SUPER_HAXAGON_AUDIO_PLAYER_OGG_3DS_HPP

@@ -1,7 +1,7 @@
 #include "Driver/NSpire/PlatformNSpire.hpp"
 
 #include "Core/Twist.hpp"
-#include "Driver/NSpire/AudioNSpire.hpp"
+#include "Driver/NSpire/AudioLoaderNspire.hpp"
 #include "Driver/NSpire/FontNSpire.hpp"
 #include "Driver/NSpire/MemoryFS.hpp"
 #include "Driver/NSpire/timer.h"
@@ -28,7 +28,7 @@ namespace SuperHaxagon {
 		const auto elapsed = static_cast<float>(TIMER_1S - timer) / TIMER_1S;
 		if (_bgm) {
 			// Trust me I know what I'm doing with my types, compiler.
-			auto* bgm = reinterpret_cast<PlayerNSpire*>(_bgm.get());
+			auto* bgm = reinterpret_cast<AudioPlayerNspire*>(_bgm.get());
 			bgm->addTime(elapsed);
 			if (bgm->isDone()) bgm->play();
 		}
@@ -62,15 +62,15 @@ namespace SuperHaxagon {
 		return MemoryFS::openFile(partial);
 	}
 
-	std::unique_ptr<Audio> PlatformNSpire::loadAudio(const std::string& partial, Stream, const Location location) {
-		return std::make_unique<AudioNSpire>(openFile(partial + ".txt", location));
+	std::unique_ptr<AudioLoader> PlatformNSpire::loadAudio(const std::string& partial, Stream, const Location location) {
+		return std::make_unique<AudioLoaderNspire>(openFile(partial + ".txt", location));
 	}
 
 	std::unique_ptr<Font> PlatformNSpire::loadFont(const std::string&, int size) {
 		return std::make_unique<FontNSpire>(size);
 	}
 
-	void PlatformNSpire::playBGM(Audio& audio) {
+	void PlatformNSpire::playBGM(AudioLoader& audio) {
 		_bgm = audio.instantiate();
 		if (!_bgm) return;
 		_bgm->setLoop(true);

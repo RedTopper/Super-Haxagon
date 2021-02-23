@@ -1,13 +1,13 @@
-#include "Driver/3DS/PlayerOgg3DS.hpp"
+#include "Driver/3DS/AudioPlayerOgg3DS.hpp"
 
 #include <stb_vorbis.c>
 
 namespace SuperHaxagon {
 	const int BUFFER_MS = 200;
 
-	LightEvent PlayerOgg3DS::_event{};
+	LightEvent AudioPlayerOgg3DS::_event{};
 
-	PlayerOgg3DS::PlayerOgg3DS(const std::string& path) {
+	AudioPlayerOgg3DS::AudioPlayerOgg3DS(const std::string& path) {
 		_loaded = false;
 
 		auto error = 0;
@@ -33,7 +33,7 @@ namespace SuperHaxagon {
 		_loaded = true;
 	}
 
-	PlayerOgg3DS::~PlayerOgg3DS() {
+	AudioPlayerOgg3DS::~AudioPlayerOgg3DS() {
 		if (!_loaded) return;
 
 		_quit = true;
@@ -50,15 +50,15 @@ namespace SuperHaxagon {
 		stb_vorbis_close(_oggFile);
 	}
 
-	void PlayerOgg3DS::setChannel(const int channel) {
+	void AudioPlayerOgg3DS::setChannel(const int channel) {
 		_channel = channel;
 	}
 
-	void PlayerOgg3DS::setLoop(const bool loop) {
+	void AudioPlayerOgg3DS::setLoop(const bool loop) {
 		_loop = loop;
 	}
 
-	void PlayerOgg3DS::play() {
+	void AudioPlayerOgg3DS::play() {
 		if (!_loaded) return;
 
 		if (_thread) {
@@ -86,16 +86,16 @@ namespace SuperHaxagon {
 		_start = svcGetSystemTick();
 	}
 
-	void PlayerOgg3DS::pause() {
+	void AudioPlayerOgg3DS::pause() {
 		ndspChnSetPaused(_channel, true);
 		_diff = svcGetSystemTick();
 	}
 
-	bool PlayerOgg3DS::isDone() const {
+	bool AudioPlayerOgg3DS::isDone() const {
 		return !_quit;
 	}
 
-	float PlayerOgg3DS::getTime() const {
+	float AudioPlayerOgg3DS::getTime() const {
 		if (!_loaded) return 0;
 
 		// If we set diff (paused), we are frozen in time. Otherwise, the current timestamp is
@@ -105,7 +105,7 @@ namespace SuperHaxagon {
 		return timeMs / 1000.0f;
 	}
 
-	bool PlayerOgg3DS::audioDecode(stb_vorbis* file, ndspWaveBuf* buff, const int channel) {
+	bool AudioPlayerOgg3DS::audioDecode(stb_vorbis* file, ndspWaveBuf* buff, const int channel) {
 		long totalSamples = 0;
 
 		while (totalSamples < static_cast<long>(getSamplesPerBuff(file->sample_rate))) {
@@ -125,12 +125,12 @@ namespace SuperHaxagon {
 		return true;
 	}
 
-	void PlayerOgg3DS::audioCallback(void*) {
+	void AudioPlayerOgg3DS::audioCallback(void*) {
 		LightEvent_Signal(&_event);
 	}
 
-	void PlayerOgg3DS::audioThread(void* const self) {
-		auto* pointer = static_cast<PlayerOgg3DS*>(self);
+	void AudioPlayerOgg3DS::audioThread(void* const self) {
+		auto* pointer = static_cast<AudioPlayerOgg3DS*>(self);
 		if (!pointer) return;
 
 		while(!pointer->_quit) {
@@ -153,11 +153,11 @@ namespace SuperHaxagon {
 		}
 	}
 
-	unsigned int PlayerOgg3DS::getSamplesPerBuff(const unsigned int sampleRate) {
+	unsigned int AudioPlayerOgg3DS::getSamplesPerBuff(const unsigned int sampleRate) {
 		return sampleRate * BUFFER_MS / 1000;
 	}
 
-	unsigned int PlayerOgg3DS::getWaveBuffSize(const unsigned int sampleRate, const int channels) {
+	unsigned int AudioPlayerOgg3DS::getWaveBuffSize(const unsigned int sampleRate, const int channels) {
 		return getSamplesPerBuff(sampleRate) * channels * sizeof(int16_t);
 	}
 }

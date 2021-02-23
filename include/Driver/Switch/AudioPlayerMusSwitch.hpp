@@ -1,15 +1,15 @@
-#ifndef SUPER_HAXAGON_PLAYER_MUS_SWITCH_H
-#define SUPER_HAXAGON_PLAYER_MUS_SWITCH_H
+#ifndef SUPER_HAXAGON_AUDIO_PLAYER_MUS_SWITCH_HPP
+#define SUPER_HAXAGON_AUDIO_PLAYER_MUS_SWITCH_HPP
 
-#include "Core/Player.hpp"
+#include "Core/AudioPlayer.hpp"
 
 #include <SDL2/SDL_mixer.h>
 
 namespace SuperHaxagon {
-	class PlayerMusSwitch : public Player {
+	class AudioPlayerMusSwitch : public AudioPlayer {
 	public:
-		explicit PlayerMusSwitch(Mix_Music* music);
-		~PlayerMusSwitch() override;
+		explicit AudioPlayerMusSwitch(Mix_Music* music);
+		~AudioPlayerMusSwitch() override;
 
 		void setChannel(int) override {};
 		void setLoop(bool loop) override;
@@ -31,4 +31,4 @@ namespace SuperHaxagon {
 }
 
 
-#endif //SUPER_HAXAGON_PLAYER_MUS_SWITCH_H
+#endif //SUPER_HAXAGON_AUDIO_PLAYER_MUS_SWITCH_HPP

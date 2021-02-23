@@ -4,7 +4,7 @@
 #include "Core/Metadata.hpp"
 #include "Core/Font.hpp"
 #include "Core/Platform.hpp"
-#include "Core/Player.hpp"
+#include "Core/AudioPlayer.hpp"
 #include "Factories/LevelFactory.hpp"
 #include "Objects/Level.hpp"
 #include "States/Over.hpp"

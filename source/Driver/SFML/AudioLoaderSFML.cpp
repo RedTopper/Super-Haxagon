@@ -1,10 +1,10 @@
-#include "Driver/SFML/AudioSFML.hpp"
+#include "Driver/SFML/AudioLoaderSFML.hpp"
 
-#include "Driver/SFML/PlayerMusicSFML.hpp"
-#include "Driver/SFML/PlayerSoundSFML.hpp"
+#include "Driver/SFML/AudioPlayerMusicSFML.hpp"
+#include "Driver/SFML/AudioPlayerSoundSFML.hpp"
 
 namespace SuperHaxagon {
-	AudioSFML::AudioSFML(const std::string& path, const Stream stream) {
+	AudioLoaderSFML::AudioLoaderSFML(const std::string& path, const Stream stream) {
 		if (stream == Stream::DIRECT) {
 			_buffer = std::make_unique<sf::SoundBuffer>();
 			if (_buffer->loadFromFile(path + ".wav")) {
@@ -18,18 +18,18 @@ namespace SuperHaxagon {
 		}
 	}
 
-	AudioSFML::~AudioSFML() = default;
+	AudioLoaderSFML::~AudioLoaderSFML() = default;
 
-	std::unique_ptr<Player> AudioSFML::instantiate() {
+	std::unique_ptr<AudioPlayer> AudioLoaderSFML::instantiate() {
 		if (_stream == Stream::DIRECT) {
 			auto sound = std::make_unique<sf::Sound>();
 			sound->setBuffer(*_buffer);
-			return std::make_unique<PlayerSoundSFML>(std::move(sound));
+			return std::make_unique<AudioPlayerSoundSFML>(std::move(sound));
 		}
 
 		if (_stream == Stream::INDIRECT) {
 			_stream = Stream::NONE;
-			return std::make_unique<PlayerMusicSFML>(std::move(_music));
+			return std::make_unique<AudioPlayerMusicSFML>(std::move(_music));
 		}
 
 		return nullptr;

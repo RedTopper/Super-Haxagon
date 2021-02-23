@@ -1,13 +1,13 @@
-#ifndef SUPER_HAXAGON_PLAYER_NSPIRE_HPP
-#define SUPER_HAXAGON_PLAYER_NSPIRE_HPP
+#ifndef SUPER_HAXAGON_AUDIO_PLAYER_NSPIRE_HPP
+#define SUPER_HAXAGON_AUDIO_PLAYER_NSPIRE_HPP
 
-#include "Core/Player.hpp"
+#include "Core/AudioPlayer.hpp"
 
 namespace SuperHaxagon {
-	class PlayerNSpire : public Player {
+	class AudioPlayerNspire : public AudioPlayer {
 	public:
-		explicit PlayerNSpire(float maxTime);
-		~PlayerNSpire() override = default;
+		explicit AudioPlayerNspire(float maxTime);
+		~AudioPlayerNspire() override = default;
 
 		void setChannel(int) override {}
 		void setLoop(bool) override {}
@@ -27,4 +27,4 @@ namespace SuperHaxagon {
 }
 
 
-#endif //SUPER_HAXAGON_PLAYER_NSPIRE_HPP
+#endif //SUPER_HAXAGON_AUDIO_PLAYER_NSPIRE_HPP

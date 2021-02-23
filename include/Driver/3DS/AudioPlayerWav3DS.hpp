@@ -1,15 +1,15 @@
-#ifndef SUPER_HAXAGON_PLAYER_3DS_HPP
-#define SUPER_HAXAGON_PLAYER_3DS_HPP
+#ifndef SUPER_HAXAGON_AUDIO_PLAYER_WAV_3DS_HPP
+#define SUPER_HAXAGON_AUDIO_PLAYER_WAV_3DS_HPP
 
-#include "Core/Player.hpp"
+#include "Core/AudioPlayer.hpp"
 
 #include <3ds.h>
 
 namespace SuperHaxagon {
-	class PlayerWav3DS : public Player {
+	class AudioPlayerWav3DS : public AudioPlayer {
 	public:
-		PlayerWav3DS(u8* data, u32 sampleRate, u32 dataSize, u16 channels, u16 bitsPerSample, u16 ndspFormat);
-		~PlayerWav3DS() override;
+		AudioPlayerWav3DS(u8* data, u32 sampleRate, u32 dataSize, u16 channels, u16 bitsPerSample, u16 ndspFormat);
+		~AudioPlayerWav3DS() override;
 
 		void setChannel(const int channel) override { _channel = channel; }
 		void setLoop(const bool loop) override { _loop = loop; }
@@ -34,4 +34,4 @@ namespace SuperHaxagon {
 	};
 }
 
-#endif //SUPER_HAXAGON_PLAYER_3DS_HPP
+#endif //SUPER_HAXAGON_AUDIO_PLAYER_WAV_3DS_HPP

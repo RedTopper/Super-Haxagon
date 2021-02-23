@@ -1,12 +1,12 @@
-#ifndef SUPER_HAXAGON_PLAYER_HPP
-#define SUPER_HAXAGON_PLAYER_HPP
+#ifndef SUPER_HAXAGON_AUDIO_PLAYER_HPP
+#define SUPER_HAXAGON_AUDIO_PLAYER_HPP
 
 namespace SuperHaxagon {
-	class Player {
+	class AudioPlayer {
 	public:
-		Player() = default;
-		Player(Player&) = delete;
-		virtual ~Player() = default;
+		AudioPlayer() = default;
+		AudioPlayer(AudioPlayer&) = delete;
+		virtual ~AudioPlayer() = default;
 
 		virtual void setChannel(int channel) = 0;
 		virtual void setLoop(bool loop) = 0;
@@ -17,4 +17,4 @@ namespace SuperHaxagon {
 	};
 }
 
-#endif //SUPER_HAXAGON_PLAYER_HPP
+#endif //SUPER_HAXAGON_AUDIO_PLAYER_HPP

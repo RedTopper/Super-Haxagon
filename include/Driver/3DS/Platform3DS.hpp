@@ -20,11 +20,11 @@ namespace SuperHaxagon {
 		float getDilation() override;
 
 		std::string getPath(const std::string& partial, Location location) override;
-		std::unique_ptr<Audio> loadAudio(const std::string& partial, Stream stream, Location location) override;
+		std::unique_ptr<AudioLoader> loadAudio(const std::string& partial, Stream stream, Location location) override;
 		std::unique_ptr<Font> loadFont(const std::string& partial, int size) override;
 
-		void playSFX(Audio& audio) override;
-		void playBGM(Audio& audio) override;
+		void playSFX(AudioLoader& audio) override;
+		void playBGM(AudioLoader& audio) override;
 
 		std::string getButtonName(const Buttons& button) override;
 		Buttons getPressed() override;
@@ -41,7 +41,7 @@ namespace SuperHaxagon {
 		void message(Dbg dbg, const std::string& where, const std::string& message) override;
 
 	private:
-		std::unique_ptr<Player> _sfx[MAX_TRACKS]{};
+		std::unique_ptr<AudioPlayer> _sfx[MAX_TRACKS]{};
 
 		std::deque<std::pair<Dbg, std::string>> _messages{};
 

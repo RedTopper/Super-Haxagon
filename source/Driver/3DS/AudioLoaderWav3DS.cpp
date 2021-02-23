@@ -1,11 +1,11 @@
-#include "Driver/3DS/AudioWav3DS.hpp"
+#include "Driver/3DS/AudioLoaderWav3DS.hpp"
 
-#include "Driver/3DS/PlayerWav3DS.hpp"
+#include "Driver/3DS/AudioPlayerWav3DS.hpp"
 
 #include <fstream>
 
 namespace SuperHaxagon {
-	AudioWav3DS::AudioWav3DS(const std::string& path) {
+	AudioLoaderWav3DS::AudioLoaderWav3DS(const std::string& path) {
 		_loaded = false;
 
 		// Open file`
@@ -50,13 +50,13 @@ namespace SuperHaxagon {
 		_loaded = true;
 	}
 
-	AudioWav3DS::~AudioWav3DS() {
+	AudioLoaderWav3DS::~AudioLoaderWav3DS() {
 		if(!_loaded) return;
 		linearFree(_data);
 	}
 
-	std::unique_ptr<Player> AudioWav3DS::instantiate() {
+	std::unique_ptr<AudioPlayer> AudioLoaderWav3DS::instantiate() {
 		if (!_loaded) return nullptr;
-		return std::make_unique<PlayerWav3DS>(_data, _sampleRate, _dataSize, _channels, _bitsPerSample, _ndspFormat);
+		return std::make_unique<AudioPlayerWav3DS>(_data, _sampleRate, _dataSize, _channels, _bitsPerSample, _ndspFormat);
 	}
 }

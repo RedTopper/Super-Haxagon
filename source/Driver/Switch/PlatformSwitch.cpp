@@ -1,9 +1,9 @@
 #include "Driver/Switch/PlatformSwitch.hpp"
 
 #include "Core/Twist.hpp"
-#include "Driver/Switch/AudioSwitch.hpp"
+#include "Driver/Switch/AudioLoaderSwitch.hpp"
 #include "Driver/Switch/FontSwitch.hpp"
-#include "Driver/Switch/PlayerMusSwitch.hpp"
+#include "Driver/Switch/AudioPlayerMusSwitch.hpp"
 
 #include <EGL/eglext.h>
 #include <SDL2/SDL.h>
@@ -178,13 +178,13 @@ namespace SuperHaxagon {
 		return 1.0;
 	}
 
-	void PlatformSwitch::playSFX(Audio& audio) {
+	void PlatformSwitch::playSFX(AudioLoader& audio) {
 		auto sfx = audio.instantiate();
 		if (!sfx) return;
 		sfx->play();
 	}
 
-	void PlatformSwitch::playBGM(Audio& audio) {
+	void PlatformSwitch::playBGM(AudioLoader& audio) {
 		_bgm = audio.instantiate();
 		if (!_bgm) return;
 		_bgm->setLoop(true);
@@ -202,8 +202,8 @@ namespace SuperHaxagon {
 		return "";
 	}
 
-	std::unique_ptr<Audio> PlatformSwitch::loadAudio(const std::string& partial, Stream stream, const Location location) {
-		return std::make_unique<AudioSwitch>(*this, getPath(partial, location), stream);
+	std::unique_ptr<AudioLoader> PlatformSwitch::loadAudio(const std::string& partial, Stream stream, const Location location) {
+		return std::make_unique<AudioLoaderSwitch>(*this, getPath(partial, location), stream);
 	}
 
 	std::unique_ptr<Font> PlatformSwitch::loadFont(const std::string& partial, int size) {

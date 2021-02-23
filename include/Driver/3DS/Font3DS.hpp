@@ -1,7 +1,7 @@
 #ifndef SUPER_HAXAGON_FONT_3DS_HPP
 #define SUPER_HAXAGON_FONT_3DS_HPP
 
-#include "Driver/Font.hpp"
+#include "Core/Font.hpp"
 
 #include <citro2d.h>
 

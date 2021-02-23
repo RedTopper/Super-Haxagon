@@ -2,7 +2,7 @@
 
 #include "Core/Game.hpp"
 #include "Core/Twist.hpp"
-#include "Driver/Platform.hpp"
+#include "Core/Platform.hpp"
 #include "Factories/PatternFactory.hpp"
 #include "Objects/Level.hpp"
 

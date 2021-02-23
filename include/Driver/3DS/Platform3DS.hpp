@@ -1,7 +1,7 @@
 #ifndef SUPER_HAXAGON_PLATFORM_3DS_HPP
 #define SUPER_HAXAGON_PLATFORM_3DS_HPP
 
-#include "Driver/Platform.hpp"
+#include "Core/Platform.hpp"
 
 #include <citro2d.h>
 

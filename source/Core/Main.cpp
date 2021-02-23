@@ -1,5 +1,5 @@
 #include "Core/Game.hpp"
-#include "Driver/Platform.hpp" 
+#include "Core/Platform.hpp" 
 
 #if defined _3DS
 #include "Driver/3DS/Platform3DS.hpp"

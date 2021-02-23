@@ -1,7 +1,7 @@
 #ifndef SUPER_HAXAGON_FONT_SFML_HPP
 #define SUPER_HAXAGON_FONT_SFML_HPP
 
-#include "Driver/Font.hpp"
+#include "Core/Font.hpp"
 
 #include <SFML/Graphics/Font.hpp>
 #include <SFML/Graphics/Text.hpp>

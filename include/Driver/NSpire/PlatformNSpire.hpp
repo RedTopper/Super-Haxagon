@@ -1,7 +1,7 @@
 #ifndef SUPER_HAXAGON_PLATFORM_NSPIRE_HPP
 #define SUPER_HAXAGON_PLATFORM_NSPIRE_HPP
 
-#include "Driver/Platform.hpp"
+#include "Core/Platform.hpp"
 
 namespace SuperHaxagon {
 	typedef struct {

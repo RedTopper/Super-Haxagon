@@ -1,30 +1,16 @@
 #include "Driver/NSpire/PlatformNSpire.hpp"
 
+#include "Core/Twist.hpp"
 #include "Driver/NSpire/AudioNSpire.hpp"
 #include "Driver/NSpire/FontNSpire.hpp"
-#include "Driver/NSpire/romfs.h"
+#include "Driver/NSpire/MemoryFS.hpp"
 #include "Driver/NSpire/timer.h"
-#include "Core/Twist.hpp"
 
 #include <ctime>
 #include <iostream>
 #include <libndls.h>
 
 namespace SuperHaxagon {
-	struct membuf : std::streambuf {
-		membuf(unsigned char* base, const size_t size) {
-			auto* const p(reinterpret_cast<char*>(base));
-			this->setg(p, p, p + size);
-		}
-	};
-	
-	struct imemstream : virtual membuf, std::istream {
-		imemstream(unsigned char* base, const size_t size):
-			membuf(base, size),
-			std::istream(static_cast<std::streambuf*>(this)) {
-		}
-	};
-	
 	PlatformNSpire::PlatformNSpire(const Dbg dbg) : Platform(dbg) {
 		auto* const gc = gui_gc_global_GC();
 		gui_gc_begin(gc);
@@ -73,43 +59,7 @@ namespace SuperHaxagon {
 			return std::make_unique<std::ifstream>(getPath(partial, location), std::ios::in | std::ios::binary);
 		}
 
-		if (partial == "/levels.haxagon") {
-			return std::make_unique<imemstream>(&romfs_levels_haxagon[0], romfs_levels_haxagon_len);
-		}
-		
-		if (partial == "/bgm/callMeKatla.txt") {
-			return std::make_unique<imemstream>(&romfs_bgm_callMeKatla_txt[0], romfs_bgm_callMeKatla_txt_len);
-		}
-
-		if (partial == "/bgm/captainCool.txt") {
-			return std::make_unique<imemstream>(&romfs_bgm_captainCool_txt[0], romfs_bgm_captainCool_txt_len);
-		}
-
-		if (partial == "/bgm/commandoSteve.txt") {
-			return std::make_unique<imemstream>(&romfs_bgm_commandoSteve_txt[0], romfs_bgm_commandoSteve_txt_len);
-		}
-
-		if (partial == "/bgm/drFinkelfracken.txt") {
-			return std::make_unique<imemstream>(&romfs_bgm_drFinkelfracken_txt[0], romfs_bgm_drFinkelfracken_txt_len);
-		}
-
-		if (partial == "/bgm/esiannoyamFoEzam.txt") {
-			return std::make_unique<imemstream>(&romfs_bgm_esiannoyamFoEzam_txt[0], romfs_bgm_esiannoyamFoEzam_txt_len);
-		}
-
-		if (partial == "/bgm/jackRussel.txt") {
-			return std::make_unique<imemstream>(&romfs_bgm_jackRussel_txt[0], romfs_bgm_jackRussel_txt_len);
-		}
-
-		if (partial == "/bgm/mazeOfMayonnaise.txt") {
-			return std::make_unique<imemstream>(&romfs_bgm_mazeOfMayonnaise_txt[0], romfs_bgm_mazeOfMayonnaise_txt_len);
-		}
-
-		if (partial == "/bgm/screenSaver.txt") {
-			return std::make_unique<imemstream>(&romfs_bgm_screenSaver_txt[0], romfs_bgm_screenSaver_txt_len);
-		}
-
-		return nullptr;
+		return MemoryFS::openFile(partial);
 	}
 
 	std::unique_ptr<Audio> PlatformNSpire::loadAudio(const std::string& partial, Stream, const Location location) {

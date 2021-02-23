@@ -2,8 +2,8 @@
 
 #include "Core/Metadata.hpp"
 #include "Core/Twist.hpp"
-#include "Driver/Font.hpp"
-#include "Driver/Platform.hpp"
+#include "Core/Font.hpp"
+#include "Core/Platform.hpp"
 #include "Factories/LevelFactory.hpp"
 #include "Factories/PatternFactory.hpp"
 #include "States/Load.hpp"

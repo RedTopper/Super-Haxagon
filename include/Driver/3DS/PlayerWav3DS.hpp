@@ -1,7 +1,7 @@
 #ifndef SUPER_HAXAGON_PLAYER_3DS_HPP
 #define SUPER_HAXAGON_PLAYER_3DS_HPP
 
-#include "Driver/Player.hpp"
+#include "Core/Player.hpp"
 
 #include <3ds.h>
 

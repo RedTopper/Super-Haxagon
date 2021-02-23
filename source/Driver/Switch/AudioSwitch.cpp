@@ -1,6 +1,6 @@
 #include "Driver/Switch/AudioSwitch.hpp"
 
-#include "Driver/Platform.hpp"
+#include "Core/Platform.hpp"
 #include "Driver/Switch/PlayerMusSwitch.hpp"
 #include "Driver/Switch/PlayerSfxSwitch.hpp"
 

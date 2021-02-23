@@ -1,7 +1,7 @@
 #ifndef SUPER_HAXAGON_AUDIO_SWITCH_HPP
 #define SUPER_HAXAGON_AUDIO_SWITCH_HPP
 
-#include "Driver/Audio.hpp"
+#include "Core/Audio.hpp"
 
 #include <SDL2/SDL_mixer.h>
 

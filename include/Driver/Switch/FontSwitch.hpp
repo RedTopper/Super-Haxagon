@@ -1,7 +1,7 @@
 #ifndef SUPER_HAXAGON_FONT_SWITCH_HPP
 #define SUPER_HAXAGON_FONT_SWITCH_HPP
 
-#include "Driver/Font.hpp"
+#include "Core/Font.hpp"
 
 #include "Core/Structs.hpp"
 #include "RenderTarget.hpp"

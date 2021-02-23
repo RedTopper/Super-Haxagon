@@ -2,7 +2,7 @@
 #define SUPER_HAXAGON_AUDIO_NSPIRE_HPP
 
 #include "Core/Metadata.hpp"
-#include "Driver/Audio.hpp"
+#include "Core/Audio.hpp"
 #include "Driver/NSpire/PlayerNSpire.hpp"
 
 namespace SuperHaxagon {

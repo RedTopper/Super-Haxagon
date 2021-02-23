@@ -1,7 +1,7 @@
 #ifndef SUPER_HAXAGON_PLATFORM_SFML_HPP
 #define SUPER_HAXAGON_PLATFORM_SFML_HPP
 
-#include "Driver/Platform.hpp"
+#include "Core/Platform.hpp"
 
 #include <SFML/Graphics.hpp>
 

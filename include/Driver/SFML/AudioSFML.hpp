@@ -1,7 +1,7 @@
 #ifndef SUPER_HAXAGON_AUDIO_SFML_HPP
 #define SUPER_HAXAGON_AUDIO_SFML_HPP
 
-#include "Driver/Audio.hpp"
+#include "Core/Audio.hpp"
 
 #include <SFML/Audio/Music.hpp>
 #include <SFML/Audio/SoundBuffer.hpp>

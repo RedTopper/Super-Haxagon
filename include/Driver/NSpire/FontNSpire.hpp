@@ -1,7 +1,7 @@
 #ifndef SUPER_HAXAGON_FONT_NSPIRE_HPP
 #define SUPER_HAXAGON_FONT_NSPIRE_HPP
 
-#include "Driver/Font.hpp"
+#include "Core/Font.hpp"
 
 #include <memory>
 #include <ngc.h>

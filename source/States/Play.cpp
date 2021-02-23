@@ -2,9 +2,9 @@
 
 #include "Core/Game.hpp"
 #include "Core/Metadata.hpp"
-#include "Driver/Font.hpp"
-#include "Driver/Platform.hpp"
-#include "Driver/Player.hpp"
+#include "Core/Font.hpp"
+#include "Core/Platform.hpp"
+#include "Core/Player.hpp"
 #include "Factories/LevelFactory.hpp"
 #include "Objects/Level.hpp"
 #include "States/Over.hpp"

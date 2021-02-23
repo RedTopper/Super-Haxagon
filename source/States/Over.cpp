@@ -1,8 +1,8 @@
 #include "States/Over.hpp"
 
 #include "Core/Game.hpp"
-#include "Driver/Platform.hpp"
-#include "Driver/Font.hpp"
+#include "Core/Platform.hpp"
+#include "Core/Font.hpp"
 #include "Factories/LevelFactory.hpp"
 #include "Objects/Level.hpp"
 #include "States/Load.hpp"

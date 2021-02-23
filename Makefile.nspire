@@ -15,12 +15,12 @@ EXE = haxagon
 # Directories
 SOURCE_DIRS := source/Core source/Factories source/Objects source/States source/Driver/NSpire
 INCLUDE_DIRS := include
-ROMFS_DIR := romfs
+MEMORYFS_DIR := romfs
 BUILD_DIR := build
 OUTPUT_DIR := output
 
-# RomFS Packable Extensions
-ROMFS_EXT = haxagon txt
+# MemoryFS Packable Extensions
+MEMORYFS_EXT = haxagon txt
 
 # Compilers
 CC = nspire-gcc
@@ -46,8 +46,8 @@ TARGET_OUTPUT_DIR := $(OUTPUT_DIR)/nspire-arm
 rwildcard=$(wildcard $1/$2) $(foreach d,$(wildcard $1/*),$(call rwildcard,$d,$2))
 
 OUTPUT_FILES := $(TARGET_OUTPUT_DIR)/$(EXE).tns $(TARGET_OUTPUT_DIR)/$(EXE).elf
-ROMFS_OBJECT_FILES := $(foreach ext,$(ROMFS_EXT),$(patsubst %.$(ext),$(TARGET_BUILD_DIR)/%.o,$(call rwildcard,$(ROMFS_DIR),*.$(ext))))
-OBJECT_FILES := $(ROMFS_OBJECT_FILES) $(foreach dir,$(SOURCE_DIRS), \
+MEMORYFS_OBJECT_FILES := $(foreach ext,$(MEMORYFS_EXT),$(patsubst %.$(ext),$(TARGET_BUILD_DIR)/%.o,$(call rwildcard,$(MEMORYFS_DIR),*.$(ext))))
+OBJECT_FILES := $(MEMORYFS_OBJECT_FILES) $(foreach dir,$(SOURCE_DIRS), \
 			$(patsubst %.c,$(TARGET_BUILD_DIR)/%.o,$(call rwildcard,$(dir),*.c)) \
 			$(patsubst %.cpp,$(TARGET_BUILD_DIR)/%.o,$(call rwildcard,$(dir),*.cpp)) \
 		)
@@ -92,7 +92,7 @@ $(dir $(1))_DIRECTORY_RULE_IS_DEFINED := 1
 endif
 endef
 
-define romfs
+define memoryfs
 .PRECIOUS: $$(TARGET_BUILD_DIR)/%.cc
 $$(TARGET_BUILD_DIR)/%.cc: %.$1
 	@echo $$@
@@ -101,4 +101,4 @@ endef
 
 $(foreach file,$(OBJECT_FILES),$(eval $(call createdirrule,$(file))))
 $(foreach file,$(OUTPUT_FILES),$(eval $(call createdirrule,$(file))))
-$(foreach extension,$(ROMFS_EXT),$(eval $(call romfs,$(extension))))
+$(foreach extension,$(MEMORYFS_EXT),$(eval $(call memoryfs,$(extension))))

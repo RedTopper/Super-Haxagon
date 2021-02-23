@@ -1,7 +1,7 @@
 #ifndef SUPER_HAXAGON_PLAYER_NSPIRE_HPP
 #define SUPER_HAXAGON_PLAYER_NSPIRE_HPP
 
-#include "Driver/Player.hpp"
+#include "Core/Player.hpp"
 
 namespace SuperHaxagon {
 	class PlayerNSpire : public Player {

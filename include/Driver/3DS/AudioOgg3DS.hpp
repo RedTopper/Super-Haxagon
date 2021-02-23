@@ -1,7 +1,7 @@
 #ifndef SUPER_HAXAGON_AUDIO_OGG_3DS_HPP
 #define SUPER_HAXAGON_AUDIO_OGG_3DS_HPP
 
-#include "Driver/Audio.hpp"
+#include "Core/Audio.hpp"
 
 #include <memory>
 #include <string>

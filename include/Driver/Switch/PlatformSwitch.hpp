@@ -1,7 +1,7 @@
 #ifndef SUPER_HAXAGON_PLATFORM_SWITCH_HPP
 #define SUPER_HAXAGON_PLATFORM_SWITCH_HPP
 
-#include "Driver/Platform.hpp"
+#include "Core/Platform.hpp"
 
 #include "RenderTarget.hpp"
 

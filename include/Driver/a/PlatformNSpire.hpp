@@ -9,11 +9,11 @@ namespace SuperHaxagon {
 		int y;
 	} Point2D;
 	
-	class PlatformNSpire : public Platform {
+	class PlatformNspire : public Platform {
 	public:
-		explicit PlatformNSpire(Dbg dbg);
-		PlatformNSpire(PlatformNSpire&) = delete;
-		~PlatformNSpire() override = default;
+		explicit PlatformNspire(Dbg dbg);
+		PlatformNspire(PlatformNspire&) = delete;
+		~PlatformNspire() override = default;
 		
 		bool loop() override;
 		float getDilation() override;

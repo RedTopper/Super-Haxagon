@@ -8,10 +8,10 @@
 
 namespace SuperHaxagon {
 	class Platform;
-	class FontNSpire : public Font {
+	class FontNspire : public Font {
 	public:
-		explicit FontNSpire(int size);
-		~FontNSpire() override;
+		explicit FontNspire(int size);
+		~FontNspire() override;
 
 		void setScale(float) override;
 		float getHeight() const override;

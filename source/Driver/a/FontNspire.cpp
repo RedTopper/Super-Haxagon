@@ -1,29 +1,29 @@
-#include "Driver/NSpire/FontNSpire.hpp"
+#include "Driver/Nspire/FontNspire.hpp"
 
 #include "Core/Structs.hpp"
 
 #include <libndls.h>
 
 namespace SuperHaxagon {
-	FontNSpire::FontNSpire(const int size) {
+	FontNspire::FontNspire(const int size) {
 		if (size == 32) {
 			_font = SerifBold24;
 		} else {
 			_font = SerifRegular10;
 		}
 
-		_size = FontNSpire::getHeight();
+		_size = FontNspire::getHeight();
 	}
 
-	FontNSpire::~FontNSpire() = default;
+	FontNspire::~FontNspire() = default;
 
-	float FontNSpire::getWidth(const std::string& text) const {
+	float FontNspire::getWidth(const std::string& text) const {
 		auto* gc = gui_gc_global_GC();
 		const auto chars = utf16(text);
 		return gui_gc_getStringWidth(gc, _font, chars.get(), 0, text.length());
 	}
 
-	void FontNSpire::draw(const Color& color, const Point& position, const Alignment alignment, const std::string& text) {
+	void FontNspire::draw(const Color& color, const Point& position, const Alignment alignment, const std::string& text) {
 		auto* gc = gui_gc_global_GC();
 		gui_gc_setColorRGB(gc, color.r, color.b, color.g);
 		gui_gc_setFont(gc, _font);
@@ -40,14 +40,14 @@ namespace SuperHaxagon {
 		gui_gc_drawString(gc, chars.get(), translate.x, translate.y, static_cast<gui_gc_StringMode>(GC_SM_NORMAL | GC_SM_TOP));
 	}
 
-	void FontNSpire::setScale(float) {}
+	void FontNspire::setScale(float) {}
 
-	float FontNSpire::getHeight() const {
+	float FontNspire::getHeight() const {
 		auto* gc = gui_gc_global_GC();
 		return static_cast<float>(gui_gc_getCharHeight(gc, _font, 0x4100));
 	}
 
-	std::unique_ptr<char[]> FontNSpire::utf16(const std::string& text) const {
+	std::unique_ptr<char[]> FontNspire::utf16(const std::string& text) const {
 		auto chars = std::make_unique<char[]>(text.length() * 2 + 2);
 		for (size_t i = 0; i < text.length(); i++) {
 			chars[i * 2] = text[i];

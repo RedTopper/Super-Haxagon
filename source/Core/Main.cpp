@@ -10,7 +10,7 @@
 #elif defined __linux__
 #include "Driver/Linux/PlatformLinux.hpp"
 #elif defined _nspire
-#include "Driver/NSpire/PlatformNSpire.hpp"
+#include "Driver/NSpire/PlatformNspire.hpp"
 #else
 #error "Target platform is not supported by any driver."
 #endif
@@ -26,7 +26,7 @@ namespace SuperHaxagon {
 		#elif defined __linux__
 		return std::make_unique<PlatformLinux>(Dbg::INFO);
 		#elif defined _nspire
-		return std::make_unique<PlatformNSpire>(Dbg::INFO);
+		return std::make_unique<PlatformNspire>(Dbg::INFO);
 		#else
 		return nullptr;
 		#endif

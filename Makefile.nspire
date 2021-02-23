@@ -13,7 +13,7 @@
 EXE = haxagon
 
 # Directories
-SOURCE_DIRS := source/Core source/Factories source/Objects source/States source/Driver/NSpire
+SOURCE_DIRS := source/Core source/Factories source/Objects source/States source/Driver/Nspire
 INCLUDE_DIRS := include
 MEMORYFS_DIR := romfs
 BUILD_DIR := build

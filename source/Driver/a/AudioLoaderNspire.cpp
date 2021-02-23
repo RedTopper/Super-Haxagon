@@ -1,4 +1,4 @@
-#include "Driver/NSpire/AudioLoaderNspire.hpp"
+#include "Driver/Nspire/AudioLoaderNspire.hpp"
 
 #include <istream>
 

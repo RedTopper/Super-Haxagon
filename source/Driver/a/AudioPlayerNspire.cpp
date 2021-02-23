@@ -1,4 +1,4 @@
-#include "Driver/NSpire/AudioPlayerNspire.hpp"
+#include "Driver/Nspire/AudioPlayerNspire.hpp"
 
 namespace SuperHaxagon {
 	AudioPlayerNspire::AudioPlayerNspire(const float maxTime) {

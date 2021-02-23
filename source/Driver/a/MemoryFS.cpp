@@ -1,4 +1,4 @@
-#include "Driver/NSpire/MemoryFS.hpp"
+#include "Driver/Nspire/MemoryFS.hpp"
 
 // This section SHOULD be code generated
 extern unsigned char romfs_levels_haxagon[];

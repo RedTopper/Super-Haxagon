@@ -1,8 +1,8 @@
-#include "Driver/NSpire/PlatformNSpire.hpp"
+#include "Driver/Nspire/PlatformNspire.hpp"
 
 #include "Core/Twist.hpp"
 #include "Driver/NSpire/AudioLoaderNspire.hpp"
-#include "Driver/NSpire/FontNSpire.hpp"
+#include "Driver/NSpire/FontNspire.hpp"
 #include "Driver/NSpire/MemoryFS.hpp"
 #include "Driver/NSpire/timer.h"
 
@@ -11,7 +11,7 @@
 #include <libndls.h>
 
 namespace SuperHaxagon {
-	PlatformNSpire::PlatformNSpire(const Dbg dbg) : Platform(dbg) {
+	PlatformNspire::PlatformNspire(const Dbg dbg) : Platform(dbg) {
 		auto* const gc = gui_gc_global_GC();
 		gui_gc_begin(gc);
 		gui_gc_setColorRGB(gc, 0, 0, 0);
@@ -23,7 +23,7 @@ namespace SuperHaxagon {
 		timer_load(0, TIMER_1S);
 	}
 
-	bool PlatformNSpire::loop() {
+	bool PlatformNspire::loop() {
 		const auto timer = timer_read(0);
 		const auto elapsed = static_cast<float>(TIMER_1S - timer) / TIMER_1S;
 		if (_bgm) {
@@ -39,11 +39,11 @@ namespace SuperHaxagon {
 		return true;
 	}
 
-	float PlatformNSpire::getDilation() {
+	float PlatformNspire::getDilation() {
 		return _dilation;
 	}
 
-	std::string PlatformNSpire::getPath(const std::string& partial, const Location location) {
+	std::string PlatformNspire::getPath(const std::string& partial, const Location location) {
 		switch (location) {
 		case Location::ROM:
 			return partial;
@@ -54,7 +54,7 @@ namespace SuperHaxagon {
 		return "";
 	}
 
-	std::unique_ptr<std::istream> PlatformNSpire::openFile(const std::string& partial, const Location location) {
+	std::unique_ptr<std::istream> PlatformNspire::openFile(const std::string& partial, const Location location) {
 		if (location == Location::USER) {
 			return std::make_unique<std::ifstream>(getPath(partial, location), std::ios::in | std::ios::binary);
 		}
@@ -62,22 +62,22 @@ namespace SuperHaxagon {
 		return MemoryFS::openFile(partial);
 	}
 
-	std::unique_ptr<AudioLoader> PlatformNSpire::loadAudio(const std::string& partial, Stream, const Location location) {
+	std::unique_ptr<AudioLoader> PlatformNspire::loadAudio(const std::string& partial, Stream, const Location location) {
 		return std::make_unique<AudioLoaderNspire>(openFile(partial + ".txt", location));
 	}
 
-	std::unique_ptr<Font> PlatformNSpire::loadFont(const std::string&, int size) {
-		return std::make_unique<FontNSpire>(size);
+	std::unique_ptr<Font> PlatformNspire::loadFont(const std::string&, int size) {
+		return std::make_unique<FontNspire>(size);
 	}
 
-	void PlatformNSpire::playBGM(AudioLoader& audio) {
+	void PlatformNspire::playBGM(AudioLoader& audio) {
 		_bgm = audio.instantiate();
 		if (!_bgm) return;
 		_bgm->setLoop(true);
 		_bgm->play();
 	}
 
-	std::string PlatformNSpire::getButtonName(const Buttons& button) {
+	std::string PlatformNspire::getButtonName(const Buttons& button) {
 		if (button.back) return "ESC";
 		if (button.select) return "ENTER";
 		if (button.left) return "4";
@@ -86,7 +86,7 @@ namespace SuperHaxagon {
 		return "?";
 	}
 
-	Buttons PlatformNSpire::getPressed() {
+	Buttons PlatformNspire::getPressed() {
 		Buttons buttons{};
 		buttons.select = isKeyPressed(KEY_NSPIRE_ENTER) > 0;
 		buttons.back = isKeyPressed(KEY_NSPIRE_ESC) > 0;
@@ -96,23 +96,23 @@ namespace SuperHaxagon {
 		return buttons;
 	}
 
-	Point PlatformNSpire::getScreenDim() const {
+	Point PlatformNspire::getScreenDim() const {
 		return {320, 240};
 	}
 
-	void PlatformNSpire::screenBegin() {
+	void PlatformNspire::screenBegin() {
 		auto* gc = gui_gc_global_GC();
 		gui_gc_begin(gc);
 		gui_gc_setColorRGB(gc, 0, 0, 0);
 		gui_gc_fillRect(gc, 0, 0, 320, 240);
 	}
 
-	void PlatformNSpire::screenFinalize() {
+	void PlatformNspire::screenFinalize() {
 		auto* gc = gui_gc_global_GC();
 		gui_gc_blit_to_screen(gc);
 	}
 
-	void PlatformNSpire::drawPoly(const Color& color, const std::vector<Point>& points) {
+	void PlatformNspire::drawPoly(const Color& color, const std::vector<Point>& points) {
 		auto* gc = gui_gc_global_GC();
 		gui_gc_setColorRGB(gc, color.r, color.g, color.b);
 		const auto pos = std::make_unique<Point2D[]>(points.size());
@@ -123,13 +123,13 @@ namespace SuperHaxagon {
 		gui_gc_fillPoly(gc, reinterpret_cast<unsigned*>(pos.get()), points.size());
 	}
 
-	void PlatformNSpire::shutdown() {
+	void PlatformNspire::shutdown() {
 		auto* gc = gui_gc_global_GC();
 		gui_gc_finish(gc);
 		timer_restore(0);
 	}
 
-	void PlatformNSpire::message(const Dbg dbg, const std::string& where, const std::string& message) {
+	void PlatformNspire::message(const Dbg dbg, const std::string& where, const std::string& message) {
 		if (dbg == Dbg::INFO) {
 			std::cout << "[ndless:info] " + where + ": " + message << std::endl;
 		} else if (dbg == Dbg::WARN) {
@@ -139,11 +139,11 @@ namespace SuperHaxagon {
 		}
 	}
 
-	Supports PlatformNSpire::supports() {
+	Supports PlatformNspire::supports() {
 		return Supports::NOTHING;
 	}
 
-	std::unique_ptr<Twist> PlatformNSpire::getTwister() {
+	std::unique_ptr<Twist> PlatformNspire::getTwister() {
 		auto* a = new std::seed_seq{time(nullptr)};
 		return std::make_unique<Twist>(
 				std::unique_ptr<std::seed_seq>(a)

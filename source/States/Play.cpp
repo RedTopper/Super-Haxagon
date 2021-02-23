@@ -59,8 +59,8 @@ namespace SuperHaxagon {
 			// Apply effects. More can be added here if needed.
 			if (metadata.getMetadata(time, "S")) _level->spin();
 			if (metadata.getMetadata(time, "I")) _level->invertBG();
-			if (metadata.getMetadata(time, "BL")) _level->pulse(1.0f);
-			if (metadata.getMetadata(time, "BS")) _level->pulse(0.5f);
+			if (metadata.getMetadata(time, "BL")) _level->pulse(1.1f);
+			if (metadata.getMetadata(time, "BS")) _level->pulse(0.7f);
 		}
 
 		// Update level

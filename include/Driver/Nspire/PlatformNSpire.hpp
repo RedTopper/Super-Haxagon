@@ -3,6 +3,8 @@
 
 #include "Core/Platform.hpp"
 
+#include <ngc.h>
+
 namespace SuperHaxagon {
 	typedef struct {
 		int x;
@@ -42,6 +44,7 @@ namespace SuperHaxagon {
 
 	private:
 		float _dilation = 1.0;
+		Gc _gc{};
 	};
 }
 

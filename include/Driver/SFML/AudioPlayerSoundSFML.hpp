@@ -17,7 +17,7 @@ namespace SuperHaxagon {
 		void setLoop(bool loop) override;
 
 		void play() override;
-		void pause() override {};
+		void pause() override {}
 		bool isDone() const override;
 		float getTime() const override;
 

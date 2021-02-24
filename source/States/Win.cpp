@@ -61,6 +61,7 @@ namespace SuperHaxagon {
 			{"FINCS", "CITRO2D", "CITRO3D"},
 			{"STEVEICE", "", "BUILDTOOLS"},
 			{"S. BARRETT", "STB", "OGG DECODE"},
+			{"VOGTINATOR", "NDLESS", "TI-NSPIRE"},
 
 			{"AND", "", ""},
 			{"YOU", "THANKS FOR", "PLAYING!"},

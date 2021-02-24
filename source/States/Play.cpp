@@ -40,7 +40,8 @@ namespace SuperHaxagon {
 	}
 
 	std::unique_ptr<State> Play::update(const float dilation) {
-		const auto maxRenderDistance = SCALE_BASE_DISTANCE * (_game.getScreenDimMax() / 400);
+		// Screen ratio divided by the screen ratio of the 3DS times it's diagonal
+		const auto maxRenderDistance = _game.getScreenDimMax() / _game.getScreenDimMin() / 1.666f * 233.47f;
 
 		// Render the level with a skewed 3D look
 		auto skewFrameMax = static_cast<float>(_level->getLevelFactory().getSpeedPulse()) * 2.5f;

@@ -11,7 +11,7 @@ namespace SuperHaxagon {
 		explicit AudioPlayerMusSwitch(Mix_Music* music);
 		~AudioPlayerMusSwitch() override;
 
-		void setChannel(int) override {};
+		void setChannel(int) override {}
 		void setLoop(bool loop) override;
 
 		void play() override;

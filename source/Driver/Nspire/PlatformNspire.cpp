@@ -1,10 +1,10 @@
 #include "Driver/Nspire/PlatformNspire.hpp"
 
 #include "Core/Twist.hpp"
-#include "Driver/NSpire/AudioLoaderNspire.hpp"
-#include "Driver/NSpire/FontNspire.hpp"
-#include "Driver/NSpire/MemoryFS.hpp"
-#include "Driver/NSpire/timer.h"
+#include "Driver/Nspire/AudioLoaderNspire.hpp"
+#include "Driver/Nspire/FontNspire.hpp"
+#include "Driver/Nspire/MemoryFS.hpp"
+#include "Driver/Nspire/timer.h"
 
 #include <ctime>
 #include <iostream>
@@ -12,12 +12,12 @@
 
 namespace SuperHaxagon {
 	PlatformNspire::PlatformNspire(const Dbg dbg) : Platform(dbg) {
-		auto* const gc = gui_gc_global_GC();
-		gui_gc_begin(gc);
-		gui_gc_setColorRGB(gc, 0, 0, 0);
-		gui_gc_fillRect(gc, 0, 0, 320, 240);
-		gui_gc_finish(gc);
-		gui_gc_blit_to_screen(gc);
+		_gc = gui_gc_global_GC();
+		gui_gc_begin(_gc);
+		gui_gc_setColorRGB(_gc, 0, 0, 0);
+		gui_gc_fillRect(_gc, 0, 0, 320, 240);
+		gui_gc_finish(_gc);
+		gui_gc_blit_to_screen(_gc);
 
 		timer_init(0);
 		timer_load(0, TIMER_1S);
@@ -67,7 +67,7 @@ namespace SuperHaxagon {
 	}
 
 	std::unique_ptr<Font> PlatformNspire::loadFont(const std::string&, int size) {
-		return std::make_unique<FontNspire>(size);
+		return std::make_unique<FontNspire>(_gc, size);
 	}
 
 	void PlatformNspire::playBGM(AudioLoader& audio) {
@@ -82,7 +82,7 @@ namespace SuperHaxagon {
 		if (button.select) return "ENTER";
 		if (button.left) return "4";
 		if (button.right) return "6";
-		if (button.quit) return "HOME";
+		if (button.quit) return "MENU";
 		return "?";
 	}
 
@@ -101,31 +101,27 @@ namespace SuperHaxagon {
 	}
 
 	void PlatformNspire::screenBegin() {
-		auto* gc = gui_gc_global_GC();
-		gui_gc_begin(gc);
-		gui_gc_setColorRGB(gc, 0, 0, 0);
-		gui_gc_fillRect(gc, 0, 0, 320, 240);
+		gui_gc_begin(_gc);
+		gui_gc_setColorRGB(_gc, 0, 0, 0);
+		gui_gc_fillRect(_gc, 0, 0, 320, 240);
 	}
 
 	void PlatformNspire::screenFinalize() {
-		auto* gc = gui_gc_global_GC();
-		gui_gc_blit_to_screen(gc);
+		gui_gc_blit_to_screen(_gc);
 	}
 
 	void PlatformNspire::drawPoly(const Color& color, const std::vector<Point>& points) {
-		auto* gc = gui_gc_global_GC();
-		gui_gc_setColorRGB(gc, color.r, color.g, color.b);
 		const auto pos = std::make_unique<Point2D[]>(points.size());
 		for (size_t i = 0; i < points.size(); i++) {
 			pos[i] = { points[i].x, points[i].y };
 		}
-		
-		gui_gc_fillPoly(gc, reinterpret_cast<unsigned*>(pos.get()), points.size());
+
+		gui_gc_setColorRGB(_gc, color.r, color.g, color.b);
+		gui_gc_fillPoly(_gc, reinterpret_cast<unsigned*>(pos.get()), points.size());
 	}
 
 	void PlatformNspire::shutdown() {
-		auto* gc = gui_gc_global_GC();
-		gui_gc_finish(gc);
+		gui_gc_finish(_gc);
 		timer_restore(0);
 	}
 

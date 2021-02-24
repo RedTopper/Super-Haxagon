@@ -11,11 +11,11 @@ namespace SuperHaxagon {
 		explicit AudioPlayerSfxSwitch(Mix_Chunk* sfx);
 		~AudioPlayerSfxSwitch() override;
 
-		void setChannel(int) override {};
-		void setLoop(bool) override {};
+		void setChannel(int) override {}
+		void setLoop(bool) override {}
 
 		void play() override;
-		void pause() override {};
+		void pause() override {}
 		bool isDone() const override {return true;}
 		float getTime() const override {return 0.0;}
 

@@ -10,7 +10,7 @@ namespace SuperHaxagon {
 	class Platform;
 	class FontNspire : public Font {
 	public:
-		explicit FontNspire(int size);
+		FontNspire(Gc& gc, int size);
 		~FontNspire() override;
 
 		void setScale(float) override;
@@ -21,7 +21,7 @@ namespace SuperHaxagon {
 
 	private:
 		gui_gc_Font _font{};
-		float _size{};
+		Gc& _gc;
 	};
 }
 

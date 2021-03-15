@@ -79,9 +79,9 @@ namespace SuperHaxagon {
 		if(pressed.back || hit == Movement::DEAD) {
 			if (&_factory != &_selected &&
 			    _factory.getCreator() == "REDHAT" && 
-			    _factory.getName() == "VOID" &&
+			    (_factory.getName() == "VOID" || _factory.getName() == "NULL") &&
 			    _factory.getDifficulty() == "???" &&
-			    _factory.getMode() == "???") {
+			    (_factory.getMode() == "???" || _factory.getMode() == "ORIGINAL")) {
 				// Play the super special win animation if you are on the last level without selecting it
 				// Congrats, you just won the game!
 				return std::make_unique<Win>(_game, std::move(_level), _selected, _score, "WONDERFUL");

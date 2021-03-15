@@ -68,7 +68,7 @@ namespace SuperHaxagon {
 			if (press.select) {
 				// If the level we are playing is not the same as the index, we need to load
 				// the original music
-				if (&_selected != &_level->getLevelFactory()) {
+				if (_selected.getMusic() != _level->getLevelFactory().getMusic()) {
 					_game.loadBGMAudio(_selected.getMusic(), _selected.getLocation(), true);
 				}
 

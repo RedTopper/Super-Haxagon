@@ -43,7 +43,7 @@ namespace SuperHaxagon {
 				_colorNextIndex[location] = _colorNextIndex[location] + 1 < availableColors.size() ? _colorNextIndex[location] + 1 : 0;
 				_colorNext[location] = availableColors[_colorNextIndex[location]];
 				if (_frame > 60.0f * 60.0f) {
-					_colorNext[location] = rotateColor(_colorNext[location], 180);
+					_colorNext[location] = rotateColor(_colorNext[location], 90);
 				} 
 			}
 		}

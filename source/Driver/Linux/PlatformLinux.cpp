@@ -10,7 +10,7 @@ namespace SuperHaxagon {
 		static_cast<int>(sf::VideoMode::getDesktopMode().width * 0.75),
 		static_cast<int>(sf::VideoMode::getDesktopMode().height * 0.75)
 	)) {
-		mkdir("./sdmc", 755);
+		mkdir("./sdmc", 0755);
 	}
 
 	std::string PlatformLinux::getPath(const std::string& partial, const Location location) {

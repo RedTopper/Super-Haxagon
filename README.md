@@ -8,6 +8,8 @@ Super Haxagon is a cross platform, open source [Super Hexagon](http://superhexag
 
 You can download the latest build on [the releases page](https://github.com/RedTopper/Super-Haxagon/releases) to the right.
 
+_Warning: The windows/linux versions requires a graphics adapter with OpenGL 3.2 or higher. Super Haxagon may be unsupported on first generation Intel processors, Remote Desktop sessions, or VMs with no hardware acceleration. See #22 for details._
+
 ## Features
 
  * Cross Platform

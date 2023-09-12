@@ -12,11 +12,11 @@
 #elif defined _nspire
 #include "Driver/NSpire/PlatformNspire.hpp"
 #elif defined __APPLE__
-    #include "TargetConditionals.h"
-    #if defined TARGET_OS_MAC
+	#include "TargetConditionals.h"
+	#if defined TARGET_OS_MAC
 		#include "Driver/macOS/PlatformMacOS.hpp"
 	#else
-		#error "Target platform is not supported by any driver."
+		#error "Target apple device is not supported by any driver."
 	#endif
 #else
 #error "Target platform is not supported by any driver."

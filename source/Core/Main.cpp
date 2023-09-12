@@ -13,7 +13,7 @@
 #include "Driver/NSpire/PlatformNspire.hpp"
 #elif defined __APPLE__
 	#include "TargetConditionals.h"
-	#if defined TARGET_OS_MAC
+	#if defined TARGET_OS_OSX
 		#include "Driver/macOS/PlatformMacOS.hpp"
 	#else
 		#error "Target apple device is not supported by any driver."
@@ -36,7 +36,7 @@ namespace SuperHaxagon {
 		return std::make_unique<PlatformNspire>(Dbg::INFO);
 		#elif defined __APPLE__
 			#include "TargetConditionals.h"
-			#if defined TARGET_OS_MAC
+			#if defined TARGET_OS_OSX
 				return std::make_unique<PlatformMacOS>(Dbg::INFO);
 			#else
 				return nullptr;

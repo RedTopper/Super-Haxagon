@@ -77,6 +77,14 @@ ifeq ($(TARGET),LINUX64)
     LIBRARIES += sfml-graphics sfml-window sfml-audio sfml-system
 endif
 
+# macOS CONFIGURATION #
+
+ifeq ($(TARGET),MAC64)
+    SOURCE_DIRS += source/Driver/SFML source/Driver/macOS
+
+    LIBRARIES += sfml-graphics sfml-window sfml-audio sfml-system
+endif
+
 # INTERNAL #
 
 include libraries/buildtools/make_base

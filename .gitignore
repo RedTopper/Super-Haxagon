@@ -6,5 +6,5 @@
 /cmake-build-release
 /.idea
 /.vs
-
+.DS_Store
 

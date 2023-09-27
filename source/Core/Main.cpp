@@ -11,6 +11,13 @@
 #include "Driver/Linux/PlatformLinux.hpp"
 #elif defined _nspire
 #include "Driver/NSpire/PlatformNspire.hpp"
+#elif defined __APPLE__
+	#include "TargetConditionals.h"
+	#if defined TARGET_OS_OSX
+		#include "Driver/macOS/PlatformMacOS.hpp"
+	#else
+		#error "Target apple device is not supported by any driver."
+	#endif
 #else
 #error "Target platform is not supported by any driver."
 #endif
@@ -27,6 +34,13 @@ namespace SuperHaxagon {
 		return std::make_unique<PlatformLinux>(Dbg::INFO);
 		#elif defined _nspire
 		return std::make_unique<PlatformNspire>(Dbg::INFO);
+		#elif defined __APPLE__
+			#include "TargetConditionals.h"
+			#if defined TARGET_OS_OSX
+				return std::make_unique<PlatformMacOS>(Dbg::INFO);
+			#else
+				return nullptr;
+			#endif
 		#else
 		return nullptr;
 		#endif

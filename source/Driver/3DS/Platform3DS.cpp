@@ -20,28 +20,27 @@ namespace SuperHaxagon {
 		gfxInitDefault();
 
 		// Metadata to gather from CFGU
-		std::string country;
+		std::string username;
 		u8 consoleModel = 0;
-		auto citra = false;
+		auto emulated = false;
 
 		const auto res = cfguInit();
 		if (R_SUCCEEDED(res)) {
-			const auto countryNameBlockID = 0x000B0001;
-			const auto countryNameBlockSize = 0x800; // in bytes
-			const auto countryNameBlockOffset = 0x80; // in bytes
-			const auto buffer = std::make_unique<char16_t[]>(countryNameBlockSize / sizeof(char16_t));
+			const auto usernameBlockID = 0x000A0000;
+			const auto usernameBlockSize = 0x1C; // in bytes
+			const auto buffer = std::make_unique<char16_t[]>(usernameBlockSize / sizeof(char16_t));
 			CFGU_GetSystemModel(&consoleModel);
-			CFGU_GetConfigInfoBlk2(countryNameBlockSize, countryNameBlockID, buffer.get());
+			CFGU_GetConfigInfoBlk2(usernameBlockSize, usernameBlockID, buffer.get());
 			cfguExit();
 
-			// Citra cannot use wide mode, so to make emulation of the game more accessible we'll check for it
-			// This is a shitty hack, either the Citra developers should fix wide mode or this should be done right
+			// Lime3DS (previously Citra) cannot use wide mode, so to make emulation of the game more accessible we'll check for it
+			// This is a shitty hack, either the Lime3DS developers should fix wide mode or this should be done right.
 			std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> convert;
-			country = convert.to_bytes(buffer.get() + countryNameBlockOffset / sizeof(char16_t) * CFG_LANGUAGE_EN);
-			citra = country == "Gensokyo";
+			username = convert.to_bytes(buffer.get());
+			emulated = username == "LIME3DS";
 		}
 
-		gfxSetWide(consoleModel != 3 && !citra);
+		gfxSetWide(consoleModel != CFG_MODEL_2DS && !emulated);
 
 		C3D_Init(C3D_DEFAULT_CMDBUF_SIZE);
 		C2D_Init(C2D_DEFAULT_MAX_OBJECTS);
@@ -58,8 +57,8 @@ namespace SuperHaxagon {
 			consoleInit(GFX_BOTTOM, nullptr);
 		}
 
-		// Output the country for debugging
-		Platform3DS::message(Dbg::INFO, "location", country);
+		// Output the username for debugging
+		Platform3DS::message(Dbg::INFO, "username", username);
 
 		// Setup NDSP
 		ndspInit();

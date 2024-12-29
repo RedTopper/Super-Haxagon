@@ -59,8 +59,8 @@ namespace SuperHaxagon {
 		return dilation > 4.0f ? 4.0f : (dilation < 0.05f ? 0.05f : dilation);
 	}
 
-	std::unique_ptr<AudioLoader> PlatformSFML::loadAudio(const std::string& path, Stream stream, Location location) {
-		return std::make_unique<AudioLoaderSFML>(getPath(path, location), stream);
+	std::unique_ptr<AudioLoader> PlatformSFML::loadAudio(const std::string& partial, Stream stream, Location location) {
+		return std::make_unique<AudioLoaderSFML>(getPath(partial, location), stream);
 	}
 
 	std::unique_ptr<Font> PlatformSFML::loadFont(const std::string& partial, const int size) {

@@ -206,8 +206,8 @@ namespace SuperHaxagon {
 		return std::make_unique<AudioLoaderSwitch>(*this, getPath(partial, location), stream);
 	}
 
-	std::unique_ptr<Font> PlatformSwitch::loadFont(const std::string& partial, int size) {
-		return std::make_unique<FontSwitch>(*this, getPath(partial, Location::ROM), size);
+	std::unique_ptr<Font> PlatformSwitch::loadFont(const std::string& partial, int size, Location location) {
+		return std::make_unique<FontSwitch>(*this, getPath(partial, location), size);
 	}
 
 	std::string PlatformSwitch::getButtonName(const Buttons& button) {

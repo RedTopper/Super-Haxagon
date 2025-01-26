@@ -46,7 +46,6 @@ namespace SuperHaxagon {
 		C2D_Init(C2D_DEFAULT_MAX_OBJECTS);
 		C2D_Prepare();
 
-		_buff = C2D_TextBufNew(4096);
 		_top = C2D_CreateScreenTarget(GFX_TOP, GFX_LEFT);
 
 		if (dbg == Dbg::FATAL) {
@@ -124,8 +123,8 @@ namespace SuperHaxagon {
 		return std::make_unique<AudioLoaderOgg3DS>(getPath(partial, location));
 	}
 
-	std::unique_ptr<Font> Platform3DS::loadFont(const std::string& partial, int size) {
-		return std::make_unique<Font3DS>(getPath(partial, Location::ROM), size, _buff);
+	std::unique_ptr<Font> Platform3DS::loadFont(const std::string& partial, int size, Location location) {
+		return std::make_unique<Font3DS>(getPath(partial, location), size);
 	}
 
 	// Note: If there are no available channels the audio is silently discarded

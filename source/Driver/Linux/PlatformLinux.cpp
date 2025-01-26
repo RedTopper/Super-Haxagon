@@ -10,15 +10,25 @@ namespace SuperHaxagon {
 		static_cast<int>(sf::VideoMode::getDesktopMode().width * 0.75),
 		static_cast<int>(sf::VideoMode::getDesktopMode().height * 0.75)
 	)) {
-		mkdir("./sdmc", 0755);
+
+		if (std::getenv("container")) {
+			const auto* data = std::getenv("XDG_DATA_HOME");
+			_sdmc = std::string(data) + "/sdmc";
+			_romfs = std::string("/app/romfs");
+		} else {
+			_sdmc = "./sdmc";
+			_romfs = "./romfs";
+		}
+
+		mkdir(_sdmc.c_str(), 0755);
 	}
 
 	std::string PlatformLinux::getPath(const std::string& partial, const Location location) {
 		switch (location) {
 		case Location::ROM:
-			return std::string("./romfs") + partial;
+			return _romfs + partial;
 		case Location::USER:
-			return std::string("./sdmc") + partial;
+			return _sdmc + partial;
 		}
 
 		return "";

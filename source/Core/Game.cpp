@@ -21,8 +21,8 @@ namespace SuperHaxagon {
 		_sfxLevelUp = platform.loadAudio("/sound/level", Stream::DIRECT, Location::ROM);
 		_sfxWonderful = platform.loadAudio("/sound/wonderful", Stream::DIRECT, Location::ROM);
 
-		_small = platform.loadFont(platform.getPath("/bump-it-up", Location::ROM), 16);
-		_large = platform.loadFont(platform.getPath("/bump-it-up", Location::ROM), 32);
+		_small = platform.loadFont("/bump-it-up", 16, Location::ROM);
+		_large = platform.loadFont("/bump-it-up", 32, Location::ROM);
 
 		_twister = platform.getTwister();
 	}

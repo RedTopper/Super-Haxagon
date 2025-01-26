@@ -63,8 +63,8 @@ namespace SuperHaxagon {
 		return std::make_unique<AudioLoaderSFML>(getPath(path, location), stream);
 	}
 
-	std::unique_ptr<Font> PlatformSFML::loadFont(const std::string& path, const int size) {
-		return std::make_unique<FontSFML>(*this, path, static_cast<float>(size));
+	std::unique_ptr<Font> PlatformSFML::loadFont(const std::string& partial, const int size, const Location location) {
+		return std::make_unique<FontSFML>(*this, getPath(partial, location), static_cast<float>(size));
 	}
 
 	void PlatformSFML::playSFX(AudioLoader& audio) {

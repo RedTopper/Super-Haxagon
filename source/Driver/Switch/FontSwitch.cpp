@@ -57,8 +57,10 @@ namespace SuperHaxagon {
 		}
 
 		FT_Face face;
-		if (FT_New_Face(ft, filename.c_str(), 0, &face)) {
+        auto error = FT_New_Face(ft, filename.c_str(), 0, &face);
+		if (error) {
 			platform.message(Dbg::FATAL, "font", "could not load font " + filename);
+			platform.message(Dbg::FATAL, "font", "error: " + std::to_string(error));
 			return;
 		}
 

@@ -19,7 +19,7 @@ namespace SuperHaxagon {
 
 		std::string getPath(const std::string& partial, Location location) override = 0;
 		std::unique_ptr<AudioLoader> loadAudio(const std::string& partial, Stream stream, Location location) override;
-		std::unique_ptr<Font> loadFont(const std::string& partial, int size) override;
+		std::unique_ptr<Font> loadFont(const std::string& partial, int size, Location location) override;
 
 		void playSFX(AudioLoader& audio) override;
 		void playBGM(AudioLoader& audio) override;

@@ -26,8 +26,8 @@ namespace SuperHaxagon {
 	template<class T>
 	class RenderTarget {
 	public:
-		RenderTarget<T>(Platform& platform, bool transparent, const std::string& shaderVertex, const std::string& shaderFragment, std::string label);
-		~RenderTarget<T>();
+		RenderTarget(Platform& platform, bool transparent, const std::string& shaderVertex, const std::string& shaderFragment, std::string label);
+		~RenderTarget();
 
 		void bind() const;
 		void insert(const T& vertex);

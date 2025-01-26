@@ -62,7 +62,7 @@ namespace SuperHaxagon {
 		virtual std::string getPath(const std::string& partial, Location location) = 0;
 		virtual std::unique_ptr<std::istream> openFile(const std::string& partial, Location location);
 		virtual std::unique_ptr<AudioLoader> loadAudio(const std::string& partial, Stream stream, Location location) = 0;
-		virtual std::unique_ptr<Font> loadFont(const std::string& partial, int size) = 0;
+		virtual std::unique_ptr<Font> loadFont(const std::string& partial, int size, Location location) = 0;
 
 		virtual void playSFX(AudioLoader& audio) = 0;
 		virtual void playBGM(AudioLoader& audio) = 0;

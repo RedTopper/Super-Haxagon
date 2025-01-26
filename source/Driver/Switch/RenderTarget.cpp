@@ -47,7 +47,7 @@ namespace SuperHaxagon {
 	}
 
 	template<class T>
-	RenderTarget<T>::~RenderTarget<T>() {
+	RenderTarget<T>::~RenderTarget() {
 		// ignores zeros, so delete away
 		glDeleteBuffers(1, &_vbo);
 		glDeleteBuffers(1, &_ibo);

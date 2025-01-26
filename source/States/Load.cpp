@@ -103,14 +103,15 @@ namespace SuperHaxagon {
 
 	void Load::enter() {
 		std::vector<std::pair<Location, std::string>> levels;
-		levels.emplace_back(std::pair<Location, std::string>(Location::ROM, "/levels.haxagon"));
+		levels.emplace_back(Location::ROM, "/levels.haxagon");
 
-		if (static_cast<int>(_platform.supports() & Supports::FILESYSTEM)) {
-			auto files = std::filesystem::directory_iterator(_platform.getPath("/", Location::USER));
+		const auto dir = _platform.getPath("/", Location::USER);
+		if (static_cast<int>(_platform.supports() & Supports::FILESYSTEM) && std::filesystem::exists(dir)) {
+			auto files = std::filesystem::directory_iterator(dir);
 			for (const auto& file : files) {
 				if (file.path().extension() != ".haxagon") continue;
 				_platform.message(Dbg::INFO, "load", "found " + file.path().string());
-				levels.emplace_back(std::pair<Location, std::string>(Location::USER, file.path().string()));
+				levels.emplace_back(Location::USER, file.path().string());
 			}
 		}
 

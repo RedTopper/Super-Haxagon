@@ -16,6 +16,9 @@ namespace SuperHaxagon {
 		void message(Dbg dbg, const std::string& where, const std::string& message) override;
 
 		std::unique_ptr<Twist> getTwister() override;
+
+		std::string _sdmc;
+		std::string _romfs;
 	};
 }
 

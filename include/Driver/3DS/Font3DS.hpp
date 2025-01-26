@@ -5,10 +5,19 @@
 
 #include <citro2d.h>
 
+// Naughty naughty re-defining internal structures!
+// See .cpp file for details.
+struct C2D_Font_s
+{
+	CFNT_s* cfnt;
+	C3D_Tex* glyphSheets;
+	float textScale;
+};
+
 namespace SuperHaxagon {
 	class Font3DS : public Font {
 	public:
-		Font3DS(const std::string& path, int size, C2D_TextBuf& buff);
+		Font3DS(const std::string& path, int size);
 		~Font3DS() override;
 
 		void setScale(float) override {};
@@ -20,7 +29,7 @@ namespace SuperHaxagon {
 		float _size;
 
 		C2D_Font _font;
-		C2D_TextBuf& _buff;
+		C2D_TextBuf _buff;
 	};
 }
 

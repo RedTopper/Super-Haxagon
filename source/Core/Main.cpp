@@ -1,7 +1,7 @@
 #include "Core/Game.hpp"
 #include "Core/Platform.hpp" 
 
-#if defined _3DS
+#if defined __3DS__ || defined _3DS
 #include "Driver/3DS/Platform3DS.hpp"
 #elif defined __SWITCH__
 #include "Driver/Switch/PlatformSwitch.hpp"
@@ -24,7 +24,7 @@
 
 namespace SuperHaxagon {
 	std::unique_ptr<Platform> getPlatform() {
-		#if defined _3DS
+		#if defined __3DS__  || defined _3DS
 		return std::make_unique<Platform3DS>(Dbg::FATAL);
 		#elif defined __SWITCH__
 		return std::make_unique<PlatformSwitch>(Dbg::INFO);

@@ -66,7 +66,7 @@ namespace SuperHaxagon {
 		return std::make_unique<AudioLoaderNspire>(openFile(partial + ".txt", location));
 	}
 
-	std::unique_ptr<Font> PlatformNspire::loadFont(const std::string&, int size) {
+	std::unique_ptr<Font> PlatformNspire::loadFont(const std::string&, int size, const Location) {
 		return std::make_unique<FontNspire>(_gc, size);
 	}
 

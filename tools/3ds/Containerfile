@@ -1,0 +1,26 @@
+FROM devkitpro/devkitarm
+
+RUN --mount=target=/var/lib/apt/lists,type=cache,sharing=locked \
+    --mount=target=/var/cache/apt,type=cache,sharing=locked \
+    apt-get update && \
+    apt-get -y --no-install-recommends install gcc g++
+
+# Build bannertool
+RUN mkdir -p /haxagon/bannertool
+WORKDIR /haxagon/bannertool
+RUN git clone --depth=1 https://github.com/carstene1ns/3ds-bannertool.git .
+RUN mkdir build && cd build && cmake .. && make -j 16
+RUN cp build/bannertool /opt/devkitpro/tools/bin
+
+# Build makerom
+RUN mkdir -p /haxagon/Project_CTR
+WORKDIR /haxagon/Project_CTR
+RUN git clone --depth=1 https://github.com/3DSGuy/Project_CTR.git .
+RUN cd makerom && make deps && make -j 16
+RUN cp makerom/bin/makerom /opt/devkitpro/tools/bin
+
+RUN mkdir -p /haxagon/build
+WORKDIR /haxagon/build
+COPY 3ds/build.sh /haxagon/build.sh
+
+CMD /haxagon/build.sh

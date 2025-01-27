@@ -3,7 +3,7 @@
 
 #include "Core/Metadata.hpp"
 #include "Core/AudioLoader.hpp"
-#include "Driver/NSpire/AudioPlayerNspire.hpp"
+#include "Driver/Nspire/AudioPlayerNspire.hpp"
 
 namespace SuperHaxagon {
 	enum class Location;

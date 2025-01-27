@@ -1,0 +1,52 @@
+version: '3.8'
+
+# For a build:
+# podman-compose run --build --rm <service>
+
+# For a shell:
+# podman-compose run --build --rm <service> bash
+
+# For a linux flatpak build, install Flatpak on your host
+# and run tools/linux/flatpak.sh from the root of this repo
+
+services:
+  3ds:
+    build:
+      context: .
+      dockerfile: 3ds/Containerfile
+    image: super-haxagon-3ds
+    container_name: super-haxagon-3ds
+    hostname: super-haxagon-3ds
+    volumes:
+      - ../:/haxagon/git:z
+      - ../build/3ds:/haxagon/build:z
+  switch:
+    build:
+      context: .
+      dockerfile: switch/Containerfile
+    image: super-haxagon-switch
+    container_name: super-haxagon-switch
+    hostname: super-haxagon-switch
+    volumes:
+      - ../:/haxagon/git:z
+      - ../build/switch:/haxagon/build:z
+  nspire:
+    build:
+      context: .
+      dockerfile: nspire/Containerfile
+    image: super-haxagon-nspire
+    container_name: super-haxagon-nspire
+    hostname: super-haxagon-nspire
+    volumes:
+      - ../:/haxagon/git:z
+      - ../build/nspire:/haxagon/build:z
+  linux:
+    build:
+      context: .
+      dockerfile: linux/Containerfile
+    image: super-haxagon-linux
+    container_name: super-haxagon-linux
+    hostname: super-haxagon-linux
+    volumes:
+      - ../:/haxagon/git:z
+      - ../build/linux:/haxagon/build:z

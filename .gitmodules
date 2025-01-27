@@ -1,6 +1,3 @@
-[submodule "libraries/buildtools"]
-	path = libraries/buildtools
-	url = https://github.com/RedTopper/buildtools.git
 [submodule "libraries/stb"]
 	path = libraries/stb
 	url = https://github.com/nothings/stb.git

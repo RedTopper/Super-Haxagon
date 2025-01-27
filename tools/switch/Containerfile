@@ -1,0 +1,7 @@
+FROM devkitpro/devkita64
+
+RUN mkdir -p /haxagon/build
+WORKDIR /haxagon/build
+COPY switch/build.sh /haxagon/build.sh
+
+CMD /haxagon/build.sh

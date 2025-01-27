@@ -1,0 +1,32 @@
+FROM fedora:41
+
+RUN --mount=target=/var/cache/dnf,type=cache,sharing=locked \
+    dnf update -y && \
+    dnf install -y --nodocs \
+    gcc gcc-c++ cmake git wget which makeinfo php xxd \
+    binutils-devel gmp-devel mpfr-devel libmpc-devel \
+    zlib-devel boost-program-options boost-devel python3.11-devel
+
+# Python 3.11 required to build, so set up alternatives
+RUN alternatives --install /usr/bin/python3-config python3-config /usr/bin/python3.11-config 1 && \
+    alternatives --install /usr/bin/python3 python3 /usr/bin/python3.13 1 && \
+    alternatives --install /usr/bin/python3 python3 /usr/bin/python3.11 2 && \
+    alternatives --install /usr/bin/python python /usr/bin/python3.13 1 && \
+    alternatives --install /usr/bin/python python /usr/bin/python3.11 2
+
+# Build ndless toolchain
+RUN mkdir -p /opt/ndless
+WORKDIR /opt/ndless
+RUN git clone --depth=1 --recurse-submodules --shallow-submodules https://github.com/ndless-nspire/Ndless.git .
+
+# This will take a while... Grab a coffee?
+RUN cd ndless-sdk/toolchain && ./build_toolchain.sh && rm -r ./download
+ENV PATH="/opt/ndless/ndless-sdk/toolchain/install/bin:/opt/ndless/ndless-sdk/bin:${PATH}"
+ENV NDLESS="/opt/ndless"
+RUN make
+
+RUN mkdir -p /haxagon/build
+WORKDIR /haxagon/build
+COPY nspire/build.sh /haxagon/build.sh
+
+CMD /haxagon/build.sh

@@ -1,5 +1,7 @@
 <p align="center"><img style="text-align:center" src="./media/rendersmall.png" alt="Banner Render" title="Banner Render"/></p>
 
+<!-- Note: icon-3ds.png name kept for backwards compatability with old readmes. -->
+
 # ![Icon](./media/icon-3ds.png "Icon") Super-Haxagon
 
 Super Haxagon is a cross platform, open source [Super Hexagon](http://superhexagon.com/) clone for the Nintendo 3DS, Nintendo Switch, Windows, Linux, and the [TI-Nspire](https://education.ti.com/en/products/calculators/graphing-calculators/ti-nspire-cx-cas) (yes, the calculator). It is developed in C++ and uses no additional libraries for the core logic, making it easy (in theory) to port to new platforms. It also has a GUI based level editor called [Haxa Editor](https://github.com/RedTopper/Haxa-Editor).

@@ -1,5 +1,7 @@
+/.flatpak-builder
 /audacity
 /build
+/repo
 /out
 /output
 /cmake-build-debug

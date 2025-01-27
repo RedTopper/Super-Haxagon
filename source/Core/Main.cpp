@@ -10,7 +10,7 @@
 #elif defined __linux__
 #include "Driver/Linux/PlatformLinux.hpp"
 #elif defined _nspire
-#include "Driver/NSpire/PlatformNspire.hpp"
+#include "Driver/Nspire/PlatformNspire.hpp"
 #elif defined __APPLE__
 	#include "TargetConditionals.h"
 	#if defined TARGET_OS_OSX

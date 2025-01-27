@@ -70,6 +70,11 @@ namespace SuperHaxagon {
 		return std::make_unique<FontNspire>(_gc, size);
 	}
 
+    // Define the base implementation of loadUserLevels here, since the nspire cannot load user levels.
+	std::vector<std::pair<Location, std::string>> Platform::loadUserLevels() {
+        return std::vector<std::pair<Location, std::string>>();
+    }
+
 	void PlatformNspire::playBGM(AudioLoader& audio) {
 		_bgm = audio.instantiate();
 		if (!_bgm) return;

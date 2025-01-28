@@ -1,5 +1,8 @@
 FROM fedora:41
 
+ARG JOBS=1
+ENV JOBS=${JOBS}
+
 RUN --mount=target=/var/cache/dnf,type=cache,sharing=locked \
     dnf update -y && \
     dnf install -y --nodocs \
@@ -12,7 +15,7 @@ RUN --mount=target=/var/cache/dnf,type=cache,sharing=locked \
 RUN mkdir -p /haxagon/sfml
 WORKDIR /haxagon/sfml
 RUN git clone --branch 2.6.x --depth=1 https://github.com/SFML/SFML.git .
-RUN mkdir build && cd build && cmake -DBUILD_SHARED_LIBS=FALSE .. && make -j 16
+RUN mkdir build && cd build && cmake -DBUILD_SHARED_LIBS=FALSE .. && make -j${JOBS}
 
 RUN mkdir -p /haxagon/build
 WORKDIR /haxagon/build

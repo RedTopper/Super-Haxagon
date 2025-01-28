@@ -23,55 +23,64 @@ _Warning: The windows/linux versions requires a graphics adapter with OpenGL 3.2
 
 ## Building
 
-Super Haxagon targets the 3DS, Switch, Windows (MinGW + MSVC), and Linux. For desktop platforms, it uses a cross platform library called SFML, so it will probably also compile on other platforms that support it.
+Super Haxagon targets the 3DS, Switch, TI-Nspire, Windows (MSVC), and Linux. For desktop platforms, it uses a 
+cross-platform library called SFML, so it will probably also compile on other platforms that support it.
 
 1. Clone this repository with `git clone https://github.com/RedTopper/Super-Haxagon.git --recursive`
 
-### 3DS Build
+### For Users With Podman or Docker:
 
-1. Get MinGW and DevkitPro and install dependencies listed in the Makefile
-1. Use the provided Makefile with the command `make TARGET:=3DS`
-1. Install either the CIA or 3DSX on your 3DS
+You can use the provided `tools/compose.yaml` file for creating sane build environments.
+The following examples use `podman-compose` and `podman` on fedora, but a similar result
+can likely be done with `docker` by replacing `podman-compose` with `docker compose` 
+(untested).
 
-### Switch Build
+From within the `tools` directory, run the following commands replacing the placeholders:
 
-1. Get MinGW and DevkitPro and install dependencies listed in the Makefile
-1. Use the provided Makefile with the command `make TARGET:=SWITCH`
-1. Copy the .nro to `sdmc:/switch/SuperHaxagon/SuperHaxagon.nro` and launch it from the hbmenu
+ * `<platform>`: The platform to build for: 3ds switch nspire linux
+ * `<cpus>`: The number of parallel jobs to default to, usually the CPU core count of your computer (ex: 8)
 
-### TI-Nspire Build
+Create the build environment with:
 
-1. On Linux (I use WSL/Ubuntu), get and build [Ndless](https://github.com/ndless-nspire/Ndless)
-1. Use the provided Makefile.nspire with the command `make -f Makefile.nspire`
-1. Copy `haxagon.tns` to the ndless folder
-1. Rename `levels.haxagon` to `levels.haxagon.tns` and copy it to the ndless folder
+`podman-compose build <platform> --build-arg JOBS=<cpus>`
 
-### PC Build
+Then build Super Haxagon with:
 
-#### ... with MSVC on Windows
+`podman-compose up <platform>`
 
-1. Note: you may need the [Visual C++ Runtime](https://support.microsoft.com/en-gb/help/2977003/the-latest-supported-visual-c-downloads)
-1. Download SFML for your MSVC version
-1. Rename the SFML folder to `SFML-MSVC` and place it in libraries
-1. Use Visual Studio to open a folder with the CMake file
-1. Build the game
-1. Press play
+If you need a shell within the build environment, run:
 
-#### ... with MinGW/msys on Windows
+`podman-compose run --rm <platform> bash`
 
-1. Note: you may need the [Visual C++ Runtime](https://support.microsoft.com/en-gb/help/2977003/the-latest-supported-visual-c-downloads)
-1. Download SFML for your MinGW version
-1. Rename the SFML folder to `SFML-MinGW` and place it in libraries
-1. Use the provided Makefile with the command `make TARGET:=WIN64` OR use the CMake file
-1. Copy the `romfs` folder and `SFML/bin/openal32.dll` library next to the built executable (only needed with Makefile)
-1. Launch the executable
+Then run the following to kick off a build from the `/haxagon/build` directory:
 
-#### ... with GCC on Linux
+`../build.sh`
 
-1. Install SFML through your distro's package manager
-1. Clone this repository
-1. Use the CMake file or Makefile `make TARGET:=LINUX64` to build it
-1. Launch the executable
+For more advanced users, feel free to modify the `compose.yaml` file to your needs.
+
+### For Linux Users Without Containerization:
+
+Install `SFML`'s _developer_ package using your system's package manager (this is
+usually the one that ends in -dev or -devel). Then:
+
+1. `mkdir build`
+2. `cd build`
+3. `cmake ..`
+4. `make`
+
+Note: This build will be dynamically linked with SFML and will require SFML to be 
+installed on any machine you want to run Super Haxagon on. For static building, 
+use the container or build SFML yourself.
+
+### For Flatpak Users:
+
+Run `tools/linux/flatpak.sh` from the root of the repo.
+
+### For Windows Users:
+
+1. Install Visual Studio 2022
+2. Place a copy of SFML in `libraries/SFML` (Create the directory)
+3. Open this repository in Visual Studio and press "Play"
 
 ## Credits
 
@@ -88,7 +97,7 @@ Thanks everyone for:
  * The SFML developers for, well, [SFML](https://www.sfml-dev.org/)
  * Audio from Open Hexagon at [SuperV1234/SSVOpenHexagon](https://github.com/SuperV1234/SSVOpenHexagon)
  * ...and Kevin MacLeod for more music at [incompetech.com](http://incompetech.com/)
- * and all of the people on the [contributors page](https://github.com/RedTopper/Super-Haxagon/graphs/contributors) (seriously, you guys rock!)
+ * and all the people on the [contributors page](https://github.com/RedTopper/Super-Haxagon/graphs/contributors) (seriously, you guys rock!)
 
 <details><summary>Music Attribution</summary>
 
@@ -137,5 +146,3 @@ Below are a few screenshots featuring the various platforms that Super Haxagon c
 ![Humble Beginnings](./media/screenshots/scr_1_MERGED.png "The First Test")
 
 </details>
-
-(Signature Verification)

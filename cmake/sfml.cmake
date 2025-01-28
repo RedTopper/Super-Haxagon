@@ -2,7 +2,6 @@
 
 message(STATUS "Using sfml driver...")
 
-set(SFML_STATIC_LIBRARIES TRUE)
 find_package(SFML 2 COMPONENTS system window graphics audio)
 
 include_directories(${SFML_INCLUDE_DIR})
@@ -17,8 +16,6 @@ set(DRIVER ${DRIVER_PLATFORM}
 )
 
 add_executable(SuperHaxagon ${DRIVER} ${SOURCES})
-
-target_compile_definitions(SuperHaxagon PRIVATE SFML_STATIC)
 
 target_link_libraries(SuperHaxagon sfml-graphics sfml-window sfml-audio sfml-system)
 

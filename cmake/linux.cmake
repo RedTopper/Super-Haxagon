@@ -12,4 +12,8 @@ set(DRIVER_PLATFORM source/Driver/Linux/PlatformLinux.cpp)
 
 include(cmake/sfml.cmake)
 
+if (SFML_STATIC_LIBRARIES)
+    target_compile_definitions(SuperHaxagon PRIVATE SFML_STATIC)
+endif()
+
 target_compile_options(SuperHaxagon PRIVATE -Wall -Wextra -pedantic)

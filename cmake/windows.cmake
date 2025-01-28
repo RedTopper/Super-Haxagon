@@ -8,9 +8,14 @@ if(NOT DEFINED SFML_DIR)
     set(SFML_DIR "${CMAKE_CURRENT_SOURCE_DIR}/libraries/SFML/lib/cmake/SFML")
 endif()
 
+set(SFML_STATIC_LIBRARIES TRUE)
+
 set(DRIVER_PLATFORM source/Driver/Win/PlatformWin.cpp)
 
 include(cmake/sfml.cmake)
+
+# Always link static on Windows
+target_compile_definitions(SuperHaxagon PRIVATE SFML_STATIC)
 
 # GUI Entrypoint
 target_link_options(SuperHaxagon PRIVATE "/SUBSYSTEM:WINDOWS" "/ENTRY:WinMainCRTStartup")

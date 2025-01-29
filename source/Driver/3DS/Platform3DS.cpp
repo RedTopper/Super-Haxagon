@@ -37,7 +37,10 @@ namespace SuperHaxagon {
 			// This is a shitty hack, either the Lime3DS developers should fix wide mode or this should be done right.
 			std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> convert;
 			username = convert.to_bytes(buffer.get());
-			emulated = username == "LIME3DS";
+			emulated =
+				username == "LIME3DS" ||
+				username == "ENCORE" ||
+				username == "CITRA";
 		}
 
 		gfxSetWide(consoleModel != CFG_MODEL_2DS && !emulated);

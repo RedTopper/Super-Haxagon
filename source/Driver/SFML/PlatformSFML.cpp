@@ -1,5 +1,6 @@
 #include "Driver/SFML/PlatformSFML.hpp"
 
+#include "Core/Configuration.hpp"
 #include "Core/Structs.hpp"
 #include "Driver/SFML/AudioLoaderSFML.hpp"
 #include "Driver/SFML/FontSFML.hpp"
@@ -15,8 +16,13 @@ namespace SuperHaxagon {
 		sf::ContextSettings settings;
 		settings.antialiasingLevel = 8;
 
+		// Set the window name to "Super Haxagon" first, to match the .desktop file,
+		// then add the version after the window has loaded.
 		_window = std::make_unique<sf::RenderWindow>(video, "Super Haxagon", sf::Style::Default, settings);
+
 		_window->setVerticalSyncEnabled(true);
+		_window->display();
+		_window->setTitle(std::string("Super Haxagon (") + VERSION + ")");
 		_loaded = true;
 	}
 

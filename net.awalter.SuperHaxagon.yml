@@ -18,7 +18,7 @@ modules:
       - type: dir
         path: .
 finish-args:
-  - "--socket=x11"
+  - "--socket=fallback-x11"
   - "--socket=pulseaudio"
   - "--device=dri"
   - "--device=input"

@@ -1,5 +1,6 @@
 #include "States/Menu.hpp"
 
+#include "Core/Configuration.hpp"
 #include "Core/Game.hpp"
 #include "Core/Metadata.hpp"
 #include "Core/Font.hpp"
@@ -165,6 +166,7 @@ namespace SuperHaxagon {
 		// Actual text
 		auto& level = **_selected;
 		auto scoreTime = "BEST: " + getTime(static_cast<float>(level.getHighScore()));
+		auto version = VERSION;
 		auto diff = "DIFF: " + level.getDifficulty();
 		auto mode = "MODE: " + level.getMode();
 		auto auth = "AUTH: " + level.getCreator();
@@ -178,6 +180,7 @@ namespace SuperHaxagon {
 		const Point posMode = {pad, posDifficulty.y + pad + small.getHeight()};
 		const Point posCreator = {pad, posMode.y + (renderCreator ? pad + small.getHeight() : 0)};
 		const Point posTime = {pad, screen.y - small.getHeight() - pad};
+		const Point posVersion = {screen.x - pad, screen.y - small.getHeight() - pad};
 
 		// Text background for information at top left of screen
 		Point infoSize = {std::max({
@@ -211,11 +214,24 @@ namespace SuperHaxagon {
 
 		_platform.drawPoly(COLOR_TRANSPARENT, time);
 
+		Point versionSize = {small.getWidth(version) + pad * 2, small.getHeight() + pad * 2};
+
+		const auto screenWidth = _platform.getScreenDim().x;
+		std::vector<Point> versionPoly = {
+			{screenWidth - versionSize.x, screenHeight - versionSize.y},
+			{screenWidth, screenHeight - versionSize.y},
+			{screenWidth, screenHeight},
+			{screenWidth - versionSize.x - versionSize.y / 2, screenHeight},
+		};
+
+		_platform.drawPoly(COLOR_TRANSPARENT, versionPoly);
+
 		large.draw(COLOR_WHITE, posTitle, Alignment::LEFT, level.getName());
 		small.draw(COLOR_GREY, posDifficulty, Alignment::LEFT, diff);
 		small.draw(COLOR_GREY, posMode, Alignment::LEFT, mode);
 		if (renderCreator) small.draw(COLOR_GREY, posCreator, Alignment::LEFT, auth);
 		small.draw(COLOR_WHITE, posTime, Alignment::LEFT, scoreTime);
+		small.draw(COLOR_WHITE, posVersion, Alignment::RIGHT, version);
 	}
 
 	void Menu::drawBot(float) {}

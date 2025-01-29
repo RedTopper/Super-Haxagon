@@ -7,7 +7,7 @@ set(APP_NAME "Super Haxagon")
 set(APP_DESCRIPTION "A Super Hexagon Clone")
 set(APP_AUTHOR "RedHat")
 
-include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
+include_directories("${CMAKE_CURRENT_SOURCE_DIR}/source")
 
 set(SOURCES
     source/States/Load.cpp

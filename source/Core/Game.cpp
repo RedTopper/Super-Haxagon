@@ -39,7 +39,12 @@ namespace SuperHaxagon {
 			// The original game was built with a 3DS in mind, so when
 			// drawing we have to scale the game to however many times larger the viewport is.
 			const auto scale = getScreenDimMin() / 240.0f;
-			const auto dilation = _platform.getDilation();
+			auto dilation = _platform.getDilation();
+
+			// Throttle how wildly off dilation can be on all platforms.
+			// A dilation of 1.0 is 1/60th of a second. Huge dilation spikes can happen
+			// when the process is suspended (for example, the 3ds on the home menu)
+			dilation = dilation > 5.0f ? 5.0f : (dilation < 0.05f ? 0.05f : dilation);
 
 			auto next = _state->update(dilation);
 			if (!_running) break;

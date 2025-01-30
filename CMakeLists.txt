@@ -9,6 +9,15 @@ set(APP_AUTHOR "RedHat")
 
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/source")
 
+# If you are using containers and your IDE can't see the header files in there,
+# but you still want type completion, just git clone the libraries in cmake/libraries.cmake
+# and enable the -DHEADERS_FOR_IDE=TRUE CMake option.
+# (for CLion this is in Build, Execution, Deployment > CMake > CMake Options)
+# (you can also, like, remove the if() block too, but remember to put it back please!)
+if(HEADERS_FOR_IDE)
+    include(cmake/libraries.cmake)
+endif()
+
 set(SOURCES
     source/States/Load.cpp
     source/States/Menu.cpp

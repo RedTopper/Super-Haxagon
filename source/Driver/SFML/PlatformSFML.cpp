@@ -61,8 +61,7 @@ namespace SuperHaxagon {
 
 	float PlatformSFML::getDilation() {
 		// The game was originally designed with 60FPS in mind
-		const auto dilation = _delta / (1.0f / 60.0f);
-		return dilation > 4.0f ? 4.0f : (dilation < 0.05f ? 0.05f : dilation);
+		return _delta / (1.0f / 60.0f);
 	}
 
 	std::unique_ptr<AudioLoader> PlatformSFML::loadAudio(const std::string& path, Stream stream, Location location) {

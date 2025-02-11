@@ -1,45 +1,61 @@
-#include "Driver/SFML/FontSFML.hpp"
+#include "Driver/Font.hpp"
 
 #include "Core/Structs.hpp"
-#include "Driver/SFML/PlatformSFML.hpp"
+
+#include <SFML/Graphics/Font.hpp>
+#include <SFML/Graphics/Text.hpp>
+#include <SFML/Graphics/RenderWindow.hpp>
 
 #include <cmath>
 
 namespace SuperHaxagon {
-	FontSFML::FontSFML(PlatformSFML& platform, const std::string& path, const float size) :
-		_platform(platform),
-		_scale(1),
-		_size(size) {
-		_loaded = _font.loadFromFile(path + ".ttf");
+	struct Font::FontData {
+		explicit FontData(sf::RenderWindow& renderWindow, const std::string& path, int size) :
+			window(renderWindow),
+			size(static_cast<float>(size)) {
+			loaded = font.loadFromFile(path + ".ttf");
+		}
+
+		sf::RenderWindow& window;
+		sf::Font font;
+		float scale{};
+		float size;
+		bool loaded;
+	};
+
+	std::unique_ptr<Font> createFont(sf::RenderWindow& renderWindow, const std::string& path, int size) {
+		return std::make_unique<Font>(std::make_unique<Font::FontData>(renderWindow, path, size));
 	}
 
-	FontSFML::~FontSFML() = default;
+	Font::Font(std::unique_ptr<Font::FontData> data) : _data(std::move(data)) {}
 
-	void FontSFML::setScale(const float scale) {
+	Font::~Font() = default;
+
+	void Font::setScale(const float scale) {
 		// scale up at half rate so it looks nice I guess?
-		_scale = (scale - 1) / 2 + 1;
+		_data->scale = (scale - 1) / 2 + 1;
 	}
 
-	float FontSFML::getHeight() const {
-		return _size * _scale;
+	float Font::getHeight() const {
+		return _data->size * _data->scale;
 	}
 
-	float FontSFML::getWidth(const std::string& text) const {
-		if (!_loaded) return 0;
+	float Font::getWidth(const std::string& str) const {
+		if (!_data->loaded) return 0;
 		sf::Text sfText;
-		sfText.setFont(_font);
-		sfText.setCharacterSize(static_cast<int>(_size * _scale));
-		sfText.setString(text);
+		sfText.setFont(_data->font);
+		sfText.setCharacterSize(static_cast<int>(_data->size * _data->scale));
+		sfText.setString(str);
 		return sfText.getLocalBounds().width;
 	}
 
-	void FontSFML::draw(const Color& color, const Point& position, const Alignment alignment, const std::string& text) {
-		if (!_loaded) return;
+	void Font::draw(const Color& color, const Point& position, const Alignment alignment, const std::string& text) const {
+		if (!_data->loaded) return;
 		sf::Text sfText;
 		sf::Vector2f sfPosition;
 		sfPosition.y = static_cast<float>(position.y);
-		sfText.setFont(_font);
-		sfText.setCharacterSize(static_cast<int>(_size * _scale));
+		sfText.setFont(_data->font);
+		sfText.setCharacterSize(static_cast<int>(_data->size * _data->scale));
 		sfText.setFillColor({color.r, color.g, color.b, color.a});
 		sfText.setString(text);
 
@@ -51,6 +67,6 @@ namespace SuperHaxagon {
 		sfPosition.y = std::round(sfPosition.y);
 		sfText.setPosition(sfPosition);
 
-		_platform.getWindow().draw(sfText);
+		_data->window.draw(sfText);
 	}
 }

@@ -2,8 +2,8 @@
 
 #include "Core/Metadata.hpp"
 #include "Core/Twist.hpp"
-#include "Core/Font.hpp"
-#include "Core/Platform.hpp"
+#include "Driver/Font.hpp"
+#include "Driver/Platform.hpp"
 #include "Factories/LevelFactory.hpp"
 #include "Factories/PatternFactory.hpp"
 #include "States/Load.hpp"
@@ -14,15 +14,26 @@ namespace SuperHaxagon {
 
 	Game::Game(Platform& platform) : _platform(platform) {
 		// Audio loading
-		_sfxBegin = platform.loadAudio("/sound/begin", Stream::DIRECT, Location::ROM);
-		_sfxHexagon = platform.loadAudio("/sound/hexagon", Stream::DIRECT, Location::ROM);
-		_sfxOver = platform.loadAudio("/sound/over", Stream::DIRECT, Location::ROM);
-		_sfxSelect = platform.loadAudio("/sound/select", Stream::DIRECT, Location::ROM);
-		_sfxLevelUp = platform.loadAudio("/sound/level", Stream::DIRECT, Location::ROM);
-		_sfxWonderful = platform.loadAudio("/sound/wonderful", Stream::DIRECT, Location::ROM);
+		const std::vector<std::pair<SoundEffect, std::string>> sounds{
+			{SoundEffect::BEGIN, "begin"},
+			{SoundEffect::HEXAGON, "hexagon"},
+			{SoundEffect::OVER, "over"},
+			{SoundEffect::SELECT, "select"},
+			{SoundEffect::LEVEL_UP, "level"},
+			{SoundEffect::WONDERFUL, "wonderful"},
+		};
 
-		_small = platform.loadFont("/bump-it-up", 16, Location::ROM);
-		_large = platform.loadFont("/bump-it-up", 32, Location::ROM);
+		for (const auto& sound : sounds) {
+			platform.loadSFX(sound.first, sound.second);
+		}
+
+		constexpr int sizes[] {
+			16, 32
+		};
+
+		for (const int size : sizes) {
+			platform.loadFont(size);
+		}
 
 		_twister = platform.getTwister();
 	}
@@ -192,11 +203,11 @@ namespace SuperHaxagon {
 	}
 
 	Font& Game::getFontSmall() const {
-		return *_small;
+		return _platform.getFont(16);
 	}
 	
 	Font& Game::getFontLarge() const {
-		return *_large;
+		return _platform.getFont(32);
 	}
 
 	float Game::getScreenDimMax() const {
@@ -216,7 +227,6 @@ namespace SuperHaxagon {
 			_bgmMetadata = std::make_unique<Metadata>(_platform.openFile(base + ".txt", location));
 		}
 		
-		_bgmAudio = _platform.loadAudio(base, Stream::INDIRECT, location);
-		_platform.playBGM(*getBGMAudio());
+		_platform.playBGM(base, location);
 	}
 }

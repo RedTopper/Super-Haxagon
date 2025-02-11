@@ -2,9 +2,9 @@
 
 #include "Core/Game.hpp"
 #include "Core/Metadata.hpp"
-#include "Core/Font.hpp"
-#include "Core/Platform.hpp"
-#include "Core/AudioPlayer.hpp"
+#include "Driver/Font.hpp"
+#include "Driver/Music.hpp"
+#include "Driver/Platform.hpp"
 #include "Factories/LevelFactory.hpp"
 #include "Objects/Level.hpp"
 #include "States/Over.hpp"
@@ -30,7 +30,7 @@ namespace SuperHaxagon {
 	void Play::enter() {
 		auto* bgm = _platform.getBGM();
 		if (bgm) bgm->play();
-		_platform.playSFX(_game.getSFXBegin());
+		_platform.playSFX(SoundEffect::BEGIN);
 		_game.setShadowAuto(true);
 	}
 
@@ -126,7 +126,7 @@ namespace SuperHaxagon {
 		const auto* lastScoreText = getScoreText(static_cast<int>(previousFrame), false);
 		if (lastScoreText != getScoreText(static_cast<int>(_level->getFrame()), false)) {
 			_level->increaseMultiplier();
-			_platform.playSFX(_game.getSFXLevelUp());
+			_platform.playSFX(SoundEffect::LEVEL_UP);
 		}
 
 		return nullptr;

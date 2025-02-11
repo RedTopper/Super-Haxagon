@@ -5,7 +5,6 @@
 
 namespace SuperHaxagon {
 	class Game;
-	class AudioLoader;
 	class Level;
 	class LevelFactory;
 	class Platform;

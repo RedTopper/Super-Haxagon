@@ -1,49 +1,64 @@
-#include "Driver/SFML/PlatformSFML.hpp"
+#include "Driver/Platform.hpp"
 
+#include "DataSFML.hpp"
 #include "Core/Configuration.hpp"
 #include "Core/Structs.hpp"
-#include "Driver/SFML/AudioLoaderSFML.hpp"
-#include "Driver/SFML/FontSFML.hpp"
-#include "Driver/SFML/AudioPlayerSoundSFML.hpp"
+#include "Driver/Font.hpp"
+#include "Driver/Music.hpp"
+#include "Driver/Sound.hpp"
 
-#include <array>
+#include <SFML/Window.hpp>
+#include <SFML/Audio.hpp>
+#include <SFML/Graphics.hpp>
+
 #include <string>
+#include <deque>
 
 namespace SuperHaxagon {
-	PlatformSFML::PlatformSFML(const Dbg dbg, sf::VideoMode video) : Platform(dbg) {
-		_clock.restart();
+	std::unique_ptr<Music> createMusic(sf::Music& music);
+	std::unique_ptr<Sound> createSound(const sf::SoundBuffer& buffer);
+	std::unique_ptr<Font> createFont(sf::RenderWindow& renderWindow, const std::string& path, int size);
+
+	std::unique_ptr<Platform::PlatformData> createPlatform(sf::VideoMode video, const std::string& sdmc, const std::string& romfs, const bool backslash) {
+		auto plat = std::make_unique<Platform::PlatformData>();
+
+		plat->sdmc = sdmc;
+		plat->romfs = romfs;
+		plat->backslash = backslash;
+
+		plat->clock.restart();
 
 		sf::ContextSettings settings;
 		settings.antialiasingLevel = 8;
 
 		// Set the window name to "Super Haxagon" first, to match the .desktop file,
 		// then add the version after the window has loaded.
-		_window = std::make_unique<sf::RenderWindow>(video, "Super Haxagon", sf::Style::Default, settings);
+		plat->window = std::make_unique<sf::RenderWindow>(video, "Super Haxagon", sf::Style::Default, settings);
 
-		_window->setVerticalSyncEnabled(true);
-		_window->display();
-		_window->setTitle(std::string("Super Haxagon (") + VERSION + ")");
-		_loaded = true;
+		plat->window->setVerticalSyncEnabled(true);
+		plat->window->display();
+		plat->window->setTitle(std::string("Super Haxagon (") + VERSION + ")");
+		plat->loaded = true;
+
+		return plat;
 	}
 
-	PlatformSFML::~PlatformSFML() = default;
-
-	bool PlatformSFML::loop() {
+	bool Platform::loop() {
 		const auto throttle = sf::milliseconds(1);
 		sf::sleep(throttle);
-		_delta = _clock.getElapsedTime().asSeconds();
-		_clock.restart();
+		_delta = _plat->clock.getElapsedTime().asSeconds();
+		_plat->clock.restart();
 		sf::Event event{};
-		while (_window->pollEvent(event)) {
-			if (event.type == sf::Event::Closed) _window->close();
-			if (event.type == sf::Event::GainedFocus) _focus = true;
-			if (event.type == sf::Event::LostFocus) _focus = false;
+		while (_plat->window->pollEvent(event)) {
+			if (event.type == sf::Event::Closed) _plat->window->close();
+			if (event.type == sf::Event::GainedFocus) _plat->focus = true;
+			if (event.type == sf::Event::LostFocus) _plat->focus = false;
 			if (event.type == sf::Event::Resized) {
 				const auto width = event.size.width > 400 ? event.size.width : 400;
 				const auto height = event.size.height > 240 ? event.size.height : 240;
 
 				if (width != event.size.width || height != event.size.height) {
-					_window->setSize({ width, height });
+					_plat->window->setSize({ width, height });
 				}
 				
 				sf::FloatRect visibleArea(
@@ -53,50 +68,82 @@ namespace SuperHaxagon {
 					static_cast<float>(height)
 				);
 
-				_window->setView(sf::View(visibleArea));
+				_plat->window->setView(sf::View(visibleArea));
 			}
 		}
-		return _loaded && _window->isOpen();
+		return _plat->loaded && _plat->window->isOpen();
 	}
 
-	float PlatformSFML::getDilation() {
+	float Platform::getDilation() const {
 		// The game was originally designed with 60FPS in mind
 		return _delta / (1.0f / 60.0f);
 	}
 
-	std::unique_ptr<AudioLoader> PlatformSFML::loadAudio(const std::string& path, Stream stream, Location location) {
-		return std::make_unique<AudioLoaderSFML>(getPath(path, location), stream);
+	std::string Platform::getPath(const std::string& partial, const Location location) const {
+		auto path = partial;
+
+		if (_plat->backslash) std::replace(path.begin(), path.end(), '/', '\\');
+
+		switch (location) {
+			case Location::ROM:
+				return _plat->romfs + path;
+			case Location::USER:
+				return _plat->sdmc + path;
+		}
+
+		return "";
 	}
 
-	std::unique_ptr<Font> PlatformSFML::loadFont(const std::string& partial, const int size, const Location location) {
-		return std::make_unique<FontSFML>(*this, getPath(partial, location), static_cast<float>(size));
+	std::unique_ptr<std::istream> Platform::openFile(const std::string& partial, const Location location) const {
+		return std::make_unique<std::ifstream>(getPath(partial, location), std::ios::in | std::ios::binary);
 	}
 
-	void PlatformSFML::playSFX(AudioLoader& audio) {
-		for (auto it = _sfx.begin(); it != _sfx.end();) {
-			auto& playing = *it;
+	void Platform::loadSFX(const SoundEffect effect, const std::string& name) const {
+		sf::SoundBuffer buffer;
+		const bool loaded = buffer.loadFromFile(getPath("/sound/" + name, Location::ROM) + ".wav");
+		if (!loaded) return;
+		_plat->sfxBuffers.emplace_back(effect, buffer);
+	}
+
+	void Platform::loadFont(const int size) {
+		auto font = createFont(*_plat->window, getPath("/bump-it-up", Location::ROM), size);
+		_fonts.emplace_back(size, std::move(font));
+	}
+
+	void Platform::playSFX(const SoundEffect effect) const {
+		for (auto it = _plat->sfx.begin(); it != _plat->sfx.end();) {
+			const auto& playing = *it;
 			if (playing->isDone()) {
-				it = _sfx.erase(it);
+				it = _plat->sfx.erase(it);
 			} else {
 				++it;
 			}
 		}
 
-		auto player = audio.instantiate();
-		if (!player) return;
-		player->setLoop(false);
-		player->play();
-		_sfx.emplace_back(std::move(player));
+		for (const auto& sfx : _plat->sfxBuffers) {
+			if (sfx.first == effect) {
+				auto player = createSound(sfx.second);
+				if (!player) return;
+				player->play();
+				_plat->sfx.emplace_back(std::move(player));
+				return;
+			}
+		}
 	}
 
-	void PlatformSFML::playBGM(AudioLoader& audio) {
-		_bgm = audio.instantiate();
+	void Platform::playBGM(const std::string& base, const Location location) {
+		_bgm = nullptr;
+		const bool loaded = _plat->bgmAudio->openFromFile(getPath(base, location) + ".ogg");
+		if (!loaded) return;
+
+		_bgm = createMusic(*_plat->bgmAudio);
 		if (!_bgm) return;
+
 		_bgm->setLoop(true);
 		_bgm->play();
 	}
 
-	std::string PlatformSFML::getButtonName(const Buttons& button) {
+	std::string Platform::getButtonName(const Buttons& button) {
 		if (button.back) return "ESC";
 		if (button.select) return "ENTER";
 		if (button.left) return "LEFT";
@@ -105,42 +152,52 @@ namespace SuperHaxagon {
 		return "?";
 	}
 
-	Buttons PlatformSFML::getPressed() {
+	Buttons Platform::getPressed() const {
 		Buttons buttons{};
-		if (!_focus) return buttons;
+		if (!_plat->focus) return buttons;
 		buttons.select = sf::Keyboard::isKeyPressed(sf::Keyboard::Enter);
 		buttons.back = sf::Keyboard::isKeyPressed(sf::Keyboard::Escape);
 		buttons.quit = sf::Keyboard::isKeyPressed(sf::Keyboard::Delete);
-		buttons.left = sf::Keyboard::isKeyPressed(sf::Keyboard::Left) | sf::Keyboard::isKeyPressed(sf::Keyboard::A);
-		buttons.right = sf::Keyboard::isKeyPressed(sf::Keyboard::Right) | sf::Keyboard::isKeyPressed(sf::Keyboard::D);
+		buttons.left = sf::Keyboard::isKeyPressed(sf::Keyboard::Left) || sf::Keyboard::isKeyPressed(sf::Keyboard::A);
+		buttons.right = sf::Keyboard::isKeyPressed(sf::Keyboard::Right) || sf::Keyboard::isKeyPressed(sf::Keyboard::D);
 		return buttons;
 	}
 
-	Point PlatformSFML::getScreenDim() const {
+	Point Platform::getScreenDim() const {
 		Point point{};
-		point.x = static_cast<float>(_window->getSize().x);
-		point.y = static_cast<float>(_window->getSize().y);
+		point.x = static_cast<float>(_plat->window->getSize().x);
+		point.y = static_cast<float>(_plat->window->getSize().y);
 		return point;
 	}
 
-	void PlatformSFML::screenBegin() {
-		_window->clear(sf::Color::Black);
+	void Platform::screenBegin() const {
+		_plat->window->clear(sf::Color::Black);
 	}
 
-	void PlatformSFML::screenFinalize() {
-		_window->display();
+	// Do nothing since we don't have two screens
+	void Platform::screenSwap() {}
+
+	void Platform::screenFinalize() const {
+		_plat->window->display();
 	}
 
-	void PlatformSFML::drawPoly(const Color& color, const std::vector<Point>& points) {
+	void Platform::drawPoly(const Color& color, const std::vector<Point>& points) const {
 		const sf::Color sfColor{ color.r, color.g, color.b, color.a };
 		sf::ConvexShape convex(points.size());
 		convex.setPosition(0, 0);
 		convex.setFillColor(sfColor);
 		auto index = 0;
 		for (const auto& point : points) {
-			convex.setPoint(index++, sf::Vector2f(static_cast<float>(point.x), static_cast<float>(point.y)));
+			convex.setPoint(index++, sf::Vector2f(point.x, point.y));
 		}
 
-		_window->draw(convex);
+		_plat->window->draw(convex);
+	}
+
+	// Do nothing for SFML
+	void Platform::shutdown() {}
+
+	Supports Platform::supports() {
+		return Supports::SHADOWS;
 	}
 }

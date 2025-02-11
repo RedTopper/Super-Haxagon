@@ -1,8 +1,8 @@
 #include "States/Over.hpp"
 
 #include "Core/Game.hpp"
-#include "Core/Platform.hpp"
-#include "Core/Font.hpp"
+#include "Driver/Font.hpp"
+#include "Driver/Platform.hpp"
 #include "Factories/LevelFactory.hpp"
 #include "Objects/Level.hpp"
 #include "States/Load.hpp"
@@ -29,7 +29,7 @@ namespace SuperHaxagon {
 	Over::~Over() = default;
 
 	void Over::enter() {
-		_platform.playSFX(_game.getSFXOver());
+		_platform.playSFX(SoundEffect::OVER);
 
 		std::ofstream scores(_platform.getPath("/scores.db", Location::USER), std::ios::out | std::ios::binary);
 

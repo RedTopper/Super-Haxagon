@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.18)
-project(Super_Haxagon VERSION 3.5.0)
+project(Super_Haxagon VERSION 3.6.0)
 
 set(CMAKE_CXX_STANDARD 17)
 
@@ -18,7 +18,13 @@ if(HEADERS_FOR_IDE)
     include(cmake/libraries.cmake)
 endif()
 
+# Used in 3DS for a console on the bottom screen
+# and Switch for debug output to a file
+set(DEBUG_CONSOLE true)
+
 set(SOURCES
+    source/Main.cpp
+
     source/States/Load.cpp
     source/States/Menu.cpp
     source/States/Over.cpp
@@ -35,10 +41,8 @@ set(SOURCES
     source/Objects/Pattern.cpp
     source/Objects/Wall.cpp
 
-    source/Core/Platform.cpp
     source/Core/Game.cpp
     source/Core/Metadata.cpp
-    source/Core/Main.cpp
     source/Core/Structs.cpp)
 
 configure_file(source/Core/Configuration.hpp.in Core/Configuration.hpp)

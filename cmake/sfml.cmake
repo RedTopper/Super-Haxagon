@@ -7,9 +7,8 @@ find_package(SFML 2 COMPONENTS system window graphics audio)
 include_directories(${SFML_INCLUDE_DIR})
 
 set(DRIVER ${DRIVER_PLATFORM}
-    source/Driver/SFML/AudioLoaderSFML.cpp
-    source/Driver/SFML/AudioPlayerSoundSFML.cpp
-    source/Driver/SFML/AudioPlayerMusicSFML.cpp
+    source/Driver/SFML/MusicSFML.cpp
+    source/Driver/SFML/SoundSFML.cpp
     source/Driver/SFML/FontSFML.cpp
     source/Driver/SFML/PlatformSFML.cpp
     source/Driver/Common/PlatformSupportsFilesystem.cpp

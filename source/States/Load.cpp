@@ -1,7 +1,7 @@
 #include "States/Load.hpp"
 
 #include "Core/Game.hpp"
-#include "Core/Platform.hpp"
+#include "Driver/Platform.hpp"
 #include "Factories/LevelFactory.hpp"
 #include "Factories/PatternFactory.hpp"
 #include "States/Menu.hpp"

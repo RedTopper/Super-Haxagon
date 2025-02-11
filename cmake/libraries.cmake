@@ -7,6 +7,7 @@ include_directories(SYSTEM "${CMAKE_CURRENT_SOURCE_DIR}/libraries/libctru/libctr
 include_directories(SYSTEM "${CMAKE_CURRENT_SOURCE_DIR}/libraries/citro2d/include")
 # https://github.com/devkitPro/citro3d
 include_directories(SYSTEM "${CMAKE_CURRENT_SOURCE_DIR}/libraries/citro3d/include")
+include_directories(SYSTEM "${CMAKE_CURRENT_SOURCE_DIR}/libraries/stb")
 
 # Switch
 # https://github.com/switchbrew/libnx

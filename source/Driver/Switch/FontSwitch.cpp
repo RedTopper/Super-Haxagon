@@ -1,6 +1,7 @@
-#include "Driver/Switch/FontSwitch.hpp"
+#include "Driver/Font.hpp"
 
-#include "Driver/Switch/PlatformSwitch.hpp"
+#include "RenderTarget.hpp"
+#include "Driver/Platform.hpp"
 
 #include <ft2build.h>
 #include FT_FREETYPE_H
@@ -46,110 +47,151 @@ void main() {
 )text";
 
 namespace SuperHaxagon {
-	FontSwitch::FontSwitch(PlatformSwitch& platform, const std::string& path, const float size) : _platform(platform) {
-		const auto filename = path + ".ttf";
+	static constexpr int GLYPH_START = 32;
+	static constexpr int GLYPH_END = 128;
 
-		// Use a new FreeType2 library per font
-		FT_Library ft;
-		if (FT_Init_FreeType(&ft)) {
-			platform.message(Dbg::FATAL, "font", "FreeType2 failed to load");
-			return;
-		}
+	struct CharacterInfo {
+		Point pxAdvance;
+		Point pxOffset;
+		Point pxDim;
+		Point uv;
+		float x;
+	};
 
-		FT_Face face;
-        auto error = FT_New_Face(ft, filename.c_str(), 0, &face);
-		if (error) {
-			platform.message(Dbg::FATAL, "font", "could not load font " + filename);
-			platform.message(Dbg::FATAL, "font", "error: " + std::to_string(error));
-			return;
-		}
+	struct Font::FontData {
+		FontData(const Platform& platform, const std::string& path, const float size, float* z) :
+			platform(platform),
+			z(z) {
 
-		FT_Set_Pixel_Sizes(face, 0, size * 2);
+			const auto filename = path + ".ttf";
 
-		auto t = 0;
-		unsigned int w = 0;
-		unsigned int h = 0;
-		auto* g = face->glyph;
-		for(auto i = GLYPH_START; i < GLYPH_END; i++) {
-			if(FT_Load_Char(face, i, FT_LOAD_RENDER)) {
-				const auto letter = std::to_string(static_cast<char>(i));
-				platform.message(Dbg::WARN, "font", "failed to load " + letter);
-				continue;
+			// Use a new FreeType2 library per font
+			FT_Library ft;
+			if (FT_Init_FreeType(&ft)) {
+				platform.message(Dbg::FATAL, "font", "FreeType2 failed to load");
+				return;
 			}
 
-			w += g->bitmap.width + 1;
-			h = std::max(h, g->bitmap.rows);
-			t = std::max(t, g->bitmap_top);
+			FT_Face face;
+			auto error = FT_New_Face(ft, filename.c_str(), 0, &face);
+			if (error) {
+				platform.message(Dbg::FATAL, "font", "could not load font " + filename);
+				platform.message(Dbg::FATAL, "font", "error: " + std::to_string(error));
+				return;
+			}
+
+			FT_Set_Pixel_Sizes(face, 0, size * 2);
+
+			auto t = 0;
+			unsigned int w = 0;
+			unsigned int h = 0;
+			auto* g = face->glyph;
+			for(auto i = GLYPH_START; i < GLYPH_END; i++) {
+				if(FT_Load_Char(face, i, FT_LOAD_RENDER)) {
+					const auto letter = std::to_string(static_cast<char>(i));
+					platform.message(Dbg::WARN, "font", "failed to load " + letter);
+					continue;
+				}
+
+				w += g->bitmap.width + 1;
+				h = std::max(h, g->bitmap.rows);
+				t = std::max(t, g->bitmap_top);
+			}
+
+			texWidth = w;
+			texHeight = h;
+			top = t > 0 ? t : 0;
+
+			surface = std::make_shared<RenderTarget<VertexUV>>(platform, true, vertex_shader, fragment_shader, path);
+			surface->bind();
+
+			glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, w, h, 0, GL_RED, GL_UNSIGNED_BYTE, nullptr);
+
+			auto x = 0;
+			for(auto i = GLYPH_START; i < GLYPH_END; i++) {
+				if(FT_Load_Char(face, i, FT_LOAD_RENDER)) continue;
+
+				glTexSubImage2D(GL_TEXTURE_2D, 0, x, 0, g->bitmap.width, g->bitmap.rows,  GL_RED, GL_UNSIGNED_BYTE, g->bitmap.buffer);
+				chars[i].pxAdvance = {
+						g->advance.x / 64.0f,
+						g->advance.y / 64.0f
+				};
+
+				chars[i].pxOffset = {
+						static_cast<float>(g->bitmap_left),
+						static_cast<float>(g->bitmap_top)
+				};
+
+				chars[i].pxDim = {
+						static_cast<float>(g->bitmap.width),
+						static_cast<float>(g->bitmap.rows)
+				};
+
+				chars[i].uv = {
+						static_cast<float>(x) / static_cast<float>(texWidth),
+						chars[i].pxDim.y / static_cast<float>(texHeight)
+				};
+
+				x += g->bitmap.width + 1;
+			}
+
+			FT_Done_Face(face);
+			FT_Done_FreeType(ft);
+
+			loaded = true;
+
+			platform.message(Dbg::INFO, "font", "loaded font " + filename);
 		}
 
-		_texWidth = w;
-		_texHeight = h;
-		_top = t > 0 ? t : 0;
+		const Platform& platform;
 
-		_surface = std::make_shared<RenderTarget<VertexUV>>(platform, true, vertex_shader, fragment_shader, path);
-		_surface->bind();
+		bool loaded = false;
+		unsigned int texWidth;
+		unsigned int texHeight;
+		unsigned int top; // from baseline to top
 
-		platform.addRenderTarget(_surface);
+		std::shared_ptr<RenderTarget<VertexUV>> surface;
 
-		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, w, h, 0, GL_RED, GL_UNSIGNED_BYTE, nullptr);
+		CharacterInfo chars[GLYPH_END]{};
 
-		auto x = 0;
-		for(auto i = GLYPH_START; i < GLYPH_END; i++) {
-			if(FT_Load_Char(face, i, FT_LOAD_RENDER)) continue;
+		float* z;
+	};
 
-			glTexSubImage2D(GL_TEXTURE_2D, 0, x, 0, g->bitmap.width, g->bitmap.rows,  GL_RED, GL_UNSIGNED_BYTE, g->bitmap.buffer);
-			_chars[i].pxAdvance = {
-				g->advance.x / 64.0f,
-				g->advance.y / 64.0f
-			};
-
-			_chars[i].pxOffset = {
-				static_cast<float>(g->bitmap_left),
-				static_cast<float>(g->bitmap_top)
-			};
-
-			_chars[i].pxDim = {
-				static_cast<float>(g->bitmap.width),
-				static_cast<float>(g->bitmap.rows)
-			};
-
-			_chars[i].uv = {
-				static_cast<float>(x) / static_cast<float>(_texWidth),
-				_chars[i].pxDim.y / static_cast<float>(_texHeight)
-			};
-
-			x += g->bitmap.width + 1;
-		}
-
-		FT_Done_Face(face);
-		FT_Done_FreeType(ft);
-
-		_loaded = true;
+	std::unique_ptr<Font> createFont(const Platform& platform, const std::string& path, const int size, float* z, std::shared_ptr<RenderTarget<VertexUV>>& surface) {
+		auto data = std::make_unique<Font::FontData>(platform, path, size, z);
+		surface = data->surface; // return the surface back to the platform for rendering
+		return std::make_unique<Font>(std::move(data));
 	}
 
-	FontSwitch::~FontSwitch() = default;
+	Font::Font(std::unique_ptr<Font::FontData> data) : _data(std::move(data)) {}
 
-	float FontSwitch::getHeight() const {
-		return static_cast<float>(_top);
+	Font::~Font() = default;
+
+	void Font::setScale(float) {}
+
+	float Font::getHeight() const {
+		return static_cast<float>(_data->top);
 	}
 
-	float FontSwitch::getWidth(const std::string& text) const {
+	float Font::getWidth(const std::string& text) const {
 		auto width = 0.0;
 		for (auto c : text) {
 			const auto i = static_cast<int>(c);
-			width += _chars[i].pxAdvance.x;
+			width += _data->chars[i].pxAdvance.x;
 		}
 
 		return width;
 	}
 
-	void FontSwitch::draw(const Color& color, const Point& position, Alignment alignment, const std::string& text) {
-		if (!_loaded) return;
+	void Font::draw(const Color& color, const Point& position, Alignment alignment, const std::string& text) const {
+		if (!_data->loaded) return;
+		auto& surface = _data->surface;
+		auto& chars = _data->chars;
 
 		Point cursor = {
 			position.x,
-			position.y + static_cast<float>(_top)
+			position.y + static_cast<float>(_data->top)
 		};
 
 		const auto width = getWidth(text);
@@ -157,38 +199,40 @@ namespace SuperHaxagon {
 		if (alignment == Alignment::CENTER) cursor.x = position.x - width / 2;
 		if (alignment == Alignment::RIGHT) cursor.x = position.x - width;
 
-		const auto z = _platform.getAndIncrementZ();
+		const auto z = *_data->z;
+		*_data->z += Z_STEP;
+
 		for (auto c : text) {
 
 			const auto i = static_cast<int>(c);
 			const Point draw = {
-				std::round(cursor.x + _chars[i].pxOffset.x),
-				std::round(cursor.y - _chars[i].pxOffset.y)
+				std::round(cursor.x + chars[i].pxOffset.x),
+				std::round(cursor.y - chars[i].pxOffset.y)
 			};
 
-			const auto dim = _chars[i].pxDim;
-			const auto uv = _chars[i].uv;
+			const auto dim = chars[i].pxDim;
+			const auto uv = chars[i].uv;
 
-			cursor.x += _chars[i].pxAdvance.x;
-			cursor.y -= _chars[i].pxAdvance.y;
+			cursor.x += chars[i].pxAdvance.x;
+			cursor.y -= chars[i].pxAdvance.y;
 
 			// Cannot render empty characters
 			if(!dim.x || !dim.y) continue;
 
-			_surface->insert({ {draw.x, draw.y + dim.y}, {uv.x, uv.y}, color, z }); // BL
-			_surface->insert({{draw.x, draw.y}, {uv.x, 0}, color, z}); // TL
-			_surface->insert({{draw.x + dim.x, draw.y}, {uv.x + dim.x / _texWidth, 0}, color, z}); // TR
-			_surface->insert({{draw.x + dim.x, draw.y + dim.y}, {uv.x + dim.x / _texWidth, uv.y}, color, z}); // BR
+			surface->insert({ {draw.x, draw.y + dim.y}, {uv.x, uv.y}, color, z }); // BL
+			surface->insert({{draw.x, draw.y}, {uv.x, 0}, color, z}); // TL
+			surface->insert({{draw.x + dim.x, draw.y}, {uv.x + dim.x / _data->texWidth, 0}, color, z}); // TR
+			surface->insert({{draw.x + dim.x, draw.y + dim.y}, {uv.x + dim.x / _data->texWidth, uv.y}, color, z}); // BR
 
 			// Insert clockwise
-			_surface->reference(0);
-			_surface->reference(1);
-			_surface->reference(2);
-			_surface->reference(0);
-			_surface->reference(2);
-			_surface->reference(3);
+			surface->reference(0);
+			surface->reference(1);
+			surface->reference(2);
+			surface->reference(0);
+			surface->reference(2);
+			surface->reference(3);
 
-			_surface->advance(4);
+			surface->advance(4);
 		}
 	}
 }

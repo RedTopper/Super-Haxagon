@@ -3,8 +3,8 @@
 #include "Core/Configuration.hpp"
 #include "Core/Game.hpp"
 #include "Core/Metadata.hpp"
-#include "Core/Font.hpp"
-#include "Core/Platform.hpp"
+#include "Driver/Font.hpp"
+#include "Driver/Platform.hpp"
 #include "Factories/LevelFactory.hpp"
 #include "States/Play.hpp"
 #include "States/Quit.hpp"
@@ -34,7 +34,7 @@ namespace SuperHaxagon {
 		_game.setSkew(0.0);
 		_game.setShadowAuto(false);
 		_game.loadBGMAudio("/werq", Location::ROM, false);
-		_platform.playSFX(_game.getSFXHexagon());
+		_platform.playSFX(SoundEffect::HEXAGON);
 	}
 
 	std::unique_ptr<State> Menu::update(const float dilation) {
@@ -60,7 +60,7 @@ namespace SuperHaxagon {
 			}
 
 			if (_transitionDirection) {
-				_platform.playSFX(_game.getSFXSelect());
+				_platform.playSFX(SoundEffect::SELECT);
 				for (auto i = COLOR_LOCATION_FIRST; i != COLOR_LOCATION_LAST; i++) {
 					const auto location = static_cast<LocColor>(i);
 

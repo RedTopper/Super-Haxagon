@@ -13,7 +13,11 @@ RUN --mount=target=/var/cache/dnf,type=cache,sharing=locked \
 # Build ndless toolchain
 RUN mkdir -p /opt/ndless
 WORKDIR /opt/ndless
-RUN git clone --depth=1 --recurse-submodules --shallow-submodules https://github.com/ndless-nspire/Ndless.git .
+RUN git clone --depth=1 https://github.com/ndless-nspire/Ndless.git . && \
+    git -c submodule.freetype2.update=none submodule update --init --depth=1 --recursive
+RUN cd ndless-sdk/thirdparty/freetype2 && \
+    git clone https://github.com/freetype/freetype.git . && \
+    git reset --hard 069083cccd73d1d68da68116c8d050bb62cdfe0e
 
 # This will take a while... Grab a coffee?
 # If it's taking a very long time, make sure you set the JOBS build argument to equal your CPU cores with '--build-arg JOBS=32'

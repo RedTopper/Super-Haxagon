@@ -1,8 +1,8 @@
 #include "States/Transition.hpp"
 
 #include "Core/Game.hpp"
-#include "Core/Platform.hpp"
-#include "Core/Font.hpp"
+#include "Driver/Font.hpp"
+#include "Driver/Platform.hpp"
 #include "Factories/LevelFactory.hpp"
 #include "Objects/Level.hpp"
 #include "States/Play.hpp"
@@ -21,7 +21,7 @@ namespace SuperHaxagon {
 	Transition::~Transition() = default;
 
 	void Transition::enter() {
-		_platform.playSFX(_game.getSFXWonderful());
+		_platform.playSFX(SoundEffect::WONDERFUL);
 	}
 
 	std::unique_ptr<State> Transition::update(const float dilation) {

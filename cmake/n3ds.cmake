@@ -10,10 +10,9 @@ include_directories(SYSTEM "${CMAKE_CURRENT_SOURCE_DIR}/libraries/stb")
 set(DRIVER
     source/Driver/3DS/Platform3DS.cpp
     source/Driver/3DS/Font3DS.cpp
-    source/Driver/3DS/AudioLoaderOgg3DS.cpp
-    source/Driver/3DS/AudioLoaderWav3DS.cpp
-    source/Driver/3DS/AudioPlayerOgg3DS.cpp
-    source/Driver/3DS/AudioPlayerWav3DS.cpp
+    source/Driver/3DS/Music3DS.cpp
+    source/Driver/3DS/Sound3DS.cpp
+    source/Driver/3DS/Wav3DS.cpp
     source/Driver/Common/PlatformSupportsFilesystem.cpp
 )
 

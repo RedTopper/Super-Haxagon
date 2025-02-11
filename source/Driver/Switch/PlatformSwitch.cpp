@@ -1,17 +1,23 @@
-#include "Driver/Switch/PlatformSwitch.hpp"
+#include "Driver/Platform.hpp"
 
+#include "RenderTarget.hpp"
+#include "Core/Configuration.hpp"
 #include "Core/Twist.hpp"
-#include "Driver/Switch/AudioLoaderSwitch.hpp"
-#include "Driver/Switch/FontSwitch.hpp"
-#include "Driver/Switch/AudioPlayerMusSwitch.hpp"
+#include "Driver/Music.hpp"
+#include "Driver/Sound.hpp"
 
+#include <EGL/egl.h>
 #include <EGL/eglext.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_mixer.h>
 #include <glad/glad.h>
+#include <switch.h>
+#include <switch/display/native_window.h>
 
 #include <iostream>
 #include <sstream>
+#include <deque>
+#include <fstream>
 #include <sys/stat.h>
 
 static const char* vertex_shader = R"text(
@@ -70,7 +76,7 @@ static const EGLint CONTEXT_ATTRIBUTE_LIST[] = {
  */
 static void callback(const GLenum source, const GLenum type, const GLuint id, const GLenum severity, GLsizei, const GLchar* message, const void* userParam) {
 	// WCGW casting away const-ness?
-	auto* platform = const_cast<SuperHaxagon::PlatformSwitch*>(static_cast<const SuperHaxagon::PlatformSwitch*>(userParam));
+	const auto* platform = static_cast<const SuperHaxagon::Platform*>(userParam);
 	const auto error = type == GL_DEBUG_TYPE_ERROR;
 	std::stringstream out;
 	out << std::hex << "Message from OpenGL:" << std::endl;
@@ -83,10 +89,94 @@ static void callback(const GLenum source, const GLenum type, const GLuint id, co
 }
 
 namespace SuperHaxagon {
-	PlatformSwitch::PlatformSwitch(const Dbg dbg): Platform(dbg) {
-		padConfigureInput(8, HidNpadStyleSet_NpadStandard);
-		padInitializeAny(&_pad);
-		
+
+	std::unique_ptr<Music> createMusic(Mix_Music* music);
+	std::unique_ptr<Sound> createSound(Mix_Chunk* sfx);
+	std::unique_ptr<Font> createFont(const Platform& platform, const std::string& path, int size, float* z, std::shared_ptr<RenderTarget<VertexUV>>& surface);
+
+	struct Platform::PlatformData {
+		bool initEGL(const Platform& platform) {
+			eglInitialize(display, nullptr, nullptr);
+
+			if (eglBindAPI(EGL_OPENGL_API) == EGL_FALSE) {
+				platform.message(Dbg::FATAL, "api", "error " + std::to_string(eglGetError()));
+				eglTerminate(display);
+				return false;
+			}
+
+			EGLConfig config;
+			EGLint numConfigs;
+
+			eglChooseConfig(display, FRAMEBUFFER_ATTRIBUTE_LIST, &config, 1, &numConfigs);
+			if (numConfigs == 0) {
+				platform.message(Dbg::FATAL, "config", "error " + std::to_string(eglGetError()));
+				eglTerminate(display);
+				return false;
+			}
+
+			surface = eglCreateWindowSurface(display, config, reinterpret_cast<EGLNativeWindowType>(window), nullptr);
+			if (!surface) {
+				platform.message(Dbg::FATAL, "surface", "error " + std::to_string(eglGetError()));
+				eglTerminate(display);
+				return false;
+			}
+
+			context = eglCreateContext(display, config, EGL_NO_CONTEXT, CONTEXT_ATTRIBUTE_LIST);
+			if (!context)
+			{
+				platform.message(Dbg::FATAL, "context", "error " + std::to_string(eglGetError()));
+				eglDestroySurface(display, surface);
+				eglTerminate(display);
+				return false;
+			}
+
+			eglMakeCurrent(display, surface, surface, context);
+			return true;
+		}
+
+		void addRenderTarget(std::shared_ptr<RenderTarget<Vertex>>& target) {
+			targetVertex.emplace_back(target);
+		}
+
+		void addRenderTarget(std::shared_ptr<RenderTarget<VertexUV>>& target) {
+			targetVertexUV.emplace_back(target);
+		}
+
+		bool debugConsole = false;
+		bool loaded = false;
+
+		unsigned int width = 1280;
+		unsigned int height = 720;
+
+		float z = 0.0f;
+		PadState pad{};
+
+		std::shared_ptr<RenderTarget<Vertex>> opaque;
+		std::shared_ptr<RenderTarget<Vertex>> transparent;
+
+		NWindow* window;
+		EGLDisplay display;
+		EGLContext context{};
+		EGLSurface surface{};
+
+		std::ofstream console;
+		std::deque<std::pair<Dbg, std::string>> messages{};
+		std::deque<std::shared_ptr<RenderTarget<Vertex>>> targetVertex{};
+		std::deque<std::shared_ptr<RenderTarget<VertexUV>>> targetVertexUV{};
+
+		std::vector<std::pair<SoundEffect, Mix_Chunk*>> sfxBuffers{};
+		Mix_Music* musicBuffer{};
+	};
+
+	template<class T>
+	void render(const Platform& platform, std::deque<std::shared_ptr<RenderTarget<T>>> targets, bool transparent) {
+		for (const auto& target : targets) {
+			if (target->isTransparent() != transparent) continue;
+			target->draw(platform);
+		}
+	}
+
+	Platform::Platform() : _plat(std::make_unique<Platform::PlatformData>()) {
 		romfsInit();
 		SDL_Init(SDL_INIT_AUDIO);
 		Mix_Init(MIX_INIT_OGG);
@@ -96,25 +186,30 @@ namespace SuperHaxagon {
 		mkdir("sdmc:/switch", 0777);
 		mkdir("sdmc:/switch/SuperHaxagon", 0777);
 
-		_window = nwindowGetDefault();
-		_console = std::ofstream("sdmc:/switch/SuperHaxagon/out.log");
-		_display = eglGetDisplay(EGL_DEFAULT_DISPLAY);
+		_plat->debugConsole = DEBUG_CONSOLE;
+		if (_plat->debugConsole) _plat->console = std::ofstream("sdmc:/switch/SuperHaxagon/out.log");
 
-		PlatformSwitch::message(Dbg::INFO, "platform", "booting");
-		PlatformSwitch::message(Dbg::INFO, "platform", Mix_GetError());
+		padConfigureInput(8, HidNpadStyleSet_NpadStandard);
+		padInitializeAny(&_plat->pad);
+
+		_plat->window = nwindowGetDefault();
+		_plat->display = eglGetDisplay(EGL_DEFAULT_DISPLAY);
+
+		message(Dbg::INFO, "platform", "booting");
+		message(Dbg::INFO, "platform", Mix_GetError());
 
 		// Create window as 1080p, but _width and _height start at 720p.
 		// Window is then cropped.
-		nwindowSetDimensions(_window, 1920, 1080);
-		nwindowSetCrop(_window, 0, 0, _width, _height);
+		nwindowSetDimensions(_plat->window, 1920, 1080);
+		nwindowSetCrop(_plat->window, 0, 0, _plat->width, _plat->height);
 
-		if (!_display) {
-			PlatformSwitch::message(Dbg::FATAL, "display", "error " + std::to_string(eglGetError()));
+		if (!_plat->display) {
+			message(Dbg::FATAL, "display", "error " + std::to_string(eglGetError()));
 			return;
 		}
 
-		if (!initEGL()) {
-			PlatformSwitch::message(Dbg::FATAL, "egl", "there was a fatal error creating an opengl context");
+		if (!_plat->initEGL(*this)) {
+			message(Dbg::FATAL, "egl", "there was a fatal error creating an opengl context");
 			return;
 		}
 
@@ -127,71 +222,60 @@ namespace SuperHaxagon {
 		glDepthFunc(GL_GREATER);
 		glDepthRange(0.0f, 1.0f);
 		glDebugMessageCallback(callback, this);
-		glViewport(0, 1080 - _height, _width, _height);
+		glViewport(0, 1080 - _plat->height, _plat->width, _plat->height);
 
-		_opaque = std::make_shared<RenderTarget<Vertex>>(*this, false, vertex_shader, fragment_shader, "platform opaque");
-		_transparent = std::make_shared<RenderTarget<Vertex>>(*this, true, vertex_shader, fragment_shader, "platform transparent");
-		addRenderTarget(_opaque);
-		addRenderTarget(_transparent);
+		_plat->opaque = std::make_shared<RenderTarget<Vertex>>(*this, false, vertex_shader, fragment_shader, "platform opaque");
+		_plat->transparent = std::make_shared<RenderTarget<Vertex>>(*this, true, vertex_shader, fragment_shader, "platform transparent");
+		_plat->addRenderTarget(_plat->opaque);
+		_plat->addRenderTarget(_plat->transparent);
 
-		_loaded = true;
+		_plat->loaded = true;
 
-		PlatformSwitch::message(Dbg::INFO, "platform",  "opengl ok");
+		message(Dbg::INFO, "platform",  "opengl ok");
 	}
 
-	PlatformSwitch::~PlatformSwitch() {
+	Platform::~Platform() {
+		for (auto& sfx : _plat->sfxBuffers) Mix_FreeChunk(sfx.second);
+		if (_plat->musicBuffer) Mix_FreeMusic(_plat->musicBuffer);
 		Mix_Quit();
 		SDL_Quit();
 		romfsExit();
-		PlatformSwitch::message(SuperHaxagon::Dbg::INFO, "platform", "shutdown ok");
+		message(SuperHaxagon::Dbg::INFO, "platform", "shutdown ok");
 	}
 
-	bool PlatformSwitch::loop() {
-		if (!_loaded) return false;
+	bool Platform::loop() {
+		if (!_plat->loaded) return false;
 
 		// Check up on the audio status
 		if (_bgm && _bgm->isDone()) _bgm->play();
 
-		const auto width = static_cast<float>(_width);
-		const auto height = static_cast<float>(_height);
+		const auto width = static_cast<float>(_plat->width);
+		const auto height = static_cast<float>(_plat->height);
 		switch (appletGetOperationMode()) {
 			default:
 			case AppletOperationMode_Handheld:
-				_width = 1280;
-				_height = 720;
+				_plat->width = 1280;
+				_plat->height = 720;
 				break;
 			case AppletOperationMode_Console:
-				_width = 1920;
-				_height = 1080;
+				_plat->width = 1920;
+				_plat->height = 1080;
 				break;
 		}
 
-		if (static_cast<unsigned int>(width) != _width || static_cast<unsigned int>(height) != _height) {
-			nwindowSetCrop(_window, 0, 0, _width, _height);
-			glViewport(0, 1080 - _height, _width, _height);
+		if (static_cast<unsigned int>(width) != _plat->width || static_cast<unsigned int>(height) != _plat->height) {
+			nwindowSetCrop(_plat->window, 0, 0, _plat->width, _plat->height);
+			glViewport(0, 1080 - _plat->height, _plat->width, _plat->height);
 		}
 
 		return appletMainLoop();
 	}
 
-	float PlatformSwitch::getDilation() {
+	float Platform::getDilation() const {
 		return 1.0;
 	}
 
-	void PlatformSwitch::playSFX(AudioLoader& audio) {
-		auto sfx = audio.instantiate();
-		if (!sfx) return;
-		sfx->play();
-	}
-
-	void PlatformSwitch::playBGM(AudioLoader& audio) {
-		_bgm = audio.instantiate();
-		if (!_bgm) return;
-		_bgm->setLoop(true);
-		_bgm->play();
-	}
-
-	std::string PlatformSwitch::getPath(const std::string& partial, const Location location) {
+	std::string Platform::getPath(const std::string& partial, const Location location) const {
 		switch (location) {
 		case Location::ROM:
 			return "romfs:" + partial;
@@ -202,15 +286,51 @@ namespace SuperHaxagon {
 		return "";
 	}
 
-	std::unique_ptr<AudioLoader> PlatformSwitch::loadAudio(const std::string& partial, Stream stream, const Location location) {
-		return std::make_unique<AudioLoaderSwitch>(*this, getPath(partial, location), stream);
+	std::unique_ptr<std::istream> Platform::openFile(const std::string& partial, const Location location) const {
+		return std::make_unique<std::ifstream>(getPath(partial, location), std::ios::in | std::ios::binary);
 	}
 
-	std::unique_ptr<Font> PlatformSwitch::loadFont(const std::string& partial, int size, Location location) {
-		return std::make_unique<FontSwitch>(*this, getPath(partial, location), size);
+	void Platform::loadSFX(const SoundEffect effect, const std::string& name) const {
+		auto* wav = Mix_LoadWAV((getPath("/sound/" + name, Location::ROM) + ".wav").c_str());
+		if (!wav) return;
+		_plat->sfxBuffers.emplace_back(effect, wav);
 	}
 
-	std::string PlatformSwitch::getButtonName(const Buttons& button) {
+	void Platform::loadFont(const int size) {
+		std::shared_ptr<RenderTarget<VertexUV>> fontSurface = nullptr;
+		auto font = createFont(*this, getPath("/bump-it-up", Location::ROM), size, &_plat->z, fontSurface);
+		_plat->addRenderTarget(fontSurface);
+		_fonts.emplace_back(size, std::move(font));
+	}
+
+	void Platform::playSFX(const SoundEffect effect) const {
+		for (const auto& sfx : _plat->sfxBuffers) {
+			if (sfx.first == effect) {
+				auto player = createSound(sfx.second);
+				if (!player) return;
+				player->play();
+				return;
+			}
+		}
+	}
+
+	void Platform::playBGM(const std::string& base, const Location location) {
+		_bgm = nullptr;
+
+		auto& music = _plat->musicBuffer;
+		if (music) Mix_FreeMusic(music);
+
+		music = Mix_LoadMUS((getPath(base, location) + ".ogg").c_str());
+		if (!music) return;
+
+		_bgm = createMusic(music);
+		if (!_bgm) return;
+
+		_bgm->setLoop(true);
+		_bgm->play();
+	}
+
+	std::string Platform::getButtonName(const Buttons& button) {
 		if (button.back) return "B";
 		if (button.select) return "A";
 		if (button.left) return "LEFT";
@@ -219,10 +339,10 @@ namespace SuperHaxagon {
 		return "?";
 	}
 
-	Buttons PlatformSwitch::getPressed() {
-		padUpdate(&_pad);
-		const auto kDown = padGetButtonsDown(&_pad);
-		const auto kPressed = padGetButtons(&_pad);
+	Buttons Platform::getPressed() const {
+		padUpdate(&_plat->pad);
+		const auto kDown = padGetButtonsDown(&_plat->pad);
+		const auto kPressed = padGetButtons(&_plat->pad);
 		Buttons buttons{};
 		buttons.select = kDown & HidNpadButton_A;
 		buttons.back = kDown & HidNpadButton_B;
@@ -232,31 +352,36 @@ namespace SuperHaxagon {
 		return buttons;
 	}
 
-	Point PlatformSwitch::getScreenDim() const {
-		return Point{static_cast<float>(_width), static_cast<float>(_height)};
+	Point Platform::getScreenDim() const {
+		return Point{static_cast<float>(_plat->width), static_cast<float>(_plat->height)};
 	}
 
-	void PlatformSwitch::screenBegin() {
-		_z = 0.0f;
+	void Platform::screenBegin() const {
+		_plat->z = 0.0f;
 		glClearColor(0.2f, 0.3f, 0.8f, 1.0f);
 		glClearDepth(0.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 
-	void PlatformSwitch::screenFinalize() {
+	// Do nothing since we don't have two screens
+	void Platform::screenSwap() {}
+
+	void Platform::screenFinalize() const {
 		// Want to render opaque first, then transparent
-		render(_targetVertex, false);
-		render(_targetVertexUV, false);
-		render(_targetVertex, true);
-		render(_targetVertexUV, true);
+		render(*this, _plat->targetVertex, false);
+		render(*this, _plat->targetVertexUV, false);
+		render(*this, _plat->targetVertex, true);
+		render(*this, _plat->targetVertexUV, true);
 
 		// Present
-		eglSwapBuffers(_display, _surface);
+		eglSwapBuffers(_plat->display, _plat->surface);
 	}
 
-	void PlatformSwitch::drawPoly(const Color& color, const std::vector<Point>& points) {
-		const auto z = getAndIncrementZ();
-		auto& buffer = color.a == 0xFF || color.a == 0 ? _opaque : _transparent;
+	void Platform::drawPoly(const Color& color, const std::vector<Point>& points) const {
+		const auto z = _plat->z;
+		_plat->z += Z_STEP;
+
+		auto& buffer = color.a == 0xFF || color.a == 0 ? _plat->opaque : _plat->transparent;
 		for (const auto& point : points) {
 			buffer->insert({point, color, z});
 		}
@@ -270,31 +395,31 @@ namespace SuperHaxagon {
 		buffer->advance(points.size());
 	}
 	
-	std::unique_ptr<Twist> PlatformSwitch::getTwister() {
-		// ALSO a shitty way to do this but it's the best I got.
+	std::unique_ptr<Twist> Platform::getTwister() {
+		// ALSO a shitty way to do this, but it's the best I got.
 		const auto a = new std::seed_seq{ svcGetSystemTick() };
 		return std::make_unique<Twist>(
 			std::unique_ptr<std::seed_seq>(a)
 		);
 	}
 	
-	void PlatformSwitch::shutdown() {
-		if (_display) {
-			eglMakeCurrent(_display, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
+	void Platform::shutdown() {
+		if (_plat->display) {
+			eglMakeCurrent(_plat->display, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
 
-			if (_context) {
-				eglDestroyContext(_display, _context);
+			if (_plat->context) {
+				eglDestroyContext(_plat->display, _plat->context);
 			}
 
-			if (_surface) {
-				eglDestroySurface(_display, _surface);
+			if (_plat->surface) {
+				eglDestroySurface(_plat->display, _plat->surface);
 			}
 
-			eglTerminate(_display);
+			eglTerminate(_plat->display);
 		}
 
 		auto display = false;
-		for (const auto& message : _messages) {
+		for (const auto& message : _plat->messages) {
 			if (message.first == Dbg::FATAL) {
 				display = true;
 			}
@@ -305,20 +430,20 @@ namespace SuperHaxagon {
 			consoleInit(nullptr);
 			std::cout << "Fatal error! START to quit." << std::endl;
 			std::cout << "Last messages:" << std::endl << std::endl;
-			for (const auto& message : _messages) {
+			for (const auto& message : _plat->messages) {
 				std::cout << message.second << std::endl;
 			}
 
 			while (appletMainLoop()) {
 				consoleUpdate(nullptr);
-				padUpdate(&_pad);
-				const auto kDown = padGetButtonsDown(&_pad);
+				padUpdate(&_plat->pad);
+				const auto kDown = padGetButtonsDown(&_plat->pad);
 				if (kDown & HidNpadButton_Plus) break;
 			}
 		}
 	}
 
-	void PlatformSwitch::message(const Dbg dbg, const std::string& where, const std::string& message) {
+	void Platform::message(const Dbg dbg, const std::string& where, const std::string& message) const {
 		std::string format;
 		if (dbg == Dbg::INFO) {
 			format = "[switch:info] ";
@@ -332,66 +457,16 @@ namespace SuperHaxagon {
 
 		format += where + ": " + message;
 
-		if (_dbg != Dbg::FATAL) {
-			// If we are in non FATAL mode, write to a file
-			_console << format << std::endl;
+		if (_plat->debugConsole) {
+			// Write to a file in debug mode
+			_plat->console << format << std::endl;
 		}
 
-		_messages.emplace_back(dbg, format);
-		if (_messages.size() > 32) _messages.pop_front();
+		_plat->messages.emplace_back(dbg, format);
+		if (_plat->messages.size() > 32) _plat->messages.pop_front();
 	}
 
-	bool PlatformSwitch::initEGL() {
-		eglInitialize(_display, nullptr, nullptr);
-
-		if (eglBindAPI(EGL_OPENGL_API) == EGL_FALSE) {
-			message(Dbg::FATAL, "api", "error " + std::to_string(eglGetError()));
-			eglTerminate(_display);
-			return false;
-		}
-
-		EGLConfig config;
-		EGLint numConfigs;
-
-		eglChooseConfig(_display, FRAMEBUFFER_ATTRIBUTE_LIST, &config, 1, &numConfigs);
-		if (numConfigs == 0) {
-			message(Dbg::FATAL, "config", "error " + std::to_string(eglGetError()));
-			eglTerminate(_display);
-			return false;
-		}
-
-		_surface = eglCreateWindowSurface(_display, config, reinterpret_cast<EGLNativeWindowType>(_window), nullptr);
-		if (!_surface) {
-			message(Dbg::FATAL, "surface", "error " + std::to_string(eglGetError()));
-			eglTerminate(_display);
-			return false;
-		}
-
-		_context = eglCreateContext(_display, config, EGL_NO_CONTEXT, CONTEXT_ATTRIBUTE_LIST);
-		if (!_context)
-		{
-			message(Dbg::FATAL, "context", "error " + std::to_string(eglGetError()));
-			eglDestroySurface(_display, _surface);
-			eglTerminate(_display);
-			return false;
-		}
-
-		eglMakeCurrent(_display, _surface, _surface, _context);
-		return true;
-	}
-
-	float PlatformSwitch::getAndIncrementZ() {
-		const auto step = 0.00001f;
-		const auto z = _z;
-		_z += step;
-		return z;
-	}
-
-	template<class T>
-	void PlatformSwitch::render(std::deque<std::shared_ptr<RenderTarget<T>>> targets, bool transparent) {
-		for (const auto& target : targets) {
-			if (target->isTransparent() != transparent) continue;
-			target->draw(*this);
-		}
+	Supports Platform::supports() {
+		return Supports::SHADOWS;
 	}
 }

@@ -3,8 +3,7 @@
 message(STATUS "Building for nspire...")
 
 set(DRIVER
-    source/Driver/Nspire/AudioLoaderNspire.cpp
-    source/Driver/Nspire/AudioPlayerNspire.cpp
+    source/Driver/Nspire/MusicNspire.cpp
     source/Driver/Nspire/FontNspire.cpp
     source/Driver/Nspire/MemoryFS.cpp
     source/Driver/Nspire/PlatformNspire.cpp

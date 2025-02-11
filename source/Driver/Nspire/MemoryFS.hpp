@@ -1,9 +1,9 @@
-#ifndef SUPER_HAXAGON_MEMORYFS_HPP
-#define SUPER_HAXAGON_MEMORYFS_HPP
+#ifndef MEMORY_FS_HPP
+#define MEMORY_FS_HPP
 
 #include <string>
+#include <istream>
 #include <memory>
-#include <iostream>
 
 namespace SuperHaxagon {
 	class MemoryFS {
@@ -12,4 +12,4 @@ namespace SuperHaxagon {
 	};
 }
 
-#endif
+#endif //MEMORY_FS_HPP

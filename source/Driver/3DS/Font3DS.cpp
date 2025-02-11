@@ -1,49 +1,76 @@
-#include "Driver/3DS/Font3DS.hpp"
+#include "Driver/Font.hpp"
 
 #include "Core/Structs.hpp"
 
+#include <citro2d.h>
+
 #include <sstream>
 
+// Naughty naughty re-defining internal structures!
+struct C2D_Font_s
+{
+	CFNT_s* cfnt;
+	C3D_Tex* glyphSheets;
+	float textScale;
+};
+
 namespace SuperHaxagon {
-	Font3DS::Font3DS(const std::string& path, const int size) : _size(static_cast<float>(size)) {
-		std::stringstream s;
-		s << path << "-" << size << ".bcfnt";
-		_buff = C2D_TextBufNew(4096);
-		_font = C2D_FontLoad(s.str().c_str());
+	struct Font::FontData {
+		FontData(const std::string& path, int size) : size(size) {
+			std::stringstream s;
+			s << path << "-" << size << ".bcfnt";
+			buff = C2D_TextBufNew(4096);
+			font = C2D_FontLoad(s.str().c_str());
 
-        // For some reason the latest version of citro2d messes with font scaling,
-        // causing all sorts of issues. Manually set scale to be 1.0.
-    	_font->textScale = 1.0f;
+			// For some reason the latest version of citro2d messes with font scaling,
+			// causing all sorts of issues. Manually set scale to be 1.0.
+			font->textScale = 1.0f;
+		}
+
+		~FontData() {
+			C2D_FontFree(font);
+			C2D_TextBufDelete(buff);
+		}
+
+		C2D_Font font;
+		C2D_TextBuf buff;
+		int size;
+	};
+
+
+	std::unique_ptr<Font> createFont(const std::string& path, int size) {
+		return std::make_unique<Font>(std::make_unique<Font::FontData>(path, size));
 	}
 
-	Font3DS::~Font3DS() {
-		C2D_FontFree(_font);
-		C2D_TextBufDelete(_buff);
-	}
+	Font::Font(std::unique_ptr<Font::FontData> data) : _data(std::move(data)) {}
 
-	float Font3DS::getWidth(const std::string& str) const {
+	Font::~Font() = default;
+
+	void Font::setScale(const float) {}
+
+	float Font::getWidth(const std::string& str) const {
 		float width, height;
 		C2D_Text text;
-		C2D_TextFontParse(&text, _font, _buff, str.c_str());
+		C2D_TextFontParse(&text, _data->font, _data->buff, str.c_str());
 		C2D_TextGetDimensions(&text, 1.0f, 1.0f, &width, &height);
-		C2D_TextBufClear(_buff);
+		C2D_TextBufClear(_data->buff);
 		return width;
 	}
 
-	float Font3DS::getHeight() const {
-		return _size + _size * 4.0f/32.0f;
+	float Font::getHeight() const {
+		return _data->size + _data->size * 4.0f/32.0f;
 	}
 
-	void Font3DS::draw(const Color& color, const Point& position, const Alignment alignment, const std::string& str) {
+	void Font::draw(const Color& color, const Point& position, const Alignment alignment, const std::string& str) const {
 		C2D_Text text;
 		const auto c = C2D_Color32(color.r, color.g, color.b, color.a);
-		C2D_TextFontParse(&text, _font, _buff, str.c_str());
+		C2D_TextFontParse(&text, _data->font, _data->buff, str.c_str());
 		C2D_TextOptimize(&text);
-        int flags = C2D_WithColor;
-    	if (alignment == Alignment::LEFT) flags |= static_cast<int>(C2D_AlignLeft);
-        if (alignment == Alignment::CENTER) flags |= static_cast<int>(C2D_AlignCenter);
-        if (alignment == Alignment::RIGHT) flags |= static_cast<int>(C2D_AlignRight);
+		int flags = C2D_WithColor;
+		if (alignment == Alignment::LEFT) flags |= static_cast<int>(C2D_AlignLeft);
+		if (alignment == Alignment::CENTER) flags |= static_cast<int>(C2D_AlignCenter);
+		if (alignment == Alignment::RIGHT) flags |= static_cast<int>(C2D_AlignRight);
 		C2D_DrawText(&text, flags, position.x, position.y, 0, 1.0f, 1.0f, c);
-		C2D_TextBufClear(_buff);
+		C2D_TextBufClear(_data->buff);
 	}
 }

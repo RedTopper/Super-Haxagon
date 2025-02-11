@@ -1,12 +1,12 @@
 #include "Driver/Switch/RenderTarget.hpp"
 
-#include "Core/Platform.hpp"
+#include "Driver/Platform.hpp"
 
 #include <algorithm>
 
 namespace SuperHaxagon {
 	template<>
-	RenderTarget<Vertex>::RenderTarget(Platform& platform, const bool transparent, const std::string& shaderVertex, const std::string& shaderFragment, std::string label) :
+	RenderTarget<Vertex>::RenderTarget(const Platform& platform, const bool transparent, const std::string& shaderVertex, const std::string& shaderFragment, std::string label) :
 		_label(std::move(label)),
 		_transparent(transparent) {
 		init(platform, shaderVertex.c_str(), shaderFragment.c_str());
@@ -21,7 +21,7 @@ namespace SuperHaxagon {
 	}
 
 	template<>
-	RenderTarget<VertexUV>::RenderTarget(Platform& platform, const bool transparent, const std::string& shaderVertex, const std::string& shaderFragment, std::string label) :
+	RenderTarget<VertexUV>::RenderTarget(const Platform& platform, const bool transparent, const std::string& shaderVertex, const std::string& shaderFragment, std::string label) :
 		_label(std::move(label)),
 		_transparent(transparent) {
 		init(platform, shaderVertex.c_str(), shaderFragment.c_str());
@@ -84,7 +84,7 @@ namespace SuperHaxagon {
 	}
 
 	template<class T>
-	void RenderTarget<T>::draw(Platform& platform) {
+	void RenderTarget<T>::draw(const Platform& platform) {
 		if (!_transparent) {
 			// Opaque objects need to be rendered front to back, the engine
 			// adds all polygons back to front.
@@ -122,7 +122,7 @@ namespace SuperHaxagon {
 	}
 
 	template<class T>
-	void RenderTarget<T>::init(Platform& platform, const char* shaderVertex, const char* shaderFragment) {
+	void RenderTarget<T>::init(const Platform& platform, const char* shaderVertex, const char* shaderFragment) {
 		const auto vs = compile(platform, GL_VERTEX_SHADER, shaderVertex);
 		const auto fs = compile(platform, GL_FRAGMENT_SHADER, shaderFragment);
 
@@ -143,7 +143,7 @@ namespace SuperHaxagon {
 	}
 
 	template<class T>
-	GLuint RenderTarget<T>::compile(Platform& platform, const GLenum type, const char* source) {
+	GLuint RenderTarget<T>::compile(const Platform& platform, const GLenum type, const char* source) {
 		GLint success;
 		GLchar msg[512];
 
@@ -168,7 +168,7 @@ namespace SuperHaxagon {
 	}
 
 	template<class T>
-	void resize(Platform& platform, const GLuint type, unsigned int& size, std::vector<T>& vector, const std::string& label) {
+	void resize(const Platform& platform, const GLuint type, unsigned int& size, std::vector<T>& vector, const std::string& label) {
 		if (size < vector.size() || size == 0) {
 			if (size == 0) size = BUFFER_RESIZE_STEP;
 			while (size < vector.size()) size *= 2;

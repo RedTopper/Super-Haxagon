@@ -1,30 +1,30 @@
-#include "Driver/macOS/PlatformMacOS.hpp"
+#include "Driver/Platform.hpp"
 
 #include "Core/Twist.hpp"
+#include "Driver/Sound.hpp"
+#include "Driver/SFML/DataSFML.hpp"
+
+#include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 
 #include <iostream>
 #include <sys/stat.h>
 
 namespace SuperHaxagon {
-	PlatformMacOS::PlatformMacOS(const Dbg dbg) : PlatformSFML(dbg, sf::VideoMode(
-		static_cast<int>(sf::VideoMode::getDesktopMode().width * 0.75),
-		static_cast<int>(sf::VideoMode::getDesktopMode().height * 0.75)
-	)) {
+	Platform::Platform() {
+		auto video = sf::VideoMode(
+				static_cast<int>(sf::VideoMode::getDesktopMode().width * 0.75),
+				static_cast<int>(sf::VideoMode::getDesktopMode().height * 0.75)
+		);
+
+		_plat = createPlatform(video, "./sdmc", "./romfs", false);
+
 		mkdir("./sdmc", 0755);
 	}
 
-	std::string PlatformMacOS::getPath(const std::string& partial, const Location location) {
-		switch (location) {
-		case Location::ROM:
-			return std::string("./romfs") + partial;
-		case Location::USER:
-			return std::string("./sdmc") + partial;
-		}
+	Platform::~Platform() = default;
 
-		return "";
-	}
-
-	void PlatformMacOS::message(const Dbg dbg, const std::string& where, const std::string& message) {
+	void Platform::message(const Dbg dbg, const std::string& where, const std::string& message) const {
 		if (dbg == Dbg::INFO) {
 			std::cout << "[macOS:info] " + where + ": " + message << std::endl;
 		} else if (dbg == Dbg::WARN) {
@@ -34,7 +34,7 @@ namespace SuperHaxagon {
 		}
 	}
 
-	std::unique_ptr<Twist> PlatformMacOS::getTwister() {
+	std::unique_ptr<Twist> Platform::getTwister() {
 		std::random_device source;
 		std::mt19937::result_type data[std::mt19937::state_size];
 		generate(std::begin(data), std::end(data), ref(source));

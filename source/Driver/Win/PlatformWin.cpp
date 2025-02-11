@@ -1,34 +1,33 @@
-#include "Driver/Win/PlatformWin.hpp"
+#include "Driver/Platform.hpp"
 
 #include "Core/Twist.hpp"
+#include "Driver/Sound.hpp"
+#include "Driver/SFML/DataSFML.hpp"
+
+#include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 
 #include <direct.h>
 #include <iostream>
 #include <windows.h>
 
 namespace SuperHaxagon {
-	PlatformWin::PlatformWin(const Dbg dbg) : PlatformSFML(dbg, sf::VideoMode(
-		static_cast<int>(sf::VideoMode::getDesktopMode().width * 0.75),
-		static_cast<int>(sf::VideoMode::getDesktopMode().height * 0.75)
-	)) {
-		SetForegroundWindow(getWindow().getSystemHandle());
+	Platform::Platform() {
+		auto video = sf::VideoMode(
+				static_cast<int>(sf::VideoMode::getDesktopMode().width * 0.75),
+				static_cast<int>(sf::VideoMode::getDesktopMode().height * 0.75)
+		);
+
+		_plat = createPlatform(video, "./sdmc", "./romfs", false);
+
+		SetForegroundWindow(_plat->window->getSystemHandle());
+
 		_mkdir(".\\sdmc");
 	}
 
-	std::string PlatformWin::getPath(const std::string& partial, const Location location) {
-		auto path = partial;
-		std::replace(path.begin(), path.end(), '/', '\\');
-		switch (location) {
-		case Location::ROM:
-			return std::string(".\\romfs") + path;
-		case Location::USER:
-			return std::string(".\\sdmc") + path;
-		}
+	Platform::~Platform() = default;
 
-		return "";
-	}
-
-	void PlatformWin::message(const Dbg dbg, const std::string& where, const std::string& message) {
+	void Platform::message(const Dbg dbg, const std::string& where, const std::string& message) const {
 		if (dbg == Dbg::INFO) {
 			std::cout << "[win:info] " + where + ": " + message << std::endl;
 		} else if (dbg == Dbg::WARN) {
@@ -39,7 +38,7 @@ namespace SuperHaxagon {
 		}
 	}
 
-	std::unique_ptr<Twist> PlatformWin::getTwister() {
+	std::unique_ptr<Twist> Platform::getTwister() {
 		try {
 			std::random_device source;
 			if (source.entropy() == 0) {

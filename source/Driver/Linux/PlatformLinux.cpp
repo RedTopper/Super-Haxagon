@@ -1,40 +1,40 @@
-#include "Driver/Linux/PlatformLinux.hpp"
+#include "Driver/Platform.hpp"
 
 #include "Core/Twist.hpp"
+#include "Driver/Sound.hpp"
+#include "Driver/SFML/DataSFML.hpp"
+
+#include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 
 #include <iostream>
 #include <sys/stat.h>
 
 namespace SuperHaxagon {
-	PlatformLinux::PlatformLinux(const Dbg dbg) : PlatformSFML(dbg, sf::VideoMode(
-		static_cast<int>(sf::VideoMode::getDesktopMode().width * 0.75),
-		static_cast<int>(sf::VideoMode::getDesktopMode().height * 0.75)
-	)) {
+	Platform::Platform() {
+		auto video = sf::VideoMode(
+			static_cast<int>(sf::VideoMode::getDesktopMode().width * 0.75),
+			static_cast<int>(sf::VideoMode::getDesktopMode().height * 0.75)
+		);
 
+		std::string sdmc, romfs;
 		if (std::getenv("container")) {
 			const auto* data = std::getenv("XDG_DATA_HOME");
-			_sdmc = std::string(data) + "/sdmc";
-			_romfs = std::string("/app/romfs");
+			sdmc = std::string(data) + "/sdmc";
+			romfs = std::string("/app/romfs");
 		} else {
-			_sdmc = "./sdmc";
-			_romfs = "./romfs";
+			sdmc = "./sdmc";
+			romfs = "./romfs";
 		}
 
-		mkdir(_sdmc.c_str(), 0755);
+		_plat = createPlatform(video, sdmc, romfs, false);
+
+		mkdir(sdmc.c_str(), 0755);
 	}
 
-	std::string PlatformLinux::getPath(const std::string& partial, const Location location) {
-		switch (location) {
-		case Location::ROM:
-			return _romfs + partial;
-		case Location::USER:
-			return _sdmc + partial;
-		}
+	Platform::~Platform() = default;
 
-		return "";
-	}
-
-	void PlatformLinux::message(const Dbg dbg, const std::string& where, const std::string& message) {
+	void Platform::message(const Dbg dbg, const std::string& where, const std::string& message) const {
 		if (dbg == Dbg::INFO) {
 			std::cout << "[linux:info] " + where + ": " + message << std::endl;
 		} else if (dbg == Dbg::WARN) {
@@ -46,7 +46,7 @@ namespace SuperHaxagon {
 		}
 	}
 
-	std::unique_ptr<Twist> PlatformLinux::getTwister() {
+	std::unique_ptr<Twist> Platform::getTwister() {
 		std::random_device source;
 		std::mt19937::result_type data[std::mt19937::state_size];
 		generate(std::begin(data), std::end(data), ref(source));

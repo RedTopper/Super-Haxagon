@@ -1,49 +1,65 @@
-#include "Driver/Nspire/PlatformNspire.hpp"
+#include "Driver/Platform.hpp"
 
+#include "timer.h"
+#include "MemoryFS.hpp"
 #include "Core/Twist.hpp"
-#include "Driver/Nspire/AudioLoaderNspire.hpp"
-#include "Driver/Nspire/FontNspire.hpp"
-#include "Driver/Nspire/MemoryFS.hpp"
-#include "Driver/Nspire/timer.h"
+#include "Core/Metadata.hpp"
+
+#include <libndls.h>
+#include <ngc.h>
 
 #include <ctime>
 #include <iostream>
-#include <libndls.h>
 
 namespace SuperHaxagon {
-	PlatformNspire::PlatformNspire(const Dbg dbg) : Platform(dbg) {
-		_gc = gui_gc_global_GC();
-		gui_gc_begin(_gc);
-		gui_gc_setColorRGB(_gc, 0, 0, 0);
-		gui_gc_fillRect(_gc, 0, 0, 320, 240);
-		gui_gc_finish(_gc);
-		gui_gc_blit_to_screen(_gc);
+	typedef struct {
+		int x;
+		int y;
+	} Point2D;
+
+	struct Platform::PlatformData {
+		Gc gc{};
+		float bgmDelta = 0.0f;
+	};
+
+	std::unique_ptr<Font> createFont(Gc& gc, int size);
+	std::unique_ptr<Music> createMusic(float max, float* timeSinceLastGet);
+
+	Platform::Platform() : _plat(std::make_unique<PlatformData>()) {
+		_plat->gc = gui_gc_global_GC();
+		gui_gc_begin(_plat->gc);
+		gui_gc_setColorRGB(_plat->gc, 0, 0, 0);
+		gui_gc_fillRect(_plat->gc, 0, 0, 320, 240);
+		gui_gc_finish(_plat->gc);
+		gui_gc_blit_to_screen(_plat->gc);
 
 		timer_init(0);
 		timer_load(0, TIMER_1S);
 	}
 
-	bool PlatformNspire::loop() {
+	Platform::~Platform() = default;
+
+	bool Platform::loop() {
 		const auto timer = timer_read(0);
 		const auto elapsed = static_cast<float>(TIMER_1S - timer) / TIMER_1S;
 		if (_bgm) {
-			// Trust me I know what I'm doing with my types, compiler.
-			auto* bgm = reinterpret_cast<AudioPlayerNspire*>(_bgm.get());
-			bgm->addTime(elapsed);
-			if (bgm->isDone()) bgm->play();
+			// The platform will keep increasing bgmDelta until the game runs Music::getTime(),
+			// at which point _plat->bgmDelta will be added to the music's internal timer and reset to zero
+			_plat->bgmDelta += elapsed;
+			if (_bgm->isDone()) _bgm->play();
 		}
 
 		timer_load(0, TIMER_1S);
-		_dilation = elapsed * 60.0f;
+		_delta = elapsed;
 		
 		return true;
 	}
 
-	float PlatformNspire::getDilation() {
-		return _dilation;
+	float Platform::getDilation() const {
+		return _delta / (1.0f / 60.0f);
 	}
 
-	std::string PlatformNspire::getPath(const std::string& partial, const Location location) {
+	std::string Platform::getPath(const std::string& partial, const Location location) const {
 		switch (location) {
 		case Location::ROM:
 			return partial;
@@ -54,7 +70,7 @@ namespace SuperHaxagon {
 		return "";
 	}
 
-	std::unique_ptr<std::istream> PlatformNspire::openFile(const std::string& partial, const Location location) {
+	std::unique_ptr<std::istream> Platform::openFile(const std::string& partial, const Location location) const {
 		if (location == Location::USER) {
 			return std::make_unique<std::ifstream>(getPath(partial, location), std::ios::in | std::ios::binary);
 		}
@@ -62,27 +78,36 @@ namespace SuperHaxagon {
 		return MemoryFS::openFile(partial);
 	}
 
-	std::unique_ptr<AudioLoader> PlatformNspire::loadAudio(const std::string& partial, Stream, const Location location) {
-		return std::make_unique<AudioLoaderNspire>(openFile(partial + ".txt", location));
+	// nspire doesn't support sound effects
+	void Platform::loadSFX(SoundEffect, const std::string&) const {}
+
+	void Platform::loadFont(const int size) {
+		auto font = createFont(_plat->gc, size);
+		_fonts.emplace_back(size, std::move(font));
 	}
 
-	std::unique_ptr<Font> PlatformNspire::loadFont(const std::string&, int size, const Location) {
-		return std::make_unique<FontNspire>(_gc, size);
-	}
-
-    // Define the base implementation of loadUserLevels here, since the nspire cannot load user levels.
 	std::vector<std::pair<Location, std::string>> Platform::loadUserLevels() {
-        return std::vector<std::pair<Location, std::string>>();
-    }
+		std::vector<std::pair<Location, std::string>> levels;
+		auto file = openFile("/levels.haxagon", Location::USER);
+		if (file->good()) {
+			levels.emplace_back(Location::USER, "/levels.haxagon");
+		}
 
-	void PlatformNspire::playBGM(AudioLoader& audio) {
-		_bgm = audio.instantiate();
+		return levels;
+	}
+
+	// nspire doesn't support sound effects
+	void Platform::playSFX(SoundEffect) const {}
+
+	void Platform::playBGM(const std::string& base, Location location) {
+		Metadata metadata(openFile(base + ".txt", location));
+		_bgm = createMusic(metadata.getMaxTime(), &_plat->bgmDelta);
 		if (!_bgm) return;
 		_bgm->setLoop(true);
 		_bgm->play();
 	}
 
-	std::string PlatformNspire::getButtonName(const Buttons& button) {
+	std::string Platform::getButtonName(const Buttons& button) {
 		if (button.back) return "ESC";
 		if (button.select) return "ENTER";
 		if (button.left) return "4";
@@ -91,7 +116,7 @@ namespace SuperHaxagon {
 		return "?";
 	}
 
-	Buttons PlatformNspire::getPressed() {
+	Buttons Platform::getPressed() const {
 		Buttons buttons{};
 		buttons.select = isKeyPressed(KEY_NSPIRE_ENTER) > 0;
 		buttons.back = isKeyPressed(KEY_NSPIRE_ESC) > 0;
@@ -101,36 +126,43 @@ namespace SuperHaxagon {
 		return buttons;
 	}
 
-	Point PlatformNspire::getScreenDim() const {
+	Point Platform::getScreenDim() const {
 		return {320, 240};
 	}
 
-	void PlatformNspire::screenBegin() {
-		gui_gc_begin(_gc);
-		gui_gc_setColorRGB(_gc, 0, 0, 0);
-		gui_gc_fillRect(_gc, 0, 0, 320, 240);
+	void Platform::screenBegin() const {
+		gui_gc_begin(_plat->gc);
+		gui_gc_setColorRGB(_plat->gc, 0, 0, 0);
+		gui_gc_fillRect(_plat->gc, 0, 0, 320, 240);
 	}
 
-	void PlatformNspire::screenFinalize() {
-		gui_gc_blit_to_screen(_gc);
+	// Do nothing since we don't have two screens
+	// ReSharper disable once CppMemberFunctionMayBeStatic
+	void Platform::screenSwap() {}
+
+	void Platform::screenFinalize() const {
+		gui_gc_blit_to_screen(_plat->gc);
 	}
 
-	void PlatformNspire::drawPoly(const Color& color, const std::vector<Point>& points) {
+	void Platform::drawPoly(const Color& color, const std::vector<Point>& points) const {
 		const auto pos = std::make_unique<Point2D[]>(points.size());
 		for (size_t i = 0; i < points.size(); i++) {
-			pos[i] = { points[i].x, points[i].y };
+			pos[i] = {
+				static_cast<int>(points[i].x),
+				static_cast<int>(points[i].y)
+			};
 		}
 
-		gui_gc_setColorRGB(_gc, color.r, color.g, color.b);
-		gui_gc_fillPoly(_gc, reinterpret_cast<unsigned*>(pos.get()), points.size());
+		gui_gc_setColorRGB(_plat->gc, color.r, color.g, color.b);
+		gui_gc_fillPoly(_plat->gc, reinterpret_cast<unsigned*>(pos.get()), points.size());
 	}
 
-	void PlatformNspire::shutdown() {
-		gui_gc_finish(_gc);
+	void Platform::shutdown() {
+		gui_gc_finish(_plat->gc);
 		timer_restore(0);
 	}
 
-	void PlatformNspire::message(const Dbg dbg, const std::string& where, const std::string& message) {
+	void Platform::message(const Dbg dbg, const std::string& where, const std::string& message) const {
 		if (dbg == Dbg::INFO) {
 			std::cout << "[ndless:info] " + where + ": " + message << std::endl;
 		} else if (dbg == Dbg::WARN) {
@@ -140,11 +172,11 @@ namespace SuperHaxagon {
 		}
 	}
 
-	Supports PlatformNspire::supports() {
+	Supports Platform::supports() {
 		return Supports::NOTHING;
 	}
 
-	std::unique_ptr<Twist> PlatformNspire::getTwister() {
+	std::unique_ptr<Twist> Platform::getTwister() {
 		auto* a = new std::seed_seq{time(nullptr)};
 		return std::make_unique<Twist>(
 				std::unique_ptr<std::seed_seq>(a)

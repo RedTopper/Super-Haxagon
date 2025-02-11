@@ -11,7 +11,6 @@ namespace SuperHaxagon {
 	struct Point;
 	struct Color;
 	class LevelFactory;
-	class AudioLoader;
 	class State;
 	class Pattern;
 	class Wall;
@@ -31,13 +30,6 @@ namespace SuperHaxagon {
 
 		Platform& getPlatform() const {return _platform;}
 		Twist& getTwister() const {return *_twister;}
-		AudioLoader& getSFXBegin() const {return *_sfxBegin;}
-		AudioLoader& getSFXHexagon() const {return *_sfxHexagon;}
-		AudioLoader& getSFXOver() const {return *_sfxOver;}
-		AudioLoader& getSFXSelect() const {return *_sfxSelect;}
-		AudioLoader& getSFXLevelUp() const {return *_sfxLevelUp;}
-		AudioLoader& getSFXWonderful() const {return *_sfxWonderful;}
-		AudioLoader* getBGMAudio() const {return _bgmAudio.get();}
 		Metadata* getBGMMetadata() const {return _bgmMetadata.get();}
 		Font& getFontSmall() const;
 		Font& getFontLarge() const;
@@ -79,7 +71,7 @@ namespace SuperHaxagon {
 		/**
 		 * Draws the little cursor in the center of the screen controlled by a human.
 		 */
-		void drawCursor(const Color& color, const Point& focus, const float cursor, const float rotation, const float offset, const float scale) const;
+		void drawCursor(const Color& color, const Point& focus, float cursor, float rotation, float offset, float scale) const;
 
 		/**
 		 * Completely draws all patterns in a live level. Can also be used to create
@@ -116,19 +108,7 @@ namespace SuperHaxagon {
 		std::unique_ptr<Twist> _twister;
 		std::unique_ptr<State> _state;
 
-		// Should really be an array of sfx
-		std::unique_ptr<AudioLoader> _sfxBegin;
-		std::unique_ptr<AudioLoader> _sfxHexagon;
-		std::unique_ptr<AudioLoader> _sfxOver;
-		std::unique_ptr<AudioLoader> _sfxSelect;
-		std::unique_ptr<AudioLoader> _sfxLevelUp;
-		std::unique_ptr<AudioLoader> _sfxWonderful;
-		
-		std::unique_ptr<AudioLoader> _bgmAudio;
 		std::unique_ptr<Metadata> _bgmMetadata;
-		
-		std::unique_ptr<Font> _small;
-		std::unique_ptr<Font> _large;
 
 		bool _running = true;
 		bool _shadowAuto = false;

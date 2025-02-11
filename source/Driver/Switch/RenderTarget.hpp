@@ -8,7 +8,8 @@
 #include <vector>
 
 namespace SuperHaxagon {
-	static constexpr int BUFFER_RESIZE_STEP = 500;
+	constexpr int BUFFER_RESIZE_STEP = 500;
+	constexpr float Z_STEP = 0.00001f;
 
 	struct Vertex {
 		Point p;
@@ -26,19 +27,19 @@ namespace SuperHaxagon {
 	template<class T>
 	class RenderTarget {
 	public:
-		RenderTarget(Platform& platform, bool transparent, const std::string& shaderVertex, const std::string& shaderFragment, std::string label);
+		RenderTarget(const Platform& platform, bool transparent, const std::string& shaderVertex, const std::string& shaderFragment, std::string label);
 		~RenderTarget();
 
 		void bind() const;
 		void insert(const T& vertex);
 		void reference(unsigned int index);
 		void advance(unsigned int indices);
-		void draw(Platform& platform);
+		void draw(const Platform& platform);
 		bool isTransparent() const {return _transparent;}
 
 	private:
-		void init(Platform& platform, const char* shaderVertex, const char* shaderFragment);
-		static GLuint compile(Platform& platform, GLenum type, const char* source);
+		void init(const Platform& platform, const char* shaderVertex, const char* shaderFragment);
+		static GLuint compile(const Platform& platform, GLenum type, const char* source);
 
 		const std::string _label;
 
@@ -58,7 +59,7 @@ namespace SuperHaxagon {
 	};
 
 	template<class T>
-	void resize(Platform& platform, GLuint type, unsigned int& size, std::vector<T>& vector, const std::string& label);
+	void resize(const Platform& platform, GLuint type, unsigned int& size, std::vector<T>& vector, const std::string& label);
 }
 
 #endif //SUPER_HAXAGON_RENDER_TARGET_HPP

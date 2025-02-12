@@ -4,9 +4,17 @@
 
 #include <switch/arm/counter.h>
 
+#include <string>
+
 namespace SuperHaxagon {
 	struct Music::MusicData {
-		MusicData(Mix_Music* music) : music(music) {}
+		MusicData(const std::string& path) {
+			music = Mix_LoadMUS(path.c_str());
+		}
+
+		~MusicData() {
+			Mix_FreeMusic(music);
+		}
 
 		Mix_Music* music;
 
@@ -25,8 +33,9 @@ namespace SuperHaxagon {
 		return armTicksToNs(armGetSystemTick()) / 1.0e9;
 	}
 
-	std::unique_ptr<Music> createMusic(Mix_Music* music) {
-		auto data = std::make_unique<Music::MusicData>(music);
+	std::unique_ptr<Music> createMusic(const std::string& path) {
+		auto data = std::make_unique<Music::MusicData>(path);
+		if (!data->music) return nullptr;
 		return std::make_unique<Music>(std::move(data));
 	}
 
@@ -36,16 +45,21 @@ namespace SuperHaxagon {
 		Mix_HaltMusic();
 	}
 
+	void Music::update() const {
+		// For the switch, we only play the music once and restart it when Mix has
+		// told us it's finished. This allows us to reset the timers in this Music
+		// instance. It might be possible to register a callback instead, but eh.
+		if (_data->loop && isDone()) {
+			play();
+		}
+	}
+
 	void Music::setLoop(const bool loop) const {
 		_data->loop = loop;
 	}
 
 	void Music::play() const {
-		if (isDone() && _data->loop) {
-			// For the switch, we only play the music once and restart it in the platform.
-			// This is because we need to detect when the music is over in order to reset the timers.
-			// The Switch platform specifically continuously calls play, so if we are not
-			// playing anything restart the music.
+		if (isDone()) {
 			_data->start = getNow();
 			Mix_PlayMusic(_data->music, 1);
 			return;

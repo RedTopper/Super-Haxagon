@@ -3,11 +3,12 @@
 namespace SuperHaxagon {
 	struct Music::MusicData {
 		MusicData(float max, float* timeSinceLastGet) : maxTime(max), timeSinceLastGet(timeSinceLastGet) {}
-		float maxTime{};
-		float time{};
+		float maxTime;
+		float time = 0.0;
 		float* timeSinceLastGet;
 		bool playing = false;
 		bool isDone = true;
+		bool loop = false;
 	};
 
 	std::unique_ptr<Music> createMusic(float max, float* timeSinceLastGet) {
@@ -19,9 +20,26 @@ namespace SuperHaxagon {
 
 	Music::~Music() = default;
 
-	void Music::setLoop(bool) const {}
+	void Music::update() const {
+		// Update our current time from the platform's info
+		if (_data->playing) {
+			_data->time += *_data->timeSinceLastGet;
+			*_data->timeSinceLastGet = 0;
+		}
+
+		// Loop if needed
+		if (_data->loop && isDone()) {
+			play();
+		}
+	}
+
+	void Music::setLoop(bool loop) const {
+		_data->loop = loop;
+	}
 
 	void Music::play() const {
+		*_data->timeSinceLastGet = 0;
+
 		if (isDone()) {
 			_data->time = 0.0f;
 		}
@@ -38,11 +56,6 @@ namespace SuperHaxagon {
 	}
 	
 	float Music::getTime() const {
-		if (_data->playing) {
-			_data->time += *_data->timeSinceLastGet;
-			*_data->timeSinceLastGet = 0;
-		}
-
 		return _data->time;
 	}
 }

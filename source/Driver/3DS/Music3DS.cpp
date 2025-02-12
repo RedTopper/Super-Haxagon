@@ -8,7 +8,7 @@
 
 namespace SuperHaxagon {
 	struct Music::MusicData {
-		MusicData(std::string& path) : path(path) {}
+		MusicData(const std::string& path) : path(path) {}
 
 		std::string path;
 		Thread thread = nullptr;
@@ -17,7 +17,8 @@ namespace SuperHaxagon {
 		std::array<ndspWaveBuf, 3> waveBuffs{};
 		volatile bool loaded = false;
 		volatile bool loop = false;
-		volatile bool quit = false;
+		volatile bool threadRunning = true;
+		volatile bool decodeDone = false;
 		volatile int channel = 0;
 		volatile uint64_t start = 0;
 		volatile uint64_t diff = 0;
@@ -40,11 +41,11 @@ namespace SuperHaxagon {
 		LightEvent_Signal(&_event);
 	}
 
-	bool audioDecode(stb_vorbis* file, ndspWaveBuf* buff, const int channel) {
+	bool audioDecode(stb_vorbis* file, ndspWaveBuf* ndspBuffer, const int channel) {
 		long totalSamples = 0;
 
 		while (totalSamples < static_cast<long>(getSamplesPerBuff(file->sample_rate))) {
-			auto* const buffer = buff->data_pcm16 + (totalSamples * file->channels);
+			auto* const buffer = ndspBuffer->data_pcm16 + (totalSamples * file->channels);
 			const size_t bufferSize = (getSamplesPerBuff(file->sample_rate) - totalSamples) * file->channels;
 
 			const auto samples = stb_vorbis_get_samples_short_interleaved(file, file->channels, buffer, bufferSize);
@@ -54,38 +55,47 @@ namespace SuperHaxagon {
 		}
 
 		if (totalSamples == 0) return false;
-		buff->nsamples = totalSamples;
-		ndspChnWaveBufAdd(channel, buff);
-		DSP_FlushDataCache(buff->data_pcm16, totalSamples * file->channels * sizeof(int16_t));
+		ndspBuffer->nsamples = totalSamples;
+		ndspChnWaveBufAdd(channel, ndspBuffer);
+		DSP_FlushDataCache(ndspBuffer->data_pcm16, totalSamples * file->channels * sizeof(int16_t));
 		return true;
 	}
 
 	void audioThread(void* const self) {
-		auto* pointer = static_cast<Music::MusicData*>(self);
-		if (!pointer) return;
+		auto* data = static_cast<Music::MusicData*>(self);
+		if (!data) return;
 
-		while(!pointer->quit) {
-			for (auto& waveBuff : pointer->waveBuffs) {
+		while(data->threadRunning) {
+			size_t buffsDone = 0;
+			for (auto& waveBuff : data->waveBuffs) {
 				if (waveBuff.status != NDSP_WBUF_DONE) continue;
-				if (!audioDecode(pointer->oggFile, &waveBuff, pointer->channel)) {
-					if (!pointer->loop) {
-						pointer->quit = true;
-						return;
-					}
 
-					// We are looping, so go back to the beginning
-					stb_vorbis_seek_start(pointer->oggFile);
-					pointer->start = svcGetSystemTick();
+				buffsDone += 1;
+
+				if (!audioDecode(data->oggFile, &waveBuff, data->channel)) {
+					data->decodeDone = true;
 				}
 			}
 
-			if (pointer->quit) return;
+			if (data->decodeDone && buffsDone == data->waveBuffs.size()) {
+				if (!data->loop) {
+					data->threadRunning = false;
+					return;
+				}
+
+				// We are looping, so go back to the beginning
+				stb_vorbis_seek_start(data->oggFile);
+				data->start = svcGetSystemTick();
+				data->decodeDone = false;
+			}
+
+			if (!data->threadRunning) return;
 			LightEvent_Wait(&_event);
 		}
 	}
 
-	std::unique_ptr<Music> createMusic(std::string file) {
-		auto data = std::make_unique<Music::MusicData>(file);
+	std::unique_ptr<Music> createMusic(const std::string& path) {
+		auto data = std::make_unique<Music::MusicData>(path + ".ogg");
 		return std::make_unique<Music>(std::move(data));
 	}
 
@@ -119,8 +129,9 @@ namespace SuperHaxagon {
 	Music::~Music() {
 		if (!_data->loaded) return;
 
-		_data->quit = true;
+		_data->threadRunning = false;
 
+		// Shutdown thread
 		if (_data->thread) {
 			LightEvent_Signal(&_event);
 			threadJoin(_data->thread, 100000000);
@@ -132,6 +143,10 @@ namespace SuperHaxagon {
 		linearFree(_data->audioBuffer);
 		stb_vorbis_close(_data->oggFile);
 	}
+
+	// 3DS: The thread knows when the song is done and will
+	// loop itself appropriately.
+	void Music::update() const {}
 
 	void Music::setLoop(const bool loop) const {
 		_data->loop = loop;
@@ -171,7 +186,7 @@ namespace SuperHaxagon {
 	}
 
 	bool Music::isDone() const {
-		return !_data->quit;
+		return !_data->threadRunning;
 	}
 
 	float Music::getTime() const {

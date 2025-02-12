@@ -3,6 +3,7 @@
 #include "RenderTarget.hpp"
 #include "Core/Configuration.hpp"
 #include "Core/Twist.hpp"
+#include "Driver/Font.hpp"
 #include "Driver/Music.hpp"
 #include "Driver/Sound.hpp"
 
@@ -90,8 +91,8 @@ static void callback(const GLenum source, const GLenum type, const GLuint id, co
 
 namespace SuperHaxagon {
 
-	std::unique_ptr<Music> createMusic(Mix_Music* music);
-	std::unique_ptr<Sound> createSound(Mix_Chunk* sfx);
+	std::unique_ptr<Music> createMusic(const std::string& path);
+	std::unique_ptr<Sound> createSound(const std::string& path);
 	std::unique_ptr<Font> createFont(const Platform& platform, const std::string& path, int size, float* z, std::shared_ptr<RenderTarget<VertexUV>>& surface);
 
 	struct Platform::PlatformData {
@@ -246,9 +247,6 @@ namespace SuperHaxagon {
 	bool Platform::loop() {
 		if (!_plat->loaded) return false;
 
-		// Check up on the audio status
-		if (_bgm && _bgm->isDone()) _bgm->play();
-
 		const auto width = static_cast<float>(_plat->width);
 		const auto height = static_cast<float>(_plat->height);
 		switch (appletGetOperationMode()) {
@@ -286,48 +284,24 @@ namespace SuperHaxagon {
 		return "";
 	}
 
+
 	std::unique_ptr<std::istream> Platform::openFile(const std::string& partial, const Location location) const {
 		return std::make_unique<std::ifstream>(getPath(partial, location), std::ios::in | std::ios::binary);
 	}
 
-	void Platform::loadSFX(const SoundEffect effect, const std::string& name) const {
-		auto* wav = Mix_LoadWAV((getPath("/sound/" + name, Location::ROM) + ".wav").c_str());
-		if (!wav) return;
-		_plat->sfxBuffers.emplace_back(effect, wav);
-	}
-
-	void Platform::loadFont(const int size) {
+	std::unique_ptr<Font> Platform::loadFont(const int size) const {
 		std::shared_ptr<RenderTarget<VertexUV>> fontSurface = nullptr;
 		auto font = createFont(*this, getPath("/bump-it-up", Location::ROM), size, &_plat->z, fontSurface);
 		_plat->addRenderTarget(fontSurface);
-		_fonts.emplace_back(size, std::move(font));
+		return font;
 	}
 
-	void Platform::playSFX(const SoundEffect effect) const {
-		for (const auto& sfx : _plat->sfxBuffers) {
-			if (sfx.first == effect) {
-				auto player = createSound(sfx.second);
-				if (!player) return;
-				player->play();
-				return;
-			}
-		}
+	std::unique_ptr<Sound> Platform::loadSound(const std::string& base) const {
+		return createSound(getPath(base, Location::ROM) + ".wav");
 	}
 
-	void Platform::playBGM(const std::string& base, const Location location) {
-		_bgm = nullptr;
-
-		auto& music = _plat->musicBuffer;
-		if (music) Mix_FreeMusic(music);
-
-		music = Mix_LoadMUS((getPath(base, location) + ".ogg").c_str());
-		if (!music) return;
-
-		_bgm = createMusic(music);
-		if (!_bgm) return;
-
-		_bgm->setLoop(true);
-		_bgm->play();
+	std::unique_ptr<Music> Platform::loadMusic(const std::string& base, const Location location) const {
+		return createMusic(getPath(base, location) + ".ogg");
 	}
 
 	std::string Platform::getButtonName(const Buttons& button) {

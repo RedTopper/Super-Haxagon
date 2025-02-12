@@ -40,8 +40,7 @@ namespace SuperHaxagon {
 		std::vector<Credits> _credits;
 		
 		float _score = 0.0;
-		float _lastTime = 0.0;
-		
+
 		size_t _index = 0;
 		float _timer = 0.0;
 

@@ -28,20 +28,20 @@ namespace SuperHaxagon {
 	Play::~Play() = default;
 
 	void Play::enter() {
-		auto* bgm = _platform.getBGM();
-		if (bgm) bgm->play();
-		_platform.playSFX(SoundEffect::BEGIN);
+		auto* bgm = _game.getMusic();
+		if (bgm && !_factory.isCreditsLevel()) bgm->play();
+		_game.playEffect(SoundEffect::BEGIN);
 		_game.setShadowAuto(true);
 	}
 
 	void Play::exit() {
-		auto* bgm = _platform.getBGM();
+		auto* bgm = _game.getMusic();
 		if (bgm) bgm->pause();
 	}
 
 	std::unique_ptr<State> Play::update(const float dilation) {
-		// Screen ratio divided by the screen ratio of the 3DS times it's diagonal
-		const auto maxRenderDistance = _game.getScreenDimMax() / _game.getScreenDimMin() / 1.666f * 233.47f;
+		// Screen ratio divided by the screen ratio of the 3DS times it's diagonal, plus a bit in case patterns are negative
+		const auto maxRenderDistance = _game.getScreenDimMax() / _game.getScreenDimMin() / 1.666f * 233.47f + 50.0f;
 
 		// Render the level with a skewed 3D look
 		auto skewFrameMax = static_cast<float>(_level->getLevelFactory().getSpeedPulse()) * 2.5f;
@@ -54,7 +54,7 @@ namespace SuperHaxagon {
 
 			// Get effect data
 			auto& metadata = *_game.getBGMMetadata();
-			const auto* bgm = _platform.getBGM();
+			const auto* bgm = _game.getMusic();
 			const auto time = bgm ? bgm->getTime() : 0.0f;
 
 			// Apply effects. More can be added here if needed.
@@ -87,10 +87,7 @@ namespace SuperHaxagon {
 				return std::make_unique<Win>(_game, std::move(_level), _selected, _score, "WONDERFUL");
 			}
 
-			if (_factory.getCreator() == "REDHAT" &&
-			    _factory.getName() == "CREDITS" &&
-			    _factory.getDifficulty() == "SPOILERS" &&
-			    _factory.getMode() == "(DUH)") {
+			if (_factory.isCreditsLevel()) {
 				// Cheater
 				return std::make_unique<Win>(_game, std::move(_level), _selected, 0.0f, "CHEATER");
 			}
@@ -126,7 +123,7 @@ namespace SuperHaxagon {
 		const auto* lastScoreText = getScoreText(static_cast<int>(previousFrame), false);
 		if (lastScoreText != getScoreText(static_cast<int>(_level->getFrame()), false)) {
 			_level->increaseMultiplier();
-			_platform.playSFX(SoundEffect::LEVEL_UP);
+			_game.playEffect(SoundEffect::LEVEL_UP);
 		}
 
 		return nullptr;

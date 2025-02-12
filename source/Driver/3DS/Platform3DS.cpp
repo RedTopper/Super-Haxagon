@@ -5,12 +5,14 @@
 #include "Core/Structs.hpp"
 #include "Core/Twist.hpp"
 #include "Driver/Font.hpp"
+#include "Driver/Music.hpp"
 #include "Driver/Sound.hpp"
 
 #include <citro2d.h>
 
 #include <array>
 #include <iostream>
+#include <sstream>
 #include <locale>
 #include <codecvt>
 #include <memory>
@@ -18,19 +20,14 @@
 #include <sys/stat.h>
 
 namespace SuperHaxagon {
-	constexpr int MAX_TRACKS = 4;
-
 	std::unique_ptr<Font> createFont(const std::string& path, int size);
-	std::unique_ptr<Music> createMusic(std::string file);
-	std::unique_ptr<Sound> createSound(Wav& wav);
+	std::unique_ptr<Music> createMusic(const std::string& path);
+	std::unique_ptr<Sound> createSound(const std::string& path);
 
 	extern void audioCallback(void*);
 	extern LightEvent _event;
 
 	struct Platform::PlatformData {
-		std::vector<std::pair<SoundEffect, std::unique_ptr<Wav>>> sfxData{};
-		std::unique_ptr<Sound> sfx[MAX_TRACKS]{};
-
 		std::deque<std::pair<Dbg, std::string>> messages{};
 
 		C3D_RenderTarget* top = nullptr;
@@ -115,8 +112,6 @@ namespace SuperHaxagon {
 	}
 
 	Platform::~Platform() {
-		for (auto& track : _plat->sfx) track = nullptr;
-		_bgm = nullptr;
 		C2D_Fini();
 		C3D_Fini();
 		gfxExit();
@@ -149,49 +144,18 @@ namespace SuperHaxagon {
 		return std::make_unique<std::ifstream>(getPath(partial, location), std::ios::in | std::ios::binary);
 	}
 
-	void Platform::loadSFX(const SoundEffect effect, const std::string& name) const {
-		auto path = getPath("/sound/" + name, Location::ROM);
-		auto wav = std::make_unique<Wav>(path);
-		_plat->sfxData.emplace_back(effect, std::move(wav));
+	std::unique_ptr<Font> Platform::loadFont(int size) const {
+		std::stringstream s;
+		s << "/bump-it-up-" << size << ".bcfnt";
+		return createFont(getPath(s.str(), Location::ROM), size);
 	}
 
-	void Platform::loadFont(const int size) {
-		auto font = createFont(getPath("/bump-it-up", Location::ROM), size);
-		_fonts.emplace_back(size, std::move(font));
+	std::unique_ptr<Sound> Platform::loadSound(const std::string& base) const {
+		return createSound(getPath(base, Location::ROM));
 	}
 
-	// Note: If there are no available channels the audio is silently discarded
-	void Platform::playSFX(SoundEffect effect) const {
-		// Find the effect
-		Wav* wav = nullptr;
-		for (auto& data : _plat->sfxData) {
-			if (data.first == effect) {
-				wav = data.second.get();
-			}
-		}
-
-		// Find a free channel
-		if (!wav) return;
-		auto channel = 1;
-		for (auto& sfx : _plat->sfx) {
-			if (!sfx || sfx->isDone()) {
-				sfx = createSound(*wav);
-				if (!sfx) return;
-				sfx->setChannel(channel);
-				sfx->play();
-				break;
-			}
-
-			channel++;
-		}
-	}
-
-	void Platform::playBGM(const std::string& base, const Location location) {
-		auto file = getPath(base, location) + ".ogg";
-		_bgm = createMusic(file);
-		if (!_bgm) return;
-		_bgm->setLoop(true);
-		_bgm->play();
+	std::unique_ptr<Music> Platform::loadMusic(const std::string& base, Location location) const {
+		return createMusic(getPath(base, location));
 	}
 
 	std::string Platform::getButtonName(const Buttons& button) {

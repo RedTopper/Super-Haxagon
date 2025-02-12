@@ -36,6 +36,12 @@ namespace SuperHaxagon {
 		const std::string& getMode() const {return _mode;}
 		const std::string& getCreator() const {return _creator;}
 		const std::string& getMusic() const {return _music;}
+		bool isCreditsLevel() const {
+			return _creator == "REDHAT" &&
+			    _name == "CREDITS" &&
+			    _difficulty == "SPOILERS" &&
+			    _mode == "(DUH)";
+		}
 
 		Location getLocation() const {return _location;}
 		int getHighScore() const {return _highScore;}

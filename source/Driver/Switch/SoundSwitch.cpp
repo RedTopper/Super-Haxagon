@@ -2,28 +2,32 @@
 
 #include <SDL2/SDL_mixer.h>
 
+#include <string>
+
 namespace SuperHaxagon {
 	struct Sound::SoundData {
-		SoundData(Mix_Chunk* sfx) : sfx(sfx) {}
+		SoundData(const std::string& path) {
+			sfx = Mix_LoadWAV(path.c_str());
+		}
+
+		~SoundData() {
+			Mix_FreeChunk(sfx);
+		}
 
 		Mix_Chunk* sfx;
 	};
 
-	std::unique_ptr<Sound> createSound(Mix_Chunk* sfx) {
-		return std::make_unique<Sound>(std::make_unique<Sound::SoundData>(sfx));
+	std::unique_ptr<Sound> createSound(const std::string& path) {
+		auto data = std::make_unique<Sound::SoundData>(path);
+		if (!data->sfx) return nullptr;
+		return std::make_unique<Sound>(std::move(data));
 	}
 
 	Sound::Sound(std::unique_ptr<SoundData> data) : _data(std::move(data)) {}
 	
 	Sound::~Sound() = default;
 
-	void Sound::setChannel(int) {}
-
 	void Sound::play() const {
 		Mix_PlayChannel(-1, _data->sfx, 0);
-	}
-
-	bool Sound::isDone() const {
-		return true;
 	}
 }

@@ -29,7 +29,7 @@ namespace SuperHaxagon {
 	Over::~Over() = default;
 
 	void Over::enter() {
-		_platform.playSFX(SoundEffect::OVER);
+		_game.playEffect(SoundEffect::OVER);
 
 		std::ofstream scores(_platform.getPath("/scores.db", Location::USER), std::ios::out | std::ios::binary);
 
@@ -69,7 +69,7 @@ namespace SuperHaxagon {
 				// If the level we are playing is not the same as the index, we need to load
 				// the original music
 				if (_selected.getMusic() != _level->getLevelFactory().getMusic()) {
-					_game.loadBGMAudio(_selected.getMusic(), _selected.getLocation(), true);
+					_game.playMusic(_selected.getMusic(), _selected.getLocation(), true);
 				}
 
 				// Go back to the original level

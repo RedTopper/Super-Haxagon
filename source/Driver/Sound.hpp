@@ -11,9 +11,7 @@ namespace SuperHaxagon {
 		Sound(Sound&) = delete;
 		~Sound();
 
-		void setChannel(int channel);
 		void play() const;
-		bool isDone() const;
 
 	private:
 		std::unique_ptr<SoundData> _data;

@@ -34,6 +34,15 @@ namespace SuperHaxagon {
 		LAST // Unused, but used for iteration
 	};
 
+	enum class SoundEffect {
+		BEGIN,
+		HEXAGON,
+		OVER,
+		SELECT,
+		LEVEL_UP,
+		WONDERFUL,
+	};
+
 	static constexpr int COLOR_LOCATION_FIRST = static_cast<int>(LocColor::FG);
 	static constexpr int COLOR_LOCATION_LAST = static_cast<int>(LocColor::LAST);
 

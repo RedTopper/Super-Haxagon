@@ -3,6 +3,8 @@
 #include "Core/Metadata.hpp"
 #include "Core/Twist.hpp"
 #include "Driver/Font.hpp"
+#include "Driver/Sound.hpp"
+#include "Driver/Music.hpp"
 #include "Driver/Platform.hpp"
 #include "Factories/LevelFactory.hpp"
 #include "Factories/PatternFactory.hpp"
@@ -15,31 +17,26 @@ namespace SuperHaxagon {
 	Game::Game(Platform& platform) : _platform(platform) {
 		// Audio loading
 		const std::vector<std::pair<SoundEffect, std::string>> sounds{
-			{SoundEffect::BEGIN, "begin"},
-			{SoundEffect::HEXAGON, "hexagon"},
-			{SoundEffect::OVER, "over"},
-			{SoundEffect::SELECT, "select"},
-			{SoundEffect::LEVEL_UP, "level"},
-			{SoundEffect::WONDERFUL, "wonderful"},
+			{SoundEffect::BEGIN, "/sound/begin"},
+			{SoundEffect::HEXAGON, "/sound/hexagon"},
+			{SoundEffect::OVER, "/sound/over"},
+			{SoundEffect::SELECT, "/sound/select"},
+			{SoundEffect::LEVEL_UP, "/sound/level"},
+			{SoundEffect::WONDERFUL, "/sound/wonderful"},
 		};
 
 		for (const auto& sound : sounds) {
-			platform.loadSFX(sound.first, sound.second);
+			_soundEffects.emplace_back(sound.first, platform.loadSound(sound.second));
 		}
 
-		constexpr int sizes[] {
-			16, 32
-		};
-
-		for (const int size : sizes) {
-			platform.loadFont(size);
-		}
-
+		_fontSmall = platform.loadFont(16);
+		_fontLarge = platform.loadFont(32);
 		_twister = platform.getTwister();
 	}
 
 	Game::~Game() {
-		_platform.stopBGM();
+		// Stop and unload music
+		_bgm = nullptr;
 		_platform.message(SuperHaxagon::Dbg::INFO, "game", "shutdown ok");
 	}
 
@@ -56,6 +53,9 @@ namespace SuperHaxagon {
 			// A dilation of 1.0 is 1/60th of a second. Huge dilation spikes can happen
 			// when the process is suspended (for example, the 3ds on the home menu)
 			dilation = dilation > 5.0f ? 5.0f : (dilation < 0.05f ? 0.05f : dilation);
+
+			// For platforms that need it, tick the BGM.
+			if (_bgm) _bgm->update();
 
 			auto next = _state->update(dilation);
 			if (!_running) break;
@@ -203,11 +203,11 @@ namespace SuperHaxagon {
 	}
 
 	Font& Game::getFontSmall() const {
-		return _platform.getFont(16);
+		return *_fontSmall;
 	}
 	
 	Font& Game::getFontLarge() const {
-		return _platform.getFont(32);
+		return *_fontLarge;
 	}
 
 	float Game::getScreenDimMax() const {
@@ -220,13 +220,26 @@ namespace SuperHaxagon {
 		return std::min(size.x, size.y);
 	}
 
-	void Game::loadBGMAudio(const std::string& music, const Location location, const bool loadMetadata) {
+	void Game::playMusic(const std::string& music, const Location location, const bool loadMetadata, const bool loop) {
 		const auto base = "/bgm" + music;
 
 		if (loadMetadata) {
 			_bgmMetadata = std::make_unique<Metadata>(_platform.openFile(base + ".txt", location));
 		}
 		
-		_platform.playBGM(base, location);
+		_bgm = _platform.loadMusic(base, location);
+
+		if (_bgm) {
+			_bgm->setLoop(loop);
+			_bgm->play();
+		}
+	}
+
+	void Game::playEffect(SoundEffect effect) const {
+		for (auto& soundEffect : _soundEffects) {
+			if (effect == soundEffect.first && soundEffect.second) {
+				soundEffect.second->play();
+			}
+		}
 	}
 }

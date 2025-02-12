@@ -33,8 +33,8 @@ namespace SuperHaxagon {
 	void Menu::enter() {
 		_game.setSkew(0.0);
 		_game.setShadowAuto(false);
-		_game.loadBGMAudio("/werq", Location::ROM, false);
-		_platform.playSFX(SoundEffect::HEXAGON);
+		_game.playMusic("/werq", Location::ROM, false);
+		_game.playEffect(SoundEffect::HEXAGON);
 	}
 
 	std::unique_ptr<State> Menu::update(const float dilation) {
@@ -45,7 +45,7 @@ namespace SuperHaxagon {
 		if (!_transitionDirection) {
 			if (press.select) {
 				auto& level = **_selected;
-				_game.loadBGMAudio(level.getMusic(), level.getLocation(), true);
+				_game.playMusic(level.getMusic(), level.getLocation(), true);
 				return std::make_unique<Play>(_game, level, level, 0.0f);
 			}
 
@@ -60,7 +60,7 @@ namespace SuperHaxagon {
 			}
 
 			if (_transitionDirection) {
-				_platform.playSFX(SoundEffect::SELECT);
+				_game.playEffect(SoundEffect::SELECT);
 				for (auto i = COLOR_LOCATION_FIRST; i != COLOR_LOCATION_LAST; i++) {
 					const auto location = static_cast<LocColor>(i);
 

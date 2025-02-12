@@ -21,7 +21,7 @@ namespace SuperHaxagon {
 	Transition::~Transition() = default;
 
 	void Transition::enter() {
-		_platform.playSFX(SoundEffect::WONDERFUL);
+		_game.playEffect(SoundEffect::WONDERFUL);
 	}
 
 	std::unique_ptr<State> Transition::update(const float dilation) {
@@ -46,7 +46,7 @@ namespace SuperHaxagon {
 			// We want to keep the current music playing if we are going to start
 			// the next level with the same music
 			if (_selected.getMusic() != factory.getMusic()) {
-				_game.loadBGMAudio(factory.getMusic(), factory.getLocation(), true);
+				_game.playMusic(factory.getMusic(), factory.getLocation(), true);
 			}
 			
 			return std::make_unique<Play>(_game, factory, _selected, _score);

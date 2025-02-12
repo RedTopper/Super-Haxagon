@@ -20,7 +20,7 @@ endif()
 
 # Used in 3DS for a console on the bottom screen
 # and Switch for debug output to a file
-set(DEBUG_CONSOLE true)
+set(DEBUG_CONSOLE false)
 
 set(SOURCES
     source/Main.cpp

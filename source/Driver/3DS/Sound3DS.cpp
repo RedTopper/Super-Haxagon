@@ -3,33 +3,34 @@
 #include "Wav3DS.hpp"
 
 namespace SuperHaxagon {
+	// 3ds has 24 tracks
+	// This includes the channel reserved for BGM!
+	constexpr int MAX_TRACKS = 16;
+
+	// Global store for what current channel we are using
+	int channel = 1;
+	ndspWaveBuf buffers[MAX_TRACKS]{};
+
 	struct Sound::SoundData {
-		SoundData(Wav& wav) : wav(wav) {}
-		const Wav& wav;
-		int channel = 0;
-		ndspWaveBuf buffer{};
+		SoundData(const std::string path) : wav(path) {}
+		const Wav wav;
 	};
 
-	std::unique_ptr<Sound> createSound(Wav& wav) {
-		return std::make_unique<Sound>(std::make_unique<Sound::SoundData>(wav));
+	std::unique_ptr<Sound> createSound(const std::string& path) {
+		return std::make_unique<Sound>(std::make_unique<Sound::SoundData>(path));
 	}
 
 	Sound::Sound(std::unique_ptr<SoundData> data) : _data(std::move(data)) {}
 
 	Sound::~Sound() {
-		ndspChnWaveBufClear(_data->channel);
-	}
-
-	void Sound::setChannel(int channel) {
-		_data->channel = channel;
+		ndspChnWaveBufClear(channel);
 	}
 
 	void Sound::play() const {
 		const Wav& wav = _data->wav;
 		if (!wav.loaded) return;
 
-		const auto channel = _data->channel;
-		ndspWaveBuf& buffer = _data->buffer;
+		ndspWaveBuf& buffer = buffers[channel];
 		float mix[12]{};
 		mix[0] = 1.0;
 		mix[1] = 1.0;
@@ -45,9 +46,12 @@ namespace SuperHaxagon {
 		buffer.offset = 0;
 		DSP_FlushDataCache(wav.data, wav.dataSize);
 		ndspChnWaveBufAdd(channel, &buffer);
-	}
 
-	bool Sound::isDone() const {
-		return _data->buffer.status == NDSP_WBUF_DONE;
+		// Next play will use next channel.
+		channel++;
+
+		// Channel 0 is reserved for BGM.
+		// Only one BGM is ever expected to be played at a time.
+		if (channel > MAX_TRACKS) channel = 1;
 	}
 }

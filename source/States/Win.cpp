@@ -3,6 +3,7 @@
 #include "Core/Game.hpp"
 #include "Core/Metadata.hpp"
 #include "Driver/Font.hpp"
+#include "Driver/Music.hpp"
 #include "Driver/Platform.hpp"
 #include "Factories/LevelFactory.hpp"
 #include "Objects/Level.hpp"
@@ -70,7 +71,7 @@ namespace SuperHaxagon {
 	}
 
 	void Win::enter() {
-		_game.loadBGMAudio("/esiannoyamFoEzam", Location::ROM, true);
+		_game.playMusic("/esiannoyamFoEzam", Location::ROM, true, false);
 		_game.setShadowAuto(true);
 	}
 	
@@ -90,16 +91,13 @@ namespace SuperHaxagon {
 
 		// Get effect data
 		auto& metadata = *_game.getBGMMetadata();
-		const auto* bgm = _platform.getBGM();
+		const auto& bgm = _game.getMusic();
 		const auto time = bgm ? bgm->getTime() : 0.0f;
-		if (time < _lastTime - 10.0f || pressed.back) {
+		if ((bgm && bgm->isDone()) || pressed.back) {
 			_level->setWinShowCursor(true);
-			_platform.stopBGM();
+			if (bgm) bgm->pause();
 			return std::make_unique<Over>(_game, std::move(_level), _selected, _score, _text);
 		}
-
-		// Keep track of time so we know when the song loops
-		_lastTime = time;
 
 		// Check for level transition labels
 		for (auto i = LEVEL_HARD; i <= LEVEL_VOID; i++) {

@@ -18,7 +18,10 @@ namespace SuperHaxagon {
 	class Twist;
 	class Font;
 	class Metadata;
+	class Sound;
+	class Music;
 	enum class Location;
+	enum class SoundEffect;
 
 	class Game {
 	public:
@@ -35,7 +38,10 @@ namespace SuperHaxagon {
 		Font& getFontLarge() const;
 		float getScreenDimMax() const;
 		float getScreenDimMin() const;
-		void loadBGMAudio(const std::string& music, Location location, bool loadMetadata);
+
+		void playMusic(const std::string& music, Location location, bool loadMetadata, bool loop = true);
+		void playEffect(SoundEffect effect) const;
+		Music* getMusic() const {return _bgm.get();}
 
 		void setRunning(const bool running) {_running = running;}
 		void setSkew(const float skew) {_skew = skew;}
@@ -103,6 +109,10 @@ namespace SuperHaxagon {
 	private:
 		Platform& _platform;
 
+		std::unique_ptr<Font> _fontSmall;
+		std::unique_ptr<Font> _fontLarge;
+		std::unique_ptr<Music> _bgm;
+		std::vector<std::pair<SoundEffect, std::unique_ptr<Sound>>> _soundEffects;
 		std::vector<std::unique_ptr<LevelFactory>> _levels;
 
 		std::unique_ptr<Twist> _twister;

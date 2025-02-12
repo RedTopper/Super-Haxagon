@@ -4,6 +4,9 @@
 #include "MemoryFS.hpp"
 #include "Core/Twist.hpp"
 #include "Core/Metadata.hpp"
+#include "Driver/Font.hpp"
+#include "Driver/Music.hpp"
+#include "Driver/Sound.hpp"
 
 #include <libndls.h>
 #include <ngc.h>
@@ -42,16 +45,14 @@ namespace SuperHaxagon {
 	bool Platform::loop() {
 		const auto timer = timer_read(0);
 		const auto elapsed = static_cast<float>(TIMER_1S - timer) / TIMER_1S;
-		if (_bgm) {
-			// The platform will keep increasing bgmDelta until the game runs Music::getTime(),
-			// at which point _plat->bgmDelta will be added to the music's internal timer and reset to zero
-			_plat->bgmDelta += elapsed;
-			if (_bgm->isDone()) _bgm->play();
-		}
 
 		timer_load(0, TIMER_1S);
+
+		// The platform will keep increasing bgmDelta until the game runs Music::loop(),
+		// at which point _plat->bgmDelta will be added to the music's internal timer and reset to zero
+		_plat->bgmDelta += elapsed;
 		_delta = elapsed;
-		
+
 		return true;
 	}
 
@@ -78,12 +79,18 @@ namespace SuperHaxagon {
 		return MemoryFS::openFile(partial);
 	}
 
-	// nspire doesn't support sound effects
-	void Platform::loadSFX(SoundEffect, const std::string&) const {}
+	std::unique_ptr<Font> Platform::loadFont(const int size) const {
+		return createFont(_plat->gc, size);
+	}
 
-	void Platform::loadFont(const int size) {
-		auto font = createFont(_plat->gc, size);
-		_fonts.emplace_back(size, std::move(font));
+	// nspire doesn't support sound effects
+	std::unique_ptr<Sound> Platform::loadSound(const std::string&) const {
+		return nullptr;
+	}
+
+	std::unique_ptr<Music> Platform::loadMusic(const std::string& base, const Location location) const {
+		Metadata metadata(openFile(base + ".txt", location));
+		return createMusic(metadata.getMaxTime(), &_plat->bgmDelta);
 	}
 
 	std::vector<std::pair<Location, std::string>> Platform::loadUserLevels() {
@@ -94,17 +101,6 @@ namespace SuperHaxagon {
 		}
 
 		return levels;
-	}
-
-	// nspire doesn't support sound effects
-	void Platform::playSFX(SoundEffect) const {}
-
-	void Platform::playBGM(const std::string& base, Location location) {
-		Metadata metadata(openFile(base + ".txt", location));
-		_bgm = createMusic(metadata.getMaxTime(), &_plat->bgmDelta);
-		if (!_bgm) return;
-		_bgm->setLoop(true);
-		_bgm->play();
 	}
 
 	std::string Platform::getButtonName(const Buttons& button) {

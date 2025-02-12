@@ -17,10 +17,8 @@ struct C2D_Font_s
 namespace SuperHaxagon {
 	struct Font::FontData {
 		FontData(const std::string& path, int size) : size(size) {
-			std::stringstream s;
-			s << path << "-" << size << ".bcfnt";
 			buff = C2D_TextBufNew(4096);
-			font = C2D_FontLoad(s.str().c_str());
+			font = C2D_FontLoad(path.c_str());
 
 			// For some reason the latest version of citro2d messes with font scaling,
 			// causing all sorts of issues. Manually set scale to be 1.0.

@@ -6,30 +6,42 @@
 
 namespace SuperHaxagon {
 	struct Sound::SoundData {
-		sf::Sound sound;
+		~SoundData() {
+			for (auto& player : players) {
+				player.stop();
+			}
+		}
+
+		void clearFinished() {
+			for (auto it = players.begin(); it != players.end();) {
+				const auto& playing = *it;
+				if (playing.getStatus() == sf::SoundSource::Stopped) {
+					it = players.erase(it);
+				} else {
+					++it;
+				}
+			}
+		}
+
+		sf::SoundBuffer buffer;
+		std::vector<sf::Sound> players{};
 	};
 
-	std::unique_ptr<Sound> createSound(const sf::SoundBuffer& buffer) {
+	std::unique_ptr<Sound> createSound(const std::string& path) {
 		auto sound = std::make_unique<Sound::SoundData>();
-		sound->sound.setBuffer(buffer);
+
+		const bool loaded = sound->buffer.loadFromFile(path);
+		if (!loaded) return nullptr;
+
 		return std::make_unique<Sound>(std::move(sound));
 	}
 
 	Sound::Sound(std::unique_ptr<SoundData> data) : _data(std::move(data)) {}
 
-	Sound::~Sound() {
-		_data->sound.stop();
-	}
-
-	// SFML does not use channels
-	// ReSharper disable once CppMemberFunctionMayBeStatic
-	void Sound::setChannel(int) {}
+	Sound::~Sound() = default;
 
 	void Sound::play() const {
-		_data->sound.play();
-	}
-
-	bool Sound::isDone() const {
-		return _data->sound.getStatus() == sf::SoundSource::Stopped;
+		_data->clearFinished();
+		_data->players.emplace_back(_data->buffer).play();
 	}
 }

@@ -1,9 +1,6 @@
 #ifndef SUPER_HAXAGON_PLATFORM_HPP
 #define SUPER_HAXAGON_PLATFORM_HPP
 
-#include "Font.hpp"
-#include "Music.hpp"
-
 #include <memory>
 #include <string>
 #include <vector>
@@ -13,6 +10,9 @@ namespace SuperHaxagon {
 	struct Point;
 	struct Color;
 	class Twist;
+	class Font;
+	class Music;
+	class Sound;
 
 	enum class Dbg {
 		INFO,
@@ -36,15 +36,6 @@ namespace SuperHaxagon {
 	enum class Location {
 		ROM,
 		USER
-	};
-
-	enum class SoundEffect {
-		BEGIN,
-		HEXAGON,
-		OVER,
-		SELECT,
-		LEVEL_UP,
-		WONDERFUL,
 	};
 
 	inline Supports operator |(Supports lhs, Supports rhs) {
@@ -72,26 +63,11 @@ namespace SuperHaxagon {
 		std::string getPath(const std::string& partial, Location location) const;
 		std::unique_ptr<std::istream> openFile(const std::string& partial, Location location) const;
 
-		void loadSFX(SoundEffect effect, const std::string& name) const;
-		void loadFont(int size);
+		std::unique_ptr<Font> loadFont(int size) const;
+		std::unique_ptr<Sound> loadSound(const std::string& base) const;
+		std::unique_ptr<Music> loadMusic(const std::string& base, Location location) const;
 
 		std::vector<std::pair<Location, std::string>> loadUserLevels();
-
-		void playSFX(SoundEffect effect) const;
-		void playBGM(const std::string& base, Location location);
-		void stopBGM() {_bgm = nullptr;}
-
-		Music* getBGM() const {return _bgm.get();}
-		Font& getFont(const int size) {
-			for (const auto& font : _fonts) {
-				if (font.first == size) {
-					return *font.second;
-				}
-			}
-
-			// Fallback to first loaded font
-			return *_fonts.front().second;
-		};
 
 		static std::string getButtonName(const Buttons& button);
 		Buttons getPressed() const;
@@ -112,9 +88,6 @@ namespace SuperHaxagon {
 		std::unique_ptr<PlatformData> _plat{};
 
 		float _delta = 0.0f;
-
-		std::vector<std::pair<int, std::unique_ptr<Font>>> _fonts{};
-		std::unique_ptr<Music> _bgm{};
 	};
 }
 

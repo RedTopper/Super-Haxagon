@@ -13,7 +13,7 @@ namespace SuperHaxagon {
 		explicit FontData(sf::RenderWindow& renderWindow, const std::string& path, int size) :
 			window(renderWindow),
 			size(static_cast<float>(size)) {
-			loaded = font.loadFromFile(path + ".ttf");
+			loaded = font.loadFromFile(path);
 		}
 
 		sf::RenderWindow& window;

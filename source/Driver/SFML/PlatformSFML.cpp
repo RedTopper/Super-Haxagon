@@ -15,8 +15,8 @@
 #include <deque>
 
 namespace SuperHaxagon {
-	std::unique_ptr<Music> createMusic(sf::Music& music);
-	std::unique_ptr<Sound> createSound(const sf::SoundBuffer& buffer);
+	std::unique_ptr<Music> createMusic(std::unique_ptr<sf::Music> music);
+	std::unique_ptr<Sound> createSound(const std::string& path);
 	std::unique_ptr<Font> createFont(sf::RenderWindow& renderWindow, const std::string& path, int size);
 
 	std::unique_ptr<Platform::PlatformData> createPlatform(sf::VideoMode video, const std::string& sdmc, const std::string& romfs, const bool backslash) {
@@ -98,49 +98,20 @@ namespace SuperHaxagon {
 		return std::make_unique<std::ifstream>(getPath(partial, location), std::ios::in | std::ios::binary);
 	}
 
-	void Platform::loadSFX(const SoundEffect effect, const std::string& name) const {
-		sf::SoundBuffer buffer;
-		const bool loaded = buffer.loadFromFile(getPath("/sound/" + name, Location::ROM) + ".wav");
-		if (!loaded) return;
-		_plat->sfxBuffers.emplace_back(effect, buffer);
+	std::unique_ptr<Font> Platform::loadFont(const int size) const {
+		return createFont(*_plat->window, getPath("/bump-it-up.ttf", Location::ROM), size);
 	}
 
-	void Platform::loadFont(const int size) {
-		auto font = createFont(*_plat->window, getPath("/bump-it-up", Location::ROM), size);
-		_fonts.emplace_back(size, std::move(font));
+	std::unique_ptr<Sound> Platform::loadSound(const std::string& base) const {
+		return createSound(getPath(base, Location::ROM) + ".wav");
 	}
 
-	void Platform::playSFX(const SoundEffect effect) const {
-		for (auto it = _plat->sfx.begin(); it != _plat->sfx.end();) {
-			const auto& playing = *it;
-			if (playing->isDone()) {
-				it = _plat->sfx.erase(it);
-			} else {
-				++it;
-			}
-		}
+	std::unique_ptr<Music> Platform::loadMusic(const std::string& base, const Location location) const {
+		auto music = std::make_unique<sf::Music>();
+		auto loaded = music->openFromFile(getPath(base, location) + ".ogg");
+		if (!loaded) return nullptr;
 
-		for (const auto& sfx : _plat->sfxBuffers) {
-			if (sfx.first == effect) {
-				auto player = createSound(sfx.second);
-				if (!player) return;
-				player->play();
-				_plat->sfx.emplace_back(std::move(player));
-				return;
-			}
-		}
-	}
-
-	void Platform::playBGM(const std::string& base, const Location location) {
-		_bgm = nullptr;
-		const bool loaded = _plat->bgmAudio->openFromFile(getPath(base, location) + ".ogg");
-		if (!loaded) return;
-
-		_bgm = createMusic(*_plat->bgmAudio);
-		if (!_bgm) return;
-
-		_bgm->setLoop(true);
-		_bgm->play();
+		return createMusic(std::move(music));
 	}
 
 	std::string Platform::getButtonName(const Buttons& button) {

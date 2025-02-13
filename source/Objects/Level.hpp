@@ -7,11 +7,12 @@
 #include <deque>
 #include <map>
 
-namespace SuperHaxagon {	
+namespace SuperHaxagon {
 	class Game;
 	class LevelFactory;
 	class PatternFactory;
 	class Twist;
+	class SurfaceGame;
 
 	class Level {
 	public:
@@ -19,12 +20,12 @@ namespace SuperHaxagon {
 		static constexpr float DIFFICULTY_SCALAR_ROT = 0.08f;
 		static constexpr float FLIP_FRAMES_MIN = 120;
 		static constexpr float FLIP_FRAMES_MAX = 600;
-		static constexpr float FRAMES_PER_CHANGE_SIDE = 50;
+		static constexpr float FRAMES_PER_CHANGE_SIDE = 30;
 		static constexpr float FRAMES_PER_SPIN = 90;
-		static constexpr float FRAMES_PER_PULSE = 10;
+		static constexpr float FRAMES_PER_PULSE = 15;
 		static constexpr float SPIN_SPEED = TAU / 130.0f;
 		static constexpr float ROTATE_ZERO_SPEED = TAU / 200.0f;
-		static constexpr float PULSE_DISTANCE = 5.0f;
+		static constexpr float PULSE_DISTANCE = 0.15f;
 		static constexpr int MIN_SAME_SIDES = 3;
 		static constexpr int MAX_SAME_SIDES = 5;
 
@@ -32,8 +33,8 @@ namespace SuperHaxagon {
 		Level(Level&) = delete;
 		~Level();
 
-		void update(Twist& rng, float patternDistDelete, float patternDistCreate, float dilation);
-		void draw(Game& game, float scale, float offsetWall) const;
+		void update(Twist& rng, float dilation);
+		void draw(SurfaceGame& game, SurfaceGame* shadows, float offset) const;
 		Movement collision(float cursorDistance, float dilation) const;
 
 		void increaseMultiplier();
@@ -46,7 +47,7 @@ namespace SuperHaxagon {
 		// Effects
 		void spin();
 		void invertBG();
-		void pulse(float scale);
+		void pulse(float pulse);
 
 		// Time
 		float getFrame() const {return _frame;}

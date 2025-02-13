@@ -1,7 +1,7 @@
 #include "Driver/Platform.hpp"
 
 #include "Core/Twist.hpp"
-#include "Driver/Sound.hpp"
+#include "Driver/Screen.hpp"
 #include "Driver/SFML/DataSFML.hpp"
 
 #include <SFML/Graphics.hpp>
@@ -27,6 +27,7 @@ namespace SuperHaxagon {
 		}
 
 		_plat = createPlatform(video, sdmc, romfs, false);
+		_screen = createScreen(*_plat->window);
 
 		mkdir(sdmc.c_str(), 0755);
 	}

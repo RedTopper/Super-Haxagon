@@ -1,6 +1,7 @@
 #include "States/Over.hpp"
 
 #include "Core/Game.hpp"
+#include "Core/SurfaceUI.hpp"
 #include "Driver/Font.hpp"
 #include "Driver/Platform.hpp"
 #include "Factories/LevelFactory.hpp"
@@ -84,11 +85,12 @@ namespace SuperHaxagon {
 		return nullptr;
 	}
 
-	void Over::drawTop(const float scale) {
-		_level->draw(_game, scale, _offset);
+	void Over::drawGame(SurfaceGame& surface, SurfaceGame* shadows) {
+		_level->draw(surface, shadows, (_offset - 1.0f) / 100.0f);
 	}
 
-	void Over::drawBot(const float scale) {
+	void Over::drawBotUI(SurfaceUI& surface) {
+		const auto scale = surface.getScale();
 		auto& large = _game.getFontLarge();
 		auto& small = _game.getFontSmall();
 		large.setScale(scale);
@@ -96,8 +98,8 @@ namespace SuperHaxagon {
 
 		const auto padText = 3 * scale;
 		const auto margin = 20 * scale;
-		const auto width = _platform.getScreenDim().x;
-		const auto height = _platform.getScreenDim().y;
+		const auto width = surface.getScreenDim().x;
+		const auto height = surface.getScreenDim().y;
 		const auto heightLarge = large.getHeight();
 		const auto heightSmall = small.getHeight();
 

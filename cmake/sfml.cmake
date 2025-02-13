@@ -8,6 +8,7 @@ include_directories(${SFML_INCLUDE_DIR})
 
 set(DRIVER ${DRIVER_PLATFORM}
     source/Driver/SFML/MusicSFML.cpp
+    source/Driver/SFML/ScreenSFML.cpp
     source/Driver/SFML/SoundSFML.cpp
     source/Driver/SFML/FontSFML.cpp
     source/Driver/SFML/PlatformSFML.cpp

@@ -10,8 +10,8 @@
 
 namespace SuperHaxagon {
 	struct Font::FontData {
-		explicit FontData(sf::RenderWindow& renderWindow, const std::string& path, int size) :
-			window(renderWindow),
+		explicit FontData(sf::RenderWindow& window, const std::string& path, int size) :
+			window(window),
 			size(static_cast<float>(size)) {
 			loaded = font.loadFromFile(path);
 		}
@@ -23,8 +23,8 @@ namespace SuperHaxagon {
 		bool loaded;
 	};
 
-	std::unique_ptr<Font> createFont(sf::RenderWindow& renderWindow, const std::string& path, int size) {
-		return std::make_unique<Font>(std::make_unique<Font::FontData>(renderWindow, path, size));
+	std::unique_ptr<Font> createFont(sf::RenderWindow& window, const std::string& path, int size) {
+		return std::make_unique<Font>(std::make_unique<Font::FontData>(window, path, size));
 	}
 
 	Font::Font(std::unique_ptr<Font::FontData> data) : _data(std::move(data)) {}

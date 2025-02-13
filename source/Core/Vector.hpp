@@ -101,7 +101,7 @@ namespace SuperHaxagon {
 	public:
 		T x[4][4] = { {1,0,0,0},{0,1,0,0},{0,0,1,0},{0,0,0,1} };
 
-		Matrix4x4() {}
+		Matrix4x4() = default;
 		Matrix4x4(T a, T b, T c, T d, T e, T f, T g, T h, T i, T j, T k, T l, T m, T n, T o, T p);
 
 		const T* operator[](uint8_t i) const { return x[i]; }

@@ -9,15 +9,15 @@
 namespace SuperHaxagon {
 	class WallFactory {
 	public:
-		static constexpr int MIN_WALL_HEIGHT = 4;
+		static constexpr float MIN_WALL_HEIGHT = 0.01f;
 
 		WallFactory(std::istream& stream, int maxSides);
 
 		Wall instantiate(float offsetDistance, int offsetSide, int sides) const;
 
 	private:
-		uint16_t _distance = 0;
-		uint16_t _height = 0;
+		float _distance = 0;
+		float _height = 0;
 		uint16_t _side = 0;
 	};
 }

@@ -36,7 +36,7 @@ namespace SuperHaxagon {
 		_colors[LocColor::FG].reserve(numColorsFG);
 		for (auto i = 0; i < numColorsFG; i++) _colors[LocColor::FG].emplace_back(readColor(stream));
 
-		_speedWall = readFloat(stream);
+		_speedWall = readFloat(stream) * SCALE_TO_SCREEN_SPACE;
 		_speedRotation = readFloat(stream);
 		_speedCursor = readFloat(stream);
 		_speedPulse = read32(stream, 4, 8192, platform, "level pulse");

@@ -20,8 +20,8 @@ namespace SuperHaxagon {
 			return Movement::CAN_MOVE;
 		}
 
-		const auto leftRotStep = cursorPos + cursorStep;
-		const auto rightRotStep = cursorPos - cursorStep;
+		const auto leftRotStep = cursorPos - cursorStep;
+		const auto rightRotStep = cursorPos + cursorStep;
 
 		// If the cursor wrapped and the range we need to calculate overflows beyond TAU we also need to check the other equivalent regions:
 		// exactly one TAU ago and the next TAU.
@@ -53,8 +53,7 @@ namespace SuperHaxagon {
 		return Movement::CAN_MOVE;
 	}
 
-	std::vector<Vec2f> Wall::calcPoints(const Vec2f& focus, const float rotation, const float sides, const float offset, const float scale) const {
-		
+	std::vector<Vec2f> Wall::calcPoints(const float sides, const float offset) const {
 		auto tHeight = _height;
 		auto tDistance = _distance + offset;
 		if(tDistance < SCALE_HEX_LENGTH) {//so the distance is never negative as it enters.
@@ -62,24 +61,22 @@ namespace SuperHaxagon {
 			tDistance = SCALE_HEX_LENGTH; //Should never be 0!!!
 		}
 
-		tDistance *= scale;
-		tHeight *= scale;
 		std::vector<Vec2f> quad{
-			calcPoint(focus, rotation, -WALL_OVERFLOW, tDistance, sides, _side),
-			calcPoint(focus, rotation, -WALL_OVERFLOW, tDistance + tHeight, sides, _side),
-			calcPoint(focus, rotation, WALL_OVERFLOW, tDistance + tHeight, sides, _side + 1),
-			calcPoint(focus, rotation, WALL_OVERFLOW, tDistance, sides, _side + 1)
+			calcPoint(-WALL_OVERFLOW, tDistance, sides, _side),
+			calcPoint(-WALL_OVERFLOW, tDistance + tHeight, sides, _side),
+			calcPoint(WALL_OVERFLOW, tDistance + tHeight, sides, _side + 1),
+			calcPoint(WALL_OVERFLOW, tDistance, sides, _side + 1)
 		};
 
 		return quad;
 	}
 
-	Vec2f Wall::calcPoint(const Vec2f& focus, const float rotation, const float overflow, const float distance, const float sides, const int side) {
+	Vec2f Wall::calcPoint(const float overflow, const float distance, const float sides, const int side) {
 		Vec2f point = {0,0};
 		auto width = static_cast<float>(side) * TAU/sides + overflow;
 		if(width > TAU + WALL_OVERFLOW) width = TAU + WALL_OVERFLOW;
-		point.x = distance * std::cos(rotation + width) + focus.x;
-		point.y = distance * std::sin(rotation + width + PI) + focus.y;
+		point.x = distance * std::cos(width);
+		point.y = distance * std::sin(width + PI);
 		return point;
 	}
 }

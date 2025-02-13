@@ -1,6 +1,7 @@
 #include "States/Transition.hpp"
 
 #include "Core/Game.hpp"
+#include "Core/SurfaceUI.hpp"
 #include "Driver/Font.hpp"
 #include "Driver/Platform.hpp"
 #include "Factories/LevelFactory.hpp"
@@ -55,18 +56,19 @@ namespace SuperHaxagon {
 		return nullptr;
 	}
 
-	void Transition::drawTop(const float scale) {
-		_level->draw(_game, scale, _offset);
+	void Transition::drawGame(SurfaceGame& surface, SurfaceGame* shadows) {
+		_level->draw(surface, shadows, (_offset - 1.0f) / 100.0f);
 	}
 
-	void Transition::drawBot(const float scale) {
+	void Transition::drawBotUI(SurfaceUI& surface) {
+		const auto scale = surface.getScale();
 		auto& large = _game.getFontLarge();
 		large.setScale(scale);
 
 		const auto* const text = "WONDERFUL";
 		const auto pad = 6 * scale;
 		const auto width = large.getWidth(text);
-		const auto center = _platform.getScreenDim().x / 2;
+		const auto center = surface.getScreenDim().x / 2;
 
 		const Vec2f posText = {center, pad};
 		const Vec2f bkgSize = {width + pad * 2, large.getHeight() + pad * 2};
@@ -79,7 +81,7 @@ namespace SuperHaxagon {
 
 		const auto percent = getPulse(_frames, Play::PULSE_TIME, 0);
 		const auto pulse = interpolateColor(PULSE_LOW, PULSE_HIGH, percent);
-		_platform.drawPoly(COLOR_TRANSPARENT, trap);
+		surface.drawPolyUI(COLOR_TRANSPARENT, trap);
 		large.draw(pulse, posText, Alignment::CENTER, text);
 	}
 }

@@ -13,7 +13,7 @@ namespace sf {
 }
 
 namespace SuperHaxagon {
-
+	std::unique_ptr<Screen> createScreen(sf::RenderWindow& window);
 	std::unique_ptr<Platform::PlatformData> createPlatform(sf::VideoMode video, const std::string& sdmc, const std::string& romfs, bool backslash);
 
 	struct Platform::PlatformData {

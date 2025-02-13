@@ -2,6 +2,7 @@
 
 #include "Core/Game.hpp"
 #include "Core/Metadata.hpp"
+#include "Core/SurfaceUI.hpp"
 #include "Driver/Font.hpp"
 #include "Driver/Music.hpp"
 #include "Driver/Platform.hpp"
@@ -72,7 +73,6 @@ namespace SuperHaxagon {
 
 	void Win::enter() {
 		_game.playMusic("/esiannoyamFoEzam", Location::ROM, true, false);
-		_game.setShadowAuto(true);
 	}
 	
 	std::unique_ptr<State> Win::update(const float dilation) {
@@ -137,18 +137,18 @@ namespace SuperHaxagon {
 
 		_timer -= dilation;
 
-		const auto maxRenderDistance = SCALE_BASE_DISTANCE * (_game.getScreenDimMax() / 400);
 		auto& level = *_level;
-		level.update(_game.getTwister(), maxRenderDistance, 0, dilation);
+		level.update(_game.getTwister(), dilation);
 		
 		return nullptr;
 	}
 
-	void Win::drawTop(const float scale) {
-		_level->draw(_game, scale, 0);
+	void Win::drawGame(SurfaceGame& surface, SurfaceGame* shadows) {
+		_level->draw(surface, shadows, 0);
 	}
 
-	void Win::drawBot(const float scale) {
+	void Win::drawBotUI(SurfaceUI& surface) {
+		const auto scale = surface.getScale();
 		auto& large = _game.getFontLarge();
 		auto& small = _game.getFontSmall();
 		large.setScale(scale);
@@ -156,8 +156,8 @@ namespace SuperHaxagon {
 
 		const auto padText = 3 * scale;
 		const auto margin = 20 * scale;
-		const auto width = _platform.getScreenDim().x;
-		const auto height = _platform.getScreenDim().y;
+		const auto width = surface.getScreenDim().x;
+		const auto height = surface.getScreenDim().y;
 		const auto heightSmall = small.getHeight();
 
 		const Vec2f posCredits = { width / 2, margin };

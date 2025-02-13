@@ -2,8 +2,9 @@
 
 namespace SuperHaxagon {
 	WallFactory::WallFactory(std::istream& stream, const int maxSides) {
-		_distance = read16(stream);
-		_height = read16(stream);
+		// To keep compatability with old levels
+		_distance = static_cast<float>(read16(stream)) * SCALE_TO_SCREEN_SPACE;
+		_height = static_cast<float>(read16(stream)) * SCALE_TO_SCREEN_SPACE;
 		_side = read16(stream);
 
 		if(_height < MIN_WALL_HEIGHT) _height = MIN_WALL_HEIGHT;

@@ -43,7 +43,11 @@ set(SOURCES
 
     source/Core/Game.cpp
     source/Core/Metadata.cpp
-    source/Core/Structs.cpp)
+    source/Core/Structs.cpp
+    source/Core/SurfaceGame.cpp
+    source/Core/SurfaceUI.cpp
+    source/Core/Vector.cpp
+)
 
 configure_file(source/Core/Configuration.hpp.in Core/Configuration.hpp)
 include_directories("${CMAKE_CURRENT_BINARY_DIR}")

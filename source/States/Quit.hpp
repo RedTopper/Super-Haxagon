@@ -13,8 +13,9 @@ namespace SuperHaxagon {
 		~Quit() override = default;
 
 		std::unique_ptr<State> update(float) override;
-		void drawTop(float) override {}
-		void drawBot(float) override {}
+		void drawGame(SurfaceGame&, SurfaceGame*) override {}
+		void drawTopUI(SurfaceUI&) override {}
+		void drawBotUI(SurfaceUI&) override {}
 
 	private:
 		Game& _game;

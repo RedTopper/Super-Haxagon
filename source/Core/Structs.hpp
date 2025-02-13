@@ -43,13 +43,16 @@ namespace SuperHaxagon {
 	static constexpr int COLOR_LOCATION_FIRST = static_cast<int>(LocColor::FG);
 	static constexpr int COLOR_LOCATION_LAST = static_cast<int>(LocColor::LAST);
 
-	static constexpr float SCALE_MENU = 3.5f;
-	static constexpr float SCALE_BASE_DISTANCE = 400.0f;
-	static constexpr float SCALE_HEX_LENGTH = 24.0f;
-	static constexpr float SCALE_HEX_BORDER = 4.0f;
-	static constexpr float SCALE_HUMAN_PADDING = 5.0f;
-	static constexpr float SCALE_HUMAN_HEIGHT = 5.0f;
-	static constexpr float SCALE_HUMAN_WIDTH = 5.0f;
+	static constexpr float SCALE_MENU = 2.5f;
+	static constexpr float SCALE_BASE_DISTANCE = 2.0f;
+	static constexpr float SCALE_HEX_LENGTH = 0.13f;
+	static constexpr float SCALE_HEX_BORDER = 0.02f;
+	static constexpr float SCALE_HUMAN_PADDING = 0.03f;
+	static constexpr float SCALE_HUMAN_HEIGHT = 0.03f;
+	static constexpr float SCALE_HUMAN_WIDTH = 0.03f;
+
+	// This converts the old "pixel based" levels to the new "screen space" coordinates
+	static constexpr float SCALE_TO_SCREEN_SPACE = 0.005f;
 
 	static const Color COLOR_SHADOW = {0, 0, 0, 0xC0};
 	static const Color COLOR_TRANSPARENT = {0, 0, 0, 0xA0};

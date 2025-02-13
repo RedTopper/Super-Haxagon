@@ -1,26 +1,24 @@
 #ifndef SUPER_HAXAGON_GAME_HPP
 #define SUPER_HAXAGON_GAME_HPP
 
-#include "Vector.hpp"
+#include "Core/SurfaceGame.hpp"
+#include "Core/SurfaceUI.hpp"
 
-#include <deque>
 #include <memory>
 #include <vector>
 #include <string>
 
 namespace SuperHaxagon {
 	// Maybe I went a bit overboard with PImpl...
-	struct Color;
 	class LevelFactory;
 	class State;
-	class Pattern;
-	class Wall;
 	class Platform;
 	class Twist;
 	class Font;
 	class Metadata;
 	class Sound;
 	class Music;
+	class Screen;
 	enum class Location;
 	enum class SoundEffect;
 
@@ -30,85 +28,31 @@ namespace SuperHaxagon {
 		Game(const Game&) = delete;
 		~Game();
 
-		const std::vector<std::unique_ptr<LevelFactory>>& getLevels() const {return _levels;}
-
-		Platform& getPlatform() const {return _platform;}
-		Twist& getTwister() const {return *_twister;}
-		Metadata* getBGMMetadata() const {return _bgmMetadata.get();}
-		Font& getFontSmall() const;
-		Font& getFontLarge() const;
-		float getScreenDimMax() const;
-		float getScreenDimMin() const;
-
+		void run();
 		void playMusic(const std::string& music, Location location, bool loadMetadata, bool loop = true);
 		void playEffect(SoundEffect effect) const;
-		Music* getMusic() const {return _bgm.get();}
-
-		void setRunning(const bool running) {_running = running;}
-		void setSkew(const float skew) {_skew = skew;}
-		void setShadowAuto(const bool shadowAuto) {_shadowAuto = shadowAuto;}
-
-		/**
-		 * Runs the game
-		 */
-		void run();
-
-		/**
-		 * Loads a level into the game
-		 */
 		void addLevel(std::unique_ptr<LevelFactory> level);
 
-		/**
-		 * Draws a rectangle at position with the size of size.
-		 * Position is the top left.
-		 */
-		void drawRect(Color color, Vec2f position, Vec2f size) const;
+		const std::vector<std::unique_ptr<LevelFactory>>& getLevels() const {return _levels;}
+		Music* getMusic() const {return _bgm.get();}
+		Metadata* getBGMMetadata() const {return _bgmMetadata.get();}
+		Platform& getPlatform() const {return _platform;}
+		Twist& getTwister() const {return *_twister;}
+		Font& getFontSmall() const {return *_fontSmall;}
+		Font& getFontLarge() const {return *_fontLarge;}
 
-		/**
-		 * Draws the background of the screen (the radiating colors part)
-		 */
-		void drawBackground(const Color& color1, const Color& color2, const Vec2f& focus, float multiplier, float rotation, float sides) const;
-
-		/**
-		 * Draws a regular polygon at some point focus. Useful for generating
-		 * the regular polygon in the center of the screen.
-		 */
-		void drawRegular(const Color& color, const Vec2f& focus, float height, float rotation, float sides) const;
-
-		/**
-		 * Draws the little cursor in the center of the screen controlled by a human.
-		 */
-		void drawCursor(const Color& color, const Vec2f& focus, float cursor, float rotation, float offset, float scale) const;
-
-		/**
-		 * Completely draws all patterns in a live level. Can also be used to create
-		 * an "Explosion" effect if you use "offset". (for game overs)
-		 */
-		void drawPatterns(const Color& color, const Vec2f& focus, const std::deque<Pattern>& patterns, float rotation, float sides, float offset, float scale) const;
-
-		/**
-		 * Draws a single moving wall based on a live wall, a color, some rotational value, and the total
-		 * amount of sides that appears.
-		 */
-		void drawWalls(const Color& color, const Vec2f& focus, const Wall& wall, float rotation, float sides, float offset, float scale) const;
-
-		/**
-		 * Gets the center of the screen from the platform
-		 */
-		Vec2f getScreenCenter() const;
-
-		/**
-		 * Gets the offset in pixels of the shadow
-		 */
-		Vec2f getShadowOffset() const;
-
-		/**
-		 * Skews the screen to give a 3D effect. Modifies the incoming triangle
-		 */
-		void skew(std::vector<Vec2f>& skew) const;
+		void setRunning(const bool running) {_running = running;}
 
 	private:
 		Platform& _platform;
+		Screen& _screen;
+
+		SurfaceGame _surfaceGame;
+		SurfaceUI _surfaceUI;
+
+		// Some platforms do not support shadows,
+		// so optionally initialize this one
+		std::unique_ptr<SurfaceGame> _surfaceShadows;
 
 		std::unique_ptr<Font> _fontSmall;
 		std::unique_ptr<Font> _fontLarge;
@@ -122,8 +66,6 @@ namespace SuperHaxagon {
 		std::unique_ptr<Metadata> _bgmMetadata;
 
 		bool _running = true;
-		bool _shadowAuto = false;
-		float _skew = 0.0;
 	};
 }
 

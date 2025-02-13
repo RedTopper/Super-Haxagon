@@ -5,6 +5,7 @@
 #include "Core/Structs.hpp"
 #include "Driver/Font.hpp"
 #include "Driver/Music.hpp"
+#include "Driver/Screen.hpp"
 #include "Driver/Sound.hpp"
 
 #include <SFML/Window.hpp>
@@ -132,37 +133,6 @@ namespace SuperHaxagon {
 		buttons.left = sf::Keyboard::isKeyPressed(sf::Keyboard::Left) || sf::Keyboard::isKeyPressed(sf::Keyboard::A);
 		buttons.right = sf::Keyboard::isKeyPressed(sf::Keyboard::Right) || sf::Keyboard::isKeyPressed(sf::Keyboard::D);
 		return buttons;
-	}
-
-	Vec2f Platform::getScreenDim() const {
-		Vec2f point{};
-		point.x = static_cast<float>(_plat->window->getSize().x);
-		point.y = static_cast<float>(_plat->window->getSize().y);
-		return point;
-	}
-
-	void Platform::screenBegin() const {
-		_plat->window->clear(sf::Color::Black);
-	}
-
-	// Do nothing since we don't have two screens
-	void Platform::screenSwap() {}
-
-	void Platform::screenFinalize() const {
-		_plat->window->display();
-	}
-
-	void Platform::drawPoly(const Color& color, const std::vector<Vec2f>& points) const {
-		const sf::Color sfColor{ color.r, color.g, color.b, color.a };
-		sf::ConvexShape convex(points.size());
-		convex.setPosition(0, 0);
-		convex.setFillColor(sfColor);
-		auto index = 0;
-		for (const auto& point : points) {
-			convex.setPoint(index++, sf::Vector2f(point.x, point.y));
-		}
-
-		_plat->window->draw(convex);
 	}
 
 	// Do nothing for SFML

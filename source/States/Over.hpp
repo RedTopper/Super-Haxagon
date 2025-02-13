@@ -14,8 +14,8 @@ namespace SuperHaxagon {
 	class Over : public State {
 	public:
 		static constexpr float GAME_OVER_ROT_SPEED = TAU/400.0f;
-		static constexpr float GAME_OVER_ACCELERATION_RATE = 0.1f;
-		static constexpr int FRAMES_PER_GAME_OVER = 60;
+		static constexpr float GAME_OVER_ACCELERATION_RATE = 0.15f;
+		static constexpr int FRAMES_PER_GAME_OVER = 30;
 		static constexpr int PULSE_TIME = 75;
 
 		Over(Game& game, std::unique_ptr<Level> level, LevelFactory& selected, float score, std::string text);
@@ -23,8 +23,9 @@ namespace SuperHaxagon {
 		~Over() override;
 
 		std::unique_ptr<State> update(float dilation) override;
-		void drawTop(float scale) override;
-		void drawBot(float scale) override;
+		void drawGame(SurfaceGame& surface, SurfaceGame* shadows)  override;
+		void drawTopUI(SurfaceUI&) override {};
+		void drawBotUI(SurfaceUI& ui) override;
 		void enter() override;
 
 	private:

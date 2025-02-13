@@ -14,6 +14,7 @@ namespace SuperHaxagon {
 	class Font;
 	class Music;
 	class Sound;
+	class Screen;
 
 	enum class Dbg {
 		INFO,
@@ -67,17 +68,12 @@ namespace SuperHaxagon {
 		std::unique_ptr<Font> loadFont(int size) const;
 		std::unique_ptr<Sound> loadSound(const std::string& base) const;
 		std::unique_ptr<Music> loadMusic(const std::string& base, Location location) const;
+		Screen& getScreen() {return *_screen;}
 
 		std::vector<std::pair<Location, std::string>> loadUserLevels();
 
 		static std::string getButtonName(const Buttons& button);
 		Buttons getPressed() const;
-		Vec2f getScreenDim() const;
-
-		void screenBegin() const;
-		void screenSwap();
-		void screenFinalize() const;
-		void drawPoly(const Color& color, const std::vector<Vec2f>& points) const;
 
 		std::unique_ptr<Twist> getTwister();
 
@@ -87,6 +83,7 @@ namespace SuperHaxagon {
 
 	private:
 		std::unique_ptr<PlatformData> _plat{};
+		std::unique_ptr<Screen> _screen{};
 
 		float _delta = 0.0f;
 	};

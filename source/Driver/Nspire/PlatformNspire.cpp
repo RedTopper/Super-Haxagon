@@ -4,6 +4,7 @@
 #include "MemoryFS.hpp"
 #include "Core/Twist.hpp"
 #include "Core/Metadata.hpp"
+#include "Core/Structs.hpp"
 #include "Driver/Font.hpp"
 #include "Driver/Music.hpp"
 #include "Driver/Sound.hpp"
@@ -122,7 +123,7 @@ namespace SuperHaxagon {
 		return buttons;
 	}
 
-	Point Platform::getScreenDim() const {
+	Vec2f Platform::getScreenDim() const {
 		return {320, 240};
 	}
 
@@ -140,7 +141,7 @@ namespace SuperHaxagon {
 		gui_gc_blit_to_screen(_plat->gc);
 	}
 
-	void Platform::drawPoly(const Color& color, const std::vector<Point>& points) const {
+	void Platform::drawPoly(const Color& color, const std::vector<Vec2f>& points) const {
 		const auto pos = std::make_unique<Point2D[]>(points.size());
 		for (size_t i = 0; i < points.size(); i++) {
 			pos[i] = {

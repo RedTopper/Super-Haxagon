@@ -1,6 +1,8 @@
 #ifndef SUPER_HAXAGON_GAME_HPP
 #define SUPER_HAXAGON_GAME_HPP
 
+#include "Vector.hpp"
+
 #include <deque>
 #include <memory>
 #include <vector>
@@ -8,7 +10,6 @@
 
 namespace SuperHaxagon {
 	// Maybe I went a bit overboard with PImpl...
-	struct Point;
 	struct Color;
 	class LevelFactory;
 	class State;
@@ -61,50 +62,50 @@ namespace SuperHaxagon {
 		 * Draws a rectangle at position with the size of size.
 		 * Position is the top left.
 		 */
-		void drawRect(Color color, Point position, Point size) const;
+		void drawRect(Color color, Vec2f position, Vec2f size) const;
 
 		/**
 		 * Draws the background of the screen (the radiating colors part)
 		 */
-		void drawBackground(const Color& color1, const Color& color2, const Point& focus, float multiplier, float rotation, float sides) const;
+		void drawBackground(const Color& color1, const Color& color2, const Vec2f& focus, float multiplier, float rotation, float sides) const;
 
 		/**
 		 * Draws a regular polygon at some point focus. Useful for generating
 		 * the regular polygon in the center of the screen.
 		 */
-		void drawRegular(const Color& color, const Point& focus, float height, float rotation, float sides) const;
+		void drawRegular(const Color& color, const Vec2f& focus, float height, float rotation, float sides) const;
 
 		/**
 		 * Draws the little cursor in the center of the screen controlled by a human.
 		 */
-		void drawCursor(const Color& color, const Point& focus, float cursor, float rotation, float offset, float scale) const;
+		void drawCursor(const Color& color, const Vec2f& focus, float cursor, float rotation, float offset, float scale) const;
 
 		/**
 		 * Completely draws all patterns in a live level. Can also be used to create
 		 * an "Explosion" effect if you use "offset". (for game overs)
 		 */
-		void drawPatterns(const Color& color, const Point& focus, const std::deque<Pattern>& patterns, float rotation, float sides, float offset, float scale) const;
+		void drawPatterns(const Color& color, const Vec2f& focus, const std::deque<Pattern>& patterns, float rotation, float sides, float offset, float scale) const;
 
 		/**
 		 * Draws a single moving wall based on a live wall, a color, some rotational value, and the total
 		 * amount of sides that appears.
 		 */
-		void drawWalls(const Color& color, const Point& focus, const Wall& wall, float rotation, float sides, float offset, float scale) const;
+		void drawWalls(const Color& color, const Vec2f& focus, const Wall& wall, float rotation, float sides, float offset, float scale) const;
 
 		/**
 		 * Gets the center of the screen from the platform
 		 */
-		Point getScreenCenter() const;
+		Vec2f getScreenCenter() const;
 
 		/**
 		 * Gets the offset in pixels of the shadow
 		 */
-		Point getShadowOffset() const;
+		Vec2f getShadowOffset() const;
 
 		/**
 		 * Skews the screen to give a 3D effect. Modifies the incoming triangle
 		 */
-		void skew(std::vector<Point>& skew) const;
+		void skew(std::vector<Vec2f>& skew) const;
 
 	private:
 		Platform& _platform;

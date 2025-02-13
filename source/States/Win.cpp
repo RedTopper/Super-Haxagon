@@ -160,9 +160,9 @@ namespace SuperHaxagon {
 		const auto height = _platform.getScreenDim().y;
 		const auto heightSmall = small.getHeight();
 
-		const Point posCredits = { width / 2, margin };
-		const Point posB = { width / 2, height - margin - heightSmall };
-		const Point posA = { width / 2, posB.y - heightSmall - padText };
+		const Vec2f posCredits = { width / 2, margin };
+		const Vec2f posB = { width / 2, height - margin - heightSmall };
+		const Vec2f posA = { width / 2, posB.y - heightSmall - padText };
 
 		if (_timer > 0.0f) {
 			large.draw(COLOR_WHITE, posCredits, Alignment::CENTER, _credits[_index].name);

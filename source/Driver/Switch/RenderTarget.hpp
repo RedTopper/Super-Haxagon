@@ -12,14 +12,14 @@ namespace SuperHaxagon {
 	constexpr float Z_STEP = 0.00001f;
 
 	struct Vertex {
-		Point p;
+		Vec2f p;
 		Color c;
 		float z;
 	};
 
 	struct VertexUV {
-		Point p;
-		Point uv;
+		Vec2f p;
+		Vec2f uv;
 		Color c;
 		float z;
 	};

@@ -1,6 +1,8 @@
 #ifndef SUPER_HAXAGON_STRUCTS_HPP
 #define SUPER_HAXAGON_STRUCTS_HPP
 
+#include "Vector.hpp"
+
 #include <cstdint>
 #include <fstream>
 #include <string>
@@ -13,11 +15,6 @@ namespace SuperHaxagon {
 		uint8_t g;
 		uint8_t b;
 		uint8_t a;
-	};
-
-	struct Point {
-		float x;
-		float y;
 	};
 
 	enum class Movement {
@@ -45,9 +42,6 @@ namespace SuperHaxagon {
 
 	static constexpr int COLOR_LOCATION_FIRST = static_cast<int>(LocColor::FG);
 	static constexpr int COLOR_LOCATION_LAST = static_cast<int>(LocColor::LAST);
-
-	static constexpr float PI = 3.14159265358979f;
-	static constexpr float TAU = PI * 2.0f;
 
 	static constexpr float SCALE_MENU = 3.5f;
 	static constexpr float SCALE_BASE_DISTANCE = 400.0f;
@@ -85,7 +79,7 @@ namespace SuperHaxagon {
 	/**
 	 * Rotates a cartesian point around the origin
 	 */
-	Point rotateAroundOrigin(const Point& point, float rotation);
+	Vec2f rotateAroundOrigin(const Vec2f& point, float rotation);
 
 	/**
 	 * Converts score into a string

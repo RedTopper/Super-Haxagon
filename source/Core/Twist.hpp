@@ -1,7 +1,7 @@
 #ifndef SUPER_HAXAGON_TWIST_HPP
 #define SUPER_HAXAGON_TWIST_HPP
 
-#include "Structs.hpp"
+#include "Vector.hpp"
 
 #include <algorithm>
 #include <memory>
@@ -51,8 +51,8 @@ namespace SuperHaxagon {
 		 * @param max The maximum point (Closed)
 		 * @return a random point
 		 */
-		Point rand(const Point& max) const {
-			return rand(Point(), max);
+		Vec2f rand(const Vec2f& max) const {
+			return rand(Vec2f(), max);
 		}
 
 		/**
@@ -82,8 +82,8 @@ namespace SuperHaxagon {
 		 * @param max The maximum point (Closed)
 		 * @return a random point
 		 */
-		Point rand(const Point& min, const Point& max) const {
-			return Point{rand(min.x, max.x), rand(min.y, max.y)};
+		Vec2f rand(const Vec2f& min, const Vec2f& max) const {
+			return Vec2f{rand(min.x, max.x), rand(min.y, max.y)};
 		}
 
 		/**

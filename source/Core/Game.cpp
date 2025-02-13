@@ -1,7 +1,7 @@
-#include "Core/Game.hpp"
+#include "Game.hpp"
 
-#include "Core/Metadata.hpp"
-#include "Core/Twist.hpp"
+#include "Metadata.hpp"
+#include "Twist.hpp"
 #include "Driver/Font.hpp"
 #include "Driver/Sound.hpp"
 #include "Driver/Music.hpp"
@@ -78,8 +78,8 @@ namespace SuperHaxagon {
 		_levels.emplace_back(std::move(level));
 	}
 
-	void Game::drawRect(const Color color, const Point position, const Point size) const {
-		const std::vector<Point> points{
+	void Game::drawRect(const Color color, const Vec2f position, const Vec2f size) const {
+		const std::vector<Vec2f> points{
 			{position.x, position.y + size.y},
 			{position.x + size.x, position.y + size.y},
 			{position.x + size.x, position.y},
@@ -89,18 +89,18 @@ namespace SuperHaxagon {
 		_platform.drawPoly(color, points);
 	}
 
-	void Game::drawBackground(const Color& color1, const Color& color2, const Point& focus, const float multiplier, const float rotation, const float sides) const {
+	void Game::drawBackground(const Color& color1, const Color& color2, const Vec2f& focus, const float multiplier, const float rotation, const float sides) const {
 		// The game used to be based off a 3DS which has a bottom screen of 240px
 		const auto maxRenderDistance = SCALE_BASE_DISTANCE * (getScreenDimMax() / 240);
 		const auto exactSides = static_cast<size_t>(std::ceil(sides));
 
 		//solid background.
-		const Point position = {0,0};
+		const Vec2f position = {0,0};
 		const auto size = _platform.getScreenDim();
 		drawRect(color1, position, size);
 
 		//This draws the main background.
-		std::vector<Point> edges;
+		std::vector<Vec2f> edges;
 		edges.resize(exactSides);
 
 		for(size_t i = 0; i < exactSides; i++) {
@@ -108,7 +108,7 @@ namespace SuperHaxagon {
 			edges[i].y = multiplier * maxRenderDistance * sin(rotation + static_cast<float>(i) * TAU / sides + PI) + focus.y;
 		}
 
-		std::vector<Point> triangle;
+		std::vector<Vec2f> triangle;
 		triangle.resize(3);
 
 		//if the sides is odd we need to "make up a color" to put in the gap between the last and first color
@@ -130,10 +130,10 @@ namespace SuperHaxagon {
 		}
 	}
 
-	void Game::drawRegular(const Color& color, const Point& focus, const float height, const float rotation, const float sides) const {
+	void Game::drawRegular(const Color& color, const Vec2f& focus, const float height, const float rotation, const float sides) const {
 		const auto exactSides = static_cast<size_t>(std::ceil(sides));
 
-		std::vector<Point> edges;
+		std::vector<Vec2f> edges;
 		edges.resize(exactSides);
 
 		// Calculate the triangle backwards so it overlaps correctly.
@@ -146,9 +146,9 @@ namespace SuperHaxagon {
 		_platform.drawPoly(color, edges);
 	}
 
-	void Game::drawCursor(const Color& color, const Point& focus, const float cursor, const float rotation, const float offset, const float scale) const {
+	void Game::drawCursor(const Color& color, const Vec2f& focus, const float cursor, const float rotation, const float offset, const float scale) const {
 		// Note: A cursor and rotation of zero points to the left
-		std::vector<Point> triangle;
+		std::vector<Vec2f> triangle;
 		triangle.resize(3);
 		triangle[0] = {offset * scale, -SCALE_HUMAN_WIDTH/2 * scale};
 		triangle[1] = {offset * scale, SCALE_HUMAN_WIDTH/2 * scale};
@@ -163,7 +163,7 @@ namespace SuperHaxagon {
 		_platform.drawPoly(color, triangle);
 	}
 
-	void Game::drawPatterns(const Color& color, const Point& focus, const std::deque<Pattern>& patterns, const float rotation, const float sides, const float offset, const float scale) const {
+	void Game::drawPatterns(const Color& color, const Vec2f& focus, const std::deque<Pattern>& patterns, const float rotation, const float sides, const float offset, const float scale) const {
 		for(const auto& pattern : patterns) {
 			for(const auto& wall : pattern.getWalls()) {
 				drawWalls(color, focus, wall, rotation, sides, offset, scale);
@@ -171,7 +171,7 @@ namespace SuperHaxagon {
 		}
 	}
 
-	void Game::drawWalls(const Color& color, const Point& focus, const Wall& wall, const float rotation, const float sides, const float offset, const float scale) const {
+	void Game::drawWalls(const Color& color, const Vec2f& focus, const Wall& wall, const float rotation, const float sides, const float offset, const float scale) const {
 		const auto distance = wall.getDistance() + offset;
 		if(distance + wall.getHeight() < SCALE_HEX_LENGTH) return; //TOO_CLOSE;
 		if(static_cast<float>(wall.getSide()) >= sides) return; //NOT_IN_RANGE
@@ -181,12 +181,12 @@ namespace SuperHaxagon {
 		_platform.drawPoly(color, trap);
 	}
 
-	Point Game::getScreenCenter() const {
+	Vec2f Game::getScreenCenter() const {
 		const auto dim = _platform.getScreenDim();
 		return {dim.x/2, dim.y/2};
 	}
 
-	Point Game::getShadowOffset() const {
+	Vec2f Game::getShadowOffset() const {
 		const auto min = getScreenDimMin();
 		if (_shadowAuto) {
 			return {0, min/180 + min/15 * _skew};
@@ -195,7 +195,7 @@ namespace SuperHaxagon {
 		return {min/60, min/60};
 	}
 
-	void Game::skew(std::vector<Point>& skew) const {
+	void Game::skew(std::vector<Vec2f>& skew) const {
 		const auto screen = _platform.getScreenDim();
 		for (auto& point : skew) {
 			point.y = ((point.y / screen.y - 0.5f) * (1.0f - _skew) + 0.5f) * screen.y;

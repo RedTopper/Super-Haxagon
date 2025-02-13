@@ -41,11 +41,11 @@ namespace SuperHaxagon {
 		return gui_gc_getStringWidth(_data->gc, _data->font, chars.get(), 0, text.length());
 	}
 
-	void Font::draw(const Color& color, const Point& position, const Alignment alignment, const std::string& text) const {
+	void Font::draw(const Color& color, const Vec2f& position, const Alignment alignment, const std::string& text) const {
 		gui_gc_setColorRGB(_data->gc, color.r, color.g, color.b);
 		gui_gc_setFont(_data->gc, _data->font);
 
-		Point translate{};
+		Vec2f translate{};
 		const auto chars = utf16(text);
 		const auto width = getWidth(text);
 		if (alignment == Alignment::LEFT) translate.x = position.x;

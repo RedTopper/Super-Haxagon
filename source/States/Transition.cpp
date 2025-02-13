@@ -68,9 +68,9 @@ namespace SuperHaxagon {
 		const auto width = large.getWidth(text);
 		const auto center = _platform.getScreenDim().x / 2;
 
-		const Point posText = {center, pad};
-		const Point bkgSize = {width + pad * 2, large.getHeight() + pad * 2};
-		const std::vector<Point> trap = {
+		const Vec2f posText = {center, pad};
+		const Vec2f bkgSize = {width + pad * 2, large.getHeight() + pad * 2};
+		const std::vector<Vec2f> trap = {
 			{center - bkgSize.x/2 - bkgSize.y/2, 0},
 			{center + bkgSize.x/2 + bkgSize.y/2, 0},
 			{center + bkgSize.x/2, bkgSize.y},

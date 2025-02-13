@@ -134,8 +134,8 @@ namespace SuperHaxagon {
 		return buttons;
 	}
 
-	Point Platform::getScreenDim() const {
-		Point point{};
+	Vec2f Platform::getScreenDim() const {
+		Vec2f point{};
 		point.x = static_cast<float>(_plat->window->getSize().x);
 		point.y = static_cast<float>(_plat->window->getSize().y);
 		return point;
@@ -152,7 +152,7 @@ namespace SuperHaxagon {
 		_plat->window->display();
 	}
 
-	void Platform::drawPoly(const Color& color, const std::vector<Point>& points) const {
+	void Platform::drawPoly(const Color& color, const std::vector<Vec2f>& points) const {
 		const sf::Color sfColor{ color.r, color.g, color.b, color.a };
 		sf::ConvexShape convex(points.size());
 		convex.setPosition(0, 0);

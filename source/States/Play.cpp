@@ -4,7 +4,6 @@
 #include "Core/Metadata.hpp"
 #include "Driver/Font.hpp"
 #include "Driver/Music.hpp"
-#include "Driver/Platform.hpp"
 #include "Factories/LevelFactory.hpp"
 #include "Objects/Level.hpp"
 #include "States/Over.hpp"
@@ -152,14 +151,14 @@ namespace SuperHaxagon {
 		// Draw the top left POINT/LINE thing
 		// Note, 400 is kind of arbitrary. Perhaps it's needed to update this later.
 		const auto* levelUp = getScoreText(static_cast<int>(_level->getFrame()), _platform.getScreenDim().x <= 400);
-		const Point levelUpPosText = {pad, pad};
-		const Point levelUpBkgSize = {
+		const Vec2f levelUpPosText = {pad, pad};
+		const Vec2f levelUpBkgSize = {
 			small.getWidth(levelUp) + pad * 2,
 			small.getHeight() + pad * 2
 		};
 
 		// Clockwise, from top left
-		const std::vector<Point> levelUpBkg = {
+		const std::vector<Vec2f> levelUpBkg = {
 			{0, 0},
 			{levelUpBkgSize.x + levelUpBkgSize.y / 2, 0},
 			{levelUpBkgSize.x, levelUpBkgSize.y},
@@ -172,8 +171,8 @@ namespace SuperHaxagon {
 		// Draw the current score
 		const auto screenWidth = _platform.getScreenDim().x;
 		const auto textScore = "TIME: " + getTime(_score);
-		const Point scorePosText = {screenWidth - pad - _scoreWidth, pad};
-		Point scoreBkgSize = {_scoreWidth + pad * 2, small.getHeight() + pad * 2};
+		const Vec2f scorePosText = {screenWidth - pad - _scoreWidth, pad};
+		Vec2f scoreBkgSize = {_scoreWidth + pad * 2, small.getHeight() + pad * 2};
 
 		// Before we draw the score, compute the best time graph.
 		auto drawBar = false;
@@ -199,7 +198,7 @@ namespace SuperHaxagon {
 		}
 
 		// Clockwise, from top left
-		const std::vector<Point> scoreBkg = {
+		const std::vector<Vec2f> scoreBkg = {
 			{screenWidth - scoreBkgSize.x - scoreBkgSize.y / 2, 0},
 			{screenWidth, 0},
 			{screenWidth, scoreBkgSize.y},
@@ -210,16 +209,16 @@ namespace SuperHaxagon {
 		small.draw(COLOR_WHITE, scorePosText, Alignment::LEFT, textScore);
 
 		if (drawBar) {
-			const Point barPos = {scorePosText.x, originalY};
-			const Point barWidth = {_scoreWidth, heightBar};
-			const Point barWidthScore = {_scoreWidth * (_score / highScore), heightBar};
+			const Vec2f barPos = {scorePosText.x, originalY};
+			const Vec2f barWidth = {_scoreWidth, heightBar};
+			const Vec2f barWidthScore = {_scoreWidth * (_score / highScore), heightBar};
 			_game.drawRect(COLOR_BLACK, barPos, barWidth);
 			_game.drawRect(COLOR_WHITE, barPos, barWidthScore);
 		}
 
 		if (drawHigh) {
 			auto textColor = COLOR_WHITE;
-			const Point posBest = {screenWidth - pad, originalY};
+			const Vec2f posBest = {screenWidth - pad, originalY};
 			if (_score - highScore <= PULSE_TIMES * PULSE_TIME) {
 				const auto percent = getPulse(_score, PULSE_TIME, highScore);
 				textColor = interpolateColor(PULSE_LOW, PULSE_HIGH, percent);

@@ -53,7 +53,7 @@ namespace SuperHaxagon {
 		return Movement::CAN_MOVE;
 	}
 
-	std::vector<Point> Wall::calcPoints(const Point& focus, const float rotation, const float sides, const float offset, const float scale) const {
+	std::vector<Vec2f> Wall::calcPoints(const Vec2f& focus, const float rotation, const float sides, const float offset, const float scale) const {
 		
 		auto tHeight = _height;
 		auto tDistance = _distance + offset;
@@ -64,7 +64,7 @@ namespace SuperHaxagon {
 
 		tDistance *= scale;
 		tHeight *= scale;
-		std::vector<Point> quad{
+		std::vector<Vec2f> quad{
 			calcPoint(focus, rotation, -WALL_OVERFLOW, tDistance, sides, _side),
 			calcPoint(focus, rotation, -WALL_OVERFLOW, tDistance + tHeight, sides, _side),
 			calcPoint(focus, rotation, WALL_OVERFLOW, tDistance + tHeight, sides, _side + 1),
@@ -74,8 +74,8 @@ namespace SuperHaxagon {
 		return quad;
 	}
 
-	Point Wall::calcPoint(const Point& focus, const float rotation, const float overflow, const float distance, const float sides, const int side) {
-		Point point = {0,0};
+	Vec2f Wall::calcPoint(const Vec2f& focus, const float rotation, const float overflow, const float distance, const float sides, const int side) {
+		Vec2f point = {0,0};
 		auto width = static_cast<float>(side) * TAU/sides + overflow;
 		if(width > TAU + WALL_OVERFLOW) width = TAU + WALL_OVERFLOW;
 		point.x = distance * std::cos(rotation + width) + focus.x;

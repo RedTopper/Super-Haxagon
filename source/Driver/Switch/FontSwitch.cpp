@@ -51,10 +51,10 @@ namespace SuperHaxagon {
 	static constexpr int GLYPH_END = 128;
 
 	struct CharacterInfo {
-		Point pxAdvance;
-		Point pxOffset;
-		Point pxDim;
-		Point uv;
+		Vec2f pxAdvance;
+		Vec2f pxOffset;
+		Vec2f pxDim;
+		Vec2f uv;
 		float x;
 	};
 
@@ -184,12 +184,12 @@ namespace SuperHaxagon {
 		return width;
 	}
 
-	void Font::draw(const Color& color, const Point& position, Alignment alignment, const std::string& text) const {
+	void Font::draw(const Color& color, const Vec2f& position, Alignment alignment, const std::string& text) const {
 		if (!_data->loaded) return;
 		auto& surface = _data->surface;
 		auto& chars = _data->chars;
 
-		Point cursor = {
+		Vec2f cursor = {
 			position.x,
 			position.y + static_cast<float>(_data->top)
 		};
@@ -205,7 +205,7 @@ namespace SuperHaxagon {
 		for (auto c : text) {
 
 			const auto i = static_cast<int>(c);
-			const Point draw = {
+			const Vec2f draw = {
 				std::round(cursor.x + chars[i].pxOffset.x),
 				std::round(cursor.y - chars[i].pxOffset.y)
 			};

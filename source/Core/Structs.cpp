@@ -1,4 +1,4 @@
-#include "Core/Structs.hpp"
+#include "Structs.hpp"
 
 #include "Driver/Platform.hpp"
 
@@ -52,7 +52,7 @@ namespace SuperHaxagon {
 		return (end - start) * percent + start;
 	}
 
-	Point rotateAroundOrigin(const Point& point, const float rotation) {
+	Vec2f rotateAroundOrigin(const Vec2f& point, const float rotation) {
 		const auto c = static_cast<float>(cos(rotation));
 		const auto s = static_cast<float>(sin(rotation + PI));
 		return { point.x * c - point.y * s,  point.x * s + point.y * c };

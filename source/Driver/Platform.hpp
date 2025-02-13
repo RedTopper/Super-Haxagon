@@ -1,13 +1,14 @@
 #ifndef SUPER_HAXAGON_PLATFORM_HPP
 #define SUPER_HAXAGON_PLATFORM_HPP
 
+#include "Core/Vector.hpp"
+
 #include <memory>
 #include <string>
 #include <vector>
 #include <fstream>
 
 namespace SuperHaxagon {
-	struct Point;
 	struct Color;
 	class Twist;
 	class Font;
@@ -71,12 +72,12 @@ namespace SuperHaxagon {
 
 		static std::string getButtonName(const Buttons& button);
 		Buttons getPressed() const;
-		Point getScreenDim() const;
+		Vec2f getScreenDim() const;
 
 		void screenBegin() const;
 		void screenSwap();
 		void screenFinalize() const;
-		void drawPoly(const Color& color, const std::vector<Point>& points) const;
+		void drawPoly(const Color& color, const std::vector<Vec2f>& points) const;
 
 		std::unique_ptr<Twist> getTwister();
 

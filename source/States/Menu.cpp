@@ -137,8 +137,8 @@ namespace SuperHaxagon {
 		auto screen = _platform.getScreenDim();
 		auto shadow = _game.getShadowOffset();
 
-		Point focus = {screen.x/2, screen.y/6 * 5};
-		Point offsetFocus = {focus.x + shadow.x, focus.y + shadow.y};
+		Vec2f focus = {screen.x/2, screen.y/6 * 5};
+		Vec2f offsetFocus = {focus.x + shadow.x, focus.y + shadow.y};
 
 		// Home screen always has 6 sides.
 		// Use a multiplier of 1.5 because the view is shifted down
@@ -147,7 +147,7 @@ namespace SuperHaxagon {
 
 		
 		// Shadows, if supported
-		if (static_cast<int>(_platform.supports() & Supports::SHADOWS)) {
+		if (static_cast<int>(Platform::supports() & Supports::SHADOWS)) {
 			_game.drawRegular(COLOR_SHADOW, offsetFocus, SCALE_HEX_LENGTH * SCALE_MENU * scale, rotation, 6.0);
 			_game.drawCursor(COLOR_SHADOW, offsetFocus, TAU / 4.0f, 0, SCALE_HEX_LENGTH + SCALE_HUMAN_PADDING + 4, scale * SCALE_MENU * 0.75f);
 		}
@@ -175,15 +175,15 @@ namespace SuperHaxagon {
 		small.setScale(scale);
 
 		// Text positions
-		const Point posTitle = {pad, pad};
-		const Point posDifficulty = {pad, posTitle.y + pad + large.getHeight()};
-		const Point posMode = {pad, posDifficulty.y + pad + small.getHeight()};
-		const Point posCreator = {pad, posMode.y + (renderCreator ? pad + small.getHeight() : 0)};
-		const Point posTime = {pad, screen.y - small.getHeight() - pad};
-		const Point posVersion = {screen.x - pad, screen.y - small.getHeight() - pad};
+		const Vec2f posTitle = {pad, pad};
+		const Vec2f posDifficulty = {pad, posTitle.y + pad + large.getHeight()};
+		const Vec2f posMode = {pad, posDifficulty.y + pad + small.getHeight()};
+		const Vec2f posCreator = {pad, posMode.y + (renderCreator ? pad + small.getHeight() : 0)};
+		const Vec2f posTime = {pad, screen.y - small.getHeight() - pad};
+		const Vec2f posVersion = {screen.x - pad, screen.y - small.getHeight() - pad};
 
 		// Text background for information at top left of screen
-		Point infoSize = {std::max({
+		Vec2f infoSize = {std::max({
 			large.getWidth(level.getName()),
 			small.getWidth(diff),
 			small.getWidth(mode),
@@ -191,7 +191,7 @@ namespace SuperHaxagon {
 		}) + pad * 2, posCreator.y + pad + small.getHeight()};
 
 		// Clockwise, from Top Left
-		std::vector<Point> info{
+		std::vector<Vec2f> info{
 			{0, 0},
 			{infoSize.x + infoSize.y / 2, 0},
 			{infoSize.x, infoSize.y},
@@ -201,11 +201,11 @@ namespace SuperHaxagon {
 		_platform.drawPoly(COLOR_TRANSPARENT, info);
 
 		// Score block with triangle
-		Point timeSize = {small.getWidth(scoreTime) + pad * 2, small.getHeight() + pad * 2};
+		Vec2f timeSize = {small.getWidth(scoreTime) + pad * 2, small.getHeight() + pad * 2};
 
 		// Clockwise, from Top Left
 		const auto screenHeight = _platform.getScreenDim().y;
-		std::vector<Point> time = {
+		std::vector<Vec2f> time = {
 			{0, screenHeight - timeSize.y},
 			{timeSize.x,  screenHeight - timeSize.y},
 			{timeSize.x + timeSize.y / 2, screenHeight},
@@ -214,10 +214,10 @@ namespace SuperHaxagon {
 
 		_platform.drawPoly(COLOR_TRANSPARENT, time);
 
-		Point versionSize = {small.getWidth(version) + pad * 2, small.getHeight() + pad * 2};
+		Vec2f versionSize = {small.getWidth(version) + pad * 2, small.getHeight() + pad * 2};
 
 		const auto screenWidth = _platform.getScreenDim().x;
-		std::vector<Point> versionPoly = {
+		std::vector<Vec2f> versionPoly = {
 			{screenWidth - versionSize.x, screenHeight - versionSize.y},
 			{screenWidth, screenHeight - versionSize.y},
 			{screenWidth, screenHeight},

@@ -326,8 +326,8 @@ namespace SuperHaxagon {
 		return buttons;
 	}
 
-	Point Platform::getScreenDim() const {
-		return Point{static_cast<float>(_plat->width), static_cast<float>(_plat->height)};
+	Vec2f Platform::getScreenDim() const {
+		return Vec2f{static_cast<float>(_plat->width), static_cast<float>(_plat->height)};
 	}
 
 	void Platform::screenBegin() const {
@@ -351,7 +351,7 @@ namespace SuperHaxagon {
 		eglSwapBuffers(_plat->display, _plat->surface);
 	}
 
-	void Platform::drawPoly(const Color& color, const std::vector<Point>& points) const {
+	void Platform::drawPoly(const Color& color, const std::vector<Vec2f>& points) const {
 		const auto z = _plat->z;
 		_plat->z += Z_STEP;
 

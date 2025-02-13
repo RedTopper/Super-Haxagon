@@ -101,11 +101,11 @@ namespace SuperHaxagon {
 		const auto heightLarge = large.getHeight();
 		const auto heightSmall = small.getHeight();
 
-		const Point posGameOver = {width / 2, margin};
-		const Point posTime = {width / 2, posGameOver.y + heightLarge + padText};
-		const Point posBest = {width / 2, posTime.y + heightSmall + padText};
-		const Point posB = {width / 2, height - margin - heightSmall};
-		const Point posA = {width / 2, posB.y - heightSmall - padText};
+		const Vec2f posGameOver = {width / 2, margin};
+		const Vec2f posTime = {width / 2, posGameOver.y + heightLarge + padText};
+		const Vec2f posBest = {width / 2, posTime.y + heightSmall + padText};
+		const Vec2f posB = {width / 2, height - margin - heightSmall};
+		const Vec2f posA = {width / 2, posB.y - heightSmall - padText};
 
 		const auto textScore = std::string("TIME: ") + getTime(_score);
 		large.draw(COLOR_WHITE, posGameOver, Alignment::CENTER,  _text);

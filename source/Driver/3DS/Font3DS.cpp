@@ -59,7 +59,7 @@ namespace SuperHaxagon {
 		return _data->size + _data->size * 4.0f/32.0f;
 	}
 
-	void Font::draw(const Color& color, const Point& position, const Alignment alignment, const std::string& str) const {
+	void Font::draw(const Color& color, const Vec2f& position, const Alignment alignment, const std::string& str) const {
 		C2D_Text text;
 		const auto c = C2D_Color32(color.r, color.g, color.b, color.a);
 		C2D_TextFontParse(&text, _data->font, _data->buff, str.c_str());

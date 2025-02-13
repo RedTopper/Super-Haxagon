@@ -17,8 +17,8 @@ namespace SuperHaxagon {
 
 		void advance(float speed);
 		Movement collision(float cursorHeight, float cursorPos, float cursorStep, int sides) const;
-		std::vector<Point> calcPoints(const Point& focus, float rotation, float sides, float offset, float scale) const;
-		static Point calcPoint(const Point& focus, float rotation, float overflow, float distance, float sides, int side);
+		std::vector<Vec2f> calcPoints(const Vec2f& focus, float rotation, float sides, float offset, float scale) const;
+		static Vec2f calcPoint(const Vec2f& focus, float rotation, float overflow, float distance, float sides, int side);
 
 		float getDistance() const {return _distance;}
 		float getHeight() const {return _height;}

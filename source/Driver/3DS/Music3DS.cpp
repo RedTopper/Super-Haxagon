@@ -7,23 +7,6 @@
 #include <array>
 
 namespace SuperHaxagon {
-	struct Music::MusicData {
-		MusicData(const std::string& path) : path(path) {}
-
-		std::string path;
-		Thread thread = nullptr;
-		int16_t* audioBuffer = nullptr;
-		stb_vorbis* oggFile = nullptr;
-		std::array<ndspWaveBuf, 3> waveBuffs{};
-		volatile bool loaded = false;
-		volatile bool loop = false;
-		volatile bool threadRunning = true;
-		volatile bool decodeDone = false;
-		volatile int channel = 0;
-		volatile uint64_t start = 0;
-		volatile uint64_t diff = 0;
-	};
-
 	const int BUFFER_MS = 200;
 	static constexpr int THREAD_AFFINITY = -1;
 	static constexpr int THREAD_STACK_SZ = 32 * 1024;
@@ -36,6 +19,46 @@ namespace SuperHaxagon {
 	unsigned int getWaveBuffSize(const unsigned int sampleRate, const int channels) {
 		return getSamplesPerBuff(sampleRate) * channels * sizeof(int16_t);
 	}
+
+	struct Music::MusicData {
+		MusicData(const std::string& path) {
+			loaded = false;
+
+			auto error = 0;
+			oggFile = stb_vorbis_open_filename(path.c_str(), &error, nullptr);
+			if(error || !(oggFile->channels == 1 || oggFile->channels == 2)) return;
+
+			const auto bufferSize = getWaveBuffSize(oggFile->sample_rate, oggFile->channels) * waveBuffs.size();
+			audioBuffer = static_cast<int16_t*>(linearAlloc(bufferSize));
+			if(!audioBuffer) {
+				stb_vorbis_close(oggFile);
+				return;
+			}
+
+			memset(&waveBuffs, 0, waveBuffs.size());
+			auto* buffer = audioBuffer;
+
+			for(auto& waveBuff : waveBuffs) {
+				waveBuff.data_vaddr = buffer;
+				waveBuff.status = NDSP_WBUF_DONE;
+				buffer += getWaveBuffSize(oggFile->sample_rate, oggFile->channels) / sizeof(buffer[0]);
+			}
+
+			loaded = true;
+		}
+
+		Thread thread = nullptr;
+		int16_t* audioBuffer = nullptr;
+		stb_vorbis* oggFile = nullptr;
+		std::array<ndspWaveBuf, 3> waveBuffs{};
+		volatile bool loaded = false;
+		volatile bool loop = false;
+		volatile bool threadRunning = true;
+		volatile bool decodeDone = false;
+		volatile int channel = 0;
+		volatile uint64_t start = 0;
+		volatile uint64_t diff = 0;
+	};
 
 	void audioCallback(void*) {
 		LightEvent_Signal(&_event);
@@ -96,35 +119,11 @@ namespace SuperHaxagon {
 
 	std::unique_ptr<Music> createMusic(const std::string& path) {
 		auto data = std::make_unique<Music::MusicData>(path + ".ogg");
+		if (!data->loaded) return nullptr;
 		return std::make_unique<Music>(std::move(data));
 	}
 
-	Music::Music(std::unique_ptr<MusicData> data) {
-		data->loaded = false;
-
-		auto error = 0;
-		data->oggFile = stb_vorbis_open_filename(data->path.c_str(), &error, nullptr);
-		if(error || !(data->oggFile->channels == 1 || data->oggFile->channels == 2)) return;
-
-		const auto bufferSize = getWaveBuffSize(data->oggFile->sample_rate, data->oggFile->channels) * data->waveBuffs.size();
-		data->audioBuffer = static_cast<int16_t*>(linearAlloc(bufferSize));
-		if(!data->audioBuffer) {
-			stb_vorbis_close(data->oggFile);
-			return;
-		}
-
-		memset(&data->waveBuffs, 0, data->waveBuffs.size());
-		auto* buffer = data->audioBuffer;
-
-		for(auto& waveBuff : data->waveBuffs) {
-			waveBuff.data_vaddr = buffer;
-			waveBuff.status = NDSP_WBUF_DONE;
-			buffer += getWaveBuffSize(data->oggFile->sample_rate, data->oggFile->channels) / sizeof(buffer[0]);
-		}
-
-		data->loaded = true;
-		_data = std::move(data);
-	}
+	Music::Music(std::unique_ptr<MusicData> data) : _data(std::move(data)) {}
 
 	Music::~Music() {
 		if (!_data->loaded) return;

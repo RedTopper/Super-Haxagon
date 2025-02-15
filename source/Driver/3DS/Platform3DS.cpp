@@ -76,7 +76,7 @@ namespace SuperHaxagon {
 			mkdir("sdmc:/3ds/data", 0777);
 			mkdir("sdmc:/3ds/data/haxagon", 0777);
 
-			screen = createScreen(wide, DEBUG_CONSOLE);
+			screen = createScreen(wide, debug);
 
 			// Output the username for debugging
 			message(Dbg::INFO, "username", username);

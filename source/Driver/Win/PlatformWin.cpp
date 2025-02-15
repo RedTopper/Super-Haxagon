@@ -12,16 +12,16 @@
 #include <windows.h>
 
 namespace SuperHaxagon {
-	Platform::Platform() {
-		_plat = createPlatform("./sdmc", "./romfs", false);
-		_screen = createScreen(*_plat->window);
+	void initializePlatform(std::string& sdmc, std::string& romfs, bool& platformBackslash) {
+		sdmc = ".\\sdmc";
+		romfs = ".\\romfs";
+
+		platformBackslash = true;
 
 		SetForegroundWindow(_plat->window->getSystemHandle());
 
 		_mkdir(".\\sdmc");
 	}
-
-	Platform::~Platform() = default;
 
 	void Platform::message(const Dbg dbg, const std::string& where, const std::string& message) const {
 		if (dbg == Dbg::INFO) {

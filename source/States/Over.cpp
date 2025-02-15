@@ -91,8 +91,9 @@ namespace SuperHaxagon {
 
 	void Over::drawBotUI(SurfaceUI& surface) {
 		const auto scale = surface.getScale();
-		auto& large = _game.getFontLarge();
-		auto& small = _game.getFontSmall();
+		if (!_game.getFontLarge() || !_game.getFontSmall()) return;
+		auto& large = *_game.getFontLarge();
+		auto& small = *_game.getFontSmall();
 		large.setScale(scale);
 		small.setScale(scale);
 

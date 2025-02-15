@@ -49,7 +49,7 @@ namespace SuperHaxagon {
 		_impl->window.clear(sf::Color(color.r, color.g, color.b));
 	}
 
-	std::unique_ptr<Screen> createScreen(sf::RenderWindow& window) {
-		return std::make_unique<Screen>(std::make_unique<Screen::ScreenImpl>(window));
+	Screen createScreen(sf::RenderWindow& window) {
+		return Screen{std::make_unique<Screen::ScreenImpl>(window)};
 	}
 }

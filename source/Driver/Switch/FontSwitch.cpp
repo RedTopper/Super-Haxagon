@@ -58,8 +58,8 @@ namespace SuperHaxagon {
 		float x;
 	};
 
-	struct Font::FontData {
-		FontData(const Platform& platform, const std::string& path, const float size, float* z) :
+	struct Font::FontImpl {
+		FontImpl(const Platform& platform, const std::string& path, const float size, float* z) :
 			platform(platform),
 			z(z) {
 
@@ -144,6 +144,66 @@ namespace SuperHaxagon {
 			platform.message(Dbg::INFO, "font", "loaded font " + filename);
 		}
 
+		float getWidth(const std::string& text) const {
+			auto width = 0.0;
+			for (auto c : text) {
+				const auto i = static_cast<int>(c);
+				width += chars[i].pxAdvance.x;
+			}
+
+			return width;
+		}
+
+		void draw(const Color& color, const Vec2f& position, Alignment alignment, const std::string& text) const {
+			if (!loaded) return;
+
+			Vec2f cursor = {
+					position.x,
+					position.y + static_cast<float>(top)
+			};
+
+			const auto width = getWidth(text);
+			if (alignment == Alignment::LEFT) cursor.x = position.x;
+			if (alignment == Alignment::CENTER) cursor.x = position.x - width / 2;
+			if (alignment == Alignment::RIGHT) cursor.x = position.x - width;
+
+			const auto tz = *z;
+			*z += Z_STEP;
+
+			for (auto c : text) {
+
+				const auto i = static_cast<int>(c);
+				const Vec2f draw = {
+						std::round(cursor.x + chars[i].pxOffset.x),
+						std::round(cursor.y - chars[i].pxOffset.y)
+				};
+
+				const auto dim = chars[i].pxDim;
+				const auto uv = chars[i].uv;
+
+				cursor.x += chars[i].pxAdvance.x;
+				cursor.y -= chars[i].pxAdvance.y;
+
+				// Cannot render empty characters
+				if(!dim.x || !dim.y) continue;
+
+				surface->insert({ {draw.x, draw.y + dim.y}, {uv.x, uv.y}, color, tz }); // BL
+				surface->insert({{draw.x, draw.y}, {uv.x, 0}, color, tz}); // TL
+				surface->insert({{draw.x + dim.x, draw.y}, {uv.x + dim.x / texWidth, 0}, color, tz}); // TR
+				surface->insert({{draw.x + dim.x, draw.y + dim.y}, {uv.x + dim.x / texWidth, uv.y}, color, tz}); // BR
+
+				// Insert clockwise
+				surface->reference(0);
+				surface->reference(1);
+				surface->reference(2);
+				surface->reference(0);
+				surface->reference(2);
+				surface->reference(3);
+
+				surface->advance(4);
+			}
+		}
+
 		const Platform& platform;
 
 		bool loaded = false;
@@ -158,81 +218,27 @@ namespace SuperHaxagon {
 		float* z;
 	};
 
-	std::unique_ptr<Font> createFont(const Platform& platform, const std::string& path, const int size, float* z, std::shared_ptr<RenderTarget<VertexUV>>& surface) {
-		auto data = std::make_unique<Font::FontData>(platform, path, size, z);
-		surface = data->surface; // return the surface back to the platform for rendering
-		return std::make_unique<Font>(std::move(data));
-	}
-
-	Font::Font(std::unique_ptr<Font::FontData> data) : _data(std::move(data)) {}
+	Font::Font(std::unique_ptr<Font::FontImpl> impl) : _impl(std::move(impl)) {}
 
 	Font::~Font() = default;
 
 	void Font::setScale(float) {}
 
 	float Font::getHeight() const {
-		return static_cast<float>(_data->top);
+		return static_cast<float>(_impl->top);
 	}
 
 	float Font::getWidth(const std::string& text) const {
-		auto width = 0.0;
-		for (auto c : text) {
-			const auto i = static_cast<int>(c);
-			width += _data->chars[i].pxAdvance.x;
-		}
-
-		return width;
+		return _impl->getWidth(text);
 	}
 
 	void Font::draw(const Color& color, const Vec2f& position, Alignment alignment, const std::string& text) const {
-		if (!_data->loaded) return;
-		auto& surface = _data->surface;
-		auto& chars = _data->chars;
+		_impl->draw(color, position, alignment, text);
+	}
 
-		Vec2f cursor = {
-			position.x,
-			position.y + static_cast<float>(_data->top)
-		};
-
-		const auto width = getWidth(text);
-		if (alignment == Alignment::LEFT) cursor.x = position.x;
-		if (alignment == Alignment::CENTER) cursor.x = position.x - width / 2;
-		if (alignment == Alignment::RIGHT) cursor.x = position.x - width;
-
-		const auto z = *_data->z;
-		*_data->z += Z_STEP;
-
-		for (auto c : text) {
-
-			const auto i = static_cast<int>(c);
-			const Vec2f draw = {
-				std::round(cursor.x + chars[i].pxOffset.x),
-				std::round(cursor.y - chars[i].pxOffset.y)
-			};
-
-			const auto dim = chars[i].pxDim;
-			const auto uv = chars[i].uv;
-
-			cursor.x += chars[i].pxAdvance.x;
-			cursor.y -= chars[i].pxAdvance.y;
-
-			// Cannot render empty characters
-			if(!dim.x || !dim.y) continue;
-
-			surface->insert({ {draw.x, draw.y + dim.y}, {uv.x, uv.y}, color, z }); // BL
-			surface->insert({{draw.x, draw.y}, {uv.x, 0}, color, z}); // TL
-			surface->insert({{draw.x + dim.x, draw.y}, {uv.x + dim.x / _data->texWidth, 0}, color, z}); // TR
-			surface->insert({{draw.x + dim.x, draw.y + dim.y}, {uv.x + dim.x / _data->texWidth, uv.y}, color, z}); // BR
-
-			// Insert clockwise
-			surface->reference(0);
-			surface->reference(1);
-			surface->reference(2);
-			surface->reference(0);
-			surface->reference(2);
-			surface->reference(3);
-
-			surface->advance(4);
-		}
+	std::unique_ptr<Font> createFont(const Platform& platform, const std::string& path, const int size, float* z, std::shared_ptr<RenderTarget<VertexUV>>& surface) {
+		auto data = std::make_unique<Font::FontImpl>(platform, path, size, z);
+		surface = data->surface; // return the surface back to the platform for rendering
+		return std::make_unique<Font>(std::move(data));
 	}
 }

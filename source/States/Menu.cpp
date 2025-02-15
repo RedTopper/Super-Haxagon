@@ -158,9 +158,9 @@ namespace SuperHaxagon {
 	}
 
 	void Menu::drawTopUI(SurfaceUI& surface) {
-
-		auto& large = _game.getFontLarge();
-		auto& small = _game.getFontSmall();
+		if (!_game.getFontLarge() || !_game.getFontSmall()) return;
+		auto& large = *_game.getFontLarge();
+		auto& small = *_game.getFontSmall();
 
 		// Padding for text
 		const auto scale = surface.getScale();

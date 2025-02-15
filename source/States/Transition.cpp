@@ -62,7 +62,8 @@ namespace SuperHaxagon {
 
 	void Transition::drawBotUI(SurfaceUI& surface) {
 		const auto scale = surface.getScale();
-		auto& large = _game.getFontLarge();
+		if (!_game.getFontLarge()) return;
+		auto& large = *_game.getFontLarge();
 		large.setScale(scale);
 
 		const auto* const text = "WONDERFUL";

@@ -38,8 +38,8 @@ namespace SuperHaxagon {
 		Metadata* getBGMMetadata() const {return _bgmMetadata.get();}
 		Platform& getPlatform() const {return _platform;}
 		Twist& getTwister() const {return *_twister;}
-		Font& getFontSmall() const {return *_fontSmall;}
-		Font& getFontLarge() const {return *_fontLarge;}
+		Font* getFontSmall() const {return _fontSmall.get();}
+		Font* getFontLarge() const {return _fontLarge.get();}
 
 		void setRunning(const bool running) {_running = running;}
 

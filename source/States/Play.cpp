@@ -128,7 +128,8 @@ namespace SuperHaxagon {
 
 	void Play::drawBotUI(SurfaceUI& surface) {
 		const auto scale = surface.getScale();
-		auto& small = _game.getFontSmall();
+		if (!_game.getFontSmall()) return;
+		auto& small = *_game.getFontSmall();
 
 		// Makes it so the score text doesn't freak out
 		// if getWidth returns slightly different values

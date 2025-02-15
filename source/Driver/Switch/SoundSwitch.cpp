@@ -5,29 +5,29 @@
 #include <string>
 
 namespace SuperHaxagon {
-	struct Sound::SoundData {
-		SoundData(const std::string& path) {
+	struct Sound::SoundImpl {
+		SoundImpl(const std::string& path) {
 			sfx = Mix_LoadWAV(path.c_str());
 		}
 
-		~SoundData() {
+		~SoundImpl() {
 			Mix_FreeChunk(sfx);
 		}
 
 		Mix_Chunk* sfx;
 	};
 
-	std::unique_ptr<Sound> createSound(const std::string& path) {
-		auto data = std::make_unique<Sound::SoundData>(path);
-		if (!data->sfx) return nullptr;
-		return std::make_unique<Sound>(std::move(data));
-	}
-
-	Sound::Sound(std::unique_ptr<SoundData> data) : _data(std::move(data)) {}
+	Sound::Sound(std::unique_ptr<SoundImpl> impl) : _impl(std::move(impl)) {}
 	
 	Sound::~Sound() = default;
 
 	void Sound::play() const {
-		Mix_PlayChannel(-1, _data->sfx, 0);
+		Mix_PlayChannel(-1, _impl->sfx, 0);
+	}
+
+	std::unique_ptr<Sound> createSound(const std::string& path) {
+		auto data = std::make_unique<Sound::SoundImpl>(path);
+		if (!data->sfx) return nullptr;
+		return std::make_unique<Sound>(std::move(data));
 	}
 }

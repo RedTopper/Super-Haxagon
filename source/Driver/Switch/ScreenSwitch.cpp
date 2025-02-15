@@ -66,8 +66,8 @@ static const EGLint CONTEXT_ATTRIBUTE_LIST[] = {
  * Helper function used for debugging OpenGL
  */
 static void callback(const GLenum source, const GLenum type, const GLuint id, const GLenum severity, GLsizei, const GLchar* message, const void* userParam) {
-	// WCGW casting away const-ness?
 	const auto* platform = static_cast<const SuperHaxagon::Platform*>(userParam);
+	if (!platform) return;
 	const auto error = type == GL_DEBUG_TYPE_ERROR;
 	std::stringstream out;
 	out << std::hex << "Message from OpenGL:" << std::endl;
@@ -80,9 +80,6 @@ static void callback(const GLenum source, const GLenum type, const GLuint id, co
 }
 
 namespace SuperHaxagon {
-	typedef std::deque<std::shared_ptr<RenderTarget<Vertex>>> VertexStorage;
-	typedef std::deque<std::shared_ptr<RenderTarget<VertexUV>>> VertexUVStorage;
-
 	template<class T>
 	void render(const Platform& platform, int width, int height, const std::deque<std::shared_ptr<RenderTarget<T>>>& targets, bool transparent) {
 		for (const auto& target : targets) {
@@ -91,7 +88,7 @@ namespace SuperHaxagon {
 		}
 	}
 
-	struct Screen::ScreenData {
+	struct Screen::ScreenImpl {
 		bool initEGL() {
 			eglInitialize(display, nullptr, nullptr);
 
@@ -131,25 +128,18 @@ namespace SuperHaxagon {
 			return true;
 		}
 
-		explicit ScreenData(
-				const Platform& platform,
-				VertexStorage& targetVertex,
-				VertexUVStorage& targetVertexUV,
-				unsigned int& width,
-				unsigned int& height,
-				float& z) :
+		ScreenImpl(const Platform& platform, VertexStorage& targetVertex, VertexUVStorage& targetVertexUV, float& z) :
 				platform(platform),
 				targetVertex(targetVertex),
 				targetVertexUV(targetVertexUV),
-				width(width),
-				height(height),
 				z(z) {
+
+			platform.message(Dbg::INFO, "screen", "booting");
+
 			window = nwindowGetDefault();
 			display = eglGetDisplay(EGL_DEFAULT_DISPLAY);
 
-			platform.message(Dbg::INFO, "platform", "booting");
-
-			// Create window as 1080p, but _width and _height start at 720p.
+			// Create window as 1080p, but width and height start at 720p.
 			// Window is then cropped.
 			nwindowSetDimensions(window, 1920, 1080);
 			nwindowSetCrop(window, 0, 0, width, height);
@@ -172,7 +162,7 @@ namespace SuperHaxagon {
 			glDepthMask(GL_TRUE);
 			glDepthFunc(GL_GREATER);
 			glDepthRange(0.0f, 1.0f);
-			glDebugMessageCallback(callback, this);
+			glDebugMessageCallback(callback, &platform);
 			glViewport(0, 1080 - height, width, height);
 
 			opaque = std::make_shared<RenderTarget<Vertex>>(platform, false, vertex_shader, fragment_shader, "platform opaque");
@@ -180,12 +170,12 @@ namespace SuperHaxagon {
 			targetVertex.emplace_back(opaque);
 			targetVertex.emplace_back(transparent);
 
-			platform.message(Dbg::INFO, "platform",  "opengl ok");
-
 			loaded = true;
+
+			platform.message(Dbg::INFO, "screen",  "opengl ok");
 		}
 
-		~ScreenData() {
+		~ScreenImpl() {
 			if (display) {
 				eglMakeCurrent(display, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
 
@@ -202,6 +192,8 @@ namespace SuperHaxagon {
 		}
 
 		void screenFinalize() {
+			if (!loaded) return;
+
 			// Want to render opaque first, then transparent
 			render(platform, width, height, targetVertex, false);
 			render(platform, width, height, targetVertexUV, false);
@@ -213,6 +205,8 @@ namespace SuperHaxagon {
 		}
 
 		void drawPoly(const Color& color, const std::vector<Vec2f>& points) {
+			if (!loaded) return;
+
 			const auto tz = z;
 			z += Z_STEP;
 
@@ -231,6 +225,8 @@ namespace SuperHaxagon {
 		}
 
 		void clear(const Color& color) {
+			if (!loaded) return;
+
 			float r = static_cast<float>(color.r) / 255.0f;
 			float g = static_cast<float>(color.g) / 255.0f;
 			float b = static_cast<float>(color.b) / 255.0f;
@@ -239,60 +235,77 @@ namespace SuperHaxagon {
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		}
 
+		Vec2f getScreenDim() {
+			if (!loaded) return {1280.0f, 720.0f};
+
+			const auto curWidth = width;
+			const auto curHeight = height;
+			switch (appletGetOperationMode()) {
+				default:
+				case AppletOperationMode_Handheld:
+					width = 1280;
+					height = 720;
+					break;
+				case AppletOperationMode_Console:
+					width = 1920;
+					height = 1080;
+					break;
+			}
+
+			if (curWidth != width || curHeight != height) {
+				nwindowSetCrop(window, 0, 0, width, height);
+				glViewport(0, 1080 - height, width, height);
+			}
+
+			return Vec2f{static_cast<float>(width), static_cast<float>(height)};
+		}
+
 		std::shared_ptr<RenderTarget<Vertex>> opaque;
 		std::shared_ptr<RenderTarget<Vertex>> transparent;
 
-		NWindow* window;
-		EGLDisplay display;
-		EGLContext context{};
-		EGLSurface surface{};
+		NWindow* window = nullptr;
+		EGLDisplay display = nullptr;
+		EGLContext context = nullptr;
+		EGLSurface surface = nullptr;
+		unsigned int width = 1280;
+		unsigned int height = 720;
 		bool loaded = false;
 
 		// Shared with platform
 		const Platform& platform;
 		VertexStorage& targetVertex;
 		VertexUVStorage& targetVertexUV;
-		unsigned int& width;
-		unsigned int& height;
 		float& z;
 	};
 
-	std::unique_ptr<Screen> createScreen(
-			const Platform& platform,
-			VertexStorage& targetVertex,
-			VertexUVStorage& targetVertexUV,
-			unsigned int& width,
-			unsigned int& height,
-			float& z) {
-		auto data = std::make_unique<Screen::ScreenData>(platform, targetVertex, targetVertexUV, width, height, z);
-		if (!data->loaded) return nullptr;
-		return std::make_unique<Screen>(std::move(data));
-	}
-
-	Screen::Screen(std::unique_ptr<ScreenData> data) : _data(std::move(data)) {}
+	Screen::Screen(std::unique_ptr<ScreenImpl> impl) : _impl(std::move(impl)) {}
 
 	Screen::~Screen() = default;
 
 	Vec2f Screen::getScreenDim() const {
-		return Vec2f{static_cast<float>(_data->width), static_cast<float>(_data->height)};
+		return _impl->getScreenDim();
 	}
 
 	void Screen::screenBegin() const {
-		_data->z = 0.0f;
+		_impl->z = 0.0f;
 	}
 
 	// Nothing to do, only one screen.
 	void Screen::screenSwitch() const {}
 
 	void Screen::screenFinalize() const {
-		_data->screenFinalize();
+		_impl->screenFinalize();
 	}
 
 	void Screen::drawPoly(const Color& color, const std::vector<Vec2f>& points) const {
-		_data->drawPoly(color, points);
+		_impl->drawPoly(color, points);
 	}
 
 	void Screen::clear(const Color& color) const {
-		_data->clear(color);
+		_impl->clear(color);
+	}
+
+	std::unique_ptr<Screen> createScreen(const Platform& platform, VertexStorage& targetVertex, VertexUVStorage& targetVertexUV, float& z) {
+		return std::make_unique<Screen>(std::make_unique<Screen::ScreenImpl>(platform, targetVertex, targetVertexUV, z));
 	}
 }

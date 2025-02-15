@@ -6,6 +6,8 @@
 #include <glad/glad.h>
 
 #include <vector>
+#include <deque>
+#include <memory>
 
 namespace SuperHaxagon {
 	constexpr int BUFFER_RESIZE_STEP = 500;
@@ -62,6 +64,9 @@ namespace SuperHaxagon {
 
 	template<class T>
 	void resize(const Platform& platform, GLuint type, unsigned int& size, std::vector<T>& vector, const std::string& label);
+
+	typedef std::deque<std::shared_ptr<RenderTarget<Vertex>>> VertexStorage;
+	typedef std::deque<std::shared_ptr<RenderTarget<VertexUV>>> VertexUVStorage;
 }
 
 #endif //SUPER_HAXAGON_RENDER_TARGET_HPP

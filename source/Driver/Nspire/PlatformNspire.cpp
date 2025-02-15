@@ -17,41 +17,46 @@
 #include <iostream>
 
 namespace SuperHaxagon {
-	struct Platform::PlatformData {
-		Gc gc{};
-		float bgmDelta = 0.0f;
-	};
-
 	std::unique_ptr<Font> createFont(Gc& gc, int size);
 	std::unique_ptr<Music> createMusic(float max, float* timeSinceLastGet);
-	std::unique_ptr<Screen> createScreen(Gc& gc);
+	Screen createScreen(Gc& gc);
 
-	Platform::Platform() : _plat(std::make_unique<PlatformData>()) {
-		_plat->gc = gui_gc_global_GC();
-		_screen = createScreen(_plat->gc);
+	struct Platform::PlatformImpl {
+		PlatformImpl() : gc(gui_gc_global_GC()), screen(createScreen(gc)){
+			timer_init(0);
+			timer_load(0, TIMER_1S);
+		}
 
-		timer_init(0);
-		timer_load(0, TIMER_1S);
-	}
+		bool loop() {
+			const auto timer = timer_read(0);
+			const auto elapsed = static_cast<float>(TIMER_1S - timer) / TIMER_1S;
+
+			timer_load(0, TIMER_1S);
+
+			// The platform will keep increasing bgmDelta until the game runs Music::loop(),
+			// at which point _plat->bgmDelta will be added to the music's internal timer and reset to zero
+			bgmDelta += elapsed;
+			delta = elapsed;
+
+			return true;
+		}
+
+		Gc gc;
+		Screen screen;
+		float bgmDelta = 0.0f;
+		float delta = 0.0f;
+	};
+
+	Platform::Platform() : _impl(std::make_unique<PlatformImpl>()) {}
 
 	Platform::~Platform() = default;
 
 	bool Platform::loop() {
-		const auto timer = timer_read(0);
-		const auto elapsed = static_cast<float>(TIMER_1S - timer) / TIMER_1S;
-
-		timer_load(0, TIMER_1S);
-
-		// The platform will keep increasing bgmDelta until the game runs Music::loop(),
-		// at which point _plat->bgmDelta will be added to the music's internal timer and reset to zero
-		_plat->bgmDelta += elapsed;
-		_delta = elapsed;
-
-		return true;
+		return _impl->loop();
 	}
 
 	float Platform::getDilation() const {
-		return _delta / (1.0f / 60.0f);
+		return _impl->delta / (1.0f / 60.0f);
 	}
 
 	std::string Platform::getPath(const std::string& partial, const Location location) const {
@@ -74,7 +79,7 @@ namespace SuperHaxagon {
 	}
 
 	std::unique_ptr<Font> Platform::loadFont(const int size) const {
-		return createFont(_plat->gc, size);
+		return createFont(_impl->gc, size);
 	}
 
 	// nspire doesn't support sound effects
@@ -84,7 +89,11 @@ namespace SuperHaxagon {
 
 	std::unique_ptr<Music> Platform::loadMusic(const std::string& base, const Location location) const {
 		Metadata metadata(openFile(base + ".txt", location));
-		return createMusic(metadata.getMaxTime(), &_plat->bgmDelta);
+		return createMusic(metadata.getMaxTime(), &_impl->bgmDelta);
+	}
+
+	Screen& Platform::getScreen() {
+		return _impl->screen;
 	}
 
 	std::vector<std::pair<Location, std::string>> Platform::loadUserLevels() {
@@ -117,7 +126,7 @@ namespace SuperHaxagon {
 	}
 
 	void Platform::shutdown() {
-		gui_gc_finish(_plat->gc);
+		gui_gc_finish(_impl->gc);
 		timer_restore(0);
 	}
 

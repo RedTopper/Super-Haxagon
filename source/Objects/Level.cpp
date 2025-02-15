@@ -2,7 +2,6 @@
 
 #include "Core/Game.hpp"
 #include "Core/Twist.hpp"
-#include "Driver/Platform.hpp"
 #include "Factories/LevelFactory.hpp"
 #include "Factories/PatternFactory.hpp"
 
@@ -63,7 +62,7 @@ namespace SuperHaxagon {
 
 		// Move the walls (either closer to the player or away from the hexagon)
 		if (_multiplierWalls > 0) {
-			advanceWalls(rng, SCALE_HEX_LENGTH, 2.0f);
+			advanceWalls(rng, HEX_LENGTH, 2.0f);
 		} else {
 			reverseWalls(rng, 2.0f, 0.0f);
 		}
@@ -87,18 +86,18 @@ namespace SuperHaxagon {
 		_flipFrame -= dilation;
 		_spin -= SPIN_SPEED / FRAMES_PER_SPIN * dilation;
 		_pulse -= PULSE_DISTANCE / FRAMES_PER_PULSE * dilation;
-		if (_spin < 0) _spin = 0;
-		if (_pulse < 0) _pulse = 0;
+		if (_spin < 0.0f) _spin = 0.0f;
+		if (_pulse < 0.0f) _pulse = 0.0f;
 
 		// Flip level if needed
 		// Cannot flip while spin effect is happening
-		if(static_cast<int>(_spin) == 0 && _flipFrame <= 0) {
+		if(_spin == 0.0f && _flipFrame <= 0) {
 			_multiplierRot *= -1.0f;
 			_flipFrame = rng.rand(FLIP_FRAMES_MIN, FLIP_FRAMES_MAX);
 		}
 	}
 
-	void Level::draw(SurfaceGame& surface, SurfaceGame* shadows, const float offset) const {
+	void Level::draw(SurfaceGame& surface, SurfaceGame* shadows, const float offset, const float pitch) const {
 
 		// Calculate colors
 		const auto percentTween = _tweenFrame / static_cast<float>(_factory->getSpeedPulse());
@@ -106,26 +105,32 @@ namespace SuperHaxagon {
 		const auto bg1 = interpolateColor(_color.at(LocColor::BG1), _colorNext.at(LocColor::BG1), percentTween);
 		const auto bg2 = interpolateColor(_color.at(LocColor::BG2), _colorNext.at(LocColor::BG2), percentTween);
 
-		surface.reset();
-		surface.setRotation(_rotation);
-		surface.setZoom(1.0f + _pulse + offset);
+		//surface.reset();
+		//surface.setRotation(_rotation);
+		//surface.setZoom(1.0f + _pulse + offset);
+		surface.calculateMatrix(_rotation);
 		surface.setWallOffset(offset);
+		//surface.setPitch(pitch);
+		//surface.setRoll(0.5f);
+		//surface.setWallOffset(offset);
 
 		surface.drawBackground(_bgInverted ? bg2 : bg1, _bgInverted ? bg1 : bg2, _sidesTween);
 
 		if (shadows) {
-			shadows->copySettings(surface);
-			shadows->setTranslate({ 0.0f, -0.01f });
-			shadows->setDepth(-0.05f);
+			shadows->calculateMatrix(_rotation);
+			shadows->setWallOffset(offset);
+			shadows->setDepth(-0.025f);
 			shadows->drawPatterns(COLOR_SHADOW, _patterns, _sidesTween);
-			shadows->drawRegular(COLOR_SHADOW, SCALE_HEX_LENGTH, _sidesTween);
-			if (_showCursor) shadows->drawCursor(COLOR_SHADOW, SCALE_HEX_LENGTH + SCALE_HUMAN_PADDING, _cursorPos);
+			shadows->drawRegular(COLOR_SHADOW, HEX_LENGTH, _sidesTween);
+			if (_showCursor) shadows->drawCursor(COLOR_SHADOW, HEX_LENGTH + PLAYER_PADDING_BETWEEN_HEX, _cursorPos);
 		}
 
 		surface.drawPatterns(fg, _patterns, _sidesTween);
-		surface.drawRegular(fg, SCALE_HEX_LENGTH, _sidesTween);
-		surface.drawRegular(bg2, (SCALE_HEX_LENGTH - SCALE_HEX_BORDER), _sidesTween);
-		if (_showCursor) surface.drawCursor(fg, SCALE_HEX_LENGTH + SCALE_HUMAN_PADDING, _cursorPos);
+		surface.drawRegular(fg, HEX_LENGTH, _sidesTween);
+		surface.drawRegular(bg2, (HEX_LENGTH - HEX_BORDER), _sidesTween);
+		if (_showCursor) surface.drawCursor(fg, HEX_LENGTH + PLAYER_PADDING_BETWEEN_HEX, _cursorPos);
+
+		surface.drawDebugTriangles();
 	}
 
 	Movement Level::collision(const float cursorDistance, const float dilation) const {

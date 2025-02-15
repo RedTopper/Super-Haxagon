@@ -114,11 +114,10 @@ namespace SuperHaxagon {
 			rotation *= -1.0f;
 		}
 
-		surface.reset();
-		surface.setRotation(-rotation);
-		surface.setTranslate({0, -1.0f / 3.0f});
-		surface.setPitch(15 * TAU / 16);
-		surface.setZoom(SCALE_MENU);
+		surface.calculateMatrix(-rotation);
+		//surface.setTranslate({0, -1.0f / 3.0f});
+		//surface.setPitch(15 * TAU / 16);
+		//surface.setZoom(SCALE_MENU);
 
 		// Colors
 		Color fg{};
@@ -143,17 +142,18 @@ namespace SuperHaxagon {
 		surface.drawBackground(bg1, bg2, 6.0);
 
 		if (shadows) {
-			shadows->copySettings(surface);
-			shadows->setTranslate({ 0, -1.0f / 3.0f - 0.01f * SCALE_MENU});
-			shadows->setDepth(-0.1f);
-			shadows->drawRegular(COLOR_SHADOW, SCALE_HEX_LENGTH, 6.0);
-			shadows->drawCursor(COLOR_SHADOW, SCALE_HEX_LENGTH + SCALE_HUMAN_PADDING, 3.0f * TAU / 4.0f - rotation);
+			shadows->calculateMatrix(-rotation);
+			shadows->setDepth(-0.05f);
+			shadows->drawRegular(COLOR_SHADOW, HEX_LENGTH, 6.0);
+			shadows->drawCursor(COLOR_SHADOW, HEX_LENGTH + PLAYER_PADDING_BETWEEN_HEX, 3.0f * TAU / 4.0f - rotation);
 		}
 
 		// Geometry
-		surface.drawRegular(fg, SCALE_HEX_LENGTH,6.0);
-		surface.drawRegular(bg3, SCALE_HEX_LENGTH - SCALE_HEX_BORDER, 6.0);
-		surface.drawCursor(fg, SCALE_HEX_LENGTH + SCALE_HUMAN_PADDING, 3.0f * TAU / 4.0f - rotation);
+		surface.drawRegular(fg, HEX_LENGTH, 6.0);
+		surface.drawRegular(bg3, HEX_LENGTH - HEX_BORDER, 6.0);
+		surface.drawCursor(fg, HEX_LENGTH + PLAYER_PADDING_BETWEEN_HEX, 3.0f * TAU / 4.0f - rotation);
+
+		surface.drawDebugTriangles();
 	}
 
 	void Menu::drawTopUI(SurfaceUI& surface) {

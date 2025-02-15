@@ -24,7 +24,7 @@ namespace SuperHaxagon {
 		_score(score),
 		_text(std::move(text)) {
 
-		// First make sure that all of the levels exist
+		// First make sure that all the levels exist
 		for (auto i = LEVEL_HARD; i <= LEVEL_VOID; i++) {
 			if (_game.getLevels()[i] == nullptr) return;
 		}
@@ -32,7 +32,7 @@ namespace SuperHaxagon {
 		const auto sides = 6;
 		std::vector<Wall> walls;
 		walls.reserve(sides);
-		for (auto i = 0; i < sides; i++) walls.emplace_back(0.0f, 16.0f, i);
+		for (auto i = 0; i < sides; i++) walls.emplace_back(0.0f, 16.0f * SCALE_TO_SCREEN_SPACE, i);
 		_surround = std::make_unique<Pattern>(walls, sides);
 
 		// Create our game over level
@@ -105,8 +105,8 @@ namespace SuperHaxagon {
 
 			const auto& factory = _game.getLevels()[i].get();
 			_level->setWinFactory(factory);
-			_level->setWinMultiplierRot(1.0);
-			_level->setWinMultiplierWalls(factory->getSpeedWall() / 2.0f * -1.0f);
+			_level->setWinMultiplierRot(0.75f);
+			_level->setWinMultiplierWalls(-0.75f);
 			_level->setWinAutoPatternCreate(i != LEVEL_VOID);
 			_level->setWinFrame(0);
 			_level->resetColors();
@@ -144,7 +144,7 @@ namespace SuperHaxagon {
 	}
 
 	void Win::drawGame(SurfaceGame& surface, SurfaceGame* shadows) {
-		_level->draw(surface, shadows, 0);
+		_level->draw(surface, shadows, 0, 0.0f);
 	}
 
 	void Win::drawBotUI(SurfaceUI& surface) {

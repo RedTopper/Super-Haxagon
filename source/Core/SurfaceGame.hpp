@@ -1,7 +1,8 @@
 #ifndef SUPER_HAXAGON_SURFACE_GAME_HPP
 #define SUPER_HAXAGON_SURFACE_GAME_HPP
 
-#include "Structs.hpp"
+#include "Core/Structs.hpp"
+#include "Core/Matrix.hpp"
 
 #include <deque>
 #include <vector>
@@ -12,25 +13,21 @@ namespace SuperHaxagon {
 	class Wall;
 	class SurfaceGame {
 	public:
-		SurfaceGame(Screen& screen);
-		virtual ~SurfaceGame() = default;
+		explicit SurfaceGame(Screen& screen);
+		~SurfaceGame() = default;
 
 		/**
-		 * Applies a software based vertex shader to the passed coordinates.
-		 * Useful for platforms that don't have programmable shaders.
-		 * Subclasses may choose to override this and simply pass the points to drawPolyGame.
+		 * Projects the game from game coordinates to camera coordinates.
+		 *
+		 * This can (should?) be done as a vertex shader, but some platforms
+		 * do not support said shaders, so do it in software.
 		 */
-		virtual void vertexShader(const Color& color, std::vector<Vec2f>& points);
+		void project(const Color& color, std::vector<Vec2f>& points);
 
 		/**
 		 * Draws points to the screen on a range of [-1, 1] for x and y.
 		 */
-		virtual void drawPolyGame(const Color& color, std::vector<Vec2f>& points);
-
-		/**
-		 * Draws a rectangle on the screen. Position is bottom left.
-		 */
-		void drawRect(Color color, Vec2f position, Vec2f size);
+		void drawPolyGame(const Color& color, std::vector<Vec2f>& points);
 
 		/**
 		 * Draws the background of the screen (the radiating colors part)
@@ -61,37 +58,28 @@ namespace SuperHaxagon {
 		void drawWalls(const Color& color, const Wall& wall, float sides);
 
 		/**
+		 * Draws 4 triangles in the corner of the expected render area. Useful for debugging.
+		 */
+		void drawDebugTriangles();
+
+		/**
 		 * Converts points to the absolute positions within the screen area.
 		 * @param points
 		 */
 		void toScreenSpace(std::vector<Vec2f>& points);
 
-		void copySettings(const SurfaceGame& surface);
-		void setRotation(float rotation);
-		void setZoom(float zoom);
-		void setRoll(float roll);
-		void setPitch(float pitch);
+		void calculateMatrix(float rotation);
+
 		void setWallOffset(float offset);
+
 		void setDepth(float depth);
-		void setTranslate(const Vec2f& translate);
-		void reset();
 
 	protected:
 		Screen& _screen;
 
 	private:
-		Matrix4x4f getMatrix();
-
-		bool _recalculate = true;
-		float _rotation = 0.0f;
-		float _zoom = 1.0f;
-		float _roll = 0.0f;
-		float _pitch = 0.0f;
 		float _offset = 0.0f;
 		float _depth = 0.0;
-		Vec2f _translate{};
-		Matrix4x4f _project{};
-		Matrix4x4f _camera{};
 		Matrix4x4f _matrix{};
 	};
 }

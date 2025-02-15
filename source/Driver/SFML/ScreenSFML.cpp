@@ -4,7 +4,7 @@
 
 namespace SuperHaxagon {
 	struct Screen::ScreenData {
-		ScreenData(sf::RenderWindow& window) : window(window) {}
+		explicit ScreenData(sf::RenderWindow& window) : window(window) {}
 
 		sf::RenderWindow& window;
 	};
@@ -24,9 +24,7 @@ namespace SuperHaxagon {
 		return point;
 	}
 
-	void Screen::screenBegin() const {
-		_data->window.clear(sf::Color(_color.r, _color.g, _color.b));
-	}
+	void Screen::screenBegin() const {}
 
 	// Do nothing since we don't have two screens
 	void Screen::screenSwitch() const {}
@@ -46,5 +44,9 @@ namespace SuperHaxagon {
 		}
 
 		_data->window.draw(convex);
+	}
+
+	void Screen::clear(Color color) const {
+		_data->window.clear(sf::Color(color.r, color.g, color.b));
 	}
 }

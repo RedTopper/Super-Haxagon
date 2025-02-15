@@ -21,11 +21,10 @@ namespace SuperHaxagon {
 		void screenBegin() const;
 		void screenFinalize() const;
 		void screenSwitch() const;
-		void setClearColor(Color color) {_color = color;}
+		void clear(Color color) const;
 
 	private:
 		std::unique_ptr<ScreenData> _data;
-		Color _color;
 	};
 }
 

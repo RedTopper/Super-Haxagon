@@ -13,7 +13,7 @@ namespace SuperHaxagon {
 	public:
 		static constexpr int PULSE_TIME = 75;
 		static constexpr float PULSE_TIMES = 2.0f;
-		static constexpr float SKEW_MAX = 0.3f;
+		static constexpr float SKEW_MAX = 1.0f;
 		static constexpr float SKEW_MIN_FRAMES = 120.0f;
 
 		Play(Game& game, LevelFactory& factory, LevelFactory& selected, float startScore);
@@ -38,7 +38,7 @@ namespace SuperHaxagon {
 		float _scoreWidth = 0;
 		float _score = 0;
 		float _skewFrame = 0.0;
-		float _skewDirection = 1.0;
+		float _skew = 0.0;
 	};
 }
 

@@ -11,11 +11,6 @@
 
 namespace SuperHaxagon {
 	Platform::Platform() {
-		auto video = sf::VideoMode(
-			static_cast<int>(sf::VideoMode::getDesktopMode().width * 0.75),
-			static_cast<int>(sf::VideoMode::getDesktopMode().height * 0.75)
-		);
-
 		std::string sdmc, romfs;
 		if (std::getenv("container")) {
 			const auto* data = std::getenv("XDG_DATA_HOME");
@@ -26,7 +21,7 @@ namespace SuperHaxagon {
 			romfs = "./romfs";
 		}
 
-		_plat = createPlatform(video, sdmc, romfs, false);
+		_plat = createPlatform(sdmc, romfs, false);
 		_screen = createScreen(*_plat->window);
 
 		mkdir(sdmc.c_str(), 0755);

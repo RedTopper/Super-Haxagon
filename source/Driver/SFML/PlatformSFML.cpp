@@ -20,8 +20,15 @@ namespace SuperHaxagon {
 	std::unique_ptr<Sound> createSound(const std::string& path);
 	std::unique_ptr<Font> createFont(sf::RenderWindow& renderWindow, const std::string& path, int size);
 
-	std::unique_ptr<Platform::PlatformData> createPlatform(sf::VideoMode video, const std::string& sdmc, const std::string& romfs, const bool backslash) {
+	std::unique_ptr<Platform::PlatformData> createPlatform(const std::string& sdmc, const std::string& romfs, const bool backslash) {
 		auto plat = std::make_unique<Platform::PlatformData>();
+
+		// Give the user the default intended aspect ratio
+		unsigned int width = (sf::VideoMode::getDesktopMode().width - 1) / 400;
+		unsigned int height = (sf::VideoMode::getDesktopMode().height - 1) / 240;
+		unsigned int min = std::max<unsigned int>(std::min(width, height), 1);
+
+		auto video = sf::VideoMode(min * 400, min * 240	);
 
 		plat->sdmc = sdmc;
 		plat->romfs = romfs;

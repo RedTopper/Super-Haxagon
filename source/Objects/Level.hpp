@@ -25,7 +25,7 @@ namespace SuperHaxagon {
 		static constexpr float FRAMES_PER_PULSE = 15;
 		static constexpr float SPIN_SPEED = TAU / 130.0f;
 		static constexpr float ROTATE_ZERO_SPEED = TAU / 200.0f;
-		static constexpr float PULSE_DISTANCE = 0.15f;
+		static constexpr float PULSE_DISTANCE = 0.1f;
 		static constexpr int MIN_SAME_SIDES = 3;
 		static constexpr int MAX_SAME_SIDES = 5;
 
@@ -34,7 +34,7 @@ namespace SuperHaxagon {
 		~Level();
 
 		void update(Twist& rng, float dilation);
-		void draw(SurfaceGame& game, SurfaceGame* shadows, float offset) const;
+		void draw(SurfaceGame& game, SurfaceGame* shadows, float offset, float pitch) const;
 		Movement collision(float cursorDistance, float dilation) const;
 
 		void increaseMultiplier();

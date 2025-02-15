@@ -43,23 +43,25 @@ namespace SuperHaxagon {
 	static constexpr int COLOR_LOCATION_FIRST = static_cast<int>(LocColor::FG);
 	static constexpr int COLOR_LOCATION_LAST = static_cast<int>(LocColor::LAST);
 
-	static constexpr float SCALE_MENU = 2.5f;
-	static constexpr float SCALE_BASE_DISTANCE = 2.0f;
-	static constexpr float SCALE_HEX_LENGTH = 0.13f;
-	static constexpr float SCALE_HEX_BORDER = 0.02f;
-	static constexpr float SCALE_HUMAN_PADDING = 0.03f;
-	static constexpr float SCALE_HUMAN_HEIGHT = 0.03f;
-	static constexpr float SCALE_HUMAN_WIDTH = 0.03f;
-
 	// This converts the old "pixel based" levels to the new "screen space" coordinates
-	static constexpr float SCALE_TO_SCREEN_SPACE = 0.005f;
+	static constexpr float SCALE_TO_SCREEN_SPACE = (2.0f/400.0f);
+
+	static constexpr float ASPECT_MIN = (5.0f / 4.0f);
+	static constexpr float ASPECT_DEFAULT = (400.0f / 240.0f);
+	static constexpr float ASPECT_MAX = (21.0f / 9.0f);
+
+	static constexpr float BASE_DISTANCE = 2.0f;
+	static constexpr float HEX_LENGTH = 24.0f * SCALE_TO_SCREEN_SPACE;
+	static constexpr float HEX_BORDER = 4.0f * SCALE_TO_SCREEN_SPACE;
+	static constexpr float PLAYER_PADDING_BETWEEN_HEX = 5.0f * SCALE_TO_SCREEN_SPACE;
+	static constexpr float PLAYER_TRI_HEIGHT = 5.0f * SCALE_TO_SCREEN_SPACE;
+	static constexpr float PLAYER_TRI_WIDTH = 5.0f * SCALE_TO_SCREEN_SPACE;
 
 	static const Color COLOR_SHADOW = {0, 0, 0, 0xC0};
 	static const Color COLOR_TRANSPARENT = {0, 0, 0, 0xA0};
 	static const Color COLOR_GREY = {0xA0, 0xA0, 0xA0, 0xFF};
 	static const Color COLOR_WHITE =  {0xFF, 0xFF, 0xFF, 0xFF};
 	static const Color COLOR_BLACK =  {0, 0, 0, 0xFF};
-	static const Color COLOR_RED =  {0xFF, 0x60, 0x60, 0xFF};
 
 	static const Color PULSE_LOW = {0xFF, 0xFF, 0xFF, 0x7F};
 	static const Color PULSE_HIGH = {0xFF, 0xFF, 0xFF, 0xFF};

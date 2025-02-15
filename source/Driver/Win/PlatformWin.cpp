@@ -13,12 +13,7 @@
 
 namespace SuperHaxagon {
 	Platform::Platform() {
-		auto video = sf::VideoMode(
-				static_cast<int>(sf::VideoMode::getDesktopMode().width * 0.75),
-				static_cast<int>(sf::VideoMode::getDesktopMode().height * 0.75)
-		);
-
-		_plat = createPlatform(video, "./sdmc", "./romfs", false);
+		_plat = createPlatform("./sdmc", "./romfs", false);
 
 		SetForegroundWindow(_plat->window->getSystemHandle());
 

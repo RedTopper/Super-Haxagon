@@ -18,7 +18,7 @@ namespace SuperHaxagon {
 		_platform(game.getPlatform()),
 		_factory(factory),
 		_selected(selected),
-		_level(factory.instantiate(game.getTwister(), SCALE_BASE_DISTANCE)),
+		_level(factory.instantiate(game.getTwister(), BASE_DISTANCE)),
 		_score(startScore)
 	{}
 
@@ -36,6 +36,11 @@ namespace SuperHaxagon {
 	}
 
 	std::unique_ptr<State> Play::update(const float dilation) {
+
+		auto skewFrameMax = static_cast<float>(_level->getLevelFactory().getSpeedPulse()) * 2.5f;
+		skewFrameMax = skewFrameMax < SKEW_MIN_FRAMES ? SKEW_MIN_FRAMES : skewFrameMax;
+		_skewFrame += dilation * (_level->getLevelFactory().getSpeedRotation() > 0 ? 1.0f : 0);
+		_skew = - static_cast<float>((-cos(_skewFrame / skewFrameMax * PI) + 1.1f) / 2.0f * SKEW_MAX);
 
 		// It's technically possible that the BGM metadata was not set
 		if (_game.getBGMMetadata()) {
@@ -60,7 +65,7 @@ namespace SuperHaxagon {
 		const auto pressed = _platform.getPressed();
 
 		// Check collision
-		const auto cursorDistance = SCALE_HEX_LENGTH + SCALE_HUMAN_PADDING + SCALE_HUMAN_HEIGHT;
+		const auto cursorDistance = HEX_LENGTH + PLAYER_PADDING_BETWEEN_HEX + PLAYER_TRI_HEIGHT;
 		const auto hit = _level->collision(cursorDistance, dilation);
 
 		// Keys
@@ -118,7 +123,7 @@ namespace SuperHaxagon {
 	}
 
 	void Play::drawGame(SurfaceGame& surface, SurfaceGame* shadows) {
-		_level->draw(surface, shadows, 0);
+		_level->draw(surface, shadows, 0, _skew);
 	}
 
 	void Play::drawBotUI(SurfaceUI& surface) {

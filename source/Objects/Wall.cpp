@@ -56,9 +56,9 @@ namespace SuperHaxagon {
 	std::vector<Vec2f> Wall::calcPoints(const float sides, const float offset) const {
 		auto tHeight = _height;
 		auto tDistance = _distance + offset;
-		if(tDistance < SCALE_HEX_LENGTH) {//so the distance is never negative as it enters.
-			tHeight -= SCALE_HEX_LENGTH - tDistance;
-			tDistance = SCALE_HEX_LENGTH; //Should never be 0!!!
+		if(tDistance < HEX_LENGTH) {//so the distance is never negative as it enters.
+			tHeight -= HEX_LENGTH - tDistance;
+			tDistance = HEX_LENGTH; //Should never be 0!!!
 		}
 
 		std::vector<Vec2f> quad{

@@ -86,7 +86,7 @@ namespace SuperHaxagon {
 	}
 
 	void Over::drawGame(SurfaceGame& surface, SurfaceGame* shadows) {
-		_level->draw(surface, shadows, (_offset - 1.0f) / 100.0f);
+		_level->draw(surface, shadows, (_offset - 1.0f) / 100.0f, 0.0f);
 	}
 
 	void Over::drawBotUI(SurfaceUI& surface) {

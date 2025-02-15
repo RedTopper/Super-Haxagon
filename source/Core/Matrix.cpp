@@ -1,4 +1,4 @@
-#include "Core/Vector.hpp"
+#include "Core/Matrix.hpp"
 
 #include <cmath>
 
@@ -33,10 +33,10 @@ namespace SuperHaxagon {
 	template <typename T>
 	Vec3<T> Matrix4x4<T>::operator*(const Vec3<T>& v) const {
 		Vec3<T> out{};
-		out.x = v.x * x[0][0] + v.y * x[1][0] + v.z * x[2][0] + /* v.z = 1 */ x[3][0];
-		out.y = v.x * x[0][1] + v.y * x[1][1] + v.z * x[2][1] + /* v.z = 1 */ x[3][1];
-		out.z = v.x * x[0][2] + v.y * x[1][2] + v.z * x[2][2] + /* v.z = 1 */ x[3][2];
-		T w   = v.x * x[0][3] + v.y * x[1][3] + v.z * x[2][3] + /* v.z = 1 */ x[3][3];
+		out.x = v.x * x[0][0] + v.y * x[1][0] + v.z * x[2][0] + /* v.w = 1 */ x[3][0];
+		out.y = v.x * x[0][1] + v.y * x[1][1] + v.z * x[2][1] + /* v.w = 1 */ x[3][1];
+		out.z = v.x * x[0][2] + v.y * x[1][2] + v.z * x[2][2] + /* v.w = 1 */ x[3][2];
+		T w   = v.x * x[0][3] + v.y * x[1][3] + v.z * x[2][3] + /* v.w = 1 */ x[3][3];
 		if (w != 1) {
 			out.x /= w;
 			out.y /= w;
@@ -140,19 +140,34 @@ namespace SuperHaxagon {
 	}
 
 	template <typename T>
-	Matrix4x4<T> Matrix4x4<T>::generateProjection(const float angleOfView, const float near, const float far) {
-		Matrix4x4 out{};
-		const float scale = 1 / tan(angleOfView * 0.5f * PI / 180.0f);
-		out[0][0] = scale;
-		out[1][1] = scale;
-		out[2][2] = -far / (far - near);
-		out[3][2] = -far * near / (far - near);
-		out[2][3] = -1;
-		out[3][3] = 0;
-		return out;
+	Matrix4x4<T> Matrix4x4<T>::generateProjection(const T fov, const T aspect, const T near, const T far) {
+		T const tanHalfFovY = std::tan(fov / static_cast<T>(2));
+		Matrix4x4<T> matrix;
+		matrix[0][0] = static_cast<T>(1) / (aspect * tanHalfFovY);
+		matrix[1][1] = static_cast<T>(1) / (tanHalfFovY);
+		matrix[2][2] = - (far + near) / (far - near);
+		matrix[2][3] = - static_cast<T>(1);
+		matrix[3][2] = - (static_cast<T>(2) * far * near) / (far - near);
+		matrix[3][3] = 0;
+		return matrix;
 	}
 
-	template struct Vec2<float>;
-	template struct Vec3<float>;
+	template <typename T>
+	Matrix4x4<T> Matrix4x4<T>::lookAt(const Vec3<T>& pos, const Vec3<T>& at, const Vec3<T>& up) {
+		auto f = (at - pos).normalize();
+		auto s = (f.cross(up)).normalize();
+		auto u = s.cross(f);
+
+		Matrix4x4<T> matrix;
+		matrix[0][0] = s.x; matrix[0][1] = u.x; matrix[0][2] = -f.x;
+		matrix[1][0] = s.y; matrix[1][1] = u.y; matrix[1][2] = -f.y;
+		matrix[2][0] = s.z; matrix[2][1] = u.z; matrix[2][2] = -f.z;
+		matrix[3][0] = -s.dot(pos);
+		matrix[3][1] = -u.dot(pos);
+		matrix[3][2] = f.dot(pos);
+		matrix[3][3] = static_cast<T>(1);
+		return matrix;
+	}
+
 	template class Matrix4x4<float>;
 }

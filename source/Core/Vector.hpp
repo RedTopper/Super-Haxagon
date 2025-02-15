@@ -1,5 +1,5 @@
-#ifndef SUPER_HAXAGON_MATRIX_HPP
-#define SUPER_HAXAGON_MATRIX_HPP
+#ifndef SUPER_HAXAGON_VECTOR_HPP
+#define SUPER_HAXAGON_VECTOR_HPP
 
 #include <cstdint>
 #include <cmath>
@@ -15,7 +15,7 @@ namespace SuperHaxagon {
 		T y;
 
 		Vec2() : x(0), y(0) {}
-		Vec2(const T xx) : x(xx), y(xx) {}
+		explicit Vec2(const T xx) : x(xx), y(xx) {}
 		Vec2(const T xx, const T yy) : x(xx), y(yy) {}
 		
 		Vec2 operator+(const Vec2& v) const {
@@ -46,8 +46,8 @@ namespace SuperHaxagon {
 		T z;
 
 		Vec3() : x(0), y(0), z(0) {}
-		Vec3(Vec2<T> v) : x(v.x), y(v.y), z(0) {}
-		Vec3(T xx) : x(xx), y(xx), z(xx) {}
+		explicit Vec3(Vec2<T> v) : x(v.x), y(v.y), z(0) {}
+		explicit Vec3(T xx) : x(xx), y(xx), z(xx) {}
 		Vec3(T xx, T yy, T zz) : x(xx), y(yy), z(zz) {}
 		
 		Vec3 operator+(const Vec3& v) const {
@@ -78,6 +78,14 @@ namespace SuperHaxagon {
 			x /= r, y /= r, z /= r; return *this;
 		}
 
+		Vec3 cross(const Vec3& r) const {
+			return Vec3 {
+				y*r.z - z*r.y,
+				z*r.x - x*r.z,
+				x*r.y - y*r.x
+			};
+		}
+
 		Vec3& normalize() {
 			if (T n = norm(); n > 0) {
 				T factor = 1 / sqrt(n);
@@ -85,6 +93,11 @@ namespace SuperHaxagon {
 			}
 
 			return *this;
+		}
+
+		T dot(const Vec3& r) const {
+			auto mult = *this * r;
+			return mult.x + mult.y + mult.z;
 		}
 
 		T norm() const {
@@ -96,30 +109,8 @@ namespace SuperHaxagon {
 		}
 	};
 
-	template<typename T>
-	class Matrix4x4 {
-	public:
-		T x[4][4] = { {1,0,0,0},{0,1,0,0},{0,0,1,0},{0,0,0,1} };
-
-		Matrix4x4() = default;
-		Matrix4x4(T a, T b, T c, T d, T e, T f, T g, T h, T i, T j, T k, T l, T m, T n, T o, T p);
-
-		const T* operator[](uint8_t i) const { return x[i]; }
-		T* operator[](uint8_t i) { return x[i]; }
-
-		Matrix4x4 operator*(const Matrix4x4& v) const;
-		Vec3<T> operator*(const Vec3<T>& v) const;
-	
-		Matrix4x4 transposed() const;
-		Matrix4x4& transpose();
-
-		static void multiply(const Matrix4x4<T>& a, const Matrix4x4& b, Matrix4x4& c);
-		static Matrix4x4 generateProjection(float angleOfView, float near, float far);
-	};
-
 	typedef Vec2<float> Vec2f;
 	typedef Vec3<float> Vec3f;
-	typedef Matrix4x4<float> Matrix4x4f;
 }
 
-#endif //SUPER_HAXAGON_MATRIX_HPP
+#endif //SUPER_HAXAGON_VECTOR_HPP

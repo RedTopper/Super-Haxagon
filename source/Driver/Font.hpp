@@ -19,9 +19,9 @@ namespace SuperHaxagon {
 
 	class Font {
 	public:
-		struct FontData;
+		struct FontImpl;
 
-		explicit Font(std::unique_ptr<FontData> data);
+		explicit Font(std::unique_ptr<FontImpl> impl);
 		Font(Font&) = delete;
 		~Font();
 
@@ -31,7 +31,7 @@ namespace SuperHaxagon {
 		void draw(const Color& color, const Vec2f& position, Alignment alignment, const std::string& text) const;
 
 	private:
-		std::unique_ptr<FontData> _data;
+		std::unique_ptr<FontImpl> _impl;
 	};
 }
 

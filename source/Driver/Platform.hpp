@@ -50,10 +50,9 @@ namespace SuperHaxagon {
 		return static_cast<Supports>(static_cast<T>(lhs) & static_cast<T>(rhs));
 	}
 
-
 	class Platform {
 	public:
-		struct PlatformData;
+		struct PlatformImpl;
 
 		Platform();
 		Platform(Platform&) = delete;
@@ -68,7 +67,7 @@ namespace SuperHaxagon {
 		std::unique_ptr<Font> loadFont(int size) const;
 		std::unique_ptr<Sound> loadSound(const std::string& base) const;
 		std::unique_ptr<Music> loadMusic(const std::string& base, Location location) const;
-		Screen& getScreen() {return *_screen;}
+		Screen& getScreen();
 
 		std::vector<std::pair<Location, std::string>> loadUserLevels();
 
@@ -82,10 +81,7 @@ namespace SuperHaxagon {
 		static Supports supports();
 
 	private:
-		std::unique_ptr<PlatformData> _plat{};
-		std::unique_ptr<Screen> _screen{};
-
-		float _delta = 0.0f;
+		std::unique_ptr<PlatformImpl> _impl{};
 	};
 }
 

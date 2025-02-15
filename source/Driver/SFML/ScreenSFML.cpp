@@ -1,26 +1,25 @@
 #include "Driver/Screen.hpp"
 
+#include "Core/Structs.hpp"
+
 #include <SFML/Graphics.hpp>
 
 namespace SuperHaxagon {
-	struct Screen::ScreenData {
-		explicit ScreenData(sf::RenderWindow& window) : window(window) {}
+	struct Screen::ScreenImpl {
+		explicit ScreenImpl(sf::RenderWindow& window) : window(window) {}
 
 		sf::RenderWindow& window;
 	};
 
-	std::unique_ptr<Screen> createScreen(sf::RenderWindow& window) {
-		return std::make_unique<Screen>(std::make_unique<Screen::ScreenData>(window));
-	}
-
-	Screen::Screen(std::unique_ptr<ScreenData> data) : _data(std::move(data)) {}
+	Screen::Screen(std::unique_ptr<ScreenImpl> data) : _impl(std::move(data)) {}
 
 	Screen::~Screen() = default;
 
 	Vec2f Screen::getScreenDim() const {
 		Vec2f point{};
-		point.x = static_cast<float>(_data->window.getSize().x);
-		point.y = static_cast<float>(_data->window.getSize().y);
+		auto size = _impl->window.getSize();
+		point.x = static_cast<float>(size.x);
+		point.y = static_cast<float>(size.y);
 		return point;
 	}
 
@@ -30,7 +29,7 @@ namespace SuperHaxagon {
 	void Screen::screenSwitch() const {}
 
 	void Screen::screenFinalize() const {
-		_data->window.display();
+		_impl->window.display();
 	}
 
 	void Screen::drawPoly(const Color& color, const std::vector<Vec2f>& points) const {
@@ -43,10 +42,14 @@ namespace SuperHaxagon {
 			convex.setPoint(index++, sf::Vector2f(point.x, point.y));
 		}
 
-		_data->window.draw(convex);
+		_impl->window.draw(convex);
 	}
 
 	void Screen::clear(const Color& color) const {
-		_data->window.clear(sf::Color(color.r, color.g, color.b));
+		_impl->window.clear(sf::Color(color.r, color.g, color.b));
+	}
+
+	std::unique_ptr<Screen> createScreen(sf::RenderWindow& window) {
+		return std::make_unique<Screen>(std::make_unique<Screen::ScreenImpl>(window));
 	}
 }

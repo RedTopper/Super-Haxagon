@@ -28,80 +28,150 @@ namespace SuperHaxagon {
 	extern void audioCallback(void*);
 	extern LightEvent _event;
 
-	struct Platform::PlatformData {
+	struct Platform::PlatformImpl {
+		PlatformImpl(bool debug) {
+			debugConsole = debug;
+
+			gfxInitDefault();
+			romfsInit();
+
+			if (debugConsole) {
+				// Create console on bottom if we want live debug output
+				consoleInit(GFX_BOTTOM, nullptr);
+			}
+
+			// Metadata to gather from CFGU
+			std::string username;
+			u8 consoleModel = 0;
+			auto emulated = false;
+
+			const auto res = cfguInit();
+			if (R_SUCCEEDED(res)) {
+				const auto usernameBlockID = 0x000A0000;
+				const auto usernameBlockSize = 0x1C; // in bytes
+				const auto buffer = std::make_unique<char16_t[]>(usernameBlockSize / sizeof(char16_t));
+				CFGU_GetSystemModel(&consoleModel);
+				CFGU_GetConfigInfoBlk2(usernameBlockSize, usernameBlockID, buffer.get());
+				cfguExit();
+
+				// Lime3DS (previously Citra) cannot use wide mode, so to make emulation of the game more accessible we'll check for it
+				// This is a shitty hack, either the Lime3DS developers should fix wide mode or this should be done right.
+				std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> convert;
+				username = convert.to_bytes(buffer.get());
+				emulated =
+						username == "LIME3DS" ||
+						username == "ENCORE" ||
+						username == "CITRA";
+			}
+
+			bool wide = consoleModel != CFG_MODEL_2DS && !emulated;
+
+			// Setup NDSP
+			ndspInit();
+			ndspSetOutputMode(NDSP_OUTPUT_STEREO);
+			ndspSetCallback(audioCallback, nullptr);
+			LightEvent_Init(&_event, RESET_ONESHOT);
+
+			mkdir("sdmc:/3ds", 0777);
+			mkdir("sdmc:/3ds/data", 0777);
+			mkdir("sdmc:/3ds/data/haxagon", 0777);
+
+			screen = createScreen(wide, DEBUG_CONSOLE);
+
+			// Output the username for debugging
+			message(Dbg::INFO, "username", username);
+		}
+
+		~PlatformImpl() {
+			screen = nullptr;
+			ndspExit();
+			romfsExit();
+			gfxExit();
+		}
+
+		bool loop() {
+			delta = (svcGetSystemTick() - last) / CPU_TICKS_PER_MSEC / 1000.0f;
+			last = svcGetSystemTick();
+			return aptMainLoop();
+		}
+
+		void shutdown() {
+			auto display = false;
+			for (const auto& message : messages) {
+				if (message.first == Dbg::FATAL) {
+					display = true;
+				}
+			}
+
+			if (display) {
+				if (debugConsole) {
+					// We already have a debug console, so clear the screen
+					// and show a message to press START to quit.
+					screen->screenBegin();
+					screen->clear(COLOR_BLACK);
+					screen->screenSwitch();
+					screen->screenFinalize();
+
+					std::cout << std::endl << "[3ds] Fatal error! START to quit." << std::endl;
+				} else {
+					// Create a new console since we don't have one.
+					gfxSetWide(false);
+					consoleInit(GFX_TOP, nullptr);
+					std::cout << "Fatal error! START to quit." << std::endl;
+					std::cout << "Last messages:" << std::endl << std::endl;
+					for (const auto& message : messages) {
+						std::cout << message.second << std::endl;
+					}
+				}
+
+				// Hold in a loop.
+				while (aptMainLoop()) {
+					gspWaitForVBlank();
+					gfxSwapBuffers();
+					hidScanInput();
+					const auto kDown = hidKeysDown();
+					if (kDown & KEY_START) break;
+				}
+			}
+		}
+
+		void message(const Dbg dbg, const std::string& where, const std::string& message) {
+			std::string format;
+			if (dbg == Dbg::INFO) {
+				format = "[3ds:info] ";
+			} else if (dbg == Dbg::WARN) {
+				format = "[3ds:warn] ";
+			} else if (dbg == Dbg::FATAL) {
+				format = "[3ds:fatal] ";
+			}
+
+			format += where + ": " + message;
+
+			if (debugConsole) {
+				std::cout << format << std::endl;
+			}
+
+			messages.emplace_back(dbg, format);
+			if (messages.size() > 32) messages.pop_front();
+		}
+
+		std::unique_ptr<Screen> screen{};
 		std::deque<std::pair<Dbg, std::string>> messages{};
 		uint64_t last = 0;
+		float delta = 0.0f;
 		bool debugConsole = false;
 	};
 
-	Platform::Platform() : _plat(std::make_unique<PlatformData>()) {
-		_plat->debugConsole = DEBUG_CONSOLE;
+	Platform::Platform() : _impl(std::make_unique<PlatformImpl>(DEBUG_CONSOLE)) {}
 
-		gfxInitDefault();
-		romfsInit();
-
-		if (_plat->debugConsole) {
-			// Create console on bottom if we want live debug output
-			consoleInit(GFX_BOTTOM, nullptr);
-		}
-
-		// Metadata to gather from CFGU
-		std::string username;
-		u8 consoleModel = 0;
-		auto emulated = false;
-
-		const auto res = cfguInit();
-		if (R_SUCCEEDED(res)) {
-			const auto usernameBlockID = 0x000A0000;
-			const auto usernameBlockSize = 0x1C; // in bytes
-			const auto buffer = std::make_unique<char16_t[]>(usernameBlockSize / sizeof(char16_t));
-			CFGU_GetSystemModel(&consoleModel);
-			CFGU_GetConfigInfoBlk2(usernameBlockSize, usernameBlockID, buffer.get());
-			cfguExit();
-
-			// Lime3DS (previously Citra) cannot use wide mode, so to make emulation of the game more accessible we'll check for it
-			// This is a shitty hack, either the Lime3DS developers should fix wide mode or this should be done right.
-			std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> convert;
-			username = convert.to_bytes(buffer.get());
-			emulated =
-				username == "LIME3DS" ||
-				username == "ENCORE" ||
-				username == "CITRA";
-		}
-
-		bool wide = consoleModel != CFG_MODEL_2DS && !emulated;
-
-		// Setup NDSP
-		ndspInit();
-		ndspSetOutputMode(NDSP_OUTPUT_STEREO);
-		ndspSetCallback(audioCallback, nullptr);
-		LightEvent_Init(&_event, RESET_ONESHOT);
-
-		mkdir("sdmc:/3ds", 0777);
-		mkdir("sdmc:/3ds/data", 0777);
-		mkdir("sdmc:/3ds/data/haxagon", 0777);
-
-		_screen = createScreen(wide, DEBUG_CONSOLE);
-
-		// Output the username for debugging
-		Platform::message(Dbg::FATAL, "username", username);
-	}
-
-	Platform::~Platform() {
-		_screen = nullptr;
-		ndspExit();
-		romfsExit();
-		gfxExit();
-	}
+	Platform::~Platform() = default;
 
 	bool Platform::loop() {
-		_delta = (svcGetSystemTick() - _plat->last) / CPU_TICKS_PER_MSEC / 1000.0f;
-		_plat->last = svcGetSystemTick();
-		return aptMainLoop();
+		return _impl->loop();
 	}
 
 	float Platform::getDilation() const {
-		return _delta / (1.0f / 60.0f);
+		return _impl->delta / (1.0f / 60.0f);
 	}
 
 	std::string Platform::getPath(const std::string& partial, const Location location) const {
@@ -131,6 +201,10 @@ namespace SuperHaxagon {
 
 	std::unique_ptr<Music> Platform::loadMusic(const std::string& base, Location location) const {
 		return createMusic(getPath(base, location));
+	}
+
+	Screen& Platform::getScreen() {
+		return *_impl->screen;
 	}
 
 	std::string Platform::getButtonName(const Buttons& button) {
@@ -163,63 +237,11 @@ namespace SuperHaxagon {
 	}
 
 	void Platform::shutdown() {
-		auto display = false;
-		for (const auto& message : _plat->messages) {
-			if (message.first == Dbg::FATAL) {
-				display = true;
-			}
-		}
-
-		if (display) {
-			if (_plat->debugConsole) {
-				// We already have a debug console, so clear the screen
-				// and show a message to press START to quit.
-				_screen->screenBegin();
-				_screen->clear(COLOR_BLACK);
-				_screen->screenSwitch();
-				_screen->screenFinalize();
-
-				std::cout << std::endl << "[3ds] Fatal error! START to quit." << std::endl;
-			} else {
-				// Create a new console since we don't have one.
-				gfxSetWide(false);
-				consoleInit(GFX_TOP, nullptr);
-				std::cout << "Fatal error! START to quit." << std::endl;
-				std::cout << "Last messages:" << std::endl << std::endl;
-				for (const auto& message : _plat->messages) {
-					std::cout << message.second << std::endl;
-				}
-			}
-
-			// Hold in a loop.
-			while (aptMainLoop()) {
-				gspWaitForVBlank();
-				gfxSwapBuffers();
-				hidScanInput();
-				const auto kDown = hidKeysDown();
-				if (kDown & KEY_START) break;
-			}
-		}
+		_impl->shutdown();
 	}
 
 	void Platform::message(const Dbg dbg, const std::string& where, const std::string& message) const {
-		std::string format;
-		if (dbg == Dbg::INFO) {
-			format = "[3ds:info] ";
-		} else if (dbg == Dbg::WARN) {
-			format = "[3ds:warn] ";
-		} else if (dbg == Dbg::FATAL) {
-			format = "[3ds:fatal] ";
-		}
-
-		format += where + ": " + message;
-
-		if (_plat->debugConsole) {
-			std::cout << format << std::endl;
-		}
-
-		_plat->messages.emplace_back(dbg, format);
-		if (_plat->messages.size() > 32) _plat->messages.pop_front();
+		_impl->message(dbg, where, message);
 	}
 
 	Supports Platform::supports() {

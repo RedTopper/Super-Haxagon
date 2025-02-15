@@ -2,14 +2,13 @@
 
 #include "Core/Twist.hpp"
 #include "Driver/Screen.hpp"
-#include "Driver/SFML/DataSFML.hpp"
+#include "Driver/SFML/CreateSFML.hpp"
 
 #include <iostream>
 #include <sys/stat.h>
 
 namespace SuperHaxagon {
-	Platform::Platform() {
-		std::string sdmc, romfs;
+	void initializePlatform(std::string& sdmc, std::string& romfs, bool& platformBackslash) {
 		if (std::getenv("container")) {
 			const auto* data = std::getenv("XDG_DATA_HOME");
 			sdmc = std::string(data) + "/sdmc";
@@ -19,13 +18,10 @@ namespace SuperHaxagon {
 			romfs = "./romfs";
 		}
 
-		_plat = createPlatform(sdmc, romfs, false);
-		_screen = createScreen(*_plat->window);
+		platformBackslash = false;
 
 		mkdir(sdmc.c_str(), 0755);
 	}
-
-	Platform::~Platform() = default;
 
 	void Platform::message(const Dbg dbg, const std::string& where, const std::string& message) const {
 		if (dbg == Dbg::INFO) {

@@ -1,16 +1,18 @@
 #ifndef SUPER_HAXAGON_SCREEN_HPP
 #define SUPER_HAXAGON_SCREEN_HPP
 
-#include "Core/Structs.hpp"
+#include "Core/Vector.hpp"
 
 #include <vector>
 #include <memory>
 
 namespace SuperHaxagon {
+	struct Color;
+
 	class Screen {
 	public:
-		struct ScreenData;
-		explicit Screen(std::unique_ptr<ScreenData> data);
+		struct ScreenImpl;
+		explicit Screen(std::unique_ptr<ScreenImpl> impl);
 		Screen(Screen&) = delete;
 		~Screen();
 
@@ -24,7 +26,7 @@ namespace SuperHaxagon {
 		void clear(const Color& color) const;
 
 	private:
-		std::unique_ptr<ScreenData> _data;
+		std::unique_ptr<ScreenImpl> _impl;
 	};
 }
 

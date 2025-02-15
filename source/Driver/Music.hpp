@@ -8,9 +8,9 @@ namespace SuperHaxagon {
 
 	class Music {
 	public:
-		struct MusicData;
+		struct MusicImpl;
 
-		explicit Music(std::unique_ptr<MusicData> data);
+		explicit Music(std::unique_ptr<MusicImpl> impl);
 		Music(Music&) = delete;
 		~Music();
 
@@ -25,7 +25,7 @@ namespace SuperHaxagon {
 		float getTime() const;
 
 	private:
-		std::unique_ptr<MusicData> _data;
+		std::unique_ptr<MusicImpl> _impl;
 	};
 }
 

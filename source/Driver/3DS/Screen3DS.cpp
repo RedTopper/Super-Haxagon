@@ -1,11 +1,13 @@
 #include "Driver/Screen.hpp"
 
+#include "Core/Structs.hpp"
+
 #include <3ds.h>
 #include <citro2d.h>
 
 namespace SuperHaxagon {
-	struct Screen::ScreenData {
-		explicit ScreenData(bool wide, bool debugConsole) {
+	struct Screen::ScreenImpl {
+		explicit ScreenImpl(bool wide, bool debugConsole) {
 			gfxSetWide(wide);
 
 			C3D_Init(C3D_DEFAULT_CMDBUF_SIZE);
@@ -33,7 +35,7 @@ namespace SuperHaxagon {
 			C3D_FrameEnd(0);
 		}
 
-		~ScreenData() {
+		~ScreenImpl() {
 			C2D_Fini();
 			C3D_Fini();
 		}
@@ -71,25 +73,21 @@ namespace SuperHaxagon {
 		bool debugConsole = false;
 	};
 
-	std::unique_ptr<Screen> createScreen(bool wide, bool debugConsole) {
-		return std::make_unique<Screen>(std::make_unique<Screen::ScreenData>(wide, debugConsole));
-	}
-
-	Screen::Screen(std::unique_ptr<ScreenData> data) : _data(std::move(data)) {}
+	Screen::Screen(std::unique_ptr<ScreenImpl> impl) : _impl(std::move(impl)) {}
 
 	Screen::~Screen() = default;
 
 	Vec2f Screen::getScreenDim() const {
-		return {static_cast<float>(_data->drawingOnTop ? 400 : 320), 240};
+		return {static_cast<float>(_impl->drawingOnTop ? 400 : 320), 240};
 	}
 
 	void Screen::screenBegin() const {
-		_data->drawingOnTop = true;
+		_impl->drawingOnTop = true;
 		C3D_FrameBegin(C3D_FRAME_SYNCDRAW);
 	}
 
 	void Screen::screenSwitch() const {
-		_data->screenSwitch();
+		_impl->screenSwitch();
 	}
 
 	void Screen::screenFinalize() const {
@@ -97,10 +95,14 @@ namespace SuperHaxagon {
 	}
 
 	void Screen::drawPoly(const Color& color, const std::vector<Vec2f>& points) const {
-		_data->drawPoly(color, points);
+		_impl->drawPoly(color, points);
 	}
 
 	void Screen::clear(const Color& color) const {
-		_data->clear(color);
+		_impl->clear(color);
+	}
+
+	std::unique_ptr<Screen> createScreen(bool wide, bool debugConsole) {
+		return std::make_unique<Screen>(std::make_unique<Screen::ScreenImpl>(wide, debugConsole));
 	}
 }

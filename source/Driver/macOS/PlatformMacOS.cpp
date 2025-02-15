@@ -2,7 +2,7 @@
 
 #include "Core/Twist.hpp"
 #include "Driver/Screen.hpp"
-#include "Driver/SFML/DataSFML.hpp"
+#include "Driver/SFML/CreateSFML.hpp"
 
 #include <iostream>
 #include <sys/stat.h>

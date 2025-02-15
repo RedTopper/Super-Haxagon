@@ -7,10 +7,12 @@
 #include <array>
 
 namespace SuperHaxagon {
+	LightEvent _event{};
+	void audioThread(void* const self);
+
 	const int BUFFER_MS = 200;
 	static constexpr int THREAD_AFFINITY = -1;
 	static constexpr int THREAD_STACK_SZ = 32 * 1024;
-	LightEvent _event{};
 
 	unsigned int getSamplesPerBuff(const unsigned int sampleRate) {
 		return sampleRate * BUFFER_MS / 1000;
@@ -20,8 +22,8 @@ namespace SuperHaxagon {
 		return getSamplesPerBuff(sampleRate) * channels * sizeof(int16_t);
 	}
 
-	struct Music::MusicData {
-		MusicData(const std::string& path) {
+	struct Music::MusicImpl {
+		MusicImpl(const std::string& path) {
 			loaded = false;
 
 			auto error = 0;
@@ -45,6 +47,62 @@ namespace SuperHaxagon {
 			}
 
 			loaded = true;
+		}
+
+		~MusicImpl() {
+			if (!loaded) return;
+
+			threadRunning = false;
+
+			// Shutdown thread
+			if (thread) {
+				LightEvent_Signal(&_event);
+				threadJoin(thread, 100000000);
+				threadFree(thread);
+			}
+
+			ndspChnWaveBufClear(channel);
+			ndspChnReset(channel);
+			linearFree(audioBuffer);
+			stb_vorbis_close(oggFile);
+		}
+
+		void play() {
+			if (!loaded) return;
+
+			if (thread) {
+				if (diff) start += svcGetSystemTick() - diff;
+				ndspChnSetPaused(channel, false);
+				LightEvent_Signal(&_event);
+				diff = 0;
+				return;
+			}
+
+			ndspChnReset(channel);
+			ndspChnSetInterp(channel, NDSP_INTERP_POLYPHASE);
+			ndspChnSetRate(channel, static_cast<float>(oggFile->sample_rate));
+			ndspChnSetFormat(channel, oggFile->channels == 1 ? NDSP_FORMAT_MONO_PCM16 : NDSP_FORMAT_STEREO_PCM16);
+
+			int32_t priority = 0x30;
+			svcGetThreadPriority(&priority, CUR_THREAD_HANDLE);
+
+			priority += 1; // Set LOWER priority and clamp
+			priority = priority < 0x18 ? 0x18 : priority;
+			priority = priority > 0x3F ? 0x3F : priority;
+
+			// Start the thread, passing the player as an argument.
+			thread = threadCreate(audioThread, this, THREAD_STACK_SZ, priority, THREAD_AFFINITY, false);
+			start = svcGetSystemTick();
+		}
+
+		float getTime() const {
+			if (!loaded) return 0;
+
+			// If we set diff (paused), we are frozen in time. Otherwise, the current timestamp is
+			// the system minus the start of the song.
+			const auto ticks = diff ? diff - start : svcGetSystemTick() - start;
+			const auto timeMs = static_cast<float>(ticks) / static_cast<float>(CPU_TICKS_PER_MSEC);
+			return timeMs / 1000.0f;
 		}
 
 		Thread thread = nullptr;
@@ -85,7 +143,7 @@ namespace SuperHaxagon {
 	}
 
 	void audioThread(void* const self) {
-		auto* data = static_cast<Music::MusicData*>(self);
+		auto* data = static_cast<Music::MusicImpl*>(self);
 		if (!data) return;
 
 		while(data->threadRunning) {
@@ -117,84 +175,38 @@ namespace SuperHaxagon {
 		}
 	}
 
-	std::unique_ptr<Music> createMusic(const std::string& path) {
-		auto data = std::make_unique<Music::MusicData>(path + ".ogg");
-		if (!data->loaded) return nullptr;
-		return std::make_unique<Music>(std::move(data));
-	}
+	Music::Music(std::unique_ptr<MusicImpl> impl) : _impl(std::move(impl)) {}
 
-	Music::Music(std::unique_ptr<MusicData> data) : _data(std::move(data)) {}
-
-	Music::~Music() {
-		if (!_data->loaded) return;
-
-		_data->threadRunning = false;
-
-		// Shutdown thread
-		if (_data->thread) {
-			LightEvent_Signal(&_event);
-			threadJoin(_data->thread, 100000000);
-			threadFree(_data->thread);
-		}
-
-		ndspChnWaveBufClear(_data->channel);
-		ndspChnReset(_data->channel);
-		linearFree(_data->audioBuffer);
-		stb_vorbis_close(_data->oggFile);
-	}
+	Music::~Music() = default;
 
 	// 3DS: The thread knows when the song is done and will
 	// loop itself appropriately.
 	void Music::update() const {}
 
 	void Music::setLoop(const bool loop) const {
-		_data->loop = loop;
+		_impl->loop = loop;
 	}
 
 	void Music::play() const {
-		if (!_data->loaded) return;
-
-		if (_data->thread) {
-			if (_data->diff) _data->start += svcGetSystemTick() - _data->diff;
-			ndspChnSetPaused(_data->channel, false);
-			LightEvent_Signal(&_event);
-			_data->diff = 0;
-			return;
-		}
-
-		ndspChnReset(_data->channel);
-		ndspChnSetInterp(_data->channel, NDSP_INTERP_POLYPHASE);
-		ndspChnSetRate(_data->channel, static_cast<float>(_data->oggFile->sample_rate));
-		ndspChnSetFormat(_data->channel, _data->oggFile->channels == 1 ? NDSP_FORMAT_MONO_PCM16 : NDSP_FORMAT_STEREO_PCM16);
-
-		int32_t priority = 0x30;
-		svcGetThreadPriority(&priority, CUR_THREAD_HANDLE);
-
-		priority += 1; // Set LOWER priority and clamp
-		priority = priority < 0x18 ? 0x18 : priority;
-		priority = priority > 0x3F ? 0x3F : priority;
-
-		// Start the thread, passing the player as an argument.
-		_data->thread = threadCreate(audioThread, _data.get(), THREAD_STACK_SZ, priority, THREAD_AFFINITY, false);
-		_data->start = svcGetSystemTick();
+		_impl->play();
 	}
 
 	void Music::pause() const {
 		ndspChnSetPaused(0, true);
-		_data->diff = svcGetSystemTick();
+		_impl->diff = svcGetSystemTick();
 	}
 
 	bool Music::isDone() const {
-		return !_data->threadRunning;
+		return !_impl->threadRunning;
 	}
 
 	float Music::getTime() const {
-		if (!_data->loaded) return 0;
+		return _impl->getTime();
+	}
 
-		// If we set diff (paused), we are frozen in time. Otherwise, the current timestamp is
-		// the system minus the start of the song.
-		const auto ticks = _data->diff ? _data->diff - _data->start : svcGetSystemTick() - _data->start;
-		const auto timeMs = static_cast<float>(ticks) / static_cast<float>(CPU_TICKS_PER_MSEC);
-		return timeMs / 1000.0f;
+	std::unique_ptr<Music> createMusic(const std::string& path) {
+		auto data = std::make_unique<Music::MusicImpl>(path + ".ogg");
+		if (!data->loaded) return nullptr;
+		return std::make_unique<Music>(std::move(data));
 	}
 }

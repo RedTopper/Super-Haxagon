@@ -1,6 +1,6 @@
 #include "Driver/Platform.hpp"
 
-#include "DataSFML.hpp"
+#include "CreateSFML.hpp"
 #include "Core/Configuration.hpp"
 #include "Core/Structs.hpp"
 #include "Driver/Font.hpp"
@@ -17,89 +17,122 @@
 
 namespace SuperHaxagon {
 	std::unique_ptr<Music> createMusic(std::unique_ptr<sf::Music> music);
+	std::unique_ptr<Screen> createScreen(sf::RenderWindow& window);
 	std::unique_ptr<Sound> createSound(const std::string& path);
 	std::unique_ptr<Font> createFont(sf::RenderWindow& renderWindow, const std::string& path, int size);
 
-	std::unique_ptr<Platform::PlatformData> createPlatform(const std::string& sdmc, const std::string& romfs, const bool backslash) {
-		auto plat = std::make_unique<Platform::PlatformData>();
+	struct Platform::PlatformImpl {
+		PlatformImpl(const std::string& sdmcPath, const std::string& romfsPath, const bool platformBackslash) {
+			// Give the user the default intended aspect ratio
+			unsigned int width = (sf::VideoMode::getDesktopMode().width - 1) / 400;
+			unsigned int height = (sf::VideoMode::getDesktopMode().height - 1) / 240;
+			unsigned int min = std::max<unsigned int>(std::min(width, height), 1);
 
-		// Give the user the default intended aspect ratio
-		unsigned int width = (sf::VideoMode::getDesktopMode().width - 1) / 400;
-		unsigned int height = (sf::VideoMode::getDesktopMode().height - 1) / 240;
-		unsigned int min = std::max<unsigned int>(std::min(width, height), 1);
+			auto video = sf::VideoMode(min * 400, min * 240	);
 
-		auto video = sf::VideoMode(min * 400, min * 240	);
+			sdmc = sdmcPath;
+			romfs = romfsPath;
+			backslash = platformBackslash;
 
-		plat->sdmc = sdmc;
-		plat->romfs = romfs;
-		plat->backslash = backslash;
+			clock.restart();
 
-		plat->clock.restart();
+			sf::ContextSettings settings;
+			settings.antialiasingLevel = 8;
 
-		sf::ContextSettings settings;
-		settings.antialiasingLevel = 8;
+			// Set the window name to "Super Haxagon" first, to match the .desktop file,
+			// then add the version after the window has loaded.
+			window = std::make_unique<sf::RenderWindow>(video, "Super Haxagon", sf::Style::Default, settings);
 
-		// Set the window name to "Super Haxagon" first, to match the .desktop file,
-		// then add the version after the window has loaded.
-		plat->window = std::make_unique<sf::RenderWindow>(video, "Super Haxagon", sf::Style::Default, settings);
+			window->setVerticalSyncEnabled(true);
+			window->display();
+			window->setTitle(std::string("Super Haxagon (") + VERSION + ")");
 
-		plat->window->setVerticalSyncEnabled(true);
-		plat->window->display();
-		plat->window->setTitle(std::string("Super Haxagon (") + VERSION + ")");
-		plat->loaded = true;
+			screen = createScreen(*window);
 
-		return plat;
+			loaded = true;
+		}
+
+		bool loop() {
+			const auto throttle = sf::milliseconds(1);
+			sf::sleep(throttle);
+			delta = clock.getElapsedTime().asSeconds();
+			clock.restart();
+			sf::Event event{};
+			while (window->pollEvent(event)) {
+				if (event.type == sf::Event::Closed) window->close();
+				if (event.type == sf::Event::GainedFocus) focus = true;
+				if (event.type == sf::Event::LostFocus) focus = false;
+				if (event.type == sf::Event::Resized) {
+					const auto width = event.size.width > 400 ? event.size.width : 400;
+					const auto height = event.size.height > 240 ? event.size.height : 240;
+
+					if (width != event.size.width || height != event.size.height) {
+						window->setSize({width, height });
+					}
+
+					sf::FloatRect visibleArea(
+							0.0f,
+							0.0f,
+							static_cast<float>(width),
+							static_cast<float>(height)
+					);
+
+					window->setView(sf::View(visibleArea));
+				}
+			}
+			return loaded && window->isOpen();
+		}
+
+		std::string getPath(const std::string& partial, const Location location) const {
+			auto path = partial;
+
+			if (backslash) std::replace(path.begin(), path.end(), '/', '\\');
+
+			switch (location) {
+				case Location::ROM:
+					return romfs + path;
+				case Location::USER:
+					return sdmc + path;
+			}
+
+			return "";
+		}
+
+		bool loaded = false;
+		bool focus = true;
+		bool backslash = false;
+		sf::Clock clock{};
+		std::unique_ptr<Screen> screen{};
+		std::unique_ptr<sf::RenderWindow> window{};
+		std::string romfs;
+		std::string sdmc;
+		float delta = 0.0f;
+	};
+
+	Platform::Platform() {
+		bool backslash;
+		std::string sdmc, romfs;
+
+		// Get information about our platform and setup anything
+		// platform specific (like creating folders)
+		initializePlatform(sdmc, romfs, backslash);
+
+		_impl = std::make_unique<PlatformImpl>(sdmc, romfs, backslash);
 	}
 
+	Platform::~Platform() = default;
+
 	bool Platform::loop() {
-		const auto throttle = sf::milliseconds(1);
-		sf::sleep(throttle);
-		_delta = _plat->clock.getElapsedTime().asSeconds();
-		_plat->clock.restart();
-		sf::Event event{};
-		while (_plat->window->pollEvent(event)) {
-			if (event.type == sf::Event::Closed) _plat->window->close();
-			if (event.type == sf::Event::GainedFocus) _plat->focus = true;
-			if (event.type == sf::Event::LostFocus) _plat->focus = false;
-			if (event.type == sf::Event::Resized) {
-				const auto width = event.size.width > 400 ? event.size.width : 400;
-				const auto height = event.size.height > 240 ? event.size.height : 240;
-
-				if (width != event.size.width || height != event.size.height) {
-					_plat->window->setSize({ width, height });
-				}
-				
-				sf::FloatRect visibleArea(
-					0.0f, 
-					0.0f, 
-					static_cast<float>(width), 
-					static_cast<float>(height)
-				);
-
-				_plat->window->setView(sf::View(visibleArea));
-			}
-		}
-		return _plat->loaded && _plat->window->isOpen();
+		return _impl->loop();
 	}
 
 	float Platform::getDilation() const {
 		// The game was originally designed with 60FPS in mind
-		return _delta / (1.0f / 60.0f);
+		return _impl->delta / (1.0f / 60.0f);
 	}
 
 	std::string Platform::getPath(const std::string& partial, const Location location) const {
-		auto path = partial;
-
-		if (_plat->backslash) std::replace(path.begin(), path.end(), '/', '\\');
-
-		switch (location) {
-			case Location::ROM:
-				return _plat->romfs + path;
-			case Location::USER:
-				return _plat->sdmc + path;
-		}
-
-		return "";
+		return _impl->getPath(partial, location);
 	}
 
 	std::unique_ptr<std::istream> Platform::openFile(const std::string& partial, const Location location) const {
@@ -107,7 +140,7 @@ namespace SuperHaxagon {
 	}
 
 	std::unique_ptr<Font> Platform::loadFont(const int size) const {
-		return createFont(*_plat->window, getPath("/bump-it-up.ttf", Location::ROM), size);
+		return createFont(*_impl->window, getPath("/bump-it-up.ttf", Location::ROM), size);
 	}
 
 	std::unique_ptr<Sound> Platform::loadSound(const std::string& base) const {
@@ -122,6 +155,10 @@ namespace SuperHaxagon {
 		return createMusic(std::move(music));
 	}
 
+	Screen& Platform::getScreen() {
+		return *_impl->screen;
+	}
+
 	std::string Platform::getButtonName(const Buttons& button) {
 		if (button.back) return "ESC";
 		if (button.select) return "ENTER";
@@ -133,7 +170,7 @@ namespace SuperHaxagon {
 
 	Buttons Platform::getPressed() const {
 		Buttons buttons{};
-		if (!_plat->focus) return buttons;
+		if (!_impl->focus) return buttons;
 		buttons.select = sf::Keyboard::isKeyPressed(sf::Keyboard::Enter);
 		buttons.back = sf::Keyboard::isKeyPressed(sf::Keyboard::Escape);
 		buttons.quit = sf::Keyboard::isKeyPressed(sf::Keyboard::Delete);

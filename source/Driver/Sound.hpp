@@ -6,15 +6,15 @@
 namespace SuperHaxagon {
 	class Sound {
 	public:
-		struct SoundData;
-		explicit Sound(std::unique_ptr<SoundData> data);
+		struct SoundImpl;
+		explicit Sound(std::unique_ptr<SoundImpl> impl);
 		Sound(Sound&) = delete;
 		~Sound();
 
 		void play() const;
 
 	private:
-		std::unique_ptr<SoundData> _data;
+		std::unique_ptr<SoundImpl> _impl;
 	};
 }
 

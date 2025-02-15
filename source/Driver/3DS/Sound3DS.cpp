@@ -11,45 +11,49 @@ namespace SuperHaxagon {
 	int channel = 1;
 	ndspWaveBuf buffers[MAX_TRACKS]{};
 
-	struct Sound::SoundData {
-		SoundData(const std::string path) : wav(path) {}
+	struct Sound::SoundImpl {
+		SoundImpl(const std::string path) : wav(path) {}
+
+		void play() const {
+			if (!wav.loaded) return;
+
+			ndspWaveBuf& buffer = buffers[channel];
+			float mix[12]{};
+			mix[0] = 1.0;
+			mix[1] = 1.0;
+			ndspChnReset(channel);
+			ndspChnWaveBufClear(channel);
+			ndspChnSetInterp(channel, NDSP_INTERP_LINEAR);
+			ndspChnSetRate(channel, wav.sampleRate);
+			ndspChnSetFormat(channel, wav.ndspFormat);
+			ndspChnSetMix(channel, mix);
+			buffer.data_vaddr = &wav.data[0];
+			buffer.nsamples = wav.dataSize / wav.bitsPerSample * 8;
+			buffer.looping = false;
+			buffer.offset = 0;
+			DSP_FlushDataCache(wav.data, wav.dataSize);
+			ndspChnWaveBufAdd(channel, &buffer);
+
+			// Next play will use next channel.
+			channel++;
+
+			// Channel 0 is reserved for BGM.
+			// Only one BGM is ever expected to be played at a time.
+			if (channel > MAX_TRACKS) channel = 1;
+		}
+
 		const Wav wav;
 	};
 
-	std::unique_ptr<Sound> createSound(const std::string& path) {
-		return std::make_unique<Sound>(std::make_unique<Sound::SoundData>(path));
-	}
-
-	Sound::Sound(std::unique_ptr<SoundData> data) : _data(std::move(data)) {}
+	Sound::Sound(std::unique_ptr<SoundImpl> impl) : _impl(std::move(impl)) {}
 
 	Sound::~Sound() = default;
 
 	void Sound::play() const {
-		const Wav& wav = _data->wav;
-		if (!wav.loaded) return;
+		_impl->play();
+	}
 
-		ndspWaveBuf& buffer = buffers[channel];
-		float mix[12]{};
-		mix[0] = 1.0;
-		mix[1] = 1.0;
-		ndspChnReset(channel);
-		ndspChnWaveBufClear(channel);
-		ndspChnSetInterp(channel, NDSP_INTERP_LINEAR);
-		ndspChnSetRate(channel, wav.sampleRate);
-		ndspChnSetFormat(channel, wav.ndspFormat);
-		ndspChnSetMix(channel, mix);
-		buffer.data_vaddr = &wav.data[0];
-		buffer.nsamples = wav.dataSize / wav.bitsPerSample * 8;
-		buffer.looping = false;
-		buffer.offset = 0;
-		DSP_FlushDataCache(wav.data, wav.dataSize);
-		ndspChnWaveBufAdd(channel, &buffer);
-
-		// Next play will use next channel.
-		channel++;
-
-		// Channel 0 is reserved for BGM.
-		// Only one BGM is ever expected to be played at a time.
-		if (channel > MAX_TRACKS) channel = 1;
+	std::unique_ptr<Sound> createSound(const std::string& path) {
+		return std::make_unique<Sound>(std::make_unique<Sound::SoundImpl>(path));
 	}
 }

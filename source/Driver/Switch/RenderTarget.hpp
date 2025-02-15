@@ -24,6 +24,8 @@ namespace SuperHaxagon {
 		float z;
 	};
 
+	class Screen;
+
 	template<class T>
 	class RenderTarget {
 	public:
@@ -34,7 +36,7 @@ namespace SuperHaxagon {
 		void insert(const T& vertex);
 		void reference(unsigned int index);
 		void advance(unsigned int indices);
-		void draw(const Platform& platform);
+		void draw(const Platform& platform, int width, int height);
 		bool isTransparent() const {return _transparent;}
 
 	private:

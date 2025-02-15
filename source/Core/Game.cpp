@@ -44,6 +44,7 @@ namespace SuperHaxagon {
 
 	Game::~Game() {
 		// Stop and unload music
+		_bgm->pause();
 		_bgm = nullptr;
 		_platform.message(Dbg::INFO, "game", "shutdown ok");
 	}

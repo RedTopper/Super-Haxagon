@@ -143,7 +143,7 @@ namespace SuperHaxagon {
 
 		if (shadows) {
 			shadows->calculateMatrix(-rotation);
-			shadows->setDepth(-0.05f);
+			shadows->setDepth(-0.025f);
 			shadows->drawRegular(COLOR_SHADOW, HEX_LENGTH, 6.0);
 			shadows->drawCursor(COLOR_SHADOW, HEX_LENGTH + PLAYER_PADDING_BETWEEN_HEX, 3.0f * TAU / 4.0f - rotation);
 		}
@@ -153,7 +153,8 @@ namespace SuperHaxagon {
 		surface.drawRegular(bg3, HEX_LENGTH - HEX_BORDER, 6.0);
 		surface.drawCursor(fg, HEX_LENGTH + PLAYER_PADDING_BETWEEN_HEX, 3.0f * TAU / 4.0f - rotation);
 
-		surface.drawDebugTriangles();
+		// To help debugging
+		// surface.drawDebugTriangles();
 	}
 
 	void Menu::drawTopUI(SurfaceUI& surface) {

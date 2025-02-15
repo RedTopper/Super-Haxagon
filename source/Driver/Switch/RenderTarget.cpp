@@ -1,6 +1,7 @@
 #include "Driver/Switch/RenderTarget.hpp"
 
 #include "Driver/Platform.hpp"
+#include "Driver/Screen.hpp"
 
 #include <algorithm>
 
@@ -84,7 +85,7 @@ namespace SuperHaxagon {
 	}
 
 	template<class T>
-	void RenderTarget<T>::draw(const Platform& platform) {
+	void RenderTarget<T>::draw(const Platform& platform, int width, int height) {
 		if (!_transparent) {
 			// Opaque objects need to be rendered front to back, the engine
 			// adds all polygons back to front.
@@ -95,9 +96,8 @@ namespace SuperHaxagon {
 
 		// glUniform ignores all invalid glGetUniformLocation results, so if the shader doesn't
 		// have these variables then they will be ignored.
-		const auto screen = platform.getScreenDim();
-		glUniform1f(glGetUniformLocation(_program, "s_width"), static_cast<float>(screen.x));
-		glUniform1f(glGetUniformLocation(_program, "s_height"), static_cast<float>(screen.y));
+		glUniform1f(glGetUniformLocation(_program, "s_width"), static_cast<float>(width));
+		glUniform1f(glGetUniformLocation(_program, "s_height"), static_cast<float>(height));
 		glUniform1i(glGetUniformLocation(_program, "f_tex"), 0);
 
 		resize(platform, GL_ARRAY_BUFFER, _vboBufferSize, _vertices, _label + " vertices");

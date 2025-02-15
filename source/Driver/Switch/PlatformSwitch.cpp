@@ -5,144 +5,34 @@
 #include "Core/Twist.hpp"
 #include "Driver/Font.hpp"
 #include "Driver/Music.hpp"
+#include "Driver/Screen.hpp"
 #include "Driver/Sound.hpp"
 
-#include <EGL/egl.h>
-#include <EGL/eglext.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_mixer.h>
-#include <glad/glad.h>
 #include <switch.h>
-#include <switch/display/native_window.h>
 
 #include <iostream>
-#include <sstream>
 #include <deque>
 #include <fstream>
 #include <sys/stat.h>
 
-static const char* vertex_shader = R"text(
-#version 330 core
-
-layout(location = 0) in vec2 v_position;
-layout(location = 1) in vec4 v_color;
-layout(location = 2) in float v_z;
-
-out vec4 f_color;
-
-uniform float s_width;
-uniform float s_height;
-
-void main() {
-	float x_norm = (v_position.x / s_width - 0.5) * 2.0;
-	float y_norm = (v_position.y / s_height - 0.5) * -2.0;
-
-	gl_Position = vec4(x_norm, y_norm, v_z, 1.0);
-	f_color = v_color;
-}
-)text";
-
-static const char* fragment_shader = R"text(
-#version 330 core
-
-layout(location = 0) out vec4 color;
-
-in vec4 f_color;
-
-void main() {
-	color = f_color;
-}
-)text";
-
-static const EGLint FRAMEBUFFER_ATTRIBUTE_LIST[] = {
-	EGL_RENDERABLE_TYPE, EGL_OPENGL_BIT,
-	EGL_RED_SIZE,       8,
-	EGL_GREEN_SIZE,     8,
-	EGL_BLUE_SIZE,      8,
-	EGL_ALPHA_SIZE,     8,
-	EGL_DEPTH_SIZE,     24,
-	EGL_STENCIL_SIZE,   8,
-	EGL_NONE
-};
-
-static const EGLint CONTEXT_ATTRIBUTE_LIST[] = {
-	EGL_CONTEXT_OPENGL_PROFILE_MASK_KHR, EGL_CONTEXT_OPENGL_CORE_PROFILE_BIT_KHR,
-	EGL_CONTEXT_MAJOR_VERSION_KHR, 4,
-	EGL_CONTEXT_MINOR_VERSION_KHR, 3,
-	EGL_NONE
-};
-
-/**
- * Helper function used for debugging OpenGL
- */
-static void callback(const GLenum source, const GLenum type, const GLuint id, const GLenum severity, GLsizei, const GLchar* message, const void* userParam) {
-	// WCGW casting away const-ness?
-	const auto* platform = static_cast<const SuperHaxagon::Platform*>(userParam);
-	const auto error = type == GL_DEBUG_TYPE_ERROR;
-	std::stringstream out;
-	out << std::hex << "Message from OpenGL:" << std::endl;
-	out << "Source: 0x" << source << std::endl;
-	out << "Type: 0x" << type << (error ? " (GL ERROR)" : "") << std::endl;
-	out << "ID: 0x" << id << std::endl;
-	out << "Severity: 0x" << severity << std::endl;
-	out << message;
-	platform->message(error ? SuperHaxagon::Dbg::FATAL : SuperHaxagon::Dbg::INFO, "opengl", out.str());
-}
-
 namespace SuperHaxagon {
+	typedef std::deque<std::shared_ptr<RenderTarget<Vertex>>> VertexStorage;
+	typedef std::deque<std::shared_ptr<RenderTarget<VertexUV>>> VertexUVStorage;
 
 	std::unique_ptr<Music> createMusic(const std::string& path);
 	std::unique_ptr<Sound> createSound(const std::string& path);
 	std::unique_ptr<Font> createFont(const Platform& platform, const std::string& path, int size, float* z, std::shared_ptr<RenderTarget<VertexUV>>& surface);
+	std::unique_ptr<Screen> createScreen(
+			const Platform& platform,
+			VertexStorage& targetVertex,
+			VertexUVStorage& targetVertexUV,
+			unsigned int& width,
+			unsigned int& height,
+			float& z);
 
 	struct Platform::PlatformData {
-		bool initEGL(const Platform& platform) {
-			eglInitialize(display, nullptr, nullptr);
-
-			if (eglBindAPI(EGL_OPENGL_API) == EGL_FALSE) {
-				platform.message(Dbg::FATAL, "api", "error " + std::to_string(eglGetError()));
-				eglTerminate(display);
-				return false;
-			}
-
-			EGLConfig config;
-			EGLint numConfigs;
-
-			eglChooseConfig(display, FRAMEBUFFER_ATTRIBUTE_LIST, &config, 1, &numConfigs);
-			if (numConfigs == 0) {
-				platform.message(Dbg::FATAL, "config", "error " + std::to_string(eglGetError()));
-				eglTerminate(display);
-				return false;
-			}
-
-			surface = eglCreateWindowSurface(display, config, reinterpret_cast<EGLNativeWindowType>(window), nullptr);
-			if (!surface) {
-				platform.message(Dbg::FATAL, "surface", "error " + std::to_string(eglGetError()));
-				eglTerminate(display);
-				return false;
-			}
-
-			context = eglCreateContext(display, config, EGL_NO_CONTEXT, CONTEXT_ATTRIBUTE_LIST);
-			if (!context)
-			{
-				platform.message(Dbg::FATAL, "context", "error " + std::to_string(eglGetError()));
-				eglDestroySurface(display, surface);
-				eglTerminate(display);
-				return false;
-			}
-
-			eglMakeCurrent(display, surface, surface, context);
-			return true;
-		}
-
-		void addRenderTarget(std::shared_ptr<RenderTarget<Vertex>>& target) {
-			targetVertex.emplace_back(target);
-		}
-
-		void addRenderTarget(std::shared_ptr<RenderTarget<VertexUV>>& target) {
-			targetVertexUV.emplace_back(target);
-		}
-
 		bool debugConsole = false;
 		bool loaded = false;
 
@@ -152,30 +42,16 @@ namespace SuperHaxagon {
 		float z = 0.0f;
 		PadState pad{};
 
-		std::shared_ptr<RenderTarget<Vertex>> opaque;
-		std::shared_ptr<RenderTarget<Vertex>> transparent;
-
 		NWindow* window;
-		EGLDisplay display;
-		EGLContext context{};
-		EGLSurface surface{};
 
 		std::ofstream console;
 		std::deque<std::pair<Dbg, std::string>> messages{};
-		std::deque<std::shared_ptr<RenderTarget<Vertex>>> targetVertex{};
-		std::deque<std::shared_ptr<RenderTarget<VertexUV>>> targetVertexUV{};
+		VertexStorage targetVertex{};
+		VertexUVStorage targetVertexUV{};
 
 		std::vector<std::pair<SoundEffect, Mix_Chunk*>> sfxBuffers{};
 		Mix_Music* musicBuffer{};
 	};
-
-	template<class T>
-	void render(const Platform& platform, std::deque<std::shared_ptr<RenderTarget<T>>> targets, bool transparent) {
-		for (const auto& target : targets) {
-			if (target->isTransparent() != transparent) continue;
-			target->draw(platform);
-		}
-	}
 
 	Platform::Platform() : _plat(std::make_unique<Platform::PlatformData>()) {
 		romfsInit();
@@ -193,46 +69,11 @@ namespace SuperHaxagon {
 		padConfigureInput(8, HidNpadStyleSet_NpadStandard);
 		padInitializeAny(&_plat->pad);
 
-		_plat->window = nwindowGetDefault();
-		_plat->display = eglGetDisplay(EGL_DEFAULT_DISPLAY);
-
-		message(Dbg::INFO, "platform", "booting");
 		message(Dbg::INFO, "platform", Mix_GetError());
 
-		// Create window as 1080p, but _width and _height start at 720p.
-		// Window is then cropped.
-		nwindowSetDimensions(_plat->window, 1920, 1080);
-		nwindowSetCrop(_plat->window, 0, 0, _plat->width, _plat->height);
+		_screen = createScreen(*this, _plat->targetVertex, _plat->targetVertexUV, _plat->width, _plat->height, _plat->z);
 
-		if (!_plat->display) {
-			message(Dbg::FATAL, "display", "error " + std::to_string(eglGetError()));
-			return;
-		}
-
-		if (!_plat->initEGL(*this)) {
-			message(Dbg::FATAL, "egl", "there was a fatal error creating an opengl context");
-			return;
-		}
-
-		gladLoadGL();
-
-		glEnable(GL_DEBUG_OUTPUT);
-		glEnable(GL_DEPTH_TEST);
-		glEnable(GL_FRAMEBUFFER_SRGB);
-		glDepthMask(GL_TRUE);
-		glDepthFunc(GL_GREATER);
-		glDepthRange(0.0f, 1.0f);
-		glDebugMessageCallback(callback, this);
-		glViewport(0, 1080 - _plat->height, _plat->width, _plat->height);
-
-		_plat->opaque = std::make_shared<RenderTarget<Vertex>>(*this, false, vertex_shader, fragment_shader, "platform opaque");
-		_plat->transparent = std::make_shared<RenderTarget<Vertex>>(*this, true, vertex_shader, fragment_shader, "platform transparent");
-		_plat->addRenderTarget(_plat->opaque);
-		_plat->addRenderTarget(_plat->transparent);
-
-		_plat->loaded = true;
-
-		message(Dbg::INFO, "platform",  "opengl ok");
+		_plat->loaded = _screen != nullptr;
 	}
 
 	Platform::~Platform() {
@@ -284,7 +125,6 @@ namespace SuperHaxagon {
 		return "";
 	}
 
-
 	std::unique_ptr<std::istream> Platform::openFile(const std::string& partial, const Location location) const {
 		return std::make_unique<std::ifstream>(getPath(partial, location), std::ios::in | std::ios::binary);
 	}
@@ -292,7 +132,7 @@ namespace SuperHaxagon {
 	std::unique_ptr<Font> Platform::loadFont(const int size) const {
 		std::shared_ptr<RenderTarget<VertexUV>> fontSurface = nullptr;
 		auto font = createFont(*this, getPath("/bump-it-up", Location::ROM), size, &_plat->z, fontSurface);
-		_plat->addRenderTarget(fontSurface);
+		_plat->targetVertexUV.emplace_back(fontSurface);
 		return font;
 	}
 
@@ -325,49 +165,6 @@ namespace SuperHaxagon {
 		buttons.right = kPressed & (HidNpadButton_R | HidNpadButton_ZR | HidNpadButton_AnyRight);
 		return buttons;
 	}
-
-	Vec2f Platform::getScreenDim() const {
-		return Vec2f{static_cast<float>(_plat->width), static_cast<float>(_plat->height)};
-	}
-
-	void Platform::screenBegin() const {
-		_plat->z = 0.0f;
-		glClearColor(0.2f, 0.3f, 0.8f, 1.0f);
-		glClearDepth(0.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	}
-
-	// Do nothing since we don't have two screens
-	void Platform::screenSwap() {}
-
-	void Platform::screenFinalize() const {
-		// Want to render opaque first, then transparent
-		render(*this, _plat->targetVertex, false);
-		render(*this, _plat->targetVertexUV, false);
-		render(*this, _plat->targetVertex, true);
-		render(*this, _plat->targetVertexUV, true);
-
-		// Present
-		eglSwapBuffers(_plat->display, _plat->surface);
-	}
-
-	void Platform::drawPoly(const Color& color, const std::vector<Vec2f>& points) const {
-		const auto z = _plat->z;
-		_plat->z += Z_STEP;
-
-		auto& buffer = color.a == 0xFF || color.a == 0 ? _plat->opaque : _plat->transparent;
-		for (const auto& point : points) {
-			buffer->insert({point, color, z});
-		}
-
-		for (size_t i = 1; i < points.size() - 1; i++) {
-			buffer->reference(0);
-			buffer->reference(i);
-			buffer->reference(i + 1);
-		}
-
-		buffer->advance(points.size());
-	}
 	
 	std::unique_ptr<Twist> Platform::getTwister() {
 		// ALSO a shitty way to do this, but it's the best I got.
@@ -378,19 +175,7 @@ namespace SuperHaxagon {
 	}
 	
 	void Platform::shutdown() {
-		if (_plat->display) {
-			eglMakeCurrent(_plat->display, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
-
-			if (_plat->context) {
-				eglDestroyContext(_plat->display, _plat->context);
-			}
-
-			if (_plat->surface) {
-				eglDestroySurface(_plat->display, _plat->surface);
-			}
-
-			eglTerminate(_plat->display);
-		}
+		_screen = nullptr;
 
 		auto display = false;
 		for (const auto& message : _plat->messages) {

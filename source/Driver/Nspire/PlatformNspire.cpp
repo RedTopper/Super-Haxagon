@@ -7,6 +7,7 @@
 #include "Core/Structs.hpp"
 #include "Driver/Font.hpp"
 #include "Driver/Music.hpp"
+#include "Driver/Screen.hpp"
 #include "Driver/Sound.hpp"
 
 #include <libndls.h>
@@ -16,11 +17,6 @@
 #include <iostream>
 
 namespace SuperHaxagon {
-	typedef struct {
-		int x;
-		int y;
-	} Point2D;
-
 	struct Platform::PlatformData {
 		Gc gc{};
 		float bgmDelta = 0.0f;
@@ -28,14 +24,11 @@ namespace SuperHaxagon {
 
 	std::unique_ptr<Font> createFont(Gc& gc, int size);
 	std::unique_ptr<Music> createMusic(float max, float* timeSinceLastGet);
+	std::unique_ptr<Screen> createScreen(Gc& gc);
 
 	Platform::Platform() : _plat(std::make_unique<PlatformData>()) {
 		_plat->gc = gui_gc_global_GC();
-		gui_gc_begin(_plat->gc);
-		gui_gc_setColorRGB(_plat->gc, 0, 0, 0);
-		gui_gc_fillRect(_plat->gc, 0, 0, 320, 240);
-		gui_gc_finish(_plat->gc);
-		gui_gc_blit_to_screen(_plat->gc);
+		_screen = createScreen(_plat->gc);
 
 		timer_init(0);
 		timer_load(0, TIMER_1S);
@@ -121,37 +114,6 @@ namespace SuperHaxagon {
 		buttons.left = isKeyPressed(KEY_NSPIRE_4) > 0;
 		buttons.right = isKeyPressed(KEY_NSPIRE_6)  > 0;
 		return buttons;
-	}
-
-	Vec2f Platform::getScreenDim() const {
-		return {320, 240};
-	}
-
-	void Platform::screenBegin() const {
-		gui_gc_begin(_plat->gc);
-		gui_gc_setColorRGB(_plat->gc, 0, 0, 0);
-		gui_gc_fillRect(_plat->gc, 0, 0, 320, 240);
-	}
-
-	// Do nothing since we don't have two screens
-	// ReSharper disable once CppMemberFunctionMayBeStatic
-	void Platform::screenSwap() {}
-
-	void Platform::screenFinalize() const {
-		gui_gc_blit_to_screen(_plat->gc);
-	}
-
-	void Platform::drawPoly(const Color& color, const std::vector<Vec2f>& points) const {
-		const auto pos = std::make_unique<Point2D[]>(points.size());
-		for (size_t i = 0; i < points.size(); i++) {
-			pos[i] = {
-				static_cast<int>(points[i].x),
-				static_cast<int>(points[i].y)
-			};
-		}
-
-		gui_gc_setColorRGB(_plat->gc, color.r, color.g, color.b);
-		gui_gc_fillPoly(_plat->gc, reinterpret_cast<unsigned*>(pos.get()), points.size());
 	}
 
 	void Platform::shutdown() {

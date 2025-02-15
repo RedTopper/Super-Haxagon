@@ -22,9 +22,7 @@ namespace SuperHaxagon {
 
 	Sound::Sound(std::unique_ptr<SoundData> data) : _data(std::move(data)) {}
 
-	Sound::~Sound() {
-		ndspChnWaveBufClear(channel);
-	}
+	Sound::~Sound() = default;
 
 	void Sound::play() const {
 		const Wav& wav = _data->wav;

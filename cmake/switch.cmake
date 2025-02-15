@@ -7,6 +7,7 @@ include_directories(SYSTEM "$ENV{DEVKITPRO}/portlibs/switch/include/freetype2")
 
 set(DRIVER
     source/Driver/Switch/MusicSwitch.cpp
+    source/Driver/Switch/ScreenSwitch.cpp
     source/Driver/Switch/SoundSwitch.cpp
     source/Driver/Switch/FontSwitch.cpp
     source/Driver/Switch/PlatformSwitch.cpp

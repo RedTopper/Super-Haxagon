@@ -46,7 +46,7 @@ namespace SuperHaxagon {
 		_data->window.draw(convex);
 	}
 
-	void Screen::clear(Color color) const {
+	void Screen::clear(const Color& color) const {
 		_data->window.clear(sf::Color(color.r, color.g, color.b));
 	}
 }

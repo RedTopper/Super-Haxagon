@@ -6,10 +6,10 @@
 #include "Core/Twist.hpp"
 #include "Driver/Font.hpp"
 #include "Driver/Music.hpp"
+#include "Driver/Screen.hpp"
 #include "Driver/Sound.hpp"
 
-#include <citro2d.h>
-
+#include <3ds.h>
 #include <array>
 #include <iostream>
 #include <sstream>
@@ -22,6 +22,7 @@
 namespace SuperHaxagon {
 	std::unique_ptr<Font> createFont(const std::string& path, int size);
 	std::unique_ptr<Music> createMusic(const std::string& path);
+	std::unique_ptr<Screen> createScreen(bool wide, bool debugConsole);
 	std::unique_ptr<Sound> createSound(const std::string& path);
 
 	extern void audioCallback(void*);
@@ -29,21 +30,20 @@ namespace SuperHaxagon {
 
 	struct Platform::PlatformData {
 		std::deque<std::pair<Dbg, std::string>> messages{};
-
-		C3D_RenderTarget* top = nullptr;
-		C3D_RenderTarget* bot = nullptr;
-		C2D_TextBuf buff;
-
-		bool drawingOnTop = true;
-		bool debugConsole = false;
 		uint64_t last = 0;
+		bool debugConsole = false;
 	};
 
 	Platform::Platform() : _plat(std::make_unique<PlatformData>()) {
 		_plat->debugConsole = DEBUG_CONSOLE;
 
-		romfsInit();
 		gfxInitDefault();
+		romfsInit();
+
+		if (_plat->debugConsole) {
+			// Create console on bottom if we want live debug output
+			consoleInit(GFX_BOTTOM, nullptr);
+		}
 
 		// Metadata to gather from CFGU
 		std::string username;
@@ -69,24 +69,7 @@ namespace SuperHaxagon {
 				username == "CITRA";
 		}
 
-		gfxSetWide(consoleModel != CFG_MODEL_2DS && !emulated);
-
-		C3D_Init(C3D_DEFAULT_CMDBUF_SIZE);
-		C2D_Init(C2D_DEFAULT_MAX_OBJECTS);
-		C2D_Prepare();
-
-		_plat->top = C2D_CreateScreenTarget(GFX_TOP, GFX_LEFT);
-
-		if (!_plat->debugConsole) {
-			// Use the bottom screen for drawing
-			_plat->bot = C2D_CreateScreenTarget(GFX_BOTTOM, GFX_LEFT);
-		} else {
-			// Otherwise create console on bottom if we want more messages
-			consoleInit(GFX_BOTTOM, nullptr);
-		}
-
-		// Output the username for debugging
-		Platform::message(Dbg::INFO, "username", username);
+		bool wide = consoleModel != CFG_MODEL_2DS && !emulated;
 
 		// Setup NDSP
 		ndspInit();
@@ -98,25 +81,17 @@ namespace SuperHaxagon {
 		mkdir("sdmc:/3ds/data", 0777);
 		mkdir("sdmc:/3ds/data/haxagon", 0777);
 
-		// Clear screen
-		C3D_FrameBegin(C3D_FRAME_SYNCDRAW);
-		C2D_TargetClear(_plat->top, C2D_Color32(0x00, 0x00, 0x00, 0xff));
-		C2D_SceneBegin(_plat->top);
+		_screen = createScreen(wide, DEBUG_CONSOLE);
 
-		if (!_plat->debugConsole) {
-			C2D_TargetClear(_plat->bot, C2D_Color32(0x00, 0x00, 0x00, 0xff));
-			C2D_SceneBegin(_plat->bot);
-		}
-
-		C3D_FrameEnd(0);
+		// Output the username for debugging
+		Platform::message(Dbg::FATAL, "username", username);
 	}
 
 	Platform::~Platform() {
-		C2D_Fini();
-		C3D_Fini();
-		gfxExit();
+		_screen = nullptr;
 		ndspExit();
 		romfsExit();
+		gfxExit();
 	}
 
 	bool Platform::loop() {
@@ -179,42 +154,6 @@ namespace SuperHaxagon {
 		return buttons;
 	}
 
-	Vec2f Platform::getScreenDim() const {
-		return {static_cast<float>(_plat->drawingOnTop ? 400 : 320), 240};
-	}
-
-	void Platform::screenBegin() const {
-		_plat->drawingOnTop = true;
-		C3D_FrameBegin(C3D_FRAME_SYNCDRAW);
-		C2D_TargetClear(_plat->top, C2D_Color32(0x00, 0x00, 0x00, 0xff));
-		C2D_SceneBegin(_plat->top);
-	}
-
-	void Platform::screenSwap() {
-		if (!_plat->debugConsole) {
-			// Allowed to draw bottom screen if in fatal mode
-			_plat->drawingOnTop = false;
-			C2D_TargetClear(_plat->bot, C2D_Color32(0x00, 0x00, 0x00, 0xff));
-			C2D_SceneBegin(_plat->bot);
-		}
-	}
-
-	void Platform::screenFinalize() const {
-		C3D_FrameEnd(0);
-	}
-
-	void Platform::drawPoly(const Color& color, const std::vector<Vec2f>& points) const {
-		const auto c = C2D_Color32(color.r, color.g, color.b, color.a);
-		for (size_t i = 1; i < points.size() - 1; i++) {
-			C2D_DrawTriangle(
-				static_cast<float>(points[0].x), static_cast<float>(points[0].y), c,
-				static_cast<float>(points[i].x), static_cast<float>(points[i].y), c,
-				static_cast<float>(points[i + 1].x), static_cast<float>(points[i + 1].y), c,
-				0
-			);
-		}
-	}
-
 	std::unique_ptr<Twist> Platform::getTwister() {
 		// Kind of a shitty way to do this, but it's the best I got.
 		const auto a = new std::seed_seq{svcGetSystemTick(), static_cast<u64>(time(nullptr))};
@@ -233,24 +172,26 @@ namespace SuperHaxagon {
 
 		if (display) {
 			if (_plat->debugConsole) {
-				// Need to create console to show user the error
+				// We already have a debug console, so clear the screen
+				// and show a message to press START to quit.
+				_screen->screenBegin();
+				_screen->clear(COLOR_BLACK);
+				_screen->screenSwitch();
+				_screen->screenFinalize();
+
+				std::cout << std::endl << "[3ds] Fatal error! START to quit." << std::endl;
+			} else {
+				// Create a new console since we don't have one.
+				gfxSetWide(false);
 				consoleInit(GFX_TOP, nullptr);
 				std::cout << "Fatal error! START to quit." << std::endl;
 				std::cout << "Last messages:" << std::endl << std::endl;
 				for (const auto& message : _plat->messages) {
 					std::cout << message.second << std::endl;
 				}
-			} else {
-				// Otherwise the console exists and just needs to show
-				// the message for a bit longer
-				C3D_FrameBegin(C3D_FRAME_SYNCDRAW);
-				C2D_TargetClear(_plat->top, C2D_Color32(0x00, 0x00, 0x00, 0xff));
-				C2D_SceneBegin(_plat->top);
-				C3D_FrameEnd(0);
-
-				std::cout << std::endl << "[3ds] Fatal error! START to quit." << std::endl;
 			}
 
+			// Hold in a loop.
 			while (aptMainLoop()) {
 				gspWaitForVBlank();
 				gfxSwapBuffers();

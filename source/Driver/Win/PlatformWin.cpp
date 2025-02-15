@@ -1,7 +1,7 @@
 #include "Driver/Platform.hpp"
 
 #include "Core/Twist.hpp"
-#include "Driver/Sound.hpp"
+#include "Driver/Screen.hpp"
 #include "Driver/SFML/DataSFML.hpp"
 
 #include <SFML/Graphics.hpp>
@@ -14,6 +14,7 @@
 namespace SuperHaxagon {
 	Platform::Platform() {
 		_plat = createPlatform("./sdmc", "./romfs", false);
+		_screen = createScreen(*_plat->window);
 
 		SetForegroundWindow(_plat->window->getSystemHandle());
 

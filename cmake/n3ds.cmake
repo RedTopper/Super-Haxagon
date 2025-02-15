@@ -11,6 +11,7 @@ set(DRIVER
     source/Driver/3DS/Platform3DS.cpp
     source/Driver/3DS/Font3DS.cpp
     source/Driver/3DS/Music3DS.cpp
+    source/Driver/3DS/Screen3DS.cpp
     source/Driver/3DS/Sound3DS.cpp
     source/Driver/3DS/Wav3DS.cpp
     source/Driver/Common/PlatformSupportsFilesystem.cpp

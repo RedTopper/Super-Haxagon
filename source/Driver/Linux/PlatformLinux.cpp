@@ -4,8 +4,6 @@
 #include "Driver/Screen.hpp"
 #include "Driver/SFML/DataSFML.hpp"
 
-#include <SFML/Graphics.hpp>
-
 #include <iostream>
 #include <sys/stat.h>
 

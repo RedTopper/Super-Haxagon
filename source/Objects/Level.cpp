@@ -130,7 +130,8 @@ namespace SuperHaxagon {
 		surface.drawRegular(bg2, (HEX_LENGTH - HEX_BORDER), _sidesTween);
 		if (_showCursor) surface.drawCursor(fg, HEX_LENGTH + PLAYER_PADDING_BETWEEN_HEX, _cursorPos);
 
-		surface.drawDebugTriangles();
+		// To help debugging
+		// surface.drawDebugTriangles();
 	}
 
 	Movement Level::collision(const float cursorDistance, const float dilation) const {

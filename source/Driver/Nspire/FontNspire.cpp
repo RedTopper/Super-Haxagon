@@ -46,7 +46,7 @@ namespace SuperHaxagon {
 			if (alignment == Alignment::RIGHT) translate.x = position.x - width;
 			translate.y = position.y + getHeight()/2.0f;
 
-			gui_gc_drawString(gc, chars.get(), translate.x, translate.y, static_cast<gui_gc_StringMode>(GC_SM_NORMAL | GC_SM_MIDDLE));
+			gui_gc_drawString(gc, chars.get(), std::round(translate.x), std::round(translate.y), static_cast<gui_gc_StringMode>(GC_SM_NORMAL | GC_SM_MIDDLE));
 		}
 
 		gui_gc_Font font{};

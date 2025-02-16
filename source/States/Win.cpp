@@ -73,6 +73,11 @@ namespace SuperHaxagon {
 
 	void Win::enter() {
 		_game.playMusic("/esiannoyamFoEzam", Location::ROM, true, false);
+		_game.setNextCamera(
+				{0, -std::sin(PI/6.0f) * 4.0f, std::cos(PI/6.0f) * 4.0f},
+				{0.0f, 0.0f, 0.0f},
+				60.0f
+		);
 	}
 	
 	std::unique_ptr<State> Win::update(const float dilation) {
@@ -105,8 +110,8 @@ namespace SuperHaxagon {
 
 			const auto& factory = _game.getLevels()[i].get();
 			_level->setWinFactory(factory);
-			_level->setWinMultiplierRot(0.75f);
-			_level->setWinMultiplierWalls(-0.75f);
+			_level->setWinMultiplierRot(0.6f);
+			_level->setWinMultiplierWalls(-0.6f);
 			_level->setWinAutoPatternCreate(i != LEVEL_VOID);
 			_level->setWinFrame(0);
 			_level->resetColors();
@@ -144,7 +149,7 @@ namespace SuperHaxagon {
 	}
 
 	void Win::drawGame(SurfaceGame& surface, SurfaceGame* shadows) {
-		_level->draw(surface, shadows, 0, 0.0f);
+		_level->draw(surface, shadows, 0);
 	}
 
 	void Win::drawBotUI(SurfaceUI& surface) {

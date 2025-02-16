@@ -74,7 +74,7 @@ namespace SuperHaxagon {
 			buttons.back = kDown & HidNpadButton_B;
 			buttons.quit = kDown & HidNpadButton_Plus;
 			buttons.left = kPressed & (HidNpadButton_L | HidNpadButton_ZL | HidNpadButton_AnyLeft);
-			buttons.right = kPressed & (HidNpadButton_R | HidNpadButton_ZR | HidNpadButton_AnyRight);
+			buttons.right = kPressed & (HidNpadButton_R | HidNpadButton_ZR | HidNpadButton_AnyRight | HidNpadButton_X);
 			return buttons;
 		}
 

@@ -1,5 +1,5 @@
-#ifndef SUPER_HAXAGON_MENU_HPP
-#define SUPER_HAXAGON_MENU_HPP
+#ifndef SUPER_HAXAGON_TITLE_HPP
+#define SUPER_HAXAGON_TITLE_HPP
 
 #include "State.hpp"
 
@@ -13,14 +13,11 @@ namespace SuperHaxagon {
 	class Platform;
 	class LevelFactory;
 
-	class Menu : public State {
+	class Title : public State {
 	public:
-		const float FRAMES_PER_TRANSITION = 12.0f;
-		const float FRAMES_PER_COLOR = 60.0f;
-
-		Menu(Game& game, LevelFactory& selected, const GameColors& starting);
-		Menu(Menu&) = delete;
-		~Menu() override;
+		explicit Title(Game& game);
+		Title(Title&) = delete;
+		~Title() override;
 
 		std::unique_ptr<State> update(float dilation) override;
 		void drawGame(SurfaceGame& surface, SurfaceGame* shadows) override;
@@ -33,16 +30,16 @@ namespace SuperHaxagon {
 		Game& _game;
 		Platform& _platform;
 
-		float _frameRotation = FRAMES_PER_TRANSITION;
-		float _frameBackgroundColor = FRAMES_PER_COLOR;
-		int _transitionDirection = 0;
-		bool _justEntered = true;
+		float _frameBackgroundColor = 0.0;
+		float _rotation = 0.0f;
+		LevelFactory& _firstLevel;
 
-		std::vector<std::unique_ptr<LevelFactory>>::const_iterator _selected;
+		GameColors _colorCurrent;
+
 		std::map<LocColor, Color> _color;
 		std::map<LocColor, Color> _colorNext;
 		std::map<LocColor, size_t> _colorNextIndex;
 	};
 }
 
-#endif //SUPER_HAXAGON_MENU_HPP
+#endif //SUPER_HAXAGON_TITLE_HPP

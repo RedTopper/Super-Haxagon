@@ -44,7 +44,7 @@ namespace SuperHaxagon {
 
 	Game::~Game() {
 		// Stop and unload music
-		_bgm->pause();
+		if (_bgm) _bgm->pause();
 		_bgm = nullptr;
 		_platform.message(Dbg::INFO, "game", "shutdown ok");
 	}
@@ -72,6 +72,7 @@ namespace SuperHaxagon {
 				next = _state->update(dilation);
 			}
 
+			_surfaceGame.update(dilation);
 			_screen.screenBegin();
 			_state->drawGame(_surfaceGame, _surfaceShadows.get());
 			_state->drawTopUI(_surfaceUI);

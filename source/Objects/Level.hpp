@@ -25,7 +25,7 @@ namespace SuperHaxagon {
 		static constexpr float FRAMES_PER_PULSE = 15;
 		static constexpr float SPIN_SPEED = TAU / 130.0f;
 		static constexpr float ROTATE_ZERO_SPEED = TAU / 200.0f;
-		static constexpr float PULSE_DISTANCE = 0.1f;
+		static constexpr float PULSE_DISTANCE = 0.05f;
 		static constexpr int MIN_SAME_SIDES = 3;
 		static constexpr int MAX_SAME_SIDES = 5;
 
@@ -34,7 +34,7 @@ namespace SuperHaxagon {
 		~Level();
 
 		void update(Twist& rng, float dilation);
-		void draw(SurfaceGame& game, SurfaceGame* shadows, float offset, float pitch) const;
+		void draw(SurfaceGame& game, SurfaceGame* shadows, float offset) const;
 		Movement collision(float cursorDistance, float dilation) const;
 
 		void increaseMultiplier();
@@ -51,6 +51,7 @@ namespace SuperHaxagon {
 
 		// Time
 		float getFrame() const {return _frame;}
+		GameColors getCurrentColor() const {return _colorCurrent;}
 
 		const LevelFactory& getLevelFactory() const {return *_factory;}
 
@@ -96,6 +97,7 @@ namespace SuperHaxagon {
 		float _tweenFrame{}; // Tween colors
 		float _flipFrame = FLIP_FRAMES_MAX; // Amount of frames left until it rotates in the opposite direction
 
+		GameColors _colorCurrent{};
 		std::map<LocColor, Color> _color;
 		std::map<LocColor, Color> _colorNext;
 		std::map<LocColor, size_t> _colorNextIndex;

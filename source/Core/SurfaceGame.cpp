@@ -9,6 +9,17 @@
 namespace SuperHaxagon {
 	SurfaceGame::SurfaceGame(Screen& screen) : _screen(screen) {}
 
+	void SurfaceGame::update(float dilation) {
+		if (_camPercentBetween < 1.0f) {
+			_camPercentBetween += dilation / _camFramesToCompletion;
+
+			if (_camPercentBetween > 1.0f) _camPercentBetween = 1.0f;
+
+			_camCurrentPos = _camFromPos.ease(_camToPos, _camPercentBetween);
+			_camCurrentLookAt = _camFromLookAt.ease(_camToLookAt, _camPercentBetween);
+		}
+	}
+
 	void SurfaceGame::project(const Color& color, std::vector<Vec2f>& points) {
 		for (auto& p : points) {
 			Vec3f point(p);
@@ -146,25 +157,23 @@ namespace SuperHaxagon {
 		}
 	}
 
-	void SurfaceGame::calculateMatrix(float rotation) {
-		auto fov = 62.0f * PI / 180.0f;
-		auto pitch = PI/8.0f;
-
-		auto project = Matrix4x4f::generateProjection(fov, ASPECT_DEFAULT, 0.1f, 10.0f);
-
-		auto camera = Matrix4x4f::lookAt(
-				{0, -std::sin(pitch), std::cos(pitch)},
-				{0, 0, 0.0f},
-				{0, std::cos(pitch), std::sin(pitch)}
+	void SurfaceGame::calculateMatrix(float rotation, float scale) {
+		constexpr auto fov = 15.5f * PI / 180.0f;
+		const auto project = Matrix4x4f::generateProjection(fov, ASPECT_DEFAULT, 0.01f, 10.0f);
+		const auto camera = Matrix4x4f::lookAt(
+				_camCurrentPos,
+				_camCurrentLookAt,
+				{0, 1.0f, 0}
 		);
-		
-		Matrix4x4f rotate{};
-		rotate[0][0] = std::cos(rotation);
-		rotate[0][1] = std::sin(rotation);
-		rotate[1][0] = -std::sin(rotation);
-		rotate[1][1] = std::cos(rotation);
-		rotate[2][2] = 1.0f;
-		rotate[3][3] = 1.0f;
+
+		// We only need to rotate around Z and scale along X and Y
+		Matrix4x4f model{};
+		model[0][0] = scale * std::cos(rotation);
+		model[0][1] = scale * std::sin(rotation);
+		model[1][0] = scale * -std::sin(rotation);
+		model[1][1] = scale * std::cos(rotation);
+		model[2][2] = 1.0f;
+		model[3][3] = 1.0f;
 
 		// Create a scaling matrix that clamps the aspect ratio
 		const auto screen = _screen.getScreenDim();
@@ -180,7 +189,11 @@ namespace SuperHaxagon {
 		aspectMatrix[0][0] = scaleX;
 		aspectMatrix[1][1] = scaleY;
 
-		_matrix = (rotate * (camera * (project * aspectMatrix)));
+		_matrix = (model * (camera * (project * aspectMatrix)));
+	}
+
+	void SurfaceGame::copyMatrix(const SurfaceGame& other) {
+		_matrix = other._matrix;
 	}
 
 	void SurfaceGame::setWallOffset(float offset) {
@@ -189,5 +202,29 @@ namespace SuperHaxagon {
 
 	void SurfaceGame::setDepth(float depth) {
 		_depth = depth;
+	}
+
+	bool SurfaceGame::isCameraMoving() const {
+		return _camPercentBetween < 0.999f;
+	}
+
+	void SurfaceGame::setCamera(SuperHaxagon::Vec3f pos, SuperHaxagon::Vec3f at) {
+		_camCurrentLookAt = at;
+		_camCurrentPos = pos;
+		_camFromLookAt = at;
+		_camFromPos = pos;
+		_camToLookAt = at;
+		_camToPos = pos;
+		_camFramesToCompletion = 0.0f;
+		_camPercentBetween = 1.0f;
+	}
+
+	void SurfaceGame::setNextCamera(SuperHaxagon::Vec3f pos, SuperHaxagon::Vec3f rot, float frames) {
+		_camFromPos = _camCurrentPos;
+		_camFromLookAt = _camCurrentLookAt;
+		_camToPos = pos;
+		_camToLookAt = rot;
+		_camFramesToCompletion = frames;
+		_camPercentBetween = 0.0f;
 	}
 }

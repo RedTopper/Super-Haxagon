@@ -16,6 +16,8 @@ namespace SuperHaxagon {
 		explicit SurfaceGame(Screen& screen);
 		~SurfaceGame() = default;
 
+		void update(float dilation);
+
 		/**
 		 * Projects the game from game coordinates to camera coordinates.
 		 *
@@ -68,11 +70,17 @@ namespace SuperHaxagon {
 		 */
 		void toScreenSpace(std::vector<Vec2f>& points);
 
-		void calculateMatrix(float rotation);
+		void calculateMatrix(float rotation, float scale);
+
+		void copyMatrix(const SurfaceGame& other);
 
 		void setWallOffset(float offset);
 
 		void setDepth(float depth);
+
+		bool isCameraMoving() const;
+		void setCamera(Vec3f pos, Vec3f at);
+		void setNextCamera(Vec3f pos, Vec3f at, float frames);
 
 	protected:
 		Screen& _screen;
@@ -81,6 +89,15 @@ namespace SuperHaxagon {
 		float _offset = 0.0f;
 		float _depth = 0.0;
 		Matrix4x4f _matrix{};
+
+		float _camPercentBetween = 0.0f;
+		float _camFramesToCompletion = 0.0f;
+		Vec3f _camCurrentPos;
+		Vec3f _camCurrentLookAt;
+		Vec3f _camFromPos;
+		Vec3f _camFromLookAt;
+		Vec3f _camToPos;
+		Vec3f _camToLookAt;
 	};
 }
 

@@ -48,7 +48,7 @@ namespace SuperHaxagon {
 			if (alignment == Alignment::LEFT) flags |= static_cast<int>(C2D_AlignLeft);
 			if (alignment == Alignment::CENTER) flags |= static_cast<int>(C2D_AlignCenter);
 			if (alignment == Alignment::RIGHT) flags |= static_cast<int>(C2D_AlignRight);
-			C2D_DrawText(&text, flags, position.x, position.y, 0, 1.0f, 1.0f, c);
+			C2D_DrawText(&text, flags, std::round(position.x), std::round(position.y), 0, 1.0f, 1.0f, c);
 			C2D_TextBufClear(buff);
 		}
 

@@ -21,7 +21,7 @@ namespace SuperHaxagon {
 		//set up the amount of sides the level should have.
 		_sidesLast = _patterns.front().getSides();
 		_sidesCurrent = _patterns.front().getSides();
-		_cursorPos = TAU/4.0f + (factory.getSpeedCursor() / 2.0f);
+		_cursorPos = -TAU/4.0f + (factory.getSpeedCursor() / 2.0f);
 	}
 
 	Level::~Level() = default;
@@ -46,6 +46,14 @@ namespace SuperHaxagon {
 				} 
 			}
 		}
+
+		// Calculate colors
+		const auto percentTween = _tweenFrame / static_cast<float>(_factory->getSpeedPulse());
+		_colorCurrent = GameColors{
+				interpolateColor(_color.at(LocColor::FG), _colorNext.at(LocColor::FG), percentTween),
+				interpolateColor(_color.at(LocColor::BG1), _colorNext.at(LocColor::BG1), percentTween),
+				interpolateColor(_color.at(LocColor::BG2), _colorNext.at(LocColor::BG2), percentTween),
+		};
 
 		// Bring walls forward if we are not delaying
 		// Otherwise tween from one shape to another.
@@ -91,33 +99,24 @@ namespace SuperHaxagon {
 
 		// Flip level if needed
 		// Cannot flip while spin effect is happening
-		if(_spin == 0.0f && _flipFrame <= 0) {
+		if (_spin == 0.0f && _flipFrame <= 0) {
 			_multiplierRot *= -1.0f;
 			_flipFrame = rng.rand(FLIP_FRAMES_MIN, FLIP_FRAMES_MAX);
 		}
 	}
 
-	void Level::draw(SurfaceGame& surface, SurfaceGame* shadows, const float offset, const float pitch) const {
-
-		// Calculate colors
-		const auto percentTween = _tweenFrame / static_cast<float>(_factory->getSpeedPulse());
-		const auto fg = interpolateColor(_color.at(LocColor::FG), _colorNext.at(LocColor::FG), percentTween);
-		const auto bg1 = interpolateColor(_color.at(LocColor::BG1), _colorNext.at(LocColor::BG1), percentTween);
-		const auto bg2 = interpolateColor(_color.at(LocColor::BG2), _colorNext.at(LocColor::BG2), percentTween);
-
-		//surface.reset();
-		//surface.setRotation(_rotation);
-		//surface.setZoom(1.0f + _pulse + offset);
-		surface.calculateMatrix(_rotation);
+	void Level::draw(SurfaceGame& surface, SurfaceGame* shadows, const float offset) const {
+		surface.calculateMatrix(_rotation, 1.0f + _pulse);
 		surface.setWallOffset(offset);
-		//surface.setPitch(pitch);
-		//surface.setRoll(0.5f);
-		//surface.setWallOffset(offset);
 
-		surface.drawBackground(_bgInverted ? bg2 : bg1, _bgInverted ? bg1 : bg2, _sidesTween);
+		surface.drawBackground(
+				_bgInverted ? _colorCurrent.bg2 : _colorCurrent.bg1,
+				_bgInverted ? _colorCurrent.bg1 : _colorCurrent.bg2,
+				_sidesTween
+		);
 
 		if (shadows) {
-			shadows->calculateMatrix(_rotation);
+			shadows->copyMatrix(surface);
 			shadows->setWallOffset(offset);
 			shadows->setDepth(-0.025f);
 			shadows->drawPatterns(COLOR_SHADOW, _patterns, _sidesTween);
@@ -125,10 +124,10 @@ namespace SuperHaxagon {
 			if (_showCursor) shadows->drawCursor(COLOR_SHADOW, HEX_LENGTH + PLAYER_PADDING_BETWEEN_HEX, _cursorPos);
 		}
 
-		surface.drawPatterns(fg, _patterns, _sidesTween);
-		surface.drawRegular(fg, HEX_LENGTH, _sidesTween);
-		surface.drawRegular(bg2, (HEX_LENGTH - HEX_BORDER), _sidesTween);
-		if (_showCursor) surface.drawCursor(fg, HEX_LENGTH + PLAYER_PADDING_BETWEEN_HEX, _cursorPos);
+		surface.drawPatterns(_colorCurrent.fg, _patterns, _sidesTween);
+		surface.drawRegular(_colorCurrent.fg, HEX_LENGTH, _sidesTween);
+		surface.drawRegular(_colorCurrent.bg2, (HEX_LENGTH - HEX_BORDER), _sidesTween);
+		if (_showCursor) surface.drawCursor(_colorCurrent.fg, HEX_LENGTH + PLAYER_PADDING_BETWEEN_HEX, _cursorPos);
 
 		// To help debugging
 		// surface.drawDebugTriangles();

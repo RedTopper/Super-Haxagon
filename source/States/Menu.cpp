@@ -1,18 +1,18 @@
 #include "States/Menu.hpp"
 
-#include "Core/Configuration.hpp"
 #include "Core/Game.hpp"
 #include "Core/Metadata.hpp"
 #include "Driver/Font.hpp"
 #include "Driver/Platform.hpp"
 #include "Factories/LevelFactory.hpp"
 #include "States/Play.hpp"
+#include "States/Title.hpp"
 #include "States/Quit.hpp"
 
 #include <algorithm>
 
 namespace SuperHaxagon {
-	Menu::Menu(Game& game, LevelFactory& selected) :
+	Menu::Menu(Game& game, LevelFactory& selected, const GameColors& starting) :
 		_game(game),
 		_platform(game.getPlatform()) {
 
@@ -22,8 +22,9 @@ namespace SuperHaxagon {
 		});
 		
 		for (auto i = COLOR_LOCATION_FIRST; i != COLOR_LOCATION_LAST; i++) {
-			_color[static_cast<LocColor>(i)] = COLOR_BLACK;
-			_colorNext[static_cast<LocColor>(i)] = COLOR_BLACK;
+			auto at = static_cast<LocColor>(i);
+			_color[at] = starting[at];
+			_colorNext[at] = starting[at];
 		}
 	}
 
@@ -31,7 +32,11 @@ namespace SuperHaxagon {
 
 	void Menu::enter() {
 		_game.playMusic("/werq", Location::ROM, false);
-		_game.playEffect(SoundEffect::HEXAGON);
+		_game.setNextCamera(
+				{0.0f, -0.6f, 1.4f},
+				{0.0f, 0.1f, 0.0f},
+				60.0f
+		);
 	}
 
 	std::unique_ptr<State> Menu::update(const float dilation) {
@@ -39,8 +44,14 @@ namespace SuperHaxagon {
 
 		if (press.quit) return std::make_unique<Quit>(_game);
 
+		// Prevent transitioning from the main menu from immediately
+		// selecting the first level.
+		if (!(press.select || press.back)) _justEntered = false;
+
+		if (press.back && !_justEntered) return std::make_unique<Title>(_game);
+
 		if (_transitionDirection == 0) {
-			if (press.select) {
+			if (press.select && !_justEntered) {
 				auto& level = **_selected;
 				_game.playMusic(level.getMusic(), level.getLocation(), true);
 				return std::make_unique<Play>(_game, level, level, 0.0f);
@@ -114,7 +125,7 @@ namespace SuperHaxagon {
 			rotation *= -1.0f;
 		}
 
-		surface.calculateMatrix(-rotation);
+		surface.calculateMatrix(-rotation, 1.0f);
 		//surface.setTranslate({0, -1.0f / 3.0f});
 		//surface.setPitch(15 * TAU / 16);
 		//surface.setZoom(SCALE_MENU);
@@ -142,7 +153,7 @@ namespace SuperHaxagon {
 		surface.drawBackground(bg1, bg2, 6.0);
 
 		if (shadows) {
-			shadows->calculateMatrix(-rotation);
+			shadows->copyMatrix(surface);
 			shadows->setDepth(-0.025f);
 			shadows->drawRegular(COLOR_SHADOW, HEX_LENGTH, 6.0);
 			shadows->drawCursor(COLOR_SHADOW, HEX_LENGTH + PLAYER_PADDING_BETWEEN_HEX, 3.0f * TAU / 4.0f - rotation);
@@ -170,7 +181,6 @@ namespace SuperHaxagon {
 		// Actual text
 		auto& level = **_selected;
 		const auto scoreTime = "BEST: " + getTime(static_cast<float>(level.getHighScore()));
-		const auto version = VERSION;
 		const auto diff = "DIFF: " + level.getDifficulty();
 		const auto mode = "MODE: " + level.getMode();
 		const auto auth = "AUTH: " + level.getCreator();
@@ -184,7 +194,6 @@ namespace SuperHaxagon {
 		const Vec2f posMode = {pad, posDifficulty.y + pad + small.getHeight()};
 		const Vec2f posCreator = {pad, posMode.y + (renderCreator ? pad + small.getHeight() : 0)};
 		const Vec2f posTime = {pad, screen.y - small.getHeight() - pad};
-		const Vec2f posVersion = {screen.x - pad, screen.y - small.getHeight() - pad};
 
 		// Text background for information at top left of screen
 		Vec2f infoSize = {std::max({
@@ -218,24 +227,11 @@ namespace SuperHaxagon {
 
 		surface.drawPolyUI(COLOR_TRANSPARENT, time);
 
-		Vec2f versionSize = {small.getWidth(version) + pad * 2, small.getHeight() + pad * 2};
-
-		const auto screenWidth = surface.getScreenDim().x;
-		std::vector<Vec2f> versionPoly = {
-			{screenWidth - versionSize.x, screenHeight - versionSize.y},
-			{screenWidth, screenHeight - versionSize.y},
-			{screenWidth, screenHeight},
-			{screenWidth - versionSize.x - versionSize.y / 2, screenHeight},
-		};
-
-		surface.drawPolyUI(COLOR_TRANSPARENT, versionPoly);
-
 		large.draw(COLOR_WHITE, posTitle, Alignment::LEFT, level.getName());
 		small.draw(COLOR_GREY, posDifficulty, Alignment::LEFT, diff);
 		small.draw(COLOR_GREY, posMode, Alignment::LEFT, mode);
 		if (renderCreator) small.draw(COLOR_GREY, posCreator, Alignment::LEFT, auth);
 		small.draw(COLOR_WHITE, posTime, Alignment::LEFT, scoreTime);
-		small.draw(COLOR_WHITE, posVersion, Alignment::RIGHT, version);
 	}
 
 	void Menu::drawBotUI(SurfaceUI&) {}

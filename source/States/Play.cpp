@@ -28,6 +28,11 @@ namespace SuperHaxagon {
 		auto* bgm = _game.getMusic();
 		if (bgm && !_factory.isCreditsLevel()) bgm->play();
 		_game.playEffect(SoundEffect::BEGIN);
+		_game.setNextCamera(
+				{0, -std::sin(SKEW_MIN) * 4.0f, std::cos(SKEW_MIN) * 4.0f},
+				{0.0f, 0.0f, 0.0f},
+				60.0f
+		);
 	}
 
 	void Play::exit() {
@@ -36,12 +41,6 @@ namespace SuperHaxagon {
 	}
 
 	std::unique_ptr<State> Play::update(const float dilation) {
-
-		auto skewFrameMax = static_cast<float>(_level->getLevelFactory().getSpeedPulse()) * 2.5f;
-		skewFrameMax = skewFrameMax < SKEW_MIN_FRAMES ? SKEW_MIN_FRAMES : skewFrameMax;
-		_skewFrame += dilation * (_level->getLevelFactory().getSpeedRotation() > 0 ? 1.0f : 0);
-		_skew = - static_cast<float>((-cos(_skewFrame / skewFrameMax * PI) + 1.1f) / 2.0f * SKEW_MAX);
-
 		// It's technically possible that the BGM metadata was not set
 		if (_game.getBGMMetadata()) {
 
@@ -55,6 +54,18 @@ namespace SuperHaxagon {
 			if (metadata.getMetadata(time, "I")) _level->invertBG();
 			if (metadata.getMetadata(time, "BL")) _level->pulse(1.0f);
 			if (metadata.getMetadata(time, "BS")) _level->pulse(0.66f);
+		}
+
+		// Camera
+		if (!_game.isCameraMoving()) {
+			_skewing = !_skewing;
+			auto skewFrameMax = static_cast<float>(_level->getLevelFactory().getSpeedPulse()) * 2.5f;
+			skewFrameMax = skewFrameMax < SKEW_MIN_FRAMES ? SKEW_MIN_FRAMES : skewFrameMax;
+			_game.setNextCamera(
+					{0, -std::sin(_skewing?SKEW_MAX:SKEW_MIN) * 4.0f, std::cos(_skewing?SKEW_MAX:SKEW_MIN) * 4.0f},
+					{0, 0, 0},
+					skewFrameMax
+			);
 		}
 
 		// Update level
@@ -123,7 +134,7 @@ namespace SuperHaxagon {
 	}
 
 	void Play::drawGame(SurfaceGame& surface, SurfaceGame* shadows) {
-		_level->draw(surface, shadows, 0, _skew);
+		_level->draw(surface, shadows, 0);
 	}
 
 	void Play::drawBotUI(SurfaceUI& surface) {

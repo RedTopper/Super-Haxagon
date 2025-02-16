@@ -32,6 +32,12 @@ namespace SuperHaxagon {
 	void Over::enter() {
 		_game.playEffect(SoundEffect::OVER);
 
+		_game.setNextCamera(
+				{0, -0.25f, 1.7f},
+				{0.0f, 0.0f, 0.0f},
+				60.0f
+		);
+
 		std::ofstream scores(_platform.getPath("/scores.db", Location::USER), std::ios::out | std::ios::binary);
 
 		if (!scores) return;
@@ -78,7 +84,7 @@ namespace SuperHaxagon {
 			}
 
 			if (press.back) {
-				return std::make_unique<Menu>(_game, _selected);
+				return std::make_unique<Menu>(_game, _selected, _level->getCurrentColor());
 			}
 		}
 
@@ -86,7 +92,7 @@ namespace SuperHaxagon {
 	}
 
 	void Over::drawGame(SurfaceGame& surface, SurfaceGame* shadows) {
-		_level->draw(surface, shadows, (_offset - 1.0f) / 100.0f, 0.0f);
+		_level->draw(surface, shadows, (_offset - 1.0f) / 100.0f);
 	}
 
 	void Over::drawBotUI(SurfaceUI& surface) {
@@ -127,11 +133,11 @@ namespace SuperHaxagon {
 		if(_frames >= FRAMES_PER_GAME_OVER) {
 			Buttons a{};
 			a.select = true;
-			small.draw(COLOR_WHITE, posA, Alignment::CENTER, "PRESS (" + _platform.getButtonName(a) + ") TO PLAY");
+			small.draw(COLOR_WHITE, posA, Alignment::CENTER, "PRESS (" + Platform::getButtonName(a) + ") TO PLAY");
 
 			Buttons b{};
 			b.back = true;
-			small.draw(COLOR_WHITE, posB, Alignment::CENTER, "PRESS (" + _platform.getButtonName(b) + ") TO QUIT");
+			small.draw(COLOR_WHITE, posB, Alignment::CENTER, "PRESS (" + Platform::getButtonName(b) + ") TO QUIT");
 		}
 	}
 }

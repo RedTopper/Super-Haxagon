@@ -3,6 +3,7 @@
 
 #include <cstdint>
 #include <cmath>
+#include <algorithm>
 
 namespace SuperHaxagon {
 
@@ -106,6 +107,27 @@ namespace SuperHaxagon {
 
 		T length() const {
 			return sqrt(norm());
+		}
+
+		Vec3 interpolate(Vec3 r, T t) {
+			return {
+				(r.x - x) * t + x,
+				(r.y - y) * t + y,
+				(r.z - z) * t + z,
+			};
+		}
+
+		Vec3 ease(Vec3 r, T t) {
+			t = std::clamp(t, static_cast<T>(0), static_cast<T>(1));
+			T f = 0;
+			if (t < static_cast<T>(0.5)) {
+				f = static_cast<T>(2) * t * t;
+			} else {
+				t -= static_cast<T>(0.5);
+				f = static_cast<T>(2) * t * (static_cast<T>(1) - t) + static_cast<T>(0.5);
+			}
+
+			return interpolate(r, f);
 		}
 	};
 

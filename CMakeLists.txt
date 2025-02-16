@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.18)
-project(Super_Haxagon VERSION 3.6.1)
+project(Super_Haxagon VERSION 3.7.0)
 
 set(CMAKE_CXX_STANDARD 17)
 
@@ -30,6 +30,7 @@ set(SOURCES
     source/States/Over.cpp
     source/States/Play.cpp
     source/States/Quit.cpp
+    source/States/Title.cpp
     source/States/Transition.cpp
     source/States/Win.cpp
 

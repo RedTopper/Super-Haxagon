@@ -4,7 +4,7 @@
 #include "Driver/Platform.hpp"
 #include "Factories/LevelFactory.hpp"
 #include "Factories/PatternFactory.hpp"
-#include "States/Menu.hpp"
+#include "States/Title.hpp"
 #include "States/Quit.hpp"
 
 #include <memory>
@@ -127,7 +127,7 @@ namespace SuperHaxagon {
 	}
 
 	std::unique_ptr<State> Load::update(float) {
-		if (_loaded) return std::make_unique<Menu>(_game, *_game.getLevels()[0]);
+		if (_loaded) return std::make_unique<Title>(_game);
 		return std::make_unique<Quit>(_game);
 	}
 }

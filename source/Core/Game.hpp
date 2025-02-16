@@ -41,6 +41,10 @@ namespace SuperHaxagon {
 		Font* getFontSmall() const {return _fontSmall.get();}
 		Font* getFontLarge() const {return _fontLarge.get();}
 
+		bool isCameraMoving() {return _surfaceGame.isCameraMoving();}
+		void setCamera(Vec3f pos, Vec3f at) {_surfaceGame.setCamera(pos, at);}
+		void setNextCamera(Vec3f pos, Vec3f at, float frames) {_surfaceGame.setNextCamera(pos, at, frames);}
+
 		void setRunning(const bool running) {_running = running;}
 
 	private:

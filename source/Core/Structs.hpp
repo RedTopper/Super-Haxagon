@@ -66,6 +66,21 @@ namespace SuperHaxagon {
 	static const Color PULSE_LOW = {0xFF, 0xFF, 0xFF, 0x7F};
 	static const Color PULSE_HIGH = {0xFF, 0xFF, 0xFF, 0xFF};
 
+	struct GameColors {
+		Color fg = COLOR_BLACK;
+		Color bg1 = COLOR_BLACK;
+		Color bg2 = COLOR_BLACK;
+
+		Color operator[](LocColor loc) const {
+			switch (loc) {
+				case LocColor::FG: return fg;
+				case LocColor::BG1: return bg1;
+				case LocColor::BG2: return bg2;
+				default: return COLOR_BLACK;
+			}
+		}
+	};
+
 	/**
 	 * Linear interpolation between two colors
 	 */

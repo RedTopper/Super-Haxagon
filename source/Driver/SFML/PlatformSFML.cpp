@@ -122,6 +122,9 @@ namespace SuperHaxagon {
 		initializePlatform(sdmc, romfs, backslash);
 
 		_impl = std::make_unique<PlatformImpl>(sdmc, romfs, backslash);
+
+		// Let windows do whatever it needs with the Window
+		osSpecificWindowSetup(_impl->window);
 	}
 
 	Platform::~Platform() = default;

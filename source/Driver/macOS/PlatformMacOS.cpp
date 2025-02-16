@@ -8,6 +8,7 @@
 #include <sys/stat.h>
 
 namespace SuperHaxagon {
+	void osSpecificWindowSetup(sf::Window&) {}
 	void initializePlatform(std::string& sdmc, std::string& romfs, bool& platformBackslash) {
 		sdmc = "./sdmc";
 		romfs = "./romfs";

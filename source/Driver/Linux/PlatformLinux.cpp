@@ -8,6 +8,7 @@
 #include <sys/stat.h>
 
 namespace SuperHaxagon {
+	void osSpecificWindowSetup(sf::Window&) {}
 	void initializePlatform(std::string& sdmc, std::string& romfs, bool& platformBackslash) {
 		if (std::getenv("container")) {
 			const auto* data = std::getenv("XDG_DATA_HOME");

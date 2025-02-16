@@ -18,9 +18,11 @@ namespace SuperHaxagon {
 
 		platformBackslash = true;
 
-		SetForegroundWindow(_plat->window->getSystemHandle());
-
 		_mkdir(".\\sdmc");
+	}
+
+	void osSpecificWindowSetup(sf::Window& window) {
+		SetForegroundWindow(window.getSystemHandle());
 	}
 
 	void Platform::message(const Dbg dbg, const std::string& where, const std::string& message) const {

@@ -50,3 +50,14 @@ services:
     volumes:
       - ../:/haxagon/git:z
       - ../build/linux:/haxagon/build:z
+  nothing:
+    # Example driver and build tooling
+    build:
+      context: .
+      dockerfile: null/Containerfile
+    image: super-haxagon-null
+    container_name: super-haxagon-null
+    hostname: super-haxagon-null
+    volumes:
+      - ../:/haxagon/git:z
+      - ../build/null:/haxagon/build:z

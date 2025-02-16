@@ -53,7 +53,9 @@ set(SOURCES
 configure_file(source/Core/Configuration.hpp.in Core/Configuration.hpp)
 include_directories("${CMAKE_CURRENT_BINARY_DIR}")
 
-if(CMAKE_SYSTEM_NAME MATCHES "Nintendo3DS")
+if(BUILD_NULL_DRIVER)
+    include(cmake/null.cmake)
+elseif(CMAKE_SYSTEM_NAME MATCHES "Nintendo3DS")
     include(cmake/n3ds.cmake)
 elseif(CMAKE_SYSTEM_NAME MATCHES "NintendoSwitch")
     include(cmake/switch.cmake)

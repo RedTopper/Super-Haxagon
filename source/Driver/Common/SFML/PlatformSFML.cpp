@@ -142,10 +142,6 @@ namespace SuperHaxagon {
 		return _impl->getPath(partial, location);
 	}
 
-	std::unique_ptr<std::istream> Platform::openFile(const std::string& partial, const Location location) const {
-		return std::make_unique<std::ifstream>(getPath(partial, location), std::ios::in | std::ios::binary);
-	}
-
 	std::unique_ptr<Font> Platform::loadFont(const int size) const {
 		return createFont(_impl->window, getPath("/bump-it-up.ttf", Location::ROM), size);
 	}

@@ -2,21 +2,35 @@
 
 message(STATUS "Building for linux...")
 
-find_package(OpenAL 1 REQUIRED)
-if (NOT TARGET OpenAL)
-    # Naughty naughty workaround for SFML not finding OpenAL-soft on Linux
-    add_custom_target(OpenAL DEPENDS OpenAL::OpenAL)
+if (NOT SKIP_SFML_BUILD)
+    set(DRIVER_PLATFORM
+        source/Driver/Linux/PlatformLinux.cpp
+        source/Driver/Common/PlatformIsFullyRandom.cpp
+    )
+
+    find_package(OpenAL 1 REQUIRED)
+    if (NOT TARGET OpenAL)
+        # Naughty naughty workaround for SFML not finding OpenAL-soft on Linux
+        add_custom_target(OpenAL DEPENDS OpenAL::OpenAL)
+    endif()
+
+    include(cmake/common/sfml.cmake)
+
+    if (SFML_STATIC_LIBRARIES)
+        target_compile_definitions(SuperHaxagon PRIVATE SFML_STATIC)
+    endif()
 endif()
 
-set(DRIVER_PLATFORM source/Driver/Linux/PlatformLinux.cpp)
+if (NOT SKIP_SDL2_BUILD)
+    set(DRIVER_PLATFORM_SDL2
+        source/Driver/Linux/PlatformLinuxSDL2.cpp
+        source/Driver/Common/PlatformIsFullyRandom.cpp
+    )
 
-include(cmake/sfml.cmake)
-
-if (SFML_STATIC_LIBRARIES)
-    target_compile_definitions(SuperHaxagon PRIVATE SFML_STATIC)
+    include(cmake/common/sdl2.cmake)
 endif()
 
-target_compile_options(SuperHaxagon PRIVATE -Wall -Wextra -pedantic)
+add_compile_options(-Wall -Wextra -pedantic)
 
 # Icons and destkop entry for flatpak
 include(GNUInstallDirs)

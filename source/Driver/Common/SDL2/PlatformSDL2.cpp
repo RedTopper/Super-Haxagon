@@ -9,17 +9,18 @@
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_mixer.h>
+#include <SDL2/SDL_ttf.h>
 
-#include <ctime>
-#include <memory>
 #include <iostream>
 #include <chrono>
+#include <thread>
+#include <sys/stat.h>
 
 namespace SuperHaxagon {
-	std::unique_ptr<Music> createMusic();
-	std::unique_ptr<Screen> createScreen(const Platform& platform);
-	std::unique_ptr<Sound> createSound();
-	std::unique_ptr<Font> createFont();
+	std::unique_ptr<Music> createMusic(const std::string& path);
+	std::unique_ptr<Screen> createScreen(SDL_Window* window, SDL_Renderer* renderer);
+	std::unique_ptr<Sound> createSound(const std::string& path);
+	std::unique_ptr<Font> createFont(SDL_Renderer& renderer, const std::string& path, int size);
 
 	void setKey(Buttons& buttons, int key, bool pressing) {
 		switch (key) {
@@ -40,33 +41,117 @@ namespace SuperHaxagon {
 		}
 	}
 
+	void setController(Buttons& buttons, int key, bool pressing) {
+		switch (key) {
+			case SDL_CONTROLLER_BUTTON_A:
+				buttons.select = pressing; return;
+			case SDL_CONTROLLER_BUTTON_B:
+				buttons.back = pressing; return;
+			case SDL_CONTROLLER_BUTTON_DPAD_LEFT:
+			case SDL_CONTROLLER_BUTTON_LEFTSHOULDER:
+				buttons.left = pressing; return;
+			case SDL_CONTROLLER_BUTTON_DPAD_RIGHT:
+			case SDL_CONTROLLER_BUTTON_RIGHTSHOULDER:
+			case SDL_CONTROLLER_BUTTON_Y:
+				buttons.right = pressing; return;
+			case SDL_CONTROLLER_BUTTON_START:
+				buttons.quit = pressing; return;
+			default: return;
+		}
+	}
+
+	SDL_GameController *findController() {
+		for (int i = 0; i < SDL_NumJoysticks(); i++) {
+			if (SDL_IsGameController(i)) {
+				std::cout << "Found a controller!" << std::endl;
+				return SDL_GameControllerOpen(i);
+			}
+		}
+
+		return nullptr;
+	}
+
 	struct Platform::PlatformImpl {
-		PlatformImpl() {
+		PlatformImpl() : screen(createScreen(nullptr, nullptr)) {}
+
+		~PlatformImpl() {
+			SDL_DestroyRenderer(renderer);
+			SDL_DestroyWindow(window);
+			Mix_Quit();
+			SDL_Quit();
+		}
+
+		void sdlInit(const Platform& platform) {
+			SDL_SetHint(SDL_HINT_WINDOWS_DPI_AWARENESS, "permonitor");
+			//SDL_SetHint(SDL_HINT_VIDEODRIVER, "x11");
+
 			if (SDL_InitSubSystem(SDL_INIT_VIDEO) < 0) {
-				message(Dbg::FATAL, "platform", "sdl could not init video!");
+				platform.message(Dbg::FATAL, "platform", "sdl could not init video!");
 				return;
 			}
 
 			if (SDL_InitSubSystem(SDL_INIT_AUDIO) < 0) {
-				message(Dbg::FATAL, "platform", "sdl could not init audio!");
-				return;
+				platform.message(Dbg::WARN, "platform", "sdl could not init audio!");
+			}
+
+			if (SDL_InitSubSystem(SDL_INIT_GAMECONTROLLER) < 0) {
+				platform.message(Dbg::WARN, "platform", "sdl could not init game controllers!");
 			}
 
 			Mix_Init(MIX_INIT_OGG);
 			Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, MIX_DEFAULT_CHANNELS, 4096);
 			Mix_AllocateChannels(16);
 
+			TTF_Init();
+
+			SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
+			SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 2);
+
+			window = SDL_CreateWindow("Super Haxagon", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 0, 0, SDL_WINDOW_FULLSCREEN_DESKTOP | SDL_WINDOW_ALLOW_HIGHDPI);
+			if (!window) {
+				platform.message(Dbg::FATAL, "screen", "could not init sfml window!");
+				return;
+			}
+
+			renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+			if (!renderer) {
+				// fallback to software
+				platform.message(Dbg::WARN, "screen", "falling back to software rendering");
+				renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
+				software = true;
+				if (!renderer) {
+					platform.message(Dbg::FATAL, "screen", "... and it failed!");
+					return;
+				}
+			}
+
+			SDL_ShowCursor(SDL_DISABLE);
+			SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+			SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+			SDL_RenderClear(renderer);
+			SDL_RenderPresent(renderer);
+
 			SDL_StopTextInput();
 
-			time = std::chrono::high_resolution_clock::now();
-		}
+			mkdir("./sdmc", 0755);
 
-		~PlatformImpl() {
-			Mix_Quit();
-			SDL_Quit();
+			time = std::chrono::high_resolution_clock::now();
+			screen = createScreen(window, renderer);
+			controller = findController();
+			loaded = true;
 		}
 
 		bool loop() {
+			if (software) {
+				// We aren't locked to the framerate of a hardware device,
+				// so attempt to make our own frame cap of 60fps
+				auto now = std::chrono::high_resolution_clock::now();
+				auto us = std::chrono::duration_cast<std::chrono::microseconds>(now - time).count();
+				auto timeToSleep = 16666 - us;
+				if (timeToSleep < 0) timeToSleep = 0;
+				std::this_thread::sleep_for(std::chrono::microseconds (timeToSleep));
+			}
+
 			auto now = std::chrono::high_resolution_clock::now();
 			auto us = std::chrono::duration_cast<std::chrono::microseconds>(now - time).count();
 			frameTime = static_cast<float>(us) /  1000000.0f;
@@ -74,45 +159,53 @@ namespace SuperHaxagon {
 
 			SDL_Event ev;
 			while (SDL_PollEvent(&ev)) {
-				if (ev.type == SDL_QUIT) {
-					return false;
-				}
-
-				if (ev.type == SDL_KEYDOWN || ev.type == SDL_KEYUP) {
-					bool press = ev.key.state == SDL_PRESSED;
-					message(Dbg::INFO, "keyboard", press ? "KeyDown" : "KeyUp");
-					setKey(buttons, ev.key.keysym.sym, press);
+				switch(ev.type) {
+					case SDL_QUIT:
+						return false;
+					case SDL_KEYDOWN:
+					case SDL_KEYUP:
+						setKey(buttons, ev.key.keysym.sym, ev.key.state == SDL_PRESSED);
+						break;
+					case SDL_CONTROLLERDEVICEADDED:
+						if (!controller) {
+							controller = SDL_GameControllerOpen(ev.cdevice.which);
+						}
+						break;
+					case SDL_CONTROLLERDEVICEREMOVED:
+						if (controller && ev.cdevice.which == SDL_JoystickInstanceID(SDL_GameControllerGetJoystick(controller))) {
+							SDL_GameControllerClose(controller);
+							controller = findController();
+						}
+						break;
+					case SDL_CONTROLLERBUTTONDOWN:
+					case SDL_CONTROLLERBUTTONUP:
+						if (controller && ev.cdevice.which == SDL_JoystickInstanceID(SDL_GameControllerGetJoystick(controller))) {
+							setController(buttons, ev.cbutton.button, ev.cbutton.state == SDL_PRESSED);
+						}
+						break;
 				}
 			}
 
 			return true;
 		}
 
-		void message(const Dbg dbg, const std::string& where, const std::string& message) const {
-			if (dbg == Dbg::INFO) {
-				std::cout << "[sdl2:info] " + where + ": " + message << std::endl;
-			} else if (dbg == Dbg::WARN) {
-				std::cout << "[sdl2:warn] " + where + ": " + message << std::endl;
-			} else if (dbg == Dbg::FATAL) {
-				std::cerr << "[sdl2:fatal] " + where + ": " + message << std::endl;
-			}
-		}
-
 		std::chrono::system_clock::time_point time;
 		std::unique_ptr<Screen> screen;
-		float frameTime = 0.0f;
 		Buttons buttons{};
+
+		float frameTime = 0.0f;
+		bool loaded = false;
+		bool software = false;
+		SDL_Window* window = nullptr;
+		SDL_Renderer* renderer = nullptr;
+		SDL_GameController* controller = nullptr;
 	};
 
 	Platform::Platform() : _impl(std::make_unique<PlatformImpl>()) {
-		// create screen once _impl is valid
-		_impl->screen = createScreen(*this);
+		_impl->sdlInit(*this);
 	}
 
-	Platform::~Platform() {
-		// de-init screen before anything else
-		_impl->screen = nullptr;
-	}
+	Platform::~Platform() = default;
 
 	bool Platform::loop() {
 		return _impl->loop();
@@ -132,16 +225,17 @@ namespace SuperHaxagon {
 		}
 	}
 
-	std::unique_ptr<Font> Platform::loadFont(const int) const {
-		return nullptr;
+	std::unique_ptr<Font> Platform::loadFont(const int size) const {
+		if (!_impl->loaded) return nullptr;
+		return createFont(*_impl->renderer, getPath("/bump-it-up.ttf", Location::ROM), size);
 	}
 
-	std::unique_ptr<Sound> Platform::loadSound(const std::string&) const {
-		return nullptr;
+	std::unique_ptr<Sound> Platform::loadSound(const std::string& base) const {
+		return createSound(getPath(base, Location::ROM) + ".wav");
 	}
 
 	std::unique_ptr<Music> Platform::loadMusic(const std::string& base, const Location location) const {
-		return nullptr;
+		return createMusic(getPath(base, location) + ".ogg");
 	}
 
 	Screen& Platform::getScreen() {
@@ -162,19 +256,4 @@ namespace SuperHaxagon {
 	}
 
 	void Platform::shutdown() {}
-
-	Supports Platform::supports() {
-		return Supports::SHADOWS;
-	}
-
-	void Platform::message(const Dbg dbg, const std::string& where, const std::string& message) const {
-		_impl->message(dbg, where, message);
-	}
-
-	std::unique_ptr<Twist> Platform::getTwister() {
-		auto* a = new std::seed_seq{time(nullptr)};
-		return std::make_unique<Twist>(
-				std::unique_ptr<std::seed_seq>(a)
-		);
-	}
 }

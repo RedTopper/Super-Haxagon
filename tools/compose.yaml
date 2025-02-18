@@ -50,6 +50,16 @@ services:
     volumes:
       - ../:/haxagon/git:z
       - ../build/linux:/haxagon/build:z
+  linux-sdl2:
+    build:
+      context: .
+      dockerfile: linux-sdl2/Containerfile
+    image: super-haxagon-linux-sdl2
+    container_name: super-haxagon-linux-sdl2
+    hostname: super-haxagon-linux-sdl2
+    volumes:
+      - ../:/haxagon/git:z
+      - ../build/linux-sdl2:/haxagon/build:z
   nothing:
     # Example driver and build tooling
     build:

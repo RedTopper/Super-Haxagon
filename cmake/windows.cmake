@@ -12,7 +12,7 @@ set(SFML_STATIC_LIBRARIES TRUE)
 
 set(DRIVER_PLATFORM source/Driver/Win/PlatformWin.cpp)
 
-include(cmake/sfml.cmake)
+include(cmake/common/sfml.cmake)
 
 # Always link static on Windows
 target_compile_definitions(SuperHaxagon PRIVATE SFML_STATIC)

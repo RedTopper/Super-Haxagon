@@ -1,6 +1,6 @@
 #!/bin/bash
 # Run from repository root
-# ex: ./tools/linux/flatpak.sh
+# ex: ./tools/flatpak.sh
 
 set -e
 

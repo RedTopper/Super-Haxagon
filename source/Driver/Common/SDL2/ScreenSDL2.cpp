@@ -8,40 +8,13 @@
 
 namespace SuperHaxagon {
 	struct Screen::ScreenImpl {
-		explicit ScreenImpl(const Platform& platform) {
-			SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
-			SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 2);
-
-			window = SDL_CreateWindow("Super Haxagon", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 0, 0, SDL_WINDOW_FULLSCREEN_DESKTOP);
-			if (!window) {
-				platform.message(Dbg::FATAL, "screen", "could not init sfml window!");
-				return;
-			}
-
-			renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-			if (!renderer) {
-				// fallback to software
-				platform.message(Dbg::WARN, "screen", "falling back to software rendering");
-				renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
-				software = true;
-				if (!renderer) {
-					platform.message(Dbg::FATAL, "screen", "... and it failed!");
-					return;
-				}
-			}
-
-			SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-			SDL_RenderClear(renderer);
-			SDL_ShowCursor(SDL_DISABLE);
-			SDL_RenderPresent(renderer);
-
-			loaded = true;
+		explicit ScreenImpl(SDL_Window* platWindow, SDL_Renderer* platRenderer) {
+			window = platWindow;
+			renderer = platRenderer;
+			loaded = window && renderer;
 		}
 
-		~ScreenImpl() {
-			SDL_DestroyRenderer(renderer);
-			SDL_DestroyWindow(window);
-		}
+		~ScreenImpl() = default;
 
 		Vec2f getScreenDim() const {
 			if (!loaded) return {640, 480};
@@ -53,6 +26,7 @@ namespace SuperHaxagon {
 
 		void screenFinalize() const {
 			if (!loaded) return;
+
 			SDL_RenderPresent(renderer);
 		}
 
@@ -65,7 +39,7 @@ namespace SuperHaxagon {
 			// Convert to SDL2 format
 			for (const auto& point : points) {
 				vertices.emplace_back(SDL_Vertex{
-						SDL_FPoint{point.x, point.y}, SDL_Color{color.r, color.g, color.b, 255}, SDL_FPoint{0, 0}
+					SDL_FPoint{point.x, point.y}, SDL_Color{color.r, color.g, color.b, color.a}, SDL_FPoint{0, 0}
 				});
 			}
 
@@ -94,7 +68,6 @@ namespace SuperHaxagon {
 		}
 
 		bool loaded = false;
-		bool software = false;
 		SDL_Window* window;
 		SDL_Renderer* renderer;
 	};
@@ -123,7 +96,7 @@ namespace SuperHaxagon {
 		_impl->clear(color);
 	}
 
-	std::unique_ptr<Screen> createScreen(const Platform& platform) {
-		return std::make_unique<Screen>(std::make_unique<Screen::ScreenImpl>(platform));
+	std::unique_ptr<Screen> createScreen(SDL_Window* window, SDL_Renderer* renderer) {
+		return std::make_unique<Screen>(std::make_unique<Screen::ScreenImpl>(window, renderer));
 	}
 }

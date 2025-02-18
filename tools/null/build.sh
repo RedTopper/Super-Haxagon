@@ -1,4 +1,4 @@
 #!/bin/bash
 
-cmake -DBUILD_NULL_DRIVER=true ../git
+cmake -DDRIVER_NULL=TRUE ../git
 make -j${JOBS}

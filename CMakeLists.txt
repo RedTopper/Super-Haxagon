@@ -53,7 +53,9 @@ set(SOURCES
 configure_file(source/Core/Configuration.hpp.in Core/Configuration.hpp)
 include_directories("${CMAKE_CURRENT_BINARY_DIR}")
 
-if(BUILD_NULL_DRIVER)
+if(DRIVER_NULL)
+    # Any platform should be able to build this
+    # if you force it to build with cmake -DDRIVER_NULL=TRUE
     include(cmake/common/null.cmake)
 elseif(CMAKE_SYSTEM_NAME MATCHES "Nintendo3DS")
     include(cmake/n3ds.cmake)
@@ -62,7 +64,11 @@ elseif(CMAKE_SYSTEM_NAME MATCHES "NintendoSwitch")
 elseif(CMAKE_SYSTEM_NAME MATCHES "Nspire")
     include(cmake/nspire.cmake)
 elseif(CMAKE_SYSTEM_NAME MATCHES "Linux")
-    include(cmake/linux.cmake)
+    if(DRIVER_SDL2)
+        include(cmake/linux-sdl2.cmake)
+    else()
+        include(cmake/linux.cmake) # Default to using the SFML2 driver
+    endif()
 elseif(CMAKE_SYSTEM_NAME MATCHES "Windows")
     include(cmake/windows.cmake)
 elseif(CMAKE_SYSTEM_NAME MATCHES "Darwin")

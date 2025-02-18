@@ -14,8 +14,6 @@ modules:
         branch: 2.6.x
   - name: SuperHaxagon
     buildsystem: cmake
-    config-opts:
-      - -D SKIP_SDL2_BUILD=TRUE
     sources:
       - type: dir
         path: .

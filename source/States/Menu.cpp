@@ -12,9 +12,15 @@
 #include <algorithm>
 
 namespace SuperHaxagon {
-	Menu::Menu(Game& game, LevelFactory& selected, const GameColors& starting) :
+	Menu::Menu(Game& game, LevelFactory& selected, const GameColors& starting, int rotationDirection, float rotation) :
 		_game(game),
 		_platform(game.getPlatform()) {
+
+		const float side = TAU / 6.0f;
+		const float percentRotated = std::fmod(rotation, side) / side;
+
+		_transitionDirection = rotationDirection;
+		_frameRotation = percentRotated * FRAMES_PER_TRANSITION;
 
 		const auto& levels = _game.getLevels();
 		_selected = std::find_if(levels.begin(), levels.end(), [&selected](const std::unique_ptr<LevelFactory>& pointer) {
@@ -54,7 +60,7 @@ namespace SuperHaxagon {
 			if (press.select && !_justEntered) {
 				auto& level = **_selected;
 				_game.playMusic(level.getMusic(), level.getLocation(), true);
-				return std::make_unique<Play>(_game, level, level, 0.0f);
+				return std::make_unique<Play>(_game, level, level, 0.0f, 0.0f, 0.0f);
 			}
 
 			if (press.right) {
@@ -125,10 +131,7 @@ namespace SuperHaxagon {
 			rotation *= -1.0f;
 		}
 
-		surface.calculateMatrix(-rotation, 1.0f);
-		//surface.setTranslate({0, -1.0f / 3.0f});
-		//surface.setPitch(15 * TAU / 16);
-		//surface.setZoom(SCALE_MENU);
+		surface.calculateMatrix(rotation, 1.0f);
 
 		// Colors
 		Color fg{};

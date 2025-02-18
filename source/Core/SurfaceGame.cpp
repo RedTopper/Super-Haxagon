@@ -169,8 +169,8 @@ namespace SuperHaxagon {
 		// We only need to rotate around Z and scale along X and Y
 		Matrix4x4f model{};
 		model[0][0] = scale * std::cos(rotation);
-		model[0][1] = scale * std::sin(rotation);
-		model[1][0] = scale * -std::sin(rotation);
+		model[0][1] = scale * -std::sin(rotation);
+		model[1][0] = scale * std::sin(rotation);
 		model[1][1] = scale * std::cos(rotation);
 		model[2][2] = 1.0f;
 		model[3][3] = 1.0f;

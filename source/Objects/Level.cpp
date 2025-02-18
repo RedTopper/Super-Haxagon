@@ -5,8 +5,10 @@
 #include "Factories/LevelFactory.hpp"
 #include "Factories/PatternFactory.hpp"
 
+#include <algorithm>
+
 namespace SuperHaxagon {
-	Level::Level(const LevelFactory& factory, Twist& rng, const float patternDistCreate) : _factory(&factory) {
+	Level::Level(const LevelFactory& factory, Twist& rng, const float patternDistCreate, const float rotation, const float cursorPos) : _factory(&factory) {
 		for (auto i = COLOR_LOCATION_FIRST; i != COLOR_LOCATION_LAST; i++) {
 			const auto location = static_cast<LocColor>(i);
 			const auto& colors = factory.getColors().at(location);
@@ -21,7 +23,8 @@ namespace SuperHaxagon {
 		//set up the amount of sides the level should have.
 		_sidesLast = _patterns.front().getSides();
 		_sidesCurrent = _patterns.front().getSides();
-		_cursorPos = -TAU/4.0f + (factory.getSpeedCursor() / 2.0f);
+		_cursorPos = cursorPos != 0.0f ? cursorPos : -TAU/4.0f + (factory.getSpeedCursor() / 2.0f);
+		_rotation = rotation;
 	}
 
 	Level::~Level() = default;
@@ -93,9 +96,29 @@ namespace SuperHaxagon {
 		// Update effect timings
 		_flipFrame -= dilation;
 		_spin -= SPIN_SPEED / FRAMES_PER_SPIN * dilation;
-		_pulse -= PULSE_DISTANCE / FRAMES_PER_PULSE * dilation;
 		if (_spin < 0.0f) _spin = 0.0f;
-		if (_pulse < 0.0f) _pulse = 0.0f;
+
+		// Beat/pulse logic
+		_pulseFrame += dilation;
+		if (_pulseDirection > 0) {
+			_currentScaleFactor = linear(
+				0,
+				_pulseSize * MAX_PULSE_DISTANCE,
+				_pulseFrame / FRAMES_PER_PULSE_LEAD_UP
+			);
+
+			if (_pulseFrame / FRAMES_PER_PULSE_LEAD_UP >= 1.0f) _pulseDirection = -1;
+		} else if (_pulseDirection < 0) {
+			_currentScaleFactor = linear(
+				_pulseSize * MAX_PULSE_DISTANCE,
+				0,
+				(_pulseFrame-FRAMES_PER_PULSE_LEAD_UP) / FRAMES_PER_PULSE_LEAD_OUT
+			);
+
+			if (_pulseFrame / (FRAMES_PER_PULSE_LEAD_UP + FRAMES_PER_PULSE_LEAD_OUT) >= 1.0f) _pulseDirection = 0;
+		}
+
+		_currentScaleFactor = std::clamp(_currentScaleFactor, 0.0f, _pulseSize * MAX_PULSE_DISTANCE);
 
 		// Flip level if needed
 		// Cannot flip while spin effect is happening
@@ -106,7 +129,9 @@ namespace SuperHaxagon {
 	}
 
 	void Level::draw(SurfaceGame& surface, SurfaceGame* shadows, const float offset) const {
-		surface.calculateMatrix(_rotation, 1.0f + _pulse);
+		const float realHexLength = (_currentScaleFactor * HEXAGON_PULSE_MULTIPLIER + 1.0f) * HEX_LENGTH;
+
+		surface.calculateMatrix(_rotation, _currentScaleFactor + 1.0f);
 		surface.setWallOffset(offset);
 
 		surface.drawBackground(
@@ -120,13 +145,13 @@ namespace SuperHaxagon {
 			shadows->setWallOffset(offset);
 			shadows->setDepth(-0.025f);
 			shadows->drawPatterns(COLOR_SHADOW, _patterns, _sidesTween);
-			shadows->drawRegular(COLOR_SHADOW, HEX_LENGTH, _sidesTween);
+			shadows->drawRegular(COLOR_SHADOW, realHexLength, _sidesTween);
 			if (_showCursor) shadows->drawCursor(COLOR_SHADOW, HEX_LENGTH + PLAYER_PADDING_BETWEEN_HEX, _cursorPos);
 		}
 
 		surface.drawPatterns(_colorCurrent.fg, _patterns, _sidesTween);
-		surface.drawRegular(_colorCurrent.fg, HEX_LENGTH, _sidesTween);
-		surface.drawRegular(_colorCurrent.bg2, (HEX_LENGTH - HEX_BORDER), _sidesTween);
+		surface.drawRegular(_colorCurrent.fg, realHexLength, _sidesTween);
+		surface.drawRegular(_colorCurrent.bg2, (realHexLength - HEX_BORDER), _sidesTween);
 		if (_showCursor) surface.drawCursor(_colorCurrent.fg, HEX_LENGTH + PLAYER_PADDING_BETWEEN_HEX, _cursorPos);
 
 		// To help debugging
@@ -190,7 +215,9 @@ namespace SuperHaxagon {
 	}
 	
 	void Level::pulse(const float pulse) {
-		_pulse = PULSE_DISTANCE * pulse;
+		_pulseFrame = 0.0f;
+		_pulseDirection = 1;
+		_pulseSize = pulse;
 	}
 
 	void Level::setWinFactory(const LevelFactory* factory) {

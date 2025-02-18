@@ -1,5 +1,7 @@
 #include "Metadata.hpp"
 
+#include "Objects/Level.hpp"
+
 #include <sstream>
 
 namespace SuperHaxagon {
@@ -25,8 +27,14 @@ namespace SuperHaxagon {
 
 	Metadata::~Metadata() = default;
 
-	bool Metadata::getMetadata(const float time, const std::string& label) {
+	bool Metadata::getMetadata(float time, const std::string& label) {
 		if (_timestamps.find(label) == _timestamps.end()) return false; // no data
+
+		// Shift the time into the future a bit for pulses (Beat Small and Beat Large)
+		// since there's a bit of a "lead up" animation to the actual beat.
+		if (label == "BS" || label == "BL") {
+			time += Level::FRAMES_PER_PULSE_LEAD_UP / 60.0f;
+		}
 
 		// If more than 10 seconds behind, reset
 		if (time < _time - 10) _indices.clear();

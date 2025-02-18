@@ -60,7 +60,8 @@ namespace SuperHaxagon {
 
 	std::unique_ptr<State> Over::update(const float dilation) {
 		_frames += dilation;
-		_level->rotate(GAME_OVER_ROT_SPEED, dilation);
+		const float speed = static_cast<float>(_level->getRotationDirection()) * GAME_OVER_ROT_SPEED;
+		_level->rotate(speed, dilation);
 		_level->clamp();
 
 		const auto press = _platform.getPressed();
@@ -80,11 +81,24 @@ namespace SuperHaxagon {
 				}
 
 				// Go back to the original level
-				return std::make_unique<Play>(_game, _selected, _selected, 0.0f);
+				return std::make_unique<Play>(
+					_game,
+					_selected,
+					_selected,
+					0.0f,
+					_level->getCurrentRotation(),
+					_level->getCursorPos()
+				);
 			}
 
 			if (press.back) {
-				return std::make_unique<Menu>(_game, _selected, _level->getCurrentColor());
+				return std::make_unique<Menu>(
+					_game,
+					_selected,
+					_level->getCurrentColor(),
+					_level->getRotationDirection(),
+					_level->getCurrentRotation()
+				);
 			}
 		}
 

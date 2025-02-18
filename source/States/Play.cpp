@@ -13,12 +13,12 @@
 
 namespace SuperHaxagon {
 
-	Play::Play(Game& game, LevelFactory& factory, LevelFactory& selected, const float startScore) :
+	Play::Play(Game& game, LevelFactory& factory, LevelFactory& selected, const float startScore, const float rotation, const float cursorPos) :
 		_game(game),
 		_platform(game.getPlatform()),
 		_factory(factory),
 		_selected(selected),
-		_level(factory.instantiate(game.getTwister(), BASE_DISTANCE)),
+		_level(factory.instantiate(game.getTwister(), BASE_DISTANCE, rotation, cursorPos)),
 		_score(startScore)
 	{}
 

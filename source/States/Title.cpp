@@ -42,7 +42,7 @@ namespace SuperHaxagon {
 
 		if (press.quit) return std::make_unique<Quit>(_game);
 		if (press.select) {
-			return std::make_unique<Menu>(_game, *_game.getLevels()[0], _colorCurrent);
+			return std::make_unique<Menu>(_game, *_game.getLevels()[0], _colorCurrent, 1, _rotation);
 		}
 
 		_rotation += dilation * TITLE_ROT_SPEED;
@@ -72,7 +72,7 @@ namespace SuperHaxagon {
 	}
 
 	void Title::drawGame(SurfaceGame& surface, SurfaceGame* shadows) {
-		surface.calculateMatrix(-_rotation, 1.0f);
+		surface.calculateMatrix(_rotation, 1.0f);
 
 		surface.drawBackground(_colorCurrent.bg1, _colorCurrent.bg2, 6.0);
 

@@ -18,7 +18,7 @@ namespace SuperHaxagon {
 		const float FRAMES_PER_TRANSITION = 12.0f;
 		const float FRAMES_PER_COLOR = 60.0f;
 
-		Menu(Game& game, LevelFactory& selected, const GameColors& starting);
+		Menu(Game& game, LevelFactory& selected, const GameColors& starting, int rotationDirection, float rotation);
 		Menu(Menu&) = delete;
 		~Menu() override;
 

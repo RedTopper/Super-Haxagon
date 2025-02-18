@@ -72,8 +72,8 @@ namespace SuperHaxagon {
 		_loaded = true;
 	}
 
-	std::unique_ptr<Level> LevelFactory::instantiate(Twist& rng, float renderDistance) const {
-		return std::make_unique<Level>(*this, rng, renderDistance);
+	std::unique_ptr<Level> LevelFactory::instantiate(Twist& rng, float renderDistance, float rotation, float cursorPos) const {
+		return std::make_unique<Level>(*this, rng, renderDistance, rotation, cursorPos);
 	}
 
 	bool LevelFactory::setHighScore(const int score) {

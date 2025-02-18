@@ -22,14 +22,16 @@ namespace SuperHaxagon {
 		static constexpr float FLIP_FRAMES_MAX = 600;
 		static constexpr float FRAMES_PER_CHANGE_SIDE = 30;
 		static constexpr float FRAMES_PER_SPIN = 90;
-		static constexpr float FRAMES_PER_PULSE = 15;
-		static constexpr float SPIN_SPEED = TAU / 130.0f;
+		static constexpr float FRAMES_PER_PULSE_LEAD_UP = 2.0f;
+		static constexpr float FRAMES_PER_PULSE_LEAD_OUT = 12.0f;
+		static constexpr float SPIN_SPEED = TAU / 100.0f;
 		static constexpr float ROTATE_ZERO_SPEED = TAU / 200.0f;
-		static constexpr float PULSE_DISTANCE = 0.05f;
+		static constexpr float MAX_PULSE_DISTANCE = 0.055f;
+		static constexpr float HEXAGON_PULSE_MULTIPLIER = 4.25f;
 		static constexpr int MIN_SAME_SIDES = 3;
 		static constexpr int MAX_SAME_SIDES = 5;
 
-		Level(const LevelFactory& factory, Twist& rng, float patternDistCreate);
+		Level(const LevelFactory& factory, Twist& rng, float patternDistCreate, float rotation, float cursorPos);
 		Level(Level&) = delete;
 		~Level();
 
@@ -51,7 +53,12 @@ namespace SuperHaxagon {
 
 		// Time
 		float getFrame() const {return _frame;}
+
+		// Transition information
 		GameColors getCurrentColor() const {return _colorCurrent;}
+		float getCurrentRotation() const {return _rotation;}
+		float getCursorPos() const {return _cursorPos;}
+		int getRotationDirection() const {return _multiplierRot < 0.0f ? -1 : 1;}
 
 		const LevelFactory& getLevelFactory() const {return *_factory;}
 
@@ -105,9 +112,13 @@ namespace SuperHaxagon {
 		int _sameCount = 0; // When 0, allows the level to select any pattern instead of currentSides
 		int _sameSides = 0; // Sides of the last selected pattern
 		bool _bgInverted = false;
-		float _pulse = 0.0;
+		float _currentScaleFactor = 0.0f;
 		float _spin = 0.0;
 		float _frontGap = 0.0;
+
+		float _pulseFrame = 0.0;
+		float _pulseSize = 0.0;
+		int _pulseDirection = 0;
 	};
 }
 

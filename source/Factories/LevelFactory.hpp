@@ -24,7 +24,7 @@ namespace SuperHaxagon {
 		LevelFactory(std::istream& stream, std::vector<std::shared_ptr<PatternFactory>>& shared, Location location, Platform& platform, size_t levelIndexOffset);
 		LevelFactory(const LevelFactory&) = delete;
 
-		std::unique_ptr<Level> instantiate(Twist& rng, float renderDistance) const;
+		std::unique_ptr<Level> instantiate(Twist& rng, float renderDistance, float rotation, float cursorPos) const;
 
 		bool isLoaded() const {return _loaded;}
 

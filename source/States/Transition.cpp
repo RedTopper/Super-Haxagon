@@ -50,7 +50,7 @@ namespace SuperHaxagon {
 				_game.playMusic(factory.getMusic(), factory.getLocation(), true);
 			}
 			
-			return std::make_unique<Play>(_game, factory, _selected, _score);
+			return std::make_unique<Play>(_game, factory, _selected, _score, _level->getCurrentRotation(), 0.0f);
 		}
 
 		return nullptr;

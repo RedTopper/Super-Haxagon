@@ -51,7 +51,7 @@ namespace SuperHaxagon {
 	static constexpr float ASPECT_MAX = (21.0f / 9.0f);
 
 	static constexpr float BASE_DISTANCE = 2.0f;
-	static constexpr float HEX_LENGTH = 24.0f * SCALE_TO_SCREEN_SPACE;
+	static constexpr float HEX_LENGTH = 22.0f * SCALE_TO_SCREEN_SPACE;
 	static constexpr float HEX_BORDER = 4.0f * SCALE_TO_SCREEN_SPACE;
 	static constexpr float PLAYER_PADDING_BETWEEN_HEX = 5.0f * SCALE_TO_SCREEN_SPACE;
 	static constexpr float PLAYER_TRI_HEIGHT = 5.0f * SCALE_TO_SCREEN_SPACE;

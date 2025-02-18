@@ -19,7 +19,7 @@ namespace SuperHaxagon {
 		static constexpr float SKEW_MIN = PI/16.0;
 		static constexpr float SKEW_MIN_FRAMES = 120.0f;
 
-		Play(Game& game, LevelFactory& factory, LevelFactory& selected, float startScore);
+		Play(Game& game, LevelFactory& factory, LevelFactory& selected, float startScore, float rotation, float cursorPos);
 		Play(Play&) = delete;
 		~Play() override;
 

@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.18)
-project(Super_Haxagon VERSION 3.7.0)
+project(Super_Haxagon VERSION 3.7.1)
 
 set(CMAKE_CXX_STANDARD 17)
 

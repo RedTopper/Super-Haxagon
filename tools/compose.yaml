@@ -71,3 +71,13 @@ services:
     volumes:
       - ../:/haxagon/git:z
       - ../build/null:/haxagon/build:z
+  portmaster:
+    build:
+      context: .
+      dockerfile: portmaster/Containerfile
+    image: super-haxagon-portmaster
+    container_name: super-haxagon-portmaster
+    hostname: super-haxagon-portmaster
+    volumes:
+      - ../:/haxagon/git:z
+      - ../build/portmaster:/haxagon/build:z

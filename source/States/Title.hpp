@@ -30,6 +30,8 @@ namespace SuperHaxagon {
 		Game& _game;
 		Platform& _platform;
 
+		bool _justEntered = true;
+		bool _showHelp = false;
 		float _frameBackgroundColor = 0.0;
 		float _rotation = 0.0f;
 		LevelFactory& _firstLevel;

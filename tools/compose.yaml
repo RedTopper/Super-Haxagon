@@ -72,12 +72,11 @@ services:
       - ../:/haxagon/git:z
       - ../build/null:/haxagon/build:z
   portmaster:
-    build:
-      context: .
-      dockerfile: portmaster/Containerfile
-    image: super-haxagon-portmaster
+    image: monkeyx/retro_builder:arm64
     container_name: super-haxagon-portmaster
     hostname: super-haxagon-portmaster
+    working_dir: /haxagon/build
+    command: /haxagon/git/tools/portmaster/build.sh
     volumes:
       - ../:/haxagon/git:z
       - ../build/portmaster:/haxagon/build:z

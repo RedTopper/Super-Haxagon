@@ -73,7 +73,7 @@ namespace SuperHaxagon {
 			buttons.select = kDown & HidNpadButton_A;
 			buttons.back = kDown & HidNpadButton_B;
 			buttons.quit = kDown & HidNpadButton_Plus;
-			buttons.left = kPressed & (HidNpadButton_L | HidNpadButton_ZL | HidNpadButton_AnyLeft);
+			buttons.left = kPressed & (HidNpadButton_L | HidNpadButton_ZL | HidNpadButton_AnyLeft | HidNpadButton_Y);
 			buttons.right = kPressed & (HidNpadButton_R | HidNpadButton_ZR | HidNpadButton_AnyRight | HidNpadButton_X);
 			return buttons;
 		}
@@ -195,13 +195,15 @@ namespace SuperHaxagon {
 		return *_impl->screen;
 	}
 
-	std::string Platform::getButtonName(const Buttons& button) {
-		if (button.back) return "B";
-		if (button.select) return "A";
-		if (button.left) return "LEFT";
-		if (button.right) return "RIGHT";
-		if (button.quit) return "PLUS";
-		return "?";
+	std::string Platform::getButtonName(ButtonName buttonName) {
+		switch (buttonName) {
+			case ButtonName::BACK: return "B";
+			case ButtonName::SELECT: return "A";
+			case ButtonName::LEFT: return "L | ZL | PAD L | Y";
+			case ButtonName::RIGHT: return "R | ZR | PAD R | X";
+			case ButtonName::QUIT: return "PLUS";
+			default: return "?";
+		}
 	}
 
 	Buttons Platform::getPressed() const {

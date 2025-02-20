@@ -164,15 +164,7 @@ namespace SuperHaxagon {
 			small.getHeight() + pad * 2
 		};
 
-		// Clockwise, from top left
-		const std::vector<Vec2f> levelUpBkg = {
-			{0, 0},
-			{levelUpBkgSize.x + levelUpBkgSize.y / 2, 0},
-			{levelUpBkgSize.x, levelUpBkgSize.y},
-			{0, levelUpBkgSize.y},
-		};
-
-		surface.drawPolyUI(COLOR_TRANSPARENT, levelUpBkg);
+		surface.drawPolyUITopLeft(COLOR_TRANSPARENT, levelUpBkgSize);
 		small.draw(COLOR_WHITE, levelUpPosText, Alignment::LEFT, levelUp);
 
 		// Draw the current score
@@ -204,15 +196,7 @@ namespace SuperHaxagon {
 			}
 		}
 
-		// Clockwise, from top left
-		const std::vector<Vec2f> scoreBkg = {
-			{screenWidth - scoreBkgSize.x - scoreBkgSize.y / 2, 0},
-			{screenWidth, 0},
-			{screenWidth, scoreBkgSize.y},
-			{screenWidth - scoreBkgSize.x, scoreBkgSize.y}
-		};
-
-		surface.drawPolyUI(COLOR_TRANSPARENT, scoreBkg);
+		surface.drawPolyUITopRight(COLOR_TRANSPARENT, scoreBkgSize);
 		small.draw(COLOR_WHITE, scorePosText, Alignment::LEFT, textScore);
 
 		if (drawBar) {

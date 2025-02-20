@@ -40,6 +40,12 @@ namespace SuperHaxagon {
 	std::unique_ptr<State> Title::update(const float dilation) {
 		const auto press = _platform.getPressed();
 
+		if (!_justEntered && press.back) {
+			_justEntered = true;
+			_showHelp = !_showHelp;
+		}
+
+		if (!press.back) _justEntered = false;
 		if (press.quit) return std::make_unique<Quit>(_game);
 		if (press.select) {
 			return std::make_unique<Menu>(_game, *_game.getLevels()[0], _colorCurrent, 1, _rotation);
@@ -92,13 +98,8 @@ namespace SuperHaxagon {
 		auto& large = *_game.getFontLarge();
 		auto& small = *_game.getFontSmall();
 
-		Buttons select{};
-		select.select = true;
-
-		const auto super = "SUPER";
-		const auto haxagon = "HAXAGON";
-		const auto press = "PRESS " + _game.getPlatform().getButtonName(select);
-		const auto version = VERSION;
+		//const auto pressSelect = "PRESS " + _game.getPlatform().getButtonName(ButtonName::SELECT);
+		//const auto pressControls = _game.getPlatform().getButtonName(ButtonName::BACK) + ": KEYS";
 
 		const auto scale = surface.getScale();
 		const auto pad = 3 * scale;
@@ -107,35 +108,68 @@ namespace SuperHaxagon {
 		large.setScale(scale);
 		small.setScale(scale);
 
-		const Vec2f posSuper = {screen.x/2.0f, screen.y/2.0f - small.getHeight() - large.getHeight()/2.0f - pad};
-		const Vec2f posHaxagon = {screen.x/2.0f, screen.y/2.0f - large.getHeight()/2.0f + pad};
-		const Vec2f posSelect = {pad, screen.y - small.getHeight() - pad};
-		const Vec2f posVersion = {screen.x - pad, screen.y - small.getHeight() - pad};
+		if (_showHelp) {
+			const auto controls = "CONTROLS";
 
-		Vec2f versionSize = {small.getWidth(version) + pad * 2, small.getHeight() + pad * 2};
-		Vec2f presSize = {small.getWidth(press) + pad * 2, small.getHeight() + pad * 2};
+			std::vector<std::pair<std::string, std::string>> keys{
+					{"SELECT:", _game.getPlatform().getButtonName(ButtonName::SELECT)},
+					{"BACK:", _game.getPlatform().getButtonName(ButtonName::BACK)},
+					{"LEFT:", _game.getPlatform().getButtonName(ButtonName::LEFT)},
+					{"RIGHT:", _game.getPlatform().getButtonName(ButtonName::RIGHT)},
+					{"QUIT:", _game.getPlatform().getButtonName(ButtonName::QUIT)},
+			};
 
-		std::vector<Vec2f> versionPoly = {
-				{screen.x - versionSize.x, screen.y - versionSize.y},
-				{screen.x, screen.y - versionSize.y},
-				{screen.x, screen.y},
-				{screen.x - versionSize.x - versionSize.y / 2, screen.y},
-		};
+			float maxWidthNames = 0.0f;
+			for (const auto& key : keys) {
+				auto width = small.getWidth(key.first);
+				if (width > maxWidthNames) maxWidthNames = width;
+			}
 
-		std::vector<Vec2f> pressPoly = {
-				{0, screen.y - presSize.y},
-				{presSize.x,  screen.y - presSize.y},
-				{presSize.x + presSize.y / 2, screen.y},
-				{0,  screen.y},
-		};
+			float maxWidthValues = 0.0f;
+			for (const auto& key : keys) {
+				auto width = small.getWidth(key.second);
+				if (width > maxWidthValues) maxWidthValues = width;
+			}
 
-		surface.drawPolyUI(COLOR_TRANSPARENT, pressPoly);
-		surface.drawPolyUI(COLOR_TRANSPARENT, versionPoly);
+			const float maxWidth = maxWidthNames + maxWidthValues + 2*pad;
+			const float height = small.getHeight();
+			const Vec2f size = {maxWidth + 2.0f*pad, static_cast<float>(keys.size()) * height + 2.0f*pad};
+			const Vec2f pos = {screen.x/2.0f - size.x/2.0f, screen.y/2.0f - size.y/2.0f};
+			const Vec2f posControls = {screen.x / 2.0f, screen.y/2.0f - size.y/2.0f - large.getHeight() - pad};
 
-		small.draw(COLOR_WHITE, posVersion, Alignment::RIGHT, version);
-		small.draw(COLOR_WHITE, posSuper, Alignment::CENTER, super);
-		small.draw(COLOR_WHITE, posSelect, Alignment::LEFT, press);
-		large.draw(COLOR_WHITE, posHaxagon, Alignment::CENTER, haxagon);
+			surface.drawRectUI(COLOR_TRANSPARENT, pos, size);
+
+			int index = 0;
+			for (const auto& key : keys) {
+				Vec2f posTextName = {pos.x + pad, pos.y + pad + height*static_cast<float>(index)};
+				small.draw(COLOR_WHITE, posTextName, Alignment::LEFT, key.first);
+				Vec2f posTextValue = {pos.x + maxWidthNames + pad*2, pos.y + pad + height*static_cast<float>(index)};
+				small.draw(COLOR_WHITE, posTextValue, Alignment::LEFT, key.second);
+				index++;
+			}
+
+			large.draw(COLOR_WHITE, posControls, Alignment::CENTER, controls);
+		} else {
+			const auto super = "SUPER";
+			const auto haxagon = "HAXAGON";
+			const auto pressSelect = "KEYS: " + _game.getPlatform().getButtonName(ButtonName::BACK);
+			const auto version = VERSION;
+
+			const Vec2f posSuper = {screen.x / 2.0f, screen.y / 2.0f - small.getHeight() - large.getHeight() / 2.0f - pad};
+			const Vec2f posHaxagon = {screen.x / 2.0f, screen.y / 2.0f - large.getHeight() / 2.0f + pad};
+			const Vec2f posSelect = {pad, screen.y - small.getHeight() - pad};
+			const Vec2f posVersion = {screen.x - pad, screen.y - small.getHeight() - pad};
+
+			const Vec2f selectSize = {small.getWidth(pressSelect) + pad * 2, small.getHeight() + pad * 2};
+			const Vec2f versionSize = {small.getWidth(version) + pad * 2, small.getHeight() + pad * 2};
+			surface.drawPolyUIBottomLeft(COLOR_TRANSPARENT, selectSize);
+			surface.drawPolyUIBottomRight(COLOR_TRANSPARENT, versionSize);
+
+			small.draw(COLOR_WHITE, posSuper, Alignment::CENTER, super);
+			large.draw(COLOR_WHITE, posHaxagon, Alignment::CENTER, haxagon);
+			small.draw(COLOR_WHITE, posSelect, Alignment::LEFT, pressSelect);
+			small.draw(COLOR_WHITE, posVersion, Alignment::RIGHT, version);
+		}
 	}
 
 	void Title::drawBotUI(SurfaceUI&) {}

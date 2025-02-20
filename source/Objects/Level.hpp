@@ -23,7 +23,7 @@ namespace SuperHaxagon {
 		static constexpr float FRAMES_PER_CHANGE_SIDE = 30;
 		static constexpr float FRAMES_PER_SPIN = 90;
 		static constexpr float FRAMES_PER_PULSE_LEAD_UP = 2.0f;
-		static constexpr float FRAMES_PER_PULSE_LEAD_OUT = 12.0f;
+		static constexpr float FRAMES_PER_PULSE_LEAD_OUT = 10.0f;
 		static constexpr float SPIN_SPEED = TAU / 100.0f;
 		static constexpr float ROTATE_ZERO_SPEED = TAU / 200.0f;
 		static constexpr float MAX_PULSE_DISTANCE = 0.055f;

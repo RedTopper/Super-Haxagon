@@ -1,5 +1,6 @@
 #include "Driver/Platform.hpp"
 
+#include "Core/Configuration.hpp"
 #include "Core/Structs.hpp"
 #include "Core/Twist.hpp"
 #include "Driver/Font.hpp"
@@ -20,7 +21,8 @@ namespace SuperHaxagon {
 	std::unique_ptr<Music> createMusic(const std::string& path);
 	std::unique_ptr<Screen> createScreen(SDL_Window* window, SDL_Renderer* renderer);
 	std::unique_ptr<Sound> createSound(const std::string& path);
-	std::unique_ptr<Font> createFont(SDL_Renderer& renderer, const std::string& path, int size);
+	std::unique_ptr<Font> createFont(const Platform& platform, SDL_Renderer& renderer, const std::string& path, int size);
+	SDL_Window* getWindow(const Platform& platform);
 
 	void setKey(Buttons& buttons, int key, bool pressing) {
 		switch (key) {
@@ -49,6 +51,7 @@ namespace SuperHaxagon {
 				buttons.back = pressing; return;
 			case SDL_CONTROLLER_BUTTON_DPAD_LEFT:
 			case SDL_CONTROLLER_BUTTON_LEFTSHOULDER:
+			case SDL_CONTROLLER_BUTTON_X:
 				buttons.left = pressing; return;
 			case SDL_CONTROLLER_BUTTON_DPAD_RIGHT:
 			case SDL_CONTROLLER_BUTTON_RIGHTSHOULDER:
@@ -107,7 +110,7 @@ namespace SuperHaxagon {
 			SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
 			SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 2);
 
-			window = SDL_CreateWindow("Super Haxagon", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 0, 0, SDL_WINDOW_FULLSCREEN_DESKTOP | SDL_WINDOW_ALLOW_HIGHDPI);
+			window = getWindow(platform);
 			if (!window) {
 				platform.message(Dbg::FATAL, "screen", "could not init sfml window!");
 				return;
@@ -135,10 +138,14 @@ namespace SuperHaxagon {
 
 			mkdir("./sdmc", 0755);
 
+			SDL_SetWindowTitle(window, (std::string("Super Haxagon (") + VERSION + ")").c_str());
+
 			time = std::chrono::high_resolution_clock::now();
 			screen = createScreen(window, renderer);
 			controller = findController();
 			loaded = true;
+
+			if (controller) showKbdControls = false;
 		}
 
 		bool loop() {
@@ -149,7 +156,7 @@ namespace SuperHaxagon {
 				auto us = std::chrono::duration_cast<std::chrono::microseconds>(now - time).count();
 				auto timeToSleep = 16666 - us;
 				if (timeToSleep < 0) timeToSleep = 0;
-				std::this_thread::sleep_for(std::chrono::microseconds (timeToSleep));
+				std::this_thread::sleep_for(std::chrono::microseconds(timeToSleep));
 			}
 
 			auto now = std::chrono::high_resolution_clock::now();
@@ -165,22 +172,26 @@ namespace SuperHaxagon {
 					case SDL_KEYDOWN:
 					case SDL_KEYUP:
 						setKey(buttons, ev.key.keysym.sym, ev.key.state == SDL_PRESSED);
+						showKbdControls = true;
 						break;
 					case SDL_CONTROLLERDEVICEADDED:
 						if (!controller) {
 							controller = SDL_GameControllerOpen(ev.cdevice.which);
+							showKbdControls = false;
 						}
 						break;
 					case SDL_CONTROLLERDEVICEREMOVED:
 						if (controller && ev.cdevice.which == SDL_JoystickInstanceID(SDL_GameControllerGetJoystick(controller))) {
 							SDL_GameControllerClose(controller);
 							controller = findController();
+							showKbdControls = true;
 						}
 						break;
 					case SDL_CONTROLLERBUTTONDOWN:
 					case SDL_CONTROLLERBUTTONUP:
 						if (controller && ev.cdevice.which == SDL_JoystickInstanceID(SDL_GameControllerGetJoystick(controller))) {
 							setController(buttons, ev.cbutton.button, ev.cbutton.state == SDL_PRESSED);
+							showKbdControls = false;
 						}
 						break;
 				}
@@ -195,6 +206,7 @@ namespace SuperHaxagon {
 
 		float frameTime = 0.0f;
 		bool loaded = false;
+		bool showKbdControls = true;
 		bool software = false;
 		SDL_Window* window = nullptr;
 		SDL_Renderer* renderer = nullptr;
@@ -227,7 +239,7 @@ namespace SuperHaxagon {
 
 	std::unique_ptr<Font> Platform::loadFont(const int size) const {
 		if (!_impl->loaded) return nullptr;
-		return createFont(*_impl->renderer, getPath("/bump-it-up.ttf", Location::ROM), size);
+		return createFont(*this, *_impl->renderer, getPath("/bump-it-up.ttf", Location::ROM), size);
 	}
 
 	std::unique_ptr<Sound> Platform::loadSound(const std::string& base) const {
@@ -242,13 +254,26 @@ namespace SuperHaxagon {
 		return *_impl->screen;
 	}
 
-	std::string Platform::getButtonName(const Buttons& button) {
-		if (button.back) return "ESC";
-		if (button.select) return "ENTER";
-		if (button.left) return "LEFT";
-		if (button.right) return "RIGHT";
-		if (button.quit) return "DELETE";
-		return "?";
+	std::string Platform::getButtonName(ButtonName buttonName) {
+		if (_impl->showKbdControls) {
+			switch (buttonName) {
+				case ButtonName::BACK: return "ESC";
+				case ButtonName::SELECT: return "ENTER";
+				case ButtonName::LEFT: return "LEFT | A";
+				case ButtonName::RIGHT: return "RIGHT | D";
+				case ButtonName::QUIT: return "DEL";
+				default: return "?";
+			}
+		}
+
+		switch (buttonName) {
+			case ButtonName::BACK: return "B (EAST)";
+			case ButtonName::SELECT: return "A (SOUTH)";
+			case ButtonName::LEFT: return "L | PAD L | X (WEST)";
+			case ButtonName::RIGHT: return "R | PAD R | Y (NORTH)";
+			case ButtonName::QUIT: return "START";
+			default: return "?";
+		}
 	}
 
 	Buttons Platform::getPressed() const {

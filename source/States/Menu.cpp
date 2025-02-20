@@ -205,30 +205,11 @@ namespace SuperHaxagon {
 			small.getWidth(mode),
 			small.getWidth(auth),
 		}) + pad * 2, posCreator.y + pad + small.getHeight()};
-
-		// Clockwise, from Top Left
-		std::vector<Vec2f> info{
-			{0, 0},
-			{infoSize.x + infoSize.y / 2, 0},
-			{infoSize.x, infoSize.y},
-			{0, infoSize.y}
-		};
-
-		surface.drawPolyUI(COLOR_TRANSPARENT, info);
+		surface.drawPolyUITopLeft(COLOR_TRANSPARENT, infoSize);
 
 		// Score block with triangle
 		Vec2f timeSize = {small.getWidth(scoreTime) + pad * 2, small.getHeight() + pad * 2};
-
-		// Clockwise, from Top Left
-		const auto screenHeight = surface.getScreenDim().y;
-		std::vector<Vec2f> time = {
-			{0, screenHeight - timeSize.y},
-			{timeSize.x,  screenHeight - timeSize.y},
-			{timeSize.x + timeSize.y / 2, screenHeight},
-			{0,  screenHeight},
-		};
-
-		surface.drawPolyUI(COLOR_TRANSPARENT, time);
+		surface.drawPolyUIBottomLeft(COLOR_TRANSPARENT, timeSize);
 
 		large.draw(COLOR_WHITE, posTitle, Alignment::LEFT, level.getName());
 		small.draw(COLOR_GREY, posDifficulty, Alignment::LEFT, diff);

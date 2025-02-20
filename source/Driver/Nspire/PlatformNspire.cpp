@@ -106,13 +106,15 @@ namespace SuperHaxagon {
 		return levels;
 	}
 
-	std::string Platform::getButtonName(const Buttons& button) {
-		if (button.back) return "ESC";
-		if (button.select) return "ENTER";
-		if (button.left) return "4";
-		if (button.right) return "6";
-		if (button.quit) return "MENU";
-		return "?";
+	std::string Platform::getButtonName(ButtonName buttonName) {
+		switch (buttonName) {
+			case ButtonName::BACK: return "ESC";
+			case ButtonName::SELECT: return "ENTER";
+			case ButtonName::LEFT: return "KPD 4";
+			case ButtonName::RIGHT: return "KPD 6";
+			case ButtonName::QUIT: return "MENU";
+			default: return "?";
+		}
 	}
 
 	Buttons Platform::getPressed() const {

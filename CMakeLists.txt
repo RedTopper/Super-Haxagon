@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.18)
+cmake_minimum_required(VERSION 3.16)
 project(Super_Haxagon VERSION 3.7.1)
 
 set(CMAKE_CXX_STANDARD 17)
@@ -65,9 +65,12 @@ elseif(CMAKE_SYSTEM_NAME MATCHES "Nspire")
     include(cmake/nspire.cmake)
 elseif(CMAKE_SYSTEM_NAME MATCHES "Linux")
     if(DRIVER_SDL2)
+        # cmake -DDRIVER_SDL2=TRUE ..
+        # See below include for additional options
         include(cmake/linux-sdl2.cmake)
     else()
-        include(cmake/linux.cmake) # Default to using the SFML2 driver
+        # Default to using the SFML2 driver
+        include(cmake/linux.cmake)
     endif()
 elseif(CMAKE_SYSTEM_NAME MATCHES "Windows")
     include(cmake/windows.cmake)

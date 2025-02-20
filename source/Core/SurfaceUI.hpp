@@ -10,13 +10,20 @@ namespace SuperHaxagon {
 	class SurfaceUI {
 	public:
 		explicit SurfaceUI(Screen& screen);
-		virtual ~SurfaceUI() = default;
+
+		~SurfaceUI() = default;
 
 		/**
 		 * Draws a polygon directly to the screen on the range of [0, screen size].
 		 * Top left is 0,0
 		 */
-		virtual void drawPolyUI(const Color& color, const std::vector<Vec2f>& points);
+		void drawPolyUI(const Color& color, const std::vector<Vec2f>& points);
+
+		// Convenience functions that call into the function above
+		void drawPolyUITopLeft(const Color& color, const Vec2f& dim);
+		void drawPolyUIBottomLeft(const Color& color, const Vec2f& dim);
+		void drawPolyUITopRight(const Color& color, const Vec2f& dim);
+		void drawPolyUIBottomRight(const Color& color, const Vec2f& dim);
 
 		/**
 		 * Draws a rectangle at position with the size of size.
@@ -24,7 +31,7 @@ namespace SuperHaxagon {
 		 */
 		void drawRectUI(Color color, Vec2f position, Vec2f size);
 
-		virtual Vec2f getScreenDim() const;
+		Vec2f getScreenDim() const;
 		float getScale() const;
 		float getScreenDimMax() const;
 		float getScreenDimMin() const;

@@ -1,18 +1,23 @@
 #include "Driver/Font.hpp"
 
 #include "Core/Structs.hpp"
+#include "Driver/Platform.hpp"
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 
-#include <cmath>
+#include <utility>
 
 namespace SuperHaxagon {
 	struct Font::FontImpl {
-		explicit FontImpl(SDL_Renderer& renderer, const std::string& path, int size) :
+		FontImpl(const Platform& platform, SDL_Renderer& renderer, std::string path, int size) :
+			platform(platform),
+			path(std::move(path)),
 			renderer(renderer),
+			font(nullptr),
+			currentScale(1.0f),
 			size(size) {
-			font = TTF_OpenFont(path.c_str(), size);
+			// font will be created on first call to setScale(..);
 		}
 
 		~FontImpl() {
@@ -20,25 +25,33 @@ namespace SuperHaxagon {
 		}
 
 		void setScale(float scale) {
-			if (!font) return;
+			if (currentScale == scale) return;
+			currentScale = scale;
+
 			// Scale slower than the true 3DS scale, to look nicer.
 			float realScale = (scale - 1.0f) / 1.5f + 1.0f;
-			float realSize = static_cast<float>(size);
-			TTF_SetFontSize(font, static_cast<int>(realScale * realSize));
+			auto realSize = static_cast<int>(realScale * static_cast<float>(size));
+
+			if (font) TTF_CloseFont(font);
+			font = TTF_OpenFont(path.c_str(), realSize);
+
+			// Note: Newer versions of SDL2_ttf include TTF_SetFontSize(TTF_Font *font, int ptsize)
+			// But to target older devices and SDL2 versions, fall back to closing and re-opening the font.
+			platform.message(Dbg::INFO, "font", "font " + std::to_string(size) + "px auto resized to " + std::to_string(realSize));
 		}
 
 		float getHeight() const {
 			if (!font) return 0;
 			int w, h;
 			TTF_SizeUTF8(font, "W", &w, &h);
-			return h;
+			return static_cast<float>(h);
 		}
 
 		float getWidth(const std::string& str) const {
 			if (!font) return 0;
 			int w, h;
 			TTF_SizeUTF8(font, str.c_str(), &w, &h);
-			return w;
+			return static_cast<float>(w);
 		}
 
 		void draw(const Color& color, const Vec2f& position, const Alignment alignment, const std::string& text) const {
@@ -60,20 +73,23 @@ namespace SuperHaxagon {
 
 			rect.w = text_width;
 			rect.h = text_height;
-			rect.y = position.y;
+			rect.y = static_cast<int>(position.y);
 
 			const auto width = text_width;
-			if (alignment == Alignment::LEFT) rect.x = position.x;
-			if (alignment == Alignment::CENTER) rect.x = position.x - width / 2;
-			if (alignment == Alignment::RIGHT) rect.x = position.x - width;
+			if (alignment == Alignment::LEFT) rect.x = static_cast<int>(position.x);
+			if (alignment == Alignment::CENTER) rect.x = static_cast<int>(position.x) - (width / 2);
+			if (alignment == Alignment::RIGHT) rect.x = static_cast<int>(position.x) - width;
 
-			SDL_RenderCopy(&renderer, texture, NULL, &rect);
+			SDL_RenderCopy(&renderer, texture, nullptr, &rect);
 
 			SDL_DestroyTexture(texture);
 		}
 
+		const Platform& platform;
+		std::string path;
 		SDL_Renderer& renderer;
 		TTF_Font* font;
+		float currentScale;
 		int size;
 	};
 
@@ -97,7 +113,7 @@ namespace SuperHaxagon {
 		_impl->draw(color, position, alignment, text);
 	}
 
-	std::unique_ptr<Font> createFont(SDL_Renderer& renderer, const std::string& path, int size) {
-		return std::make_unique<Font>(std::make_unique<Font::FontImpl>(renderer, path, size));
+	std::unique_ptr<Font> createFont(const Platform& platform, SDL_Renderer& renderer, const std::string& path, int size) {
+		return std::make_unique<Font>(std::make_unique<Font::FontImpl>(platform, renderer, path, size));
 	}
 }

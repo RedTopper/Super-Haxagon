@@ -145,13 +145,8 @@ namespace SuperHaxagon {
 		}
 
 		if(_frames >= FRAMES_PER_GAME_OVER) {
-			Buttons a{};
-			a.select = true;
-			small.draw(COLOR_WHITE, posA, Alignment::CENTER, "PRESS (" + Platform::getButtonName(a) + ") TO PLAY");
-
-			Buttons b{};
-			b.back = true;
-			small.draw(COLOR_WHITE, posB, Alignment::CENTER, "PRESS (" + Platform::getButtonName(b) + ") TO QUIT");
+			small.draw(COLOR_WHITE, posA, Alignment::CENTER, "PRESS " + _platform.getButtonName(ButtonName::SELECT) + " TO PLAY");
+			small.draw(COLOR_WHITE, posB, Alignment::CENTER, "PRESS " + _platform.getButtonName(ButtonName::BACK) + " TO QUIT");
 		}
 	}
 }

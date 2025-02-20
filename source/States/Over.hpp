@@ -15,7 +15,7 @@ namespace SuperHaxagon {
 	public:
 		static constexpr float GAME_OVER_ROT_SPEED = TAU/400.0f;
 		static constexpr float GAME_OVER_ACCELERATION_RATE = 0.15f;
-		static constexpr int FRAMES_PER_GAME_OVER = 30;
+		static constexpr int FRAMES_PER_GAME_OVER = 45;
 		static constexpr int PULSE_TIME = 75;
 
 		Over(Game& game, std::unique_ptr<Level> level, LevelFactory& selected, float score, std::string text);

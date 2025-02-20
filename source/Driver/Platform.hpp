@@ -22,6 +22,14 @@ namespace SuperHaxagon {
 		FATAL
 	};
 
+	enum class ButtonName {
+		SELECT,
+		BACK,
+		QUIT,
+		LEFT,
+		RIGHT
+	};
+
 	struct Buttons {
 		bool select : 1;
 		bool back : 1;
@@ -71,7 +79,7 @@ namespace SuperHaxagon {
 
 		std::vector<std::pair<Location, std::string>> loadUserLevels();
 
-		static std::string getButtonName(const Buttons& button);
+		std::string getButtonName(ButtonName buttonName);
 		Buttons getPressed() const;
 
 		std::unique_ptr<Twist> getTwister();

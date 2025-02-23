@@ -18,10 +18,23 @@ include(cmake/common/sdl2.cmake)
 
 target_compile_options(SuperHaxagon PRIVATE -Wall -Wextra -pedantic)
 
-install(FILES
-        ${CMAKE_SOURCE_DIR}/media/portmaster/SuperHaxagon.sh
-        DESTINATION .
-)
+# Package
+install(FILES ${CMAKE_SOURCE_DIR}/media/portmaster/SuperHaxagon.sh DESTINATION .)
 
+# Game files
 install(TARGETS SuperHaxagon RUNTIME DESTINATION ./superhaxagon)
 install(DIRECTORY ${CMAKE_SOURCE_DIR}/romfs DESTINATION ./superhaxagon)
+
+# Licenses
+install(DIRECTORY ${CMAKE_SOURCE_DIR}/media/portmaster/licenses DESTINATION ./superhaxagon)
+install(FILES ${CMAKE_SOURCE_DIR}/LICENSE.md DESTINATION ./superhaxagon/licenses)
+
+# PortMaster packaging files
+install(FILES
+        ${CMAKE_SOURCE_DIR}/media/portmaster/port.json
+        ${CMAKE_SOURCE_DIR}/media/portmaster/README.md
+        ${CMAKE_SOURCE_DIR}/media/portmaster/screenshot.png
+        ${CMAKE_SOURCE_DIR}/media/portmaster/gameinfo.xml
+        ${CMAKE_SOURCE_DIR}/media/portmaster/cover.png
+        DESTINATION ./superhaxagon
+)

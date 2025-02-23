@@ -5,11 +5,16 @@
 #include <iostream>
 
 namespace SuperHaxagon {
+	void platformSpecificHints() {
+		SDL_SetHint(SDL_HINT_WINDOWS_DPI_AWARENESS, "permonitor");
+		SDL_SetHint(SDL_HINT_VIDEODRIVER, "wayland");
+	}
+
 	SDL_Window* getWindow(const Platform& platform) {
 		constexpr int dsWidth = 400;
 		constexpr int dsHeight = 240;
-		int displayWidth = 1280;
-		int displayHeight = 720;
+		int displayWidth;
+		int displayHeight;
 		int scale = 1;
 
 		SDL_DisplayMode mode;

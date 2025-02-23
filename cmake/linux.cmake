@@ -2,6 +2,8 @@
 
 message(STATUS "Building for linux...")
 
+set(PLATFORM_NAME "LINUX SFML")
+
 set(DRIVER_PLATFORM
     source/Driver/Linux/PlatformLinux.cpp
     source/Driver/Common/PlatformIsFullyRandom.cpp

@@ -2,6 +2,8 @@
 
 message(STATUS "Building for nspire...")
 
+set(PLATFORM_NAME "NSPIRE")
+
 set(DRIVER
     source/Driver/Nspire/MusicNspire.cpp
     source/Driver/Nspire/ScreenNspire.cpp

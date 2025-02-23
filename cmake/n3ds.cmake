@@ -2,6 +2,8 @@
 
 message(STATUS "Building for 3DS...")
 
+set(PLATFORM_NAME "3DS")
+
 # Include platform extensions not in devkitpro for .cia and .3ds files
 include(cmake/toolchains/Platform/Nintendo3DSExtra.cmake)
 

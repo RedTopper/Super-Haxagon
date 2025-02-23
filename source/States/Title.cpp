@@ -169,6 +169,14 @@ namespace SuperHaxagon {
 			large.draw(COLOR_WHITE, posHaxagon, Alignment::CENTER, haxagon);
 			small.draw(COLOR_WHITE, posSelect, Alignment::LEFT, pressSelect);
 			small.draw(COLOR_WHITE, posVersion, Alignment::RIGHT, version);
+
+			if (sizeof(PLATFORM_NAME) > 1) {
+				const auto platform = PLATFORM_NAME;
+				const Vec2f posPlatform = {screen.x/2.0f, pad};
+				//const Vec2f platformSize = {small.getWidth(platform) + pad * 2, small.getHeight() + pad * 2};
+				//surface.drawPolyUITopLeft(COLOR_TRANSPARENT, platformSize);
+				small.draw(COLOR_WHITE, posPlatform, Alignment::CENTER, platform);
+			}
 		}
 	}
 

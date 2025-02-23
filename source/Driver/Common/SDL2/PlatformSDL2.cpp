@@ -1,5 +1,6 @@
 #include "Driver/Platform.hpp"
 
+#include "CreateSDL2.hpp"
 #include "Core/Configuration.hpp"
 #include "Core/Structs.hpp"
 #include "Core/Twist.hpp"
@@ -21,47 +22,7 @@ namespace SuperHaxagon {
 	std::unique_ptr<Music> createMusic(const std::string& path);
 	std::unique_ptr<Screen> createScreen(SDL_Window* window, SDL_Renderer* renderer);
 	std::unique_ptr<Sound> createSound(const std::string& path);
-	std::unique_ptr<Font> createFont(const Platform& platform, SDL_Renderer& renderer, const std::string& path, int size);
-	SDL_Window* getWindow(const Platform& platform);
-
-	void setKey(Buttons& buttons, int key, bool pressing) {
-		switch (key) {
-			case SDLK_ESCAPE:
-				buttons.back = pressing; return;
-			case SDLK_DELETE:
-				buttons.quit = pressing; return;
-			case SDLK_RETURN:
-				buttons.select = pressing; return;
-			case SDLK_LEFT:
-			case SDLK_a:
-				buttons.left = pressing; return;
-			case SDLK_RIGHT:
-			case SDLK_d:
-				buttons.right = pressing; return;
-			default:
-				return;
-		}
-	}
-
-	void setController(Buttons& buttons, int key, bool pressing) {
-		switch (key) {
-			case SDL_CONTROLLER_BUTTON_A:
-				buttons.select = pressing; return;
-			case SDL_CONTROLLER_BUTTON_B:
-				buttons.back = pressing; return;
-			case SDL_CONTROLLER_BUTTON_DPAD_LEFT:
-			case SDL_CONTROLLER_BUTTON_LEFTSHOULDER:
-			case SDL_CONTROLLER_BUTTON_X:
-				buttons.left = pressing; return;
-			case SDL_CONTROLLER_BUTTON_DPAD_RIGHT:
-			case SDL_CONTROLLER_BUTTON_RIGHTSHOULDER:
-			case SDL_CONTROLLER_BUTTON_Y:
-				buttons.right = pressing; return;
-			case SDL_CONTROLLER_BUTTON_START:
-				buttons.quit = pressing; return;
-			default: return;
-		}
-	}
+	std::unique_ptr<Font> createFont(const Platform& platform, SDL_Renderer* renderer, SDL_Surface* surface, const std::string& path, int size);
 
 	SDL_GameController *findController() {
 		for (int i = 0; i < SDL_NumJoysticks(); i++) {
@@ -85,8 +46,7 @@ namespace SuperHaxagon {
 		}
 
 		void sdlInit(const Platform& platform) {
-			SDL_SetHint(SDL_HINT_WINDOWS_DPI_AWARENESS, "permonitor");
-			//SDL_SetHint(SDL_HINT_VIDEODRIVER, "x11");
+			platformSpecificHints();
 
 			if (SDL_InitSubSystem(SDL_INIT_VIDEO) < 0) {
 				platform.message(Dbg::FATAL, "platform", "sdl could not init video!");
@@ -149,6 +109,8 @@ namespace SuperHaxagon {
 		}
 
 		bool loop() {
+			if (!loaded) return false;
+
 			if (software) {
 				// We aren't locked to the framerate of a hardware device,
 				// so attempt to make our own frame cap of 60fps
@@ -239,7 +201,7 @@ namespace SuperHaxagon {
 
 	std::unique_ptr<Font> Platform::loadFont(const int size) const {
 		if (!_impl->loaded) return nullptr;
-		return createFont(*this, *_impl->renderer, getPath("/bump-it-up.ttf", Location::ROM), size);
+		return createFont(*this, _impl->renderer, nullptr, getPath("/bump-it-up.ttf", Location::ROM), size);
 	}
 
 	std::unique_ptr<Sound> Platform::loadSound(const std::string& base) const {
@@ -255,25 +217,7 @@ namespace SuperHaxagon {
 	}
 
 	std::string Platform::getButtonName(ButtonName buttonName) {
-		if (_impl->showKbdControls) {
-			switch (buttonName) {
-				case ButtonName::BACK: return "ESC";
-				case ButtonName::SELECT: return "ENTER";
-				case ButtonName::LEFT: return "LEFT | A";
-				case ButtonName::RIGHT: return "RIGHT | D";
-				case ButtonName::QUIT: return "DEL";
-				default: return "?";
-			}
-		}
-
-		switch (buttonName) {
-			case ButtonName::BACK: return "B (EAST)";
-			case ButtonName::SELECT: return "A (SOUTH)";
-			case ButtonName::LEFT: return "L | PAD L | X (WEST)";
-			case ButtonName::RIGHT: return "R | PAD R | Y (NORTH)";
-			case ButtonName::QUIT: return "START";
-			default: return "?";
-		}
+		return ::SuperHaxagon::getButtonName(buttonName, _impl->showKbdControls);
 	}
 
 	Buttons Platform::getPressed() const {

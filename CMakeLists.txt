@@ -1,5 +1,5 @@
-cmake_minimum_required(VERSION 3.16)
-project(Super_Haxagon VERSION 3.7.1)
+cmake_minimum_required(VERSION 3.13)
+project(Super_Haxagon VERSION 3.8.0)
 
 set(CMAKE_CXX_STANDARD 17)
 
@@ -50,7 +50,6 @@ set(SOURCES
     source/Core/SurfaceUI.cpp
 )
 
-configure_file(source/Core/Configuration.hpp.in Core/Configuration.hpp)
 include_directories("${CMAKE_CURRENT_BINARY_DIR}")
 
 if(DRIVER_NULL)
@@ -63,11 +62,17 @@ elseif(CMAKE_SYSTEM_NAME MATCHES "NintendoSwitch")
     include(cmake/switch.cmake)
 elseif(CMAKE_SYSTEM_NAME MATCHES "Nspire")
     include(cmake/nspire.cmake)
+elseif(CMAKE_SYSTEM_NAME MATCHES "Miyoo")
+    include(cmake/miyoo.cmake)
 elseif(CMAKE_SYSTEM_NAME MATCHES "Linux")
     if(DRIVER_SDL2)
         # cmake -DDRIVER_SDL2=TRUE ..
-        # See below include for additional options
+        # The default SDL2 experience (like SFML but SDL2)
         include(cmake/linux-sdl2.cmake)
+    elseif(DRIVER_PORTMASTER)
+        # cmake -DDRIVER_PORTMASTER=TRUE ..
+        # Defaults to fullscreen and has different keybindings
+        include(cmake/portmaster.cmake)
     else()
         # Default to using the SFML2 driver
         include(cmake/linux.cmake)
@@ -79,3 +84,5 @@ elseif(CMAKE_SYSTEM_NAME MATCHES "Darwin")
 else()
     message(FATAL_ERROR "No viable platform to build for!")
 endif()
+
+configure_file(source/Core/Configuration.hpp.in Core/Configuration.hpp)

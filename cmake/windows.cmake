@@ -2,6 +2,8 @@
 
 message(STATUS "Building for windows...")
 
+set(PLATFORM_NAME "WINDOWS")
+
 # Place a copy of SFML for Visual Studio in the libraries folder below
 # or define SFML_DIR with -DSFML_DIR at the commandline
 if(NOT DEFINED SFML_DIR)

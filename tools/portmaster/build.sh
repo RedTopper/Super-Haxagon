@@ -1,4 +1,4 @@
 #!/bin/bash
 
-cmake ../git -DDRIVER_SDL2=TRUE -DPORTMASTER=TRUE
+cmake -DDRIVER_PORTMASTER=TRUE ../git
 make -j${JOBS}

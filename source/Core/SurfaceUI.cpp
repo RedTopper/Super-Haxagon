@@ -60,10 +60,10 @@ namespace SuperHaxagon {
 
 	void SurfaceUI::drawRectUI(const Color color, const Vec2f position, const Vec2f size) {
 		const std::vector<Vec2f> points{
-				{position.x, position.y + size.y},
-				{position.x + size.x, position.y + size.y},
-				{position.x + size.x, position.y},
 				{position.x, position.y},
+				{position.x + size.x, position.y},
+				{position.x + size.x, position.y + size.y},
+				{position.x, position.y + size.y},
 		};
 
 		this->drawPolyUI(color, points);

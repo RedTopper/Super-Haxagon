@@ -1,4 +1,4 @@
 #!/bin/bash
 
-cmake ../git -DDRIVER_SDL2=TRUE
+cmake -DDRIVER_SDL2=TRUE ../git
 make -j${JOBS}

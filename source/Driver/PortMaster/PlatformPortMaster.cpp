@@ -5,6 +5,8 @@
 #include <iostream>
 
 namespace SuperHaxagon {
+	void platformSpecificHints() {}
+
 	SDL_Window* getWindow(const Platform&) {
 		return SDL_CreateWindow("Super Haxagon", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 0, 0, SDL_WINDOW_FULLSCREEN_DESKTOP | SDL_WINDOW_ALLOW_HIGHDPI);
 	}

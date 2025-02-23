@@ -2,6 +2,8 @@
 
 message(STATUS "Building for switch...")
 
+set(PLATFORM_NAME "SWITCH")
+
 include_directories(SYSTEM "$ENV{DEVKITPRO}/portlibs/switch/include")
 include_directories(SYSTEM "$ENV{DEVKITPRO}/portlibs/switch/include/freetype2")
 

@@ -10,10 +10,11 @@
 
 namespace SuperHaxagon {
 	struct Font::FontImpl {
-		FontImpl(const Platform& platform, SDL_Renderer& renderer, std::string path, int size) :
+		FontImpl(const Platform& platform, SDL_Renderer* renderer, SDL_Surface* surface, std::string path, int size) :
 			platform(platform),
 			path(std::move(path)),
 			renderer(renderer),
+			surface(surface),
 			font(nullptr),
 			currentScale(1.0f),
 			size(size) {
@@ -56,20 +57,21 @@ namespace SuperHaxagon {
 
 		void draw(const Color& color, const Vec2f& position, const Alignment alignment, const std::string& text) const {
 			if (!font) return;
+			if (text.empty()) return;
 
 			int text_width;
 			int text_height;
-			SDL_Surface *surface;
-			SDL_Texture *texture;
+
+			SDL_Surface* fontSurface;
+			SDL_Texture* texture = nullptr;
 			SDL_Rect rect;
 			SDL_Color textColor = {color.r, color.g, color.b, 255};
-			surface = TTF_RenderText_Solid(font, text.c_str(), textColor);
-			texture = SDL_CreateTextureFromSurface(&renderer, surface);
 
-			text_width = surface->w;
-			text_height = surface->h;
+			fontSurface = TTF_RenderText_Solid(font, text.c_str(), textColor);
+			if (!fontSurface) return;
 
-			SDL_FreeSurface(surface);
+			text_width = fontSurface->w;
+			text_height = fontSurface->h;
 
 			rect.w = text_width;
 			rect.h = text_height;
@@ -80,14 +82,21 @@ namespace SuperHaxagon {
 			if (alignment == Alignment::CENTER) rect.x = static_cast<int>(position.x) - (width / 2);
 			if (alignment == Alignment::RIGHT) rect.x = static_cast<int>(position.x) - width;
 
-			SDL_RenderCopy(&renderer, texture, nullptr, &rect);
+			if (renderer) {
+				texture = SDL_CreateTextureFromSurface(renderer, fontSurface);
+				SDL_RenderCopy(renderer, texture, nullptr, &rect);
+				SDL_DestroyTexture(texture);
+			} else {
+				SDL_BlitSurface(fontSurface, nullptr, surface, &rect);
+			}
 
-			SDL_DestroyTexture(texture);
+			SDL_FreeSurface(fontSurface);
 		}
 
 		const Platform& platform;
 		std::string path;
-		SDL_Renderer& renderer;
+		SDL_Renderer* renderer;
+		SDL_Surface* surface;
 		TTF_Font* font;
 		float currentScale;
 		int size;
@@ -113,7 +122,7 @@ namespace SuperHaxagon {
 		_impl->draw(color, position, alignment, text);
 	}
 
-	std::unique_ptr<Font> createFont(const Platform& platform, SDL_Renderer& renderer, const std::string& path, int size) {
-		return std::make_unique<Font>(std::make_unique<Font::FontImpl>(platform, renderer, path, size));
+	std::unique_ptr<Font> createFont(const Platform& platform, SDL_Renderer* renderer, SDL_Surface* surface, const std::string& path, int size) {
+		return std::make_unique<Font>(std::make_unique<Font::FontImpl>(platform, renderer, surface, path, size));
 	}
 }

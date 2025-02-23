@@ -6,13 +6,11 @@ find_package(SDL2 REQUIRED)
 
 include_directories(${SDL2_INCLUDE_DIRS})
 
-set(DRIVER ${DRIVER_PLATFORM_SDL2}
+set(DRIVER ${DRIVER_PLATFORM}
     source/Driver/Common/SDL2/MusicSDL2.cpp
-    source/Driver/Common/SDL2/ScreenSDL2.cpp
     source/Driver/Common/SDL2/SoundSDL2.cpp
     source/Driver/Common/SDL2/FontSDL2.cpp
     source/Driver/Common/SDL2/PlatformSDL2.cpp
-    source/Driver/Common/PlatformSupportsFilesystem.cpp
 )
 
 add_executable(SuperHaxagon ${DRIVER} ${SOURCES})

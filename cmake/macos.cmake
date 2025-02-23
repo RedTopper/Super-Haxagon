@@ -10,6 +10,9 @@
 
 message(STATUS "Attempting to build for macOS...")
 
+set(PLATFORM_NAME "MACOS")
+
+
 set(DRIVER_PLATFORM source/Driver/macOS/PlatformMacOS.cpp source/Driver/Common/PlatformIsFullyRandom.cpp)
 
 include(cmake/common/sfml.cmake)

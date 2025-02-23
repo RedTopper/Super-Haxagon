@@ -80,3 +80,13 @@ services:
     volumes:
       - ../:/haxagon/git:z
       - ../build/portmaster:/haxagon/build:z
+  miyoo:
+    build:
+      context: .
+      dockerfile: miyoo/Containerfile
+    image: super-haxagon-miyoo
+    container_name: super-haxagon-miyoo
+    hostname: super-haxagon-miyoo
+    volumes:
+      - ../:/haxagon/git:z
+      - ../build/miyoo:/haxagon/build:z

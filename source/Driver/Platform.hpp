@@ -89,7 +89,12 @@ namespace SuperHaxagon {
 		static Supports supports();
 
 	private:
-		std::unique_ptr<PlatformImpl> _impl{};
+		// Hello voyager! I came across this interesting bug while compiling for the
+		// Miyoo Mini, which uses GCC 8.2.1. Thought I would share it here:
+		// https://stackoverflow.com/questions/58375922/compile-error-with-gcc-when-in-class-initializing-unique-ptr-of-incomplete-type
+		// Previous code was:
+		// std::unique_ptr<PlatformImpl> _impl{};
+		std::unique_ptr<PlatformImpl> _impl;
 	};
 }
 

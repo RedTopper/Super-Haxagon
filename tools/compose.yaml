@@ -1,10 +1,15 @@
 version: '3.8'
 
 # For a build:
-# podman-compose run --build --rm <service>
+# podman-compose up --build --build-arg JOBS=<cpu-cores> <service>
+# ex:
+# podman-compose up --build --build-arg JOBS=32 miyoo
 
 # For a shell:
 # podman-compose run --build --rm <service> bash
+# Then you can run:
+# build.sh
+# in the current directory to start building the project.
 
 # For a linux flatpak build, install Flatpak on your host
 # and run tools/linux/flatpak.sh from the root of this repo
@@ -17,9 +22,12 @@ services:
     image: super-haxagon-3ds
     container_name: super-haxagon-3ds
     hostname: super-haxagon-3ds
+    command: /root/git/tools/3ds/build.sh
+    working_dir: /root/git/build/3ds
+    environment:
+      - CMAKE_ARGS=-DCMAKE_INSTALL_PREFIX=/root/git/release/3ds
     volumes:
-      - ../:/haxagon/git:z
-      - ../build/3ds:/haxagon/build:z
+      - ../:/root/git:z
   switch:
     build:
       context: .
@@ -27,9 +35,12 @@ services:
     image: super-haxagon-switch
     container_name: super-haxagon-switch
     hostname: super-haxagon-switch
+    command: /root/git/tools/switch/build.sh
+    working_dir: /root/git/build/switch
+    environment:
+      - CMAKE_ARGS=-DCMAKE_INSTALL_PREFIX=/root/git/release/switch
     volumes:
-      - ../:/haxagon/git:z
-      - ../build/switch:/haxagon/build:z
+      - ../:/root/git:z
   nspire:
     build:
       context: .
@@ -37,9 +48,12 @@ services:
     image: super-haxagon-nspire
     container_name: super-haxagon-nspire
     hostname: super-haxagon-nspire
+    command: /root/git/tools/nspire/build.sh
+    working_dir: /root/git/build/nspire
+    environment:
+      - CMAKE_ARGS=-DCMAKE_INSTALL_PREFIX=/root/git/release/nspire
     volumes:
-      - ../:/haxagon/git:z
-      - ../build/nspire:/haxagon/build:z
+      - ../:/root/git:z
   linux:
     build:
       context: .
@@ -47,9 +61,12 @@ services:
     image: super-haxagon-linux
     container_name: super-haxagon-linux
     hostname: super-haxagon-linux
+    command: /root/git/tools/linux/build.sh
+    working_dir: /root/git/build/linux-sfml
+    environment:
+      - CMAKE_ARGS=-DCMAKE_INSTALL_PREFIX=/root/git/release/linux-sfml
     volumes:
-      - ../:/haxagon/git:z
-      - ../build/linux:/haxagon/build:z
+      - ../:/root/git:z
   linux-sdl2:
     build:
       context: .
@@ -57,9 +74,12 @@ services:
     image: super-haxagon-linux-sdl2
     container_name: super-haxagon-linux-sdl2
     hostname: super-haxagon-linux-sdl2
+    command: /root/git/tools/linux-sdl2/build.sh
+    working_dir: /root/git/build/linux-sdl2
+    environment:
+      - CMAKE_ARGS=-DCMAKE_INSTALL_PREFIX=/root/git/release/linux-sdl2
     volumes:
-      - ../:/haxagon/git:z
-      - ../build/linux-sdl2:/haxagon/build:z
+      - ../:/root/git:z
   nothing:
     # Example driver and build tooling
     build:
@@ -68,18 +88,20 @@ services:
     image: super-haxagon-null
     container_name: super-haxagon-null
     hostname: super-haxagon-null
+    command: /root/git/tools/null/build.sh
+    working_dir: /root/git/build/null
     volumes:
-      - ../:/haxagon/git:z
-      - ../build/null:/haxagon/build:z
+      - ../:/root/git:z
   portmaster:
     image: monkeyx/retro_builder:arm64
     container_name: super-haxagon-portmaster
     hostname: super-haxagon-portmaster
-    working_dir: /haxagon/build
-    command: /haxagon/git/tools/portmaster/build.sh
+    command: /root/git/tools/portmaster/build.sh
+    working_dir: /root/git/build/portmaster
+    environment:
+      - CMAKE_ARGS=-DCMAKE_INSTALL_PREFIX=/root/git/release/portmaster
     volumes:
-      - ../:/haxagon/git:z
-      - ../build/portmaster:/haxagon/build:z
+      - ../:/root/git:z
   miyoo:
     build:
       context: .
@@ -87,6 +109,9 @@ services:
     image: super-haxagon-miyoo
     container_name: super-haxagon-miyoo
     hostname: super-haxagon-miyoo
+    command: /root/git/tools/miyoo/build.sh
+    working_dir: /root/git/build/miyoo
+    environment:
+      - CMAKE_ARGS=-DCMAKE_INSTALL_PREFIX=/root/git/release/miyoo
     volumes:
-      - ../:/haxagon/git:z
-      - ../build/miyoo:/haxagon/build:z
+      - ../:/root/git:z

@@ -65,3 +65,9 @@ foreach(ROM_TARGET CIA;3DS)
         LOGO "${CMAKE_CURRENT_SOURCE_DIR}/media/3ds/logo.bcma.lz"
     )
 endforeach()
+
+install(FILES
+        "${CMAKE_CURRENT_BINARY_DIR}/SuperHaxagon.cia"
+        "${CMAKE_CURRENT_BINARY_DIR}/SuperHaxagon.3dsx"
+        DESTINATION .
+)

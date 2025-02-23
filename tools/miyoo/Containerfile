@@ -64,7 +64,4 @@ RUN tar -xzf lib.tar.gz && \
     ln -s libjson-c.so.5 libjson-c.so && \
     ln -s libz.so.1 libz.so
 
-WORKDIR /haxagon/build
-COPY miyoo/build.sh /haxagon/build.sh
-
-CMD /haxagon/build.sh
+ENV PATH="/root/git/tools/miyoo:${PATH}"

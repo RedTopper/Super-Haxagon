@@ -2,14 +2,9 @@ FROM fedora:41
 
 ARG JOBS=1
 ENV JOBS=${JOBS}
+ENV PATH=/root/git/tools/null:${PATH}
 
 RUN --mount=target=/var/cache/dnf,type=cache,sharing=locked \
     dnf update -y && \
     dnf install -y --nodocs \
     gcc gcc-c++ cmake git
-
-RUN mkdir -p /haxagon/build
-WORKDIR /haxagon/build
-COPY null/build.sh /haxagon/build.sh
-
-CMD /haxagon/build.sh

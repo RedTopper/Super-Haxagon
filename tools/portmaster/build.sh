@@ -1,4 +1,5 @@
 #!/bin/bash
 
-cmake -DDRIVER_PORTMASTER=TRUE ../git
+cmake -DDRIVER_PORTMASTER=TRUE ${CMAKE_ARGS} ../../
 make -j${JOBS}
+make install

@@ -26,8 +26,5 @@ ENV PATH="/opt/ndless/ndless-sdk/toolchain/install/bin:/opt/ndless/ndless-sdk/bi
 ENV NDLESS="/opt/ndless"
 RUN make -j${JOBS}
 
-RUN mkdir -p /haxagon/build
-WORKDIR /haxagon/build
-COPY nspire/build.sh /haxagon/build.sh
-
-CMD /haxagon/build.sh
+# Then add my tools to the PATH
+ENV PATH="/root/git/tools/ndless:${PATH}"

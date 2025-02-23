@@ -23,5 +23,8 @@ target_compile_definitions(SuperHaxagon PRIVATE SFML_STATIC)
 target_link_options(SuperHaxagon PRIVATE "/SUBSYSTEM:WINDOWS" "/ENTRY:WinMainCRTStartup")
 
 # Also distribute OpenAL with the built binary
-add_custom_command(TARGET SuperHaxagon POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${SFML_DIR}/../../../bin/openal32.dll $<TARGET_FILE_DIR:SuperHaxagon>)
+add_custom_command(TARGET SuperHaxagon POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${SFML_DIR}/../../../bin/openal32.dll $<TARGET_FILE_DIR:SuperHaxagon>
+)
+
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/openal32.dll DESTINATION .)

@@ -1,4 +1,4 @@
-# cmake
+# cmake -DDRIVER_NULL=TRUE
 
 message(STATUS "Building null driver...")
 

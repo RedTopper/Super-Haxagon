@@ -17,6 +17,6 @@ add_executable(SuperHaxagon ${DRIVER} ${SOURCES})
 
 target_link_libraries(SuperHaxagon ${SDL2_LIBRARIES} SDL2_mixer SDL2_ttf)
 
-add_custom_command(TARGET SuperHaxagon POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/romfs $<TARGET_FILE_DIR:SuperHaxagon>/romfs)
-install(TARGETS SuperHaxagon RUNTIME DESTINATION .)
-install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/romfs DESTINATION .)
+add_custom_command(TARGET SuperHaxagon POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/romfs $<TARGET_FILE_DIR:SuperHaxagon>/romfs
+)

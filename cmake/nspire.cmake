@@ -36,3 +36,5 @@ create_tns(SuperHaxagon
     NAME "${APP_NAME}"
     AUTHOR "${APP_AUTHOR}"
 )
+
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/SuperHaxagon.tns" DESTINATION .)

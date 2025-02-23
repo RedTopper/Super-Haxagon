@@ -2,9 +2,4 @@ FROM devkitpro/devkita64
 
 ARG JOBS=1
 ENV JOBS=${JOBS}
-
-RUN mkdir -p /haxagon/build
-WORKDIR /haxagon/build
-COPY switch/build.sh /haxagon/build.sh
-
-CMD /haxagon/build.sh
+ENV PATH=/root/git/tools/switch:${PATH}

@@ -19,6 +19,9 @@ add_executable(SuperHaxagon ${DRIVER} ${SOURCES})
 
 target_link_libraries(SuperHaxagon sfml-graphics sfml-window sfml-audio sfml-system)
 
-add_custom_command(TARGET SuperHaxagon POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/romfs $<TARGET_FILE_DIR:SuperHaxagon>/romfs)
+add_custom_command(TARGET SuperHaxagon POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/romfs $<TARGET_FILE_DIR:SuperHaxagon>/romfs
+)
+
 install(TARGETS SuperHaxagon RUNTIME DESTINATION .)
-install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/romfs DESTINATION .)
+install(DIRECTORY ${CMAKE_SOURCE_DIR}/romfs DESTINATION .)

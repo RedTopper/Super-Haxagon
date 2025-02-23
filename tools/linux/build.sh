@@ -1,9 +1,10 @@
 #!/bin/bash
 
-cmake ../git \
-    -DCMAKE_PREFIX_PATH="/haxagon/sfml/build" \
-    -DSFML_DIR="/haxagon/sfml" \
-    -DSFML_INCLUDE_DIR="/haxagon/sfml/include" \
+cmake ../../ ${CMAKE_ARGS} \
+    -DCMAKE_PREFIX_PATH="/root/sfml/build" \
+    -DSFML_DIR="/root/sfml" \
+    -DSFML_INCLUDE_DIR="/root/sfml/include" \
     -DSFML_STATIC_LIBRARIES="TRUE"
 
 make -j${JOBS}
+make install

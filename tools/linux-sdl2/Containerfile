@@ -9,8 +9,4 @@ RUN --mount=target=/var/cache/dnf,type=cache,sharing=locked \
     gcc gcc-c++ cmake git \
     SDL2-devel SDL2_mixer-devel SDL2_ttf-devel
 
-RUN mkdir -p /haxagon/build
-WORKDIR /haxagon/build
-COPY linux-sdl2/build.sh /haxagon/build.sh
-
-CMD /haxagon/build.sh
+ENV PATH="/root/git/tools/linux-sdl2:${PATH}"

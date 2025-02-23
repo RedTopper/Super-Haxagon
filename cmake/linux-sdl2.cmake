@@ -17,3 +17,6 @@ set(DRIVER_PLATFORM ${DRIVER_PLATFORM}
 include(cmake/common/sdl2.cmake)
 
 target_compile_options(SuperHaxagon PRIVATE -Wall -Wextra -pedantic)
+
+install(TARGETS SuperHaxagon RUNTIME DESTINATION .)
+install(DIRECTORY ${CMAKE_SOURCE_DIR}/romfs DESTINATION .)

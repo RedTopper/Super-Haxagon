@@ -12,13 +12,9 @@ RUN --mount=target=/var/cache/dnf,type=cache,sharing=locked \
     libX11-devel libXrandr-devel libXcursor-devel
 
 # Build SFML 2.6
-RUN mkdir -p /haxagon/sfml
-WORKDIR /haxagon/sfml
+RUN mkdir -p /root/sfml
+WORKDIR /root/sfml
 RUN git clone --branch 2.6.x --depth=1 https://github.com/SFML/SFML.git .
 RUN mkdir build && cd build && cmake -DBUILD_SHARED_LIBS=FALSE .. && make -j${JOBS}
 
-RUN mkdir -p /haxagon/build
-WORKDIR /haxagon/build
-COPY linux/build.sh /haxagon/build.sh
-
-CMD /haxagon/build.sh
+ENV PATH="/root/git/tools/linux:${PATH}"

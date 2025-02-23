@@ -28,7 +28,11 @@ target_link_libraries(SuperHaxagon SDL2 SDL2_image SDL2_mixer SDL2_ttf GLESv2 EG
 
 target_compile_options(SuperHaxagon PRIVATE -Wall -Wextra -pedantic)
 
-add_custom_command(TARGET SuperHaxagon POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/romfs $<TARGET_FILE_DIR:SuperHaxagon>/romfs)
-add_custom_command(TARGET SuperHaxagon POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/media/miyoo/config.json $<TARGET_FILE_DIR:SuperHaxagon>)
-add_custom_command(TARGET SuperHaxagon POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/media/miyoo/launch.sh $<TARGET_FILE_DIR:SuperHaxagon>)
-add_custom_command(TARGET SuperHaxagon POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/media/miyoo/icon.png $<TARGET_FILE_DIR:SuperHaxagon>)
+install(TARGETS SuperHaxagon RUNTIME DESTINATION .)
+install(DIRECTORY ${CMAKE_SOURCE_DIR}/romfs DESTINATION .)
+install(FILES
+        ${CMAKE_SOURCE_DIR}/media/miyoo/config.json
+        ${CMAKE_SOURCE_DIR}/media/miyoo/launch.sh
+        ${CMAKE_SOURCE_DIR}/media/miyoo/icon.png
+        DESTINATION .
+)

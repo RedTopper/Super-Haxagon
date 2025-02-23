@@ -33,3 +33,5 @@ nx_create_nro(SuperHaxagon
     ICON "${CMAKE_CURRENT_SOURCE_DIR}/media/switch/icon-switch.jpg"
     ROMFS "${CMAKE_CURRENT_SOURCE_DIR}/romfs"
 )
+
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/SuperHaxagon.nro" DESTINATION .)

@@ -39,7 +39,7 @@ namespace SuperHaxagon {
 	void Menu::enter() {
 		_game.playMusic("/werq", Location::ROM, false);
 		_game.getCam().setNext(
-				{0.0f, -0.6f + 1.0/3.0f, 1.5f},
+				{0.0f, -0.6f + 1.0f/3.0f, 1.5f},
 				{0.0f, 0.1f, 0.0f},
 				60.0f
 		);
@@ -83,7 +83,7 @@ namespace SuperHaxagon {
 				_game.getCam().setNext(
 						{std::sin(_cameraRotation)/2.0f, -0.6f + std::cos(_cameraRotation)/3.0f, 1.5f},
 						{0.0f, 0.1f, 0.0f},
-						FRAMES_PER_TRANSITION
+						FRAMES_PER_TRANSITION * 2.5f
 				);
 
 				for (auto i = COLOR_LOCATION_FIRST; i != COLOR_LOCATION_LAST; i++) {

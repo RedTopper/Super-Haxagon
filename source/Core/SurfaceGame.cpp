@@ -120,10 +120,10 @@ namespace SuperHaxagon {
 		};
 
 		std::vector<Vec2f> rightAngles = {
-			{-1, -0.6}, // bottom left (Red)
-			{-1, 0.6}, // top left (Green)
-			{1, -0.6}, // bottom right (Blue)
-			{1, 0.6} // top right (White)
+			{-1.0f, -0.6f}, // bottom left (Red)
+			{-1.0f, 0.6f}, // top left (Green)
+			{1.0f, -0.6f}, // bottom right (Blue)
+			{1.0f, 0.6f} // top right (White)
 		};
 
 		for (size_t i = 0; i < rightAngles.size(); i++) {

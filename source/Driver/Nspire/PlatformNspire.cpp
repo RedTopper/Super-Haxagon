@@ -146,10 +146,9 @@ namespace SuperHaxagon {
 		return Supports::NOTHING;
 	}
 
-	std::unique_ptr<Twist> Platform::getTwister() {
-		auto* a = new std::seed_seq{time(nullptr)};
-		return std::make_unique<Twist>(
-				std::unique_ptr<std::seed_seq>(a)
-		);
+	Twist Platform::getTwister() {
+		std::unique_ptr<std::seed_seq> seq;
+		seq.reset(new std::seed_seq{time(nullptr)});
+		return Twist(std::move(seq));
 	}
 }

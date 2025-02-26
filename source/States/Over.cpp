@@ -32,9 +32,9 @@ namespace SuperHaxagon {
 	void Over::enter() {
 		_game.playEffect(SoundEffect::OVER);
 
-		_game.setNextCamera(
-				{0, -0.25f, 1.7f},
-				{0.0f, 0.0f, 0.0f},
+		_game.getCam().setNext(
+				{0, -0.3f, 2.0f},
+				{0.0f, 0.035f, 0.0f},
 				60.0f
 		);
 

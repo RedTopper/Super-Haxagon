@@ -42,6 +42,7 @@ set(SOURCES
     source/Objects/Pattern.cpp
     source/Objects/Wall.cpp
 
+    source/Core/Camera.cpp
     source/Core/Game.cpp
     source/Core/Matrix.cpp
     source/Core/Metadata.cpp

@@ -38,8 +38,8 @@ namespace SuperHaxagon {
 
 	void Menu::enter() {
 		_game.playMusic("/werq", Location::ROM, false);
-		_game.setNextCamera(
-				{0.0f, -0.6f, 1.4f},
+		_game.getCam().setNext(
+				{0.0f, -0.6f + 1.0/3.0f, 1.5f},
 				{0.0f, 0.1f, 0.0f},
 				60.0f
 		);
@@ -63,18 +63,29 @@ namespace SuperHaxagon {
 				return std::make_unique<Play>(_game, level, level, 0.0f, 0.0f, 0.0f);
 			}
 
+			// Tell the IDE to shut up about an unreachable condition (it's reachable)
+			_transitionDirection = 0;
+
 			if (press.right) {
 				_transitionDirection = -1;
 				++_selected;
+				_cameraRotation += TAU / static_cast<float>(_game.getLevels().size());
 				if (_selected == _game.getLevels().end()) _selected = _game.getLevels().begin();
 			} else if (press.left) {
 				_transitionDirection = 1;
 				if (_selected == _game.getLevels().begin()) _selected = _game.getLevels().end();
 				--_selected;
+				_cameraRotation -= TAU / static_cast<float>(_game.getLevels().size());
 			}
 
 			if (_transitionDirection != 0) {
 				_game.playEffect(SoundEffect::SELECT);
+				_game.getCam().setNext(
+						{std::sin(_cameraRotation)/2.0f, -0.6f + std::cos(_cameraRotation)/3.0f, 1.5f},
+						{0.0f, 0.1f, 0.0f},
+						FRAMES_PER_TRANSITION
+				);
+
 				for (auto i = COLOR_LOCATION_FIRST; i != COLOR_LOCATION_LAST; i++) {
 					const auto location = static_cast<LocColor>(i);
 

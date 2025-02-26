@@ -82,7 +82,7 @@ namespace SuperHaxagon {
 		std::string getButtonName(ButtonName buttonName);
 		Buttons getPressed() const;
 
-		std::unique_ptr<Twist> getTwister();
+		Twist getTwister();
 
 		void shutdown();
 		void message(Dbg level, const std::string& where, const std::string& message) const;

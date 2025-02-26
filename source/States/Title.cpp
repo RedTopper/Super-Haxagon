@@ -31,7 +31,7 @@ namespace SuperHaxagon {
 		auto* music = _game.getMusic();
 		if (music) music->pause();
 		_game.playEffect(SoundEffect::HEXAGON);
-		_game.setCamera(
+		_game.getCam().set(
 				{0.0f, -0.30f, 2.0f},
 				{0.0f, 0.25f, 0.0f}
 		);

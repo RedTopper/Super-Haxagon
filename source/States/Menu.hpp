@@ -39,6 +39,7 @@ namespace SuperHaxagon {
 		bool _justEntered = true;
 
 		std::vector<std::unique_ptr<LevelFactory>>::const_iterator _selected;
+		float _cameraRotation = 0.0f;
 		std::map<LocColor, Color> _color;
 		std::map<LocColor, Color> _colorNext;
 		std::map<LocColor, size_t> _colorNextIndex;

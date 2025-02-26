@@ -7,18 +7,7 @@
 #include <algorithm>
 
 namespace SuperHaxagon {
-	SurfaceGame::SurfaceGame(Screen& screen) : _screen(screen) {}
-
-	void SurfaceGame::update(float dilation) {
-		if (_camPercentBetween < 1.0f) {
-			_camPercentBetween += dilation / _camFramesToCompletion;
-
-			if (_camPercentBetween > 1.0f) _camPercentBetween = 1.0f;
-
-			_camCurrentPos = _camFromPos.ease(_camToPos, _camPercentBetween);
-			_camCurrentLookAt = _camFromLookAt.ease(_camToLookAt, _camPercentBetween);
-		}
-	}
+	SurfaceGame::SurfaceGame(Screen& screen, Camera& camera) : _screen(screen), _camera(camera) {}
 
 	void SurfaceGame::project(const Color& color, std::vector<Vec2f>& points) {
 		for (auto& p : points) {
@@ -161,8 +150,8 @@ namespace SuperHaxagon {
 		constexpr auto fov = 15.5f * PI / 180.0f;
 		const auto project = Matrix4x4f::generateProjection(fov, ASPECT_DEFAULT, 0.01f, 10.0f);
 		const auto camera = Matrix4x4f::lookAt(
-				_camCurrentPos,
-				_camCurrentLookAt,
+				_camera.currentPos(),
+				_camera.currentLookAt(),
 				{0, 1.0f, 0}
 		);
 
@@ -202,29 +191,5 @@ namespace SuperHaxagon {
 
 	void SurfaceGame::setDepth(float depth) {
 		_depth = depth;
-	}
-
-	bool SurfaceGame::isCameraMoving() const {
-		return _camPercentBetween < 0.999f;
-	}
-
-	void SurfaceGame::setCamera(SuperHaxagon::Vec3f pos, SuperHaxagon::Vec3f at) {
-		_camCurrentLookAt = at;
-		_camCurrentPos = pos;
-		_camFromLookAt = at;
-		_camFromPos = pos;
-		_camToLookAt = at;
-		_camToPos = pos;
-		_camFramesToCompletion = 0.0f;
-		_camPercentBetween = 1.0f;
-	}
-
-	void SurfaceGame::setNextCamera(SuperHaxagon::Vec3f pos, SuperHaxagon::Vec3f rot, float frames) {
-		_camFromPos = _camCurrentPos;
-		_camFromLookAt = _camCurrentLookAt;
-		_camToPos = pos;
-		_camToLookAt = rot;
-		_camFramesToCompletion = frames;
-		_camPercentBetween = 0.0f;
 	}
 }

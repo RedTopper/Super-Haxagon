@@ -210,12 +210,11 @@ namespace SuperHaxagon {
 		return _impl->getPressed();
 	}
 	
-	std::unique_ptr<Twist> Platform::getTwister() {
+	Twist Platform::getTwister() {
 		// ALSO a shitty way to do this, but it's the best I got.
-		const auto a = new std::seed_seq{ svcGetSystemTick() };
-		return std::make_unique<Twist>(
-			std::unique_ptr<std::seed_seq>(a)
-		);
+		std::unique_ptr<std::seed_seq> seq;
+		seq.reset(new std::seed_seq{ svcGetSystemTick() });
+		return Twist(std::move(seq));
 	}
 	
 	void Platform::shutdown() {

@@ -17,7 +17,9 @@ namespace SuperHaxagon {
 	Game::Game(Platform& platform) :
 		_platform(platform),
 		_screen(platform.getScreen()),
-		_surfaceGame(_screen),
+		_twister(_platform.getTwister()),
+		_camera(_twister),
+		_surfaceGame(_screen, _camera),
 		_surfaceUI(_screen) {
 		// Audio loading
 		const std::vector<std::pair<SoundEffect, std::string>> sounds{
@@ -38,7 +40,7 @@ namespace SuperHaxagon {
 		_twister = platform.getTwister();
 
 		if (static_cast<int>(Platform::supports() & Supports::SHADOWS)) {
-			_surfaceShadows = std::make_unique<SurfaceGame>(_screen);
+			_surfaceShadows = std::make_unique<SurfaceGame>(_screen, _camera);
 		}
 	}
 
@@ -72,7 +74,7 @@ namespace SuperHaxagon {
 				next = _state->update(dilation);
 			}
 
-			_surfaceGame.update(dilation);
+			_camera.update(dilation);
 			_screen.screenBegin();
 			_state->drawGame(_surfaceGame, _surfaceShadows.get());
 			_state->drawTopUI(_surfaceUI);

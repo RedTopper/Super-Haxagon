@@ -37,19 +37,19 @@ namespace SuperHaxagon {
 		Music* getMusic() const {return _bgm.get();}
 		Metadata* getBGMMetadata() const {return _bgmMetadata.get();}
 		Platform& getPlatform() const {return _platform;}
-		Twist& getTwister() const {return *_twister;}
+		Twist& getTwister() {return _twister;}
 		Font* getFontSmall() const {return _fontSmall.get();}
 		Font* getFontLarge() const {return _fontLarge.get();}
 
-		bool isCameraMoving() {return _surfaceGame.isCameraMoving();}
-		void setCamera(Vec3f pos, Vec3f at) {_surfaceGame.setCamera(pos, at);}
-		void setNextCamera(Vec3f pos, Vec3f at, float frames) {_surfaceGame.setNextCamera(pos, at, frames);}
+		Camera& getCam() {return _camera;}
 
 		void setRunning(const bool running) {_running = running;}
 
 	private:
 		Platform& _platform;
 		Screen& _screen;
+		Twist _twister;
+		Camera _camera;
 
 		SurfaceGame _surfaceGame;
 		SurfaceUI _surfaceUI;
@@ -64,7 +64,6 @@ namespace SuperHaxagon {
 		std::vector<std::pair<SoundEffect, std::unique_ptr<Sound>>> _soundEffects;
 		std::vector<std::unique_ptr<LevelFactory>> _levels;
 
-		std::unique_ptr<Twist> _twister;
 		std::unique_ptr<State> _state;
 
 		std::unique_ptr<Metadata> _bgmMetadata;

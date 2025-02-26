@@ -36,7 +36,7 @@ namespace SuperHaxagon {
 		}
 	}
 
-	std::unique_ptr<Twist> Platform::getTwister() {
+	Twist Platform::getTwister() {
 		try {
 			std::random_device source;
 			if (source.entropy() == 0) {
@@ -46,14 +46,11 @@ namespace SuperHaxagon {
 
 			std::mt19937::result_type data[std::mt19937::state_size];
 			generate(std::begin(data), std::end(data), ref(source));
-			return std::make_unique<Twist>(
-					std::make_unique<std::seed_seq>(std::begin(data), std::end(data))
-			);
+			return Twist(std::make_unique<std::seed_seq>(std::begin(data), std::end(data)));
 		} catch (std::runtime_error&) {
-			auto* a = new std::seed_seq{time(nullptr)};
-			return std::make_unique<Twist>(
-					std::unique_ptr<std::seed_seq>(a)
-			);
+			std::unique_ptr<std::seed_seq> seq;
+			seq.reset(new std::seed_seq{time(nullptr)});
+			return Twist(std::move(seq));
 		}
 	}
 }

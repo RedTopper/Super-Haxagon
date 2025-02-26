@@ -73,7 +73,7 @@ namespace SuperHaxagon {
 
 	void Win::enter() {
 		_game.playMusic("/esiannoyamFoEzam", Location::ROM, true, false);
-		_game.setNextCamera(
+		_game.getCam().setNext(
 				{0, -std::sin(PI/6.0f) * 4.0f, std::cos(PI/6.0f) * 4.0f},
 				{0.0f, 0.0f, 0.0f},
 				60.0f

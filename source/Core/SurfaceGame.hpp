@@ -1,6 +1,7 @@
 #ifndef SUPER_HAXAGON_SURFACE_GAME_HPP
 #define SUPER_HAXAGON_SURFACE_GAME_HPP
 
+#include "Core/Camera.hpp"
 #include "Core/Structs.hpp"
 #include "Core/Matrix.hpp"
 
@@ -13,10 +14,8 @@ namespace SuperHaxagon {
 	class Wall;
 	class SurfaceGame {
 	public:
-		explicit SurfaceGame(Screen& screen);
+		SurfaceGame(Screen& screen, Camera& camera);
 		~SurfaceGame() = default;
-
-		void update(float dilation);
 
 		/**
 		 * Projects the game from game coordinates to camera coordinates.
@@ -78,26 +77,12 @@ namespace SuperHaxagon {
 
 		void setDepth(float depth);
 
-		bool isCameraMoving() const;
-		void setCamera(Vec3f pos, Vec3f at);
-		void setNextCamera(Vec3f pos, Vec3f at, float frames);
-
-	protected:
-		Screen& _screen;
-
 	private:
+		Screen& _screen;
+		Camera& _camera;
 		float _offset = 0.0f;
 		float _depth = 0.0;
 		Matrix4x4f _matrix{};
-
-		float _camPercentBetween = 0.0f;
-		float _camFramesToCompletion = 0.0f;
-		Vec3f _camCurrentPos;
-		Vec3f _camCurrentLookAt;
-		Vec3f _camFromPos;
-		Vec3f _camFromLookAt;
-		Vec3f _camToPos;
-		Vec3f _camToLookAt;
 	};
 }
 

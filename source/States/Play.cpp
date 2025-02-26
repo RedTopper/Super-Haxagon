@@ -2,6 +2,7 @@
 
 #include "Core/Game.hpp"
 #include "Core/Metadata.hpp"
+#include "Core/Twist.hpp"
 #include "Driver/Font.hpp"
 #include "Driver/Music.hpp"
 #include "Factories/LevelFactory.hpp"
@@ -28,7 +29,7 @@ namespace SuperHaxagon {
 		auto* bgm = _game.getMusic();
 		if (bgm && !_factory.isCreditsLevel()) bgm->play();
 		_game.playEffect(SoundEffect::BEGIN);
-		_game.setNextCamera(
+		_game.getCam().setNext(
 				{0, -std::sin(SKEW_MIN) * 4.0f, std::cos(SKEW_MIN) * 4.0f},
 				{0.0f, 0.0f, 0.0f},
 				60.0f
@@ -54,17 +55,19 @@ namespace SuperHaxagon {
 			if (metadata.getMetadata(time, "I")) _level->invertBG();
 			if (metadata.getMetadata(time, "BL")) _level->pulse(1.0f);
 			if (metadata.getMetadata(time, "BS")) _level->pulse(0.66f);
+			if (metadata.getMetadata(time, "TILT")) _game.getCam().tilt(20.0f);
+			if (metadata.getMetadata(time, "RST")) _game.getCam().reset(20.0f);
 		}
 
 		// Camera
-		if (!_game.isCameraMoving()) {
+		if (!_game.getCam().isMoving()) {
 			_skewing = !_skewing;
 			auto skewFrameMax = static_cast<float>(_level->getLevelFactory().getSpeedPulse()) * 2.5f;
 			skewFrameMax = skewFrameMax < SKEW_MIN_FRAMES ? SKEW_MIN_FRAMES : skewFrameMax;
-			_game.setNextCamera(
-					{0, -std::sin(_skewing?SKEW_MAX:SKEW_MIN) * 4.0f, std::cos(_skewing?SKEW_MAX:SKEW_MIN) * 4.0f},
-					{0, 0, 0},
-					skewFrameMax
+			_game.getCam().setNext(
+				{0.0f, -std::sin(_skewing?SKEW_MAX:SKEW_MIN) * 4.0f, std::cos(_skewing?SKEW_MAX:SKEW_MIN) * 4.0f},
+				{0, 0, 0},
+				skewFrameMax
 			);
 		}
 

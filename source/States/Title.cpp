@@ -31,10 +31,11 @@ namespace SuperHaxagon {
 		auto* music = _game.getMusic();
 		if (music) music->pause();
 		_game.playEffect(SoundEffect::HEXAGON);
-		_game.getCam().set(
-				{0.0f, -0.30f, 2.0f},
-				{0.0f, 0.25f, 0.0f}
-		);
+
+		auto& cam = _game.getCam();
+		cam.reset();
+		cam.setPosition(CameraLayer::LOOK_AT, {0.0f, 0.25f, 0.0f});
+		cam.setPosition(CameraLayer::MAIN, {0.0f, -0.30f, 2.0f});
 	}
 
 	std::unique_ptr<State> Title::update(const float dilation) {
@@ -78,7 +79,7 @@ namespace SuperHaxagon {
 	}
 
 	void Title::drawGame(SurfaceGame& surface, SurfaceGame* shadows) {
-		surface.calculateMatrix(_rotation, 1.0f);
+		surface.calculateMatrix(_rotation);
 
 		surface.drawBackground(_colorCurrent.bg1, _colorCurrent.bg2, 6.0);
 

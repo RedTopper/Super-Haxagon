@@ -29,11 +29,13 @@ namespace SuperHaxagon {
 		auto* bgm = _game.getMusic();
 		if (bgm && !_factory.isCreditsLevel()) bgm->play();
 		_game.playEffect(SoundEffect::BEGIN);
-		_game.getCam().setNext(
-				{0, -std::sin(SKEW_MIN) * 4.0f, std::cos(SKEW_MIN) * 4.0f},
-				{0.0f, 0.0f, 0.0f},
-				60.0f
-		);
+
+		const auto at = Vec3f{0.0f, 0.0f, 0.0f};
+		const auto pos = calculateTilt(at, SKEW_MIN, 4.0f);
+
+		auto& cam = _game.getCam();
+		cam.setMovement(CameraLayer::LOOK_AT, at, 60.0f);
+		cam.setMovement(CameraLayer::MAIN, pos, 60.0f);
 	}
 
 	void Play::exit() {
@@ -43,6 +45,7 @@ namespace SuperHaxagon {
 
 	std::unique_ptr<State> Play::update(const float dilation) {
 		// It's technically possible that the BGM metadata was not set
+		auto& cam = _game.getCam();
 		if (_game.getBGMMetadata()) {
 
 			// Get effect data
@@ -53,22 +56,52 @@ namespace SuperHaxagon {
 			// Apply effects. More can be added here if needed.
 			if (metadata.getMetadata(time, "S")) _level->spin();
 			if (metadata.getMetadata(time, "I")) _level->invertBG();
-			if (metadata.getMetadata(time, "BL")) _level->pulse(1.0f);
-			if (metadata.getMetadata(time, "BS")) _level->pulse(0.66f);
-			if (metadata.getMetadata(time, "TILT")) _game.getCam().tilt(20.0f);
-			if (metadata.getMetadata(time, "RST")) _game.getCam().reset(20.0f);
+
+			if (metadata.getMetadata(time, "BL")) {
+				cam.setMovement(CameraLayer::SCALE, Vec3f{MAX_PULSE_DISTANCE, MAX_PULSE_DISTANCE, 0.0f}, FRAMES_PER_PULSE_LEAD_UP);
+				cam.queueMovement(CameraLayer::SCALE, Vec3f{0.0f, 0.0f, 0.0f}, FRAMES_PER_PULSE_LEAD_OUT);
+			}
+
+			if (metadata.getMetadata(time, "BS")) {
+				cam.setMovement(CameraLayer::SCALE, Vec3f{MAX_PULSE_DISTANCE * 0.66f, MAX_PULSE_DISTANCE * 0.66f, 0.0f}, FRAMES_PER_PULSE_LEAD_UP);
+				cam.queueMovement(CameraLayer::SCALE, Vec3f{0.0f, 0.0f, 0.0f}, FRAMES_PER_PULSE_LEAD_OUT);
+			}
+
+			// Tilt Left
+			if (metadata.getMetadata(time, "TL")) {
+				cam.setMovement(CameraLayer::TILTS, Vec3f{-1.75f, 0.0f, 0.0f}, 15.0f);
+				cam.queueMovement(CameraLayer::TILTS, Vec3f{-1.25f, 0.0f, 0.0f}, 90.0f);
+				cam.queueMovement(CameraLayer::TILTS, Vec3f{0.0f, 0.0f, 0.0f}, 30.0f);
+			}
+
+			// Tilt Right
+			if (metadata.getMetadata(time, "TR")) {
+				cam.setMovement(CameraLayer::TILTS, Vec3f{1.75f, 0.0f, 0.0f}, 15.0f);
+				cam.queueMovement(CameraLayer::TILTS, Vec3f{1.25f, 0.0f, 0.0f}, 90.0f);
+				cam.queueMovement(CameraLayer::TILTS, Vec3f{0.0f, 0.0f, 0.0f}, 30.0f);
+			}
+
+			// Big Zoom
+			if (metadata.getMetadata(time, "Z")) {
+				cam.setMovement(CameraLayer::ZOOMS, Vec3f{0.0f, 0.0f, -1.5f}, 20.0f);
+				cam.queueMovement(CameraLayer::ZOOMS, Vec3f{0.0f, 0.0f, 4.0f}, 40.0f);
+				cam.queueMovement(CameraLayer::ZOOMS,Vec3f{0.0f, 0.0f, 3.5f}, 10.0f);
+				cam.queueMovement(CameraLayer::ZOOMS, Vec3f{0.0f, 0.0f, -0.5f}, 30.0f);
+				cam.queueMovement(CameraLayer::ZOOMS, Vec3f{0.0f, 0.0f, 0.0f}, 10.0f);
+			}
 		}
 
 		// Camera
-		if (!_game.getCam().isMoving()) {
+		if (!cam.isMoving(CameraLayer::MAIN)) {
 			_skewing = !_skewing;
-			auto skewFrameMax = static_cast<float>(_level->getLevelFactory().getSpeedPulse()) * 2.5f;
-			skewFrameMax = skewFrameMax < SKEW_MIN_FRAMES ? SKEW_MIN_FRAMES : skewFrameMax;
-			_game.getCam().setNext(
-				{0.0f, -std::sin(_skewing?SKEW_MAX:SKEW_MIN) * 4.0f, std::cos(_skewing?SKEW_MAX:SKEW_MIN) * 4.0f},
-				{0, 0, 0},
-				skewFrameMax
+			const auto skewFrameMax = std::max(
+					SKEW_MIN_FRAMES,
+					static_cast<float>(_level->getLevelFactory().getSpeedPulse()) * 2.5f
 			);
+
+			const auto anchor = Vec3f{0.0f};
+			const auto rotation = _skewing ? SKEW_MAX : SKEW_MIN;
+			cam.setMovementRotation(CameraLayer::MAIN, anchor, rotation, 4.0f, skewFrameMax);
 		}
 
 		// Update level
@@ -137,7 +170,8 @@ namespace SuperHaxagon {
 	}
 
 	void Play::drawGame(SurfaceGame& surface, SurfaceGame* shadows) {
-		_level->draw(surface, shadows, 0);
+		const float scale = _game.getCam().currentPos(CameraLayer::SCALE).x;
+		_level->draw(surface, shadows, 0, scale);
 	}
 
 	void Play::drawBotUI(SurfaceUI& surface) {

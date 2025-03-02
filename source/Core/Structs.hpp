@@ -57,6 +57,10 @@ namespace SuperHaxagon {
 	static constexpr float PLAYER_TRI_HEIGHT = 5.0f * SCALE_TO_SCREEN_SPACE;
 	static constexpr float PLAYER_TRI_WIDTH = 5.0f * SCALE_TO_SCREEN_SPACE;
 
+	static constexpr float FRAMES_PER_PULSE_LEAD_UP = 3.0f;
+	static constexpr float FRAMES_PER_PULSE_LEAD_OUT = 10.0f;
+	static constexpr float MAX_PULSE_DISTANCE = 0.055f;
+
 	static const Color COLOR_SHADOW = {0, 0, 0, 0xC0};
 	static const Color COLOR_TRANSPARENT = {0, 0, 0, 0xA0};
 	static const Color COLOR_GREY = {0xA0, 0xA0, 0xA0, 0xFF};

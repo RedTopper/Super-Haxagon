@@ -31,12 +31,10 @@ namespace SuperHaxagon {
 
 	void Over::enter() {
 		_game.playEffect(SoundEffect::OVER);
-
-		_game.getCam().setNext(
-				{0, -0.3f, 2.0f},
-				{0.0f, 0.035f, 0.0f},
-				60.0f
-		);
+		auto& cam = _game.getCam();
+		cam.stopAllEffects();
+		cam.setMovement(CameraLayer::LOOK_AT, Vec3f{0.0f, 0.035f, 0.0f}, 60.0f);
+		cam.setMovement(CameraLayer::MAIN, Vec3f{0, -0.3f, 2.0f}, 60.0f);
 
 		std::ofstream scores(_platform.getPath("/scores.db", Location::USER), std::ios::out | std::ios::binary);
 
@@ -106,7 +104,8 @@ namespace SuperHaxagon {
 	}
 
 	void Over::drawGame(SurfaceGame& surface, SurfaceGame* shadows) {
-		_level->draw(surface, shadows, (_offset - 1.0f) / 100.0f);
+		const float scale = _game.getCam().currentPos(CameraLayer::SCALE).x;
+		_level->draw(surface, shadows, (_offset - 1.0f) / 100.0f, scale);
 	}
 
 	void Over::drawBotUI(SurfaceUI& surface) {

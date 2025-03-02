@@ -18,7 +18,7 @@ namespace SuperHaxagon {
 		_platform(platform),
 		_screen(platform.getScreen()),
 		_twister(_platform.getTwister()),
-		_camera(_twister),
+		_camera(),
 		_surfaceGame(_screen, _camera),
 		_surfaceUI(_screen) {
 		// Audio loading

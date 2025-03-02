@@ -18,15 +18,12 @@ namespace SuperHaxagon {
 	public:
 		static constexpr float DIFFICULTY_SCALAR_WALLS = 0.0375f;
 		static constexpr float DIFFICULTY_SCALAR_ROT = 0.08f;
-		static constexpr float FLIP_FRAMES_MIN = 120;
-		static constexpr float FLIP_FRAMES_MAX = 600;
-		static constexpr float FRAMES_PER_CHANGE_SIDE = 30;
-		static constexpr float FRAMES_PER_SPIN = 90;
-		static constexpr float FRAMES_PER_PULSE_LEAD_UP = 2.0f;
-		static constexpr float FRAMES_PER_PULSE_LEAD_OUT = 10.0f;
+		static constexpr float FLIP_FRAMES_MIN = 120.0f;
+		static constexpr float FLIP_FRAMES_MAX = 600.0f;
+		static constexpr float FRAMES_PER_CHANGE_SIDE = 30.0f;
+		static constexpr float FRAMES_PER_SPIN = 75.0f;
 		static constexpr float SPIN_SPEED = TAU / 100.0f;
 		static constexpr float ROTATE_ZERO_SPEED = TAU / 200.0f;
-		static constexpr float MAX_PULSE_DISTANCE = 0.055f;
 		static constexpr float HEXAGON_PULSE_MULTIPLIER = 4.25f;
 		static constexpr int MIN_SAME_SIDES = 3;
 		static constexpr int MAX_SAME_SIDES = 5;
@@ -36,7 +33,7 @@ namespace SuperHaxagon {
 		~Level();
 
 		void update(Twist& rng, float dilation);
-		void draw(SurfaceGame& game, SurfaceGame* shadows, float offset) const;
+		void draw(SurfaceGame& game, SurfaceGame* shadows, float offset, float scaleFactor) const;
 		Movement collision(float cursorDistance, float dilation) const;
 
 		void increaseMultiplier();
@@ -49,7 +46,6 @@ namespace SuperHaxagon {
 		// Effects
 		void spin();
 		void invertBG();
-		void pulse(float pulse);
 
 		// Time
 		float getFrame() const {return _frame;}
@@ -112,13 +108,8 @@ namespace SuperHaxagon {
 		int _sameCount = 0; // When 0, allows the level to select any pattern instead of currentSides
 		int _sameSides = 0; // Sides of the last selected pattern
 		bool _bgInverted = false;
-		float _currentScaleFactor = 0.0f;
 		float _spin = 0.0;
 		float _frontGap = 0.0;
-
-		float _pulseFrame = 0.0;
-		float _pulseSize = 0.0;
-		int _pulseDirection = 0;
 	};
 }
 

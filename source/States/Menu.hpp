@@ -34,7 +34,7 @@ namespace SuperHaxagon {
 		Platform& _platform;
 
 		float _frameRotation = FRAMES_PER_TRANSITION;
-		float _frameBackgroundColor = FRAMES_PER_COLOR;
+		float _frameBackgroundColor = 0.0f;
 		int _transitionDirection = 0;
 		bool _justEntered = true;
 

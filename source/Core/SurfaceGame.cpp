@@ -146,7 +146,7 @@ namespace SuperHaxagon {
 		}
 	}
 
-	void SurfaceGame::calculateMatrix(float rotation, float scale) {
+	void SurfaceGame::calculateMatrix(float rotation) {
 		constexpr auto fov = 15.5f * PI / 180.0f;
 		const auto project = Matrix4x4f::generateProjection(fov, ASPECT_DEFAULT, 0.01f, 10.0f);
 		const auto camera = Matrix4x4f::lookAt(
@@ -156,13 +156,17 @@ namespace SuperHaxagon {
 		);
 
 		// We only need to rotate around Z and scale along X and Y
+		// Initialized as identity matrix
 		Matrix4x4f model{};
-		model[0][0] = scale * std::cos(rotation);
-		model[0][1] = scale * -std::sin(rotation);
-		model[1][0] = scale * std::sin(rotation);
-		model[1][1] = scale * std::cos(rotation);
-		model[2][2] = 1.0f;
-		model[3][3] = 1.0f;
+		model[0][0] = std::cos(rotation);
+		model[0][1] = -std::sin(rotation);
+		model[1][0] = std::sin(rotation);
+		model[1][1] = std::cos(rotation);
+
+		const auto scale = _camera.currentPos(CameraLayer::SCALE);
+		Matrix4x4f scaleMat{};
+		scaleMat[0][0] = scale.x + 1.0f;
+		scaleMat[1][1] = scale.y + 1.0f;
 
 		// Create a scaling matrix that clamps the aspect ratio
 		const auto screen = _screen.getScreenDim();
@@ -178,7 +182,7 @@ namespace SuperHaxagon {
 		aspectMatrix[0][0] = scaleX;
 		aspectMatrix[1][1] = scaleY;
 
-		_matrix = (model * (camera * (project * aspectMatrix)));
+		_matrix = (model * (scaleMat * (camera * (project * aspectMatrix))));
 	}
 
 	void SurfaceGame::copyMatrix(const SurfaceGame& other) {

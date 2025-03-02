@@ -10,6 +10,26 @@ namespace SuperHaxagon {
 	static constexpr float PI = 3.14159265358979f;
 	static constexpr float TAU = PI * 2.0f;
 
+	// Converts a linear input to an eased input
+	template<typename T>
+	inline T ease(T t) {
+		t = std::clamp(t, static_cast<T>(0), static_cast<T>(1));
+		T f = 0;
+		if (t < static_cast<T>(0.5)) {
+			f = static_cast<T>(2) * t * t;
+		} else {
+			t -= static_cast<T>(0.5);
+			f = static_cast<T>(2) * t * (static_cast<T>(1) - t) + static_cast<T>(0.5);
+		}
+
+		return f;
+	}
+
+	template<typename T>
+	inline T interpolate(T start, T end, T t) {
+		return (end - start) * t + start;
+	}
+
 	template<typename T>
 	struct Vec2 {
 		T x;
@@ -109,25 +129,16 @@ namespace SuperHaxagon {
 			return sqrt(norm());
 		}
 
-		Vec3 interpolate(Vec3 r, T t) {
+		Vec3 interpolate(Vec3 r, T t) const {
 			return {
-				(r.x - x) * t + x,
-				(r.y - y) * t + y,
-				(r.z - z) * t + z,
+				SuperHaxagon::interpolate<T>(x, r.x, t),
+				SuperHaxagon::interpolate<T>(y, r.y, t),
+				SuperHaxagon::interpolate<T>(z, r.z, t),
 			};
 		}
 
-		Vec3 ease(Vec3 r, T t) {
-			t = std::clamp(t, static_cast<T>(0), static_cast<T>(1));
-			T f = 0;
-			if (t < static_cast<T>(0.5)) {
-				f = static_cast<T>(2) * t * t;
-			} else {
-				t -= static_cast<T>(0.5);
-				f = static_cast<T>(2) * t * (static_cast<T>(1) - t) + static_cast<T>(0.5);
-			}
-
-			return interpolate(r, f);
+		Vec3 ease(Vec3 r, T t) const {
+			return interpolate(r, SuperHaxagon::ease<T>(t));
 		}
 	};
 

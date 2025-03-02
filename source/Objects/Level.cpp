@@ -98,28 +98,6 @@ namespace SuperHaxagon {
 		_spin -= SPIN_SPEED / FRAMES_PER_SPIN * dilation;
 		if (_spin < 0.0f) _spin = 0.0f;
 
-		// Beat/pulse logic
-		_pulseFrame += dilation;
-		if (_pulseDirection > 0) {
-			_currentScaleFactor = linear(
-				0,
-				_pulseSize * MAX_PULSE_DISTANCE,
-				_pulseFrame / FRAMES_PER_PULSE_LEAD_UP
-			);
-
-			if (_pulseFrame / FRAMES_PER_PULSE_LEAD_UP >= 1.0f) _pulseDirection = -1;
-		} else if (_pulseDirection < 0) {
-			_currentScaleFactor = linear(
-				_pulseSize * MAX_PULSE_DISTANCE,
-				0,
-				(_pulseFrame-FRAMES_PER_PULSE_LEAD_UP) / FRAMES_PER_PULSE_LEAD_OUT
-			);
-
-			if (_pulseFrame / (FRAMES_PER_PULSE_LEAD_UP + FRAMES_PER_PULSE_LEAD_OUT) >= 1.0f) _pulseDirection = 0;
-		}
-
-		_currentScaleFactor = std::clamp(_currentScaleFactor, 0.0f, _pulseSize * MAX_PULSE_DISTANCE);
-
 		// Flip level if needed
 		// Cannot flip while spin effect is happening
 		if (_spin == 0.0f && _flipFrame <= 0) {
@@ -128,10 +106,10 @@ namespace SuperHaxagon {
 		}
 	}
 
-	void Level::draw(SurfaceGame& surface, SurfaceGame* shadows, const float offset) const {
-		const float realHexLength = (_currentScaleFactor * HEXAGON_PULSE_MULTIPLIER + 1.0f) * HEX_LENGTH;
+	void Level::draw(SurfaceGame& surface, SurfaceGame* shadows, const float offset, const float scaleFactor) const {
+		const float realHexLength = (scaleFactor * HEXAGON_PULSE_MULTIPLIER + 1.0f) * HEX_LENGTH;
 
-		surface.calculateMatrix(_rotation, _currentScaleFactor + 1.0f);
+		surface.calculateMatrix(_rotation);
 		surface.setWallOffset(offset);
 
 		surface.drawBackground(
@@ -212,12 +190,6 @@ namespace SuperHaxagon {
 	
 	void Level::invertBG() {
 		_bgInverted = !_bgInverted;
-	}
-	
-	void Level::pulse(const float pulse) {
-		_pulseFrame = 0.0f;
-		_pulseDirection = 1;
-		_pulseSize = pulse;
 	}
 
 	void Level::setWinFactory(const LevelFactory* factory) {

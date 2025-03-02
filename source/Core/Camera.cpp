@@ -1,60 +1,155 @@
 #include "Camera.hpp"
 
 namespace SuperHaxagon {
+	std::vector<CameraLayer> allLayers {
+		CameraLayer::LOOK_AT,
+		CameraLayer::MAIN,
+		CameraLayer::SCALE,
+		CameraLayer::TILTS,
+		CameraLayer::ZOOMS,
+	};
+
+	std::vector<CameraLayer> effectLayers {
+		CameraLayer::SCALE,
+		CameraLayer::TILTS,
+		CameraLayer::ZOOMS,
+	};
+
+	std::vector<CameraLayer> positionLayers {
+		CameraLayer::MAIN,
+		CameraLayer::TILTS,
+		CameraLayer::ZOOMS,
+	};
+
 	void Camera::update(float dilation) {
-		if (_percentBetween < 1.0f) {
-			_percentBetween += dilation / _framesToCompletion;
+		for (const auto& pair : _movements) {
+			const auto key = pair.first;
 
-			if (_percentBetween > 1.0f) _percentBetween = 1.0f;
+			// Deque a movement if our current movement is null,
+			// starting at the last known position
+			if (!pair.second && !_queue[key].empty()) {
+				_movements[key] = std::move(_queue[key][0]);
+				_queue[key].pop_front();
+				_movements[key]->start(_position[key]);
+			}
 
-			_currentPos = _fromPos.ease(_toPos, _percentBetween);
-			_currentLookAt = _fromLookAt.ease(_toLookAt, _percentBetween);
+			// If we have a movement to process, check if it's done.
+			if (_movements[key]) {
+				_position[key] = _movements[key]->getCurrent();
+
+				// If it's done, remove it, otherwise update.
+				if (_movements[key]->isFinished()) {
+					_movements[key] = nullptr;
+				} else {
+					_movements[key]->update(dilation);
+				}
+			}
 		}
 	}
 
-	bool Camera::isMoving() const {
-		return _locked || _percentBetween < 0.999f;
+	Camera::Camera() {
+		for (const auto layer : allLayers) {
+			_movements[layer] = nullptr;
+		}
 	}
 
-	void Camera::set(SuperHaxagon::Vec3f pos, SuperHaxagon::Vec3f at) {
-		_currentLookAt = at;
-		_currentPos = pos;
-		_fromLookAt = at;
-		_fromPos = pos;
-		_toLookAt = at;
-		_toPos = pos;
-		_framesToCompletion = 0.0f;
-		_percentBetween = 1.0f;
+	bool Camera::isMoving(CameraLayer layer) {
+		return _movements[layer] != nullptr;
 	}
 
-	void Camera::setNext(SuperHaxagon::Vec3f pos, SuperHaxagon::Vec3f at, float frames) {
-		_fromPos = _currentPos;
-		_fromLookAt = _currentLookAt;
-		_toPos = pos;
-		_toLookAt = at;
-		_framesToCompletion = frames;
+	Vec3f Camera::currentPos() {
+		Vec3f result{};
+		for (auto layer : positionLayers) {
+			result = result + _position[layer];
+		}
+
+		return result;
+	}
+
+	Vec3f Camera::currentPos(CameraLayer layer) {
+		return _position[layer];
+	}
+
+	Vec3f Camera::currentLookAt() {
+		return _position[CameraLayer::LOOK_AT];
+	}
+
+	void Camera::stopAllEffects() {
+		for (auto layer : effectLayers) {
+			_queue[layer].clear();
+			_movements[layer] = std::make_unique<Camera::Movement>(Vec3f{}, 15.0f);
+			_movements[layer]->start(_position[layer]);
+		}
+	}
+
+	void Camera::reset() {
+		for (auto layer : allLayers) {
+			_queue[layer].clear();
+			_movements[layer] = nullptr;
+		}
+	}
+
+	void Camera::setPosition(CameraLayer layer, Vec3f pos) {
+		_position[layer] = pos;
+		_movements[layer] = nullptr;
+		_queue[layer].clear();
+	}
+
+	void Camera::setMovement(CameraLayer layer, Vec3f to, float frames) {
+		_queue[layer].clear();
+		_movements[layer] = std::make_unique<Camera::Movement>(to, frames);
+		_movements[layer]->start(_position[layer]);
+	}
+
+	void Camera::queueMovement(CameraLayer layer, Vec3f to, float frames) {
+		_queue[layer].push_back(std::make_unique<Camera::Movement>(to, frames));
+	}
+
+	void Camera::setMovementRotation(CameraLayer layer, Vec3f anchor, float rotation, float magnitude, float frames) {
+		_queue[layer].clear();
+		_movements[layer] = std::make_unique<Camera::MovementCircular>(anchor, rotation, magnitude, frames);
+		_movements[layer]->start(_position[layer]);
+	}
+
+	Camera::Movement::Movement(Vec3f to, float frames) :
+			_percentStep(1.0f / frames),
+			_to(to) {
+	}
+
+	void Camera::Movement::start(Vec3f from) {
+		_from = from;
 		_percentBetween = 0.0f;
 	}
 
-	void Camera::reset(float frames) {
-		_locked = false;
-		_tiltDir = 0.0f;
-		setNext(
-			{0.0f, _currentPos.y, _currentPos.z},
-			_currentLookAt,
-			frames
-		);
+	Vec3f Camera::Movement::getCurrent() const {
+		return _from.ease(_to, _percentBetween);;
 	}
 
-	void Camera::tilt(float frames) {
-		if (_tiltDir == 0) _tiltDir = _rand.rand() > 0.5f ? 1.0f : -1.0f;
-		_tiltDir *= -1.0f;
-		_locked = true;
-		auto pos = Vec3f{0.0f, _currentPos.y, _currentPos.z} - Vec3f{_tiltDir, 0.0f, 0.0f};
-		setNext(
-			pos,
-			_currentLookAt,
-			frames
-		);
+	void Camera::Movement::update(float dilation) {
+		if (_percentBetween < 1.0f) {
+			_percentBetween += dilation * _percentStep;
+			if (_percentBetween > 1.0f) _percentBetween = 1.0f;
+		}
+	}
+
+	bool Camera::Movement::isFinished() const {
+		return _percentBetween >= 1.0f;
+	}
+
+	Camera::MovementCircular::MovementCircular(Vec3f anchor, float rotation, float magnitude, float frames) :
+			Camera::Movement(calculateTilt(anchor, rotation, magnitude), frames),
+			_anchor(anchor),
+			_tiltMagnitude(magnitude),
+			_tiltTo(rotation) {
+	}
+
+	void Camera::MovementCircular::start(Vec3f from) {
+		const auto vec = (_anchor + from).normalize();
+		_tiltFrom = std::atan2(-vec.y, vec.z);
+	}
+
+	Vec3f Camera::MovementCircular::getCurrent() const {
+		auto tilt = linear(_tiltFrom, _tiltTo, ease(_percentBetween));
+		return calculateTilt(_anchor, tilt, _tiltMagnitude);
 	}
 }

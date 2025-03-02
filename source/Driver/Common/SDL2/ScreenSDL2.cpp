@@ -35,6 +35,8 @@ namespace SuperHaxagon {
 
 			std::vector<SDL_Vertex> vertices;
 			std::vector<int> references;
+			vertices.reserve(points.size());
+			references.reserve((points.size()-2)*3);
 
 			// Convert to SDL2 format
 			for (const auto& point : points) {

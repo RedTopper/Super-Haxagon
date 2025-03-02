@@ -38,11 +38,14 @@ namespace SuperHaxagon {
 
 	void Menu::enter() {
 		_game.playMusic("/werq", Location::ROM, false);
-		_game.getCam().setNext(
-				{0.0f, -0.6f + 1.0f/3.0f, 1.5f},
-				{0.0f, 0.1f, 0.0f},
-				60.0f
-		);
+
+		const auto curPos = _game.getCam().currentPos(CameraLayer::MAIN);
+
+		auto& cam = _game.getCam();
+		cam.stopAllEffects();
+		cam.setMovement(CameraLayer::LOOK_AT, Vec3f{0.0f, 0.1f, 0.0f}, 60.0f);
+		cam.setMovement(CameraLayer::MAIN, curPos, 15.0f);
+		cam.queueMovement(CameraLayer::MAIN, Vec3f{0.0f, -0.6f + 1.0f/3.0f, 1.5f}, 45.0f);
 	}
 
 	std::unique_ptr<State> Menu::update(const float dilation) {
@@ -80,11 +83,10 @@ namespace SuperHaxagon {
 
 			if (_transitionDirection != 0) {
 				_game.playEffect(SoundEffect::SELECT);
-				_game.getCam().setNext(
-						{std::sin(_cameraRotation)/2.0f, -0.6f + std::cos(_cameraRotation)/3.0f, 1.5f},
-						{0.0f, 0.1f, 0.0f},
-						FRAMES_PER_TRANSITION * 2.5f
-				);
+
+				const auto pos = Vec3f{std::sin(_cameraRotation)/2.0f, -0.6f + std::cos(_cameraRotation)/3.0f, 1.5f};
+
+				_game.getCam().setMovement(CameraLayer::MAIN, pos, FRAMES_PER_TRANSITION * 2.5f);
 
 				for (auto i = COLOR_LOCATION_FIRST; i != COLOR_LOCATION_LAST; i++) {
 					const auto location = static_cast<LocColor>(i);
@@ -142,7 +144,7 @@ namespace SuperHaxagon {
 			rotation *= -1.0f;
 		}
 
-		surface.calculateMatrix(rotation, 1.0f);
+		surface.calculateMatrix(rotation);
 
 		// Colors
 		Color fg{};

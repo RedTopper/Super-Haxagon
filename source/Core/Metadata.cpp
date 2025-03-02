@@ -1,6 +1,6 @@
 #include "Metadata.hpp"
 
-#include "Objects/Level.hpp"
+#include "Core/Structs.hpp"
 
 #include <sstream>
 
@@ -33,7 +33,7 @@ namespace SuperHaxagon {
 		// Shift the time into the future a bit for pulses (Beat Small and Beat Large)
 		// since there's a bit of a "lead up" animation to the actual beat.
 		if (label == "BS" || label == "BL") {
-			time += (Level::FRAMES_PER_PULSE_LEAD_UP/2.0f) / 60.0f;
+			time += (FRAMES_PER_PULSE_LEAD_UP/2.0f) / 60.0f;
 		}
 
 		// If more than 10 seconds behind, reset

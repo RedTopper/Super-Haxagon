@@ -69,7 +69,7 @@ namespace SuperHaxagon {
 		 */
 		void toScreenSpace(std::vector<Vec2f>& points);
 
-		void calculateMatrix(float rotation, float scale);
+		void calculateMatrix(float rotation);
 
 		void copyMatrix(const SurfaceGame& other);
 

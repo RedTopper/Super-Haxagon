@@ -72,12 +72,11 @@ namespace SuperHaxagon {
 	}
 
 	void Win::enter() {
+		auto& cam = _game.getCam();
 		_game.playMusic("/esiannoyamFoEzam", Location::ROM, true, false);
-		_game.getCam().setNext(
-				{0, -std::sin(PI/6.0f) * 4.0f, std::cos(PI/6.0f) * 4.0f},
-				{0.0f, 0.0f, 0.0f},
-				60.0f
-		);
+		cam.stopAllEffects();
+		cam.setMovement(CameraLayer::LOOK_AT, Vec3f{0.0f, 0.0f, 0.0f}, 60.0f);
+		cam.setMovement(CameraLayer::MAIN, calculateTilt(Vec3f{}, PI/6.0f, 4.0f), 60.0f);
 	}
 	
 	std::unique_ptr<State> Win::update(const float dilation) {
@@ -125,19 +124,29 @@ namespace SuperHaxagon {
 		}
 
 		// Apply effects. More can be added here if needed.
+		auto& cam = _game.getCam();
 		if (metadata.getMetadata(time, "HYPER")) {
 			_level->setWinFrame(60.0 * 60.0);
 			_level->spin();
 		}
 
 		if (metadata.getMetadata(time, "PSURROUND")) _level->getPatterns().emplace_front(*_surround);
-		if (metadata.getMetadata(time, "BL")) _level->pulse(1.0);
-		if (metadata.getMetadata(time, "BS")) _level->pulse(0.5);
 		if (metadata.getMetadata(time, "I")) _level->invertBG();
+
 		if (metadata.getMetadata(time, "C")) {
 			_index++;
 			_timer = CREDITS_TIMER;
 			if (_index >= _credits.size()) _index = _credits.size() - 1;
+		}
+
+		if (metadata.getMetadata(time, "BL")) {
+			cam.setMovement(CameraLayer::SCALE, Vec3f{MAX_PULSE_DISTANCE, MAX_PULSE_DISTANCE, 0.0f}, FRAMES_PER_PULSE_LEAD_UP);
+			cam.queueMovement(CameraLayer::SCALE, Vec3f{0.0f, 0.0f, 0.0f}, FRAMES_PER_PULSE_LEAD_OUT);
+		}
+
+		if (metadata.getMetadata(time, "BS")) {
+			cam.setMovement(CameraLayer::SCALE, Vec3f{MAX_PULSE_DISTANCE * 0.5f, MAX_PULSE_DISTANCE * 0.5f, 0.0f}, FRAMES_PER_PULSE_LEAD_UP);
+			cam.queueMovement(CameraLayer::SCALE, Vec3f{0.0f, 0.0f, 0.0f}, FRAMES_PER_PULSE_LEAD_OUT);
 		}
 
 		_timer -= dilation;
@@ -149,7 +158,8 @@ namespace SuperHaxagon {
 	}
 
 	void Win::drawGame(SurfaceGame& surface, SurfaceGame* shadows) {
-		_level->draw(surface, shadows, 0);
+		const float scale = _game.getCam().currentPos(CameraLayer::SCALE).x;
+		_level->draw(surface, shadows, 0, scale);
 	}
 
 	void Win::drawBotUI(SurfaceUI& surface) {

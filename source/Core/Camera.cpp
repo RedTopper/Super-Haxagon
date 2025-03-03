@@ -1,7 +1,9 @@
 #include "Camera.hpp"
 
+#include <array>
+
 namespace SuperHaxagon {
-	std::vector<CameraLayer> allLayers {
+	constexpr static std::array<CameraLayer, 5> ALL_LAYERS {
 		CameraLayer::LOOK_AT,
 		CameraLayer::MAIN,
 		CameraLayer::SCALE,
@@ -9,13 +11,13 @@ namespace SuperHaxagon {
 		CameraLayer::ZOOMS,
 	};
 
-	std::vector<CameraLayer> effectLayers {
+	constexpr static std::array<CameraLayer, 3> EFFECT_LAYERS {
 		CameraLayer::SCALE,
 		CameraLayer::TILTS,
 		CameraLayer::ZOOMS,
 	};
 
-	std::vector<CameraLayer> positionLayers {
+	constexpr static std::array<CameraLayer, 3> POSITION_LAYERS {
 		CameraLayer::MAIN,
 		CameraLayer::TILTS,
 		CameraLayer::ZOOMS,
@@ -48,8 +50,10 @@ namespace SuperHaxagon {
 	}
 
 	Camera::Camera() {
-		for (const auto layer : allLayers) {
+		for (const auto layer : ALL_LAYERS) {
 			_movements[layer] = nullptr;
+			_position[layer] = Vec3f{};
+			_queue[layer] = std::deque<std::unique_ptr<Camera::Movement>>{};
 		}
 	}
 
@@ -59,7 +63,7 @@ namespace SuperHaxagon {
 
 	Vec3f Camera::currentPos() {
 		Vec3f result{};
-		for (auto layer : positionLayers) {
+		for (auto layer : POSITION_LAYERS) {
 			result = result + _position[layer];
 		}
 
@@ -75,7 +79,7 @@ namespace SuperHaxagon {
 	}
 
 	void Camera::stopAllEffects() {
-		for (auto layer : effectLayers) {
+		for (auto layer : EFFECT_LAYERS) {
 			_queue[layer].clear();
 			_movements[layer] = std::make_unique<Camera::Movement>(Vec3f{}, 15.0f);
 			_movements[layer]->start(_position[layer]);
@@ -83,7 +87,7 @@ namespace SuperHaxagon {
 	}
 
 	void Camera::reset() {
-		for (auto layer : allLayers) {
+		for (auto layer : ALL_LAYERS) {
 			_queue[layer].clear();
 			_movements[layer] = nullptr;
 		}

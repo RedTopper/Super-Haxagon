@@ -2,15 +2,21 @@
 
 <!-- Note: icon-3ds.png name kept for backwards compatability with old readmes. -->
 
-# ![Icon](./media/icon-3ds.png "Icon") Super-Haxagon
+# ![Icon](./media/icon-3ds.png "Icon") SuperHaxagon
 
-Super Haxagon is a cross platform, open source [Super Hexagon](http://superhexagon.com/) clone for the Nintendo 3DS, Nintendo Switch, Windows, Linux, and the [TI-Nspire](https://education.ti.com/en/products/calculators/graphing-calculators/ti-nspire-cx-cas) (yes, the calculator). It is developed in C++ and uses no additional libraries for the core logic, making it easy (in theory) to port to new platforms. It also has a GUI based level editor called [Haxa Editor](https://github.com/RedTopper/Haxa-Editor).
+SuperHaxagon, like the original game [Super Hexagon](http://superhexagon.com/) by Terry Cavanagh, has only one goal. 
+Survive as long as possible by avoiding the falling walls in a trippy, spinny frenzy!
+
+SuperHaxagon is a cross-platform, open source _Super Hexagon_ clone for the Nintendo 3DS, Nintendo Switch, Windows,
+Linux, Portmaster, Miyoo Mini, and the [TI-Nspire](https://education.ti.com/en/products/calculators/graphing-calculators/ti-nspire-cx-cas) (yes, the calculator). It is developed in C++ and uses no 
+additional libraries for the core logic, making it easy (in theory) to port to new platforms. It also has a GUI based 
+level editor called [Haxa Editor](https://github.com/RedTopper/Haxa-Editor).
 
 ## Download
 
 You can download the latest build on [the releases page](https://github.com/RedTopper/Super-Haxagon/releases) to the right.
 
-_Warning: The windows/linux versions requires a graphics adapter with OpenGL 3.2 or higher. Super Haxagon may be unsupported on first generation Intel processors, Remote Desktop sessions, or VMs with no hardware acceleration. See #22 for details._
+_Note: SFML requires a graphics adapter with OpenGL 3.2 or higher. Super Haxagon may be unsupported on first generation Intel processors, Remote Desktop sessions, or VMs with no hardware acceleration. See #22 for details._
 
 ## Features
 
@@ -74,7 +80,7 @@ use the container or build SFML yourself.
 
 ### For Flatpak Users:
 
-Run `tools/linux/flatpak.sh` from the root of the repo.
+Run `flatpak.sh` from the `tools` directory.
 
 ### For Windows Users:
 
@@ -82,47 +88,89 @@ Run `tools/linux/flatpak.sh` from the root of the repo.
 2. Place a copy of SFML in `libraries/SFML` (Create the directory)
 3. Open this repository in Visual Studio and press "Play"
 
+## Editing the Beatmaps
+
+If you are looking to swap out the existing music tracks with your own, you may be wondering what's up with those
+`.txt` files next to the tracks. These metadata files provide information to the game about when to time beats, 
+spins, tilts, zooms, and any other effects while the music is running.
+
+While it _may_ be possible to automatically generate the "beats" from the music itself at runtime, some platforms
+(the TI-NSpire, mostly) don't have the spare CPU cycles to deal with decoding music, so I found the best balance
+to write out the events manually.
+
+You can open these `.txt` files in [Audacity](https://www.audacityteam.org/) as a 
+[Label Track](https://manual.audacityteam.org/man/creating_and_selecting_labels.html). If they change, the
+events that the game can recognize are found in the `Play::update()` function within `Play.cpp`, and are 
+currently as follows:
+
+* **S**: A large, sudden spin
+* **I**: Invert the background colors
+* **BL**: Large beat, when the music is really thumping
+* **BS**: Small beat
+* **TL**: Tilt the level by moving the main camera to the left
+* **TR**: Tilt the level by moving the main camera to the right
+* **Z**: A huge, diving zoom.
+
+Yes, deleting these files is cheating.
+
 ## Credits
 
 Thanks everyone for:
 
+ * The original game [Super Hexagon](http://superhexagon.com/) by Terry Cavanagh
  * The toolchain by [devkitPro](https://github.com/devkitPro)
  * The 3DS 2D engine by fincs at [devkitPro/citro2D](https://github.com/devkitPro/citro2d)
  * The CTR User library by Smea at [devkitPro/libctru](https://github.com/devkitPro/libctru)
  * The Switch User library by Switchbrew at [switchbrew/libnx](https://github.com/switchbrew/libnx)
  * The font Bump IT UP by aaronamar at [fontstruct.com](http://fontstruct.com/fontstructions/show/155156/bump_it_up)
- * Steveice10 for the build tools at [RedTopper/buildtools](https://github.com/RedTopper/buildtools) (MIRROR)
- * Steveice10 for the banner tool at [RedTopper/bannertool](https://github.com/RedTopper/bannertool) (MIRROR)
  * Sean T. Barrett for OGG decoding at [nothings/stb](https://github.com/nothings/stb)
+ * The sound effects, created by [TwistBit](https://github.com/TwistBit)
  * The SFML developers for, well, [SFML](https://www.sfml-dev.org/)
- * Audio from Open Hexagon at [SuperV1234/SSVOpenHexagon](https://github.com/SuperV1234/SSVOpenHexagon)
- * ...and Kevin MacLeod for more music at [incompetech.com](http://incompetech.com/)
+ * The SDL2 developers for [SDL2](https://github.com/libsdl-org/SDL)
+ * [Dunderpatrullen](https://dunderpatrullen.nu/) and [Bossfight](https://www.bossfightmusic.com/) for the music
+ * Kevin MacLeod for more music at [incompetech.com](http://incompetech.com/)
  * and all the people on the [contributors page](https://github.com/RedTopper/Super-Haxagon/graphs/contributors) (seriously, you guys rock!)
 
-<details><summary>Music Attribution</summary>
+Previous versions of the games are supported by these folks too!
 
-Werq by Kevin MacLeod  
-Link: https://incompetech.filmmusic.io/song/4616-werq  
-License: http://creativecommons.org/licenses/by/4.0/  
+ * Steveice10 for the build tools at [RedTopper/buildtools](https://github.com/RedTopper/buildtools) (MIRROR)
+ * Steveice10 for the banner tool at [RedTopper/bannertool](https://github.com/RedTopper/bannertool) (MIRROR)
+ * Sound Effects from Open Hexagon at [SuperV1234/SSVOpenHexagon](https://github.com/vittorioromeo/SSVOpenHexagon)
 
-Screen Saver by Kevin MacLeod  
-Link: https://incompetech.filmmusic.io/song/5715-screen-saver  
-License: http://creativecommons.org/licenses/by/4.0/  
+Music Attribution
 
-Call Me Katla, Baby by Dunderpatrullen  
-Captain Cool by Bossfight  
-Commando Steve by Bossfight  
-Dr. Finkelfracken's Cure by Bossfight  
-Jack Russel by Bossfight  
-The Maze Of Mayonnaise by Bossfight  
-Link: https://github.com/SuperV1234/SSVOpenHexagonAssets  
-License: ᵖˡᵉᵃˢᵉ ᵈᵒⁿ'ᵗ ˢᵘᵉ ᵐᵉ  
+> Bleeping Demo Kevin MacLeod (incompetech.com)
+> 
+> Licensed under Creative Commons: By Attribution 3.0 License
+> 
+> http://creativecommons.org/licenses/by/3.0/
 
-</details>
+> Screen Saver Kevin MacLeod (incompetech.com)
+> 
+> Licensed under Creative Commons: By Attribution 3.0 License
+> 
+> http://creativecommons.org/licenses/by/3.0/
+
+> Call Me Katla, Baby by Dunderpatrullen
+>
+> Licensed _non-commercially_
+
+> Captain Cool by Bossfight
+> 
+> Commando Steve by Bossfight
+> 
+> Dr. Finkelfracken's Cure by Bossfight
+> 
+> Jack Russel by Bossfight
+> 
+> The Maze Of Mayonnaise by Bossfight
+> 
+> From [SuperV1234/SSVOpenHexagon](https://github.com/vittorioromeo/SSVOpenHexagon)
 
 ## Cross Platform
 
-Below are a few screenshots featuring the various platforms that Super Haxagon compiles on. The 3DS version is packaged with a custom 3D banner to make it look official. Additionally, the gif was recorded on actual Nintendo Switch hardware.
+Below are a few screenshots featuring the various platforms that Super Haxagon compiles on. The 3DS version is packaged 
+with a custom 3D banner to make it look official. Additionally, the gif was recorded on actual Nintendo Switch hardware.
 
 <img width="500" src="./media/screenshots/HNI_0013.JPG"                     alt="3D Banner"            title="3D Banner"/>
 <img width="500" src="./media/screenshots/Windows_2020-07-10_014324.png"    alt="In Game Windows"      title="Windows"/>

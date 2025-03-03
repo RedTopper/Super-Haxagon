@@ -3,13 +3,16 @@
 #include "Driver/Screen.hpp"
 #include "Driver/Common/SFML/CreateSFML.hpp"
 
+#include <filesystem>
 #include <iostream>
 #include <sys/stat.h>
 
 namespace SuperHaxagon {
 	void osSpecificWindowSetup(sf::Window&) {}
 	void initializePlatform(std::string& sdmc, std::string& romfs, bool& platformBackslash) {
-		if (std::getenv("container")) {
+		if (std::getenv("container") && std::filesystem::exists("/app")) {
+			// If we are in a container and /app exists, we're very likely
+			// in the flaptak version.
 			const auto* data = std::getenv("XDG_DATA_HOME");
 			sdmc = std::string(data) + "/sdmc";
 			romfs = std::string("/app/romfs");

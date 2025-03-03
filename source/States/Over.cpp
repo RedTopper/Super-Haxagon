@@ -30,7 +30,7 @@ namespace SuperHaxagon {
 	Over::~Over() = default;
 
 	void Over::enter() {
-		_game.playEffect(SoundEffect::OVER);
+		_game.playEffect(_text == "WONDERFUL" ? SoundEffect::WONDERFUL : SoundEffect::OVER);
 		auto& cam = _game.getCam();
 		cam.stopAllEffects();
 		cam.setMovement(CameraLayer::LOOK_AT, Vec3f{0.0f, 0.035f, 0.0f}, 60.0f);
@@ -77,6 +77,9 @@ namespace SuperHaxagon {
 				if (_selected.getMusic() != _level->getLevelFactory().getMusic()) {
 					_game.playMusic(_selected.getMusic(), _selected.getLocation(), true);
 				}
+
+				// Use "GO" instead of "BEGIN" (begin is used on the title)
+				_game.playEffect(SoundEffect::GO);
 
 				// Go back to the original level
 				return std::make_unique<Play>(

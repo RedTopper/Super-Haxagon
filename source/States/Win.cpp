@@ -49,7 +49,7 @@ namespace SuperHaxagon {
 			{"AJ WALTER", "REDTOPPER", "CREATOR"},
 
 			{"ASSETS", "", ""},
-			{"V. ROMEO", "OPEN HEXAGON", "SFX"},
+			{"TwistBit", "ALL NEW", "SFX"},
 			{"k. MACLEOD", "BGM", "TITLE AND VOID"},
 			{"BOSSFIGHT", "BGM", "LEVELS"},
 			{"AND", "DUNDERPATRULLEN", "BGM LEVELS"},
@@ -60,6 +60,7 @@ namespace SuperHaxagon {
 			{"SMEA", "3DS CTRULIB", "LIBRARIES"},
 			{"S.BREW", "SWITCHBREW", "LIBRARIES"},
 			{"SFML", "DESKTOP", "LIBRARIES"},
+			{"SDL2", "PORTMASTER", "LIBRARIES"},
 			{"FINCS", "CITRO2D", "CITRO3D"},
 			{"STEVEICE", "", "BUILDTOOLS"},
 			{"S. BARRETT", "STB", "OGG DECODE"},

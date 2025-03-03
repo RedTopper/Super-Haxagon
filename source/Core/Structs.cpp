@@ -79,7 +79,6 @@ namespace SuperHaxagon {
 	}
 
 	const char* getScoreText(const int score, const bool reduced) {
-	
 		if (score < 15 * 60) return "POINT";
 		if (score < 30 * 60) return "LINE";
 		if (score < 40 * 60) return reduced ? "TRI" : "TRIANGLE";
@@ -89,6 +88,18 @@ namespace SuperHaxagon {
 		if (score < 80 * 60) return reduced ? "HEPTA" : "HEPTAGON";
 		if (score < 90 * 60 + 10) return reduced ? "OCTA" : "OCTAGON";
 		return "WONDERFUL";
+	}
+
+	SoundEffect getEffect(const int score) {
+		if (score >= 90 * 60) return SoundEffect::LEVEL_UP;
+		if (score >= 80 * 60) return SoundEffect::SHAPE_OCTAGON;
+		if (score >= 70 * 60) return SoundEffect::SHAPE_HEPTAGON;
+		if (score >= 60 * 60) return SoundEffect::SHAPE_HEXAGON;
+		if (score >= 50 * 60) return SoundEffect::SHAPE_PENTAGON;
+		if (score >= 40 * 60) return SoundEffect::SHAPE_SQUARE;
+		if (score >= 30 * 60) return SoundEffect::SHAPE_TRIANGLE;
+		if (score >= 15 * 60) return SoundEffect::SHAPE_LINE;
+		return SoundEffect::GO;
 	}
 
 	bool readCompare(std::istream& stream, const std::string& str) {

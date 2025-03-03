@@ -17,6 +17,7 @@ namespace SuperHaxagon {
 		u16 channels;
 		u16 bitsPerSample;
 		u16 ndspFormat;
+		u16 blockAlign;
 		bool loaded = false;
 	};
 }

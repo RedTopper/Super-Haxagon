@@ -17,6 +17,9 @@ add_executable(SuperHaxagon ${DRIVER} ${SOURCES})
 
 target_link_libraries(SuperHaxagon ${SDL2_LIBRARIES} SDL2_mixer SDL2_ttf)
 
-add_custom_command(TARGET SuperHaxagon POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/romfs $<TARGET_FILE_DIR:SuperHaxagon>/romfs
-)
+file(RELATIVE_PATH REL_PATH ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_SOURCE_DIR}/romfs)
+
+if (NOT "${REL_PATH}" STREQUAL "romfs")
+    # If the relative path is in another directory, create it.
+    file(CREATE_LINK ${REL_PATH} ${CMAKE_CURRENT_BINARY_DIR}/romfs SYMBOLIC)
+endif()

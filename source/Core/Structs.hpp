@@ -33,11 +33,20 @@ namespace SuperHaxagon {
 
 	enum class SoundEffect {
 		BEGIN,
-		HEXAGON,
+		GO,
+		HAXAGON,
 		OVER,
 		SELECT,
 		LEVEL_UP,
+		AWESOME,
 		WONDERFUL,
+		SHAPE_LINE,
+		SHAPE_TRIANGLE,
+		SHAPE_SQUARE,
+		SHAPE_PENTAGON,
+		SHAPE_HEXAGON,
+		SHAPE_HEPTAGON,
+		SHAPE_OCTAGON,
 	};
 
 	static constexpr int COLOR_LOCATION_FIRST = static_cast<int>(LocColor::FG);
@@ -124,6 +133,11 @@ namespace SuperHaxagon {
 	 * if the user is less than 10 seconds into the game)
 	 */
 	const char* getScoreText(int score, bool reduced);
+
+	/**
+	 * Gets the sound that should play for the current score
+	 */
+	SoundEffect getEffect(int score);
 
 	/**
 	 * Compares a fixed length string to an expected string in a file.

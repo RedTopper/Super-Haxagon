@@ -19,9 +19,15 @@ add_executable(SuperHaxagon ${DRIVER} ${SOURCES})
 
 target_link_libraries(SuperHaxagon sfml-graphics sfml-window sfml-audio sfml-system)
 
-add_custom_command(TARGET SuperHaxagon POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/romfs $<TARGET_FILE_DIR:SuperHaxagon>/romfs
-)
+file(RELATIVE_PATH REL_PATH ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_SOURCE_DIR}/romfs)
+
+if(CMAKE_SYSTEM_NAME MATCHES "Windows")
+    # Windows does not have permission (by default) to symlink
+    file(COPY ${CMAKE_SOURCE_DIR}/romfs DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+elseif (NOT "${REL_PATH}" STREQUAL "romfs")
+    # If the relative path is in another directory, create it.
+    file(CREATE_LINK ${REL_PATH} ${CMAKE_CURRENT_BINARY_DIR}/romfs SYMBOLIC)
+endif()
 
 install(TARGETS SuperHaxagon RUNTIME DESTINATION .)
 install(DIRECTORY ${CMAKE_SOURCE_DIR}/romfs DESTINATION .)

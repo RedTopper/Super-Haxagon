@@ -37,7 +37,7 @@ namespace SuperHaxagon {
 	Menu::~Menu() = default;
 
 	void Menu::enter() {
-		_game.playMusic("/werq", Location::ROM, false);
+		_game.playMusic("/bleepingDemo", Location::ROM, false);
 
 		const auto curPos = _game.getCam().currentPos(CameraLayer::MAIN);
 
@@ -63,6 +63,7 @@ namespace SuperHaxagon {
 			if (press.select && !_justEntered) {
 				auto& level = **_selected;
 				_game.playMusic(level.getMusic(), level.getLocation(), true);
+				_game.playEffect(SoundEffect::BEGIN);
 				return std::make_unique<Play>(_game, level, level, 0.0f, 0.0f, 0.0f);
 			}
 

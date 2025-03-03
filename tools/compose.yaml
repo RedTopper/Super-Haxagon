@@ -25,7 +25,7 @@ services:
     command: /root/git/tools/3ds/build.sh
     working_dir: /root/git/build/3ds
     environment:
-      - CMAKE_ARGS=-DCMAKE_INSTALL_PREFIX=/root/git/release/3ds
+      - "CMAKE_ARGS=-DCMAKE_INSTALL_PREFIX=/root/git/release/3ds -DCMAKE_BUILD_TYPE=Release"
     volumes:
       - ../:/root/git:z
   switch:
@@ -38,7 +38,7 @@ services:
     command: /root/git/tools/switch/build.sh
     working_dir: /root/git/build/switch
     environment:
-      - CMAKE_ARGS=-DCMAKE_INSTALL_PREFIX=/root/git/release/switch
+      - "CMAKE_ARGS=-DCMAKE_INSTALL_PREFIX=/root/git/release/switch -DCMAKE_BUILD_TYPE=Release"
     volumes:
       - ../:/root/git:z
   nspire:
@@ -51,7 +51,7 @@ services:
     command: /root/git/tools/nspire/build.sh
     working_dir: /root/git/build/nspire
     environment:
-      - CMAKE_ARGS=-DCMAKE_INSTALL_PREFIX=/root/git/release/nspire
+      - "CMAKE_ARGS=-DCMAKE_INSTALL_PREFIX=/root/git/release/nspire -DCMAKE_BUILD_TYPE=Release"
     volumes:
       - ../:/root/git:z
   linux:
@@ -64,7 +64,7 @@ services:
     command: /root/git/tools/linux/build.sh
     working_dir: /root/git/build/linux-sfml
     environment:
-      - CMAKE_ARGS=-DCMAKE_INSTALL_PREFIX=/root/git/release/linux-sfml
+      - "CMAKE_ARGS=-DCMAKE_INSTALL_PREFIX=/root/git/release/linux-sfml -DCMAKE_BUILD_TYPE=Release"
     volumes:
       - ../:/root/git:z
   linux-sdl2:
@@ -77,7 +77,7 @@ services:
     command: /root/git/tools/linux-sdl2/build.sh
     working_dir: /root/git/build/linux-sdl2
     environment:
-      - CMAKE_ARGS=-DCMAKE_INSTALL_PREFIX=/root/git/release/linux-sdl2
+      - "CMAKE_ARGS=-DCMAKE_INSTALL_PREFIX=/root/git/release/linux-sdl2 -DCMAKE_BUILD_TYPE=Release"
     volumes:
       - ../:/root/git:z
   nothing:
@@ -99,7 +99,7 @@ services:
     command: /root/git/tools/portmaster/build.sh
     working_dir: /root/git/build/portmaster
     environment:
-      - CMAKE_ARGS=-DCMAKE_INSTALL_PREFIX=/root/git/release/portmaster
+      - "CMAKE_ARGS=-DCMAKE_INSTALL_PREFIX=/root/git/release/portmaster -DCMAKE_BUILD_TYPE=Release"
     volumes:
       - ../:/root/git:z
   miyoo:
@@ -112,6 +112,6 @@ services:
     command: /root/git/tools/miyoo/build.sh
     working_dir: /root/git/build/miyoo
     environment:
-      - CMAKE_ARGS=-DCMAKE_INSTALL_PREFIX=/root/git/release/miyoo
+      - "CMAKE_ARGS=-DCMAKE_INSTALL_PREFIX=/root/git/release/miyoo -DCMAKE_BUILD_TYPE=Release"
     volumes:
       - ../:/root/git:z

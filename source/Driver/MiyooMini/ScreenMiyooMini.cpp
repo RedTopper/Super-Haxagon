@@ -128,6 +128,7 @@ namespace SuperHaxagon {
 			if (!loaded) return;
 
 			std::vector<Vec2i> vertices;
+			vertices.reserve(points.size());
 
 			#ifdef RENDER_QUARTER_RES
 			const Vec2i screenSize = {width/2, height/2};

@@ -28,7 +28,7 @@ namespace SuperHaxagon {
 			ndspChnSetFormat(channel, wav.ndspFormat);
 			ndspChnSetMix(channel, mix);
 			buffer.data_vaddr = &wav.data[0];
-			buffer.nsamples = wav.dataSize / wav.bitsPerSample * 8;
+			buffer.nsamples = (wav.dataSize / (wav.bitsPerSample * wav.channels)) * 8;
 			buffer.looping = false;
 			buffer.offset = 0;
 			DSP_FlushDataCache(wav.data, wav.dataSize);

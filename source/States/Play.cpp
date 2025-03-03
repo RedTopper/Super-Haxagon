@@ -28,7 +28,6 @@ namespace SuperHaxagon {
 	void Play::enter() {
 		auto* bgm = _game.getMusic();
 		if (bgm && !_factory.isCreditsLevel()) bgm->play();
-		_game.playEffect(SoundEffect::BEGIN);
 
 		const auto at = Vec3f{0.0f, 0.0f, 0.0f};
 		const auto pos = calculateTilt(at, SKEW_MIN, 4.0f);
@@ -124,6 +123,7 @@ namespace SuperHaxagon {
 			    (_factory.getMode() == "???" || _factory.getMode() == "ORIGINAL")) {
 				// Play the super special win animation if you are on the last level without selecting it
 				// Congrats, you just won the game!
+				_game.playEffect(SoundEffect::AWESOME);
 				return std::make_unique<Win>(_game, std::move(_level), _selected, _score, "WONDERFUL");
 			}
 
@@ -163,7 +163,7 @@ namespace SuperHaxagon {
 		const auto* lastScoreText = getScoreText(static_cast<int>(previousFrame), false);
 		if (lastScoreText != getScoreText(static_cast<int>(_level->getFrame()), false)) {
 			_level->increaseMultiplier();
-			_game.playEffect(SoundEffect::LEVEL_UP);
+			_game.playEffect(getEffect(static_cast<int>(_level->getFrame())));
 		}
 
 		return nullptr;

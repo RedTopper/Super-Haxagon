@@ -36,7 +36,7 @@ zip -r "../$DEST/$GAME-PortMaster-arm64-autoinstall.zip" *
 cd ..
 
 if [[ -d "windows" ]]; then
-    zip -j "$DEST/$GAME-Windows-x86-no-romfs.zip" "windows/$GAME.exe" "openal32.dll"
+    zip -j "$DEST/$GAME-Windows-x86-no-romfs.zip" "windows/$GAME.exe" "windows/openal32.dll" "$DEST/PLACE_ROMFS_FOLDER_HERE.txt"
 else
     echo "Windows directory does not exist!"
 fi

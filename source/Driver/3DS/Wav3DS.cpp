@@ -20,11 +20,18 @@ namespace SuperHaxagon {
 		file.read(reinterpret_cast<char*>(&channels), sizeof(channels));
 		file.seekg(24);
 		file.read(reinterpret_cast<char*>(&sampleRate), sizeof(sampleRate));
+		file.seekg(32);
+		file.read(reinterpret_cast<char*>(&blockAlign), sizeof(blockAlign));
 		file.seekg(34);
 		file.read(reinterpret_cast<char*>(&bitsPerSample), sizeof(bitsPerSample));
 
 		// Check header
+		// Only mono or stereo WAV files are allowed,
+		// and only 8 or 16 bits per sample.
 		if(dataSize == 0 || !(channels == 1 || channels == 2) || !(bitsPerSample == 8 || bitsPerSample == 16)) return;
+
+		// Check alignment
+		if (dataSize % blockAlign != 0) return;
 
 		data = static_cast<u8*>(linearAlloc(dataSize));
 

@@ -30,7 +30,7 @@ namespace SuperHaxagon {
 	void Title::enter() {
 		auto* music = _game.getMusic();
 		if (music) music->pause();
-		_game.playEffect(SoundEffect::HEXAGON);
+		_game.playEffect(SoundEffect::HAXAGON);
 
 		auto& cam = _game.getCam();
 		cam.reset();

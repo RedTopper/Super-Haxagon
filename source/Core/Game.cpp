@@ -24,11 +24,20 @@ namespace SuperHaxagon {
 		// Audio loading
 		const std::vector<std::pair<SoundEffect, std::string>> sounds{
 			{SoundEffect::BEGIN, "/sound/begin"},
-			{SoundEffect::HEXAGON, "/sound/hexagon"},
+			{SoundEffect::GO, "/sound/go"},
+			{SoundEffect::HAXAGON, "/sound/haxagon"},
 			{SoundEffect::OVER, "/sound/over"},
 			{SoundEffect::SELECT, "/sound/select"},
 			{SoundEffect::LEVEL_UP, "/sound/level"},
+			{SoundEffect::AWESOME, "/sound/awesome"},
 			{SoundEffect::WONDERFUL, "/sound/wonderful"},
+			{SoundEffect::SHAPE_LINE, "/sound/shapes/line"},
+			{SoundEffect::SHAPE_TRIANGLE, "/sound/shapes/triangle"},
+			{SoundEffect::SHAPE_SQUARE, "/sound/shapes/square"},
+			{SoundEffect::SHAPE_PENTAGON, "/sound/shapes/pentagon"},
+			{SoundEffect::SHAPE_HEXAGON, "/sound/shapes/hexagon"},
+			{SoundEffect::SHAPE_HEPTAGON, "/sound/shapes/heptagon"},
+			{SoundEffect::SHAPE_OCTAGON, "/sound/shapes/octagon"},
 		};
 
 		for (const auto& sound : sounds) {

@@ -31,6 +31,6 @@ $GPTOKEYB "$BINARY" &
 
 pm_platform_helper "$GAMEDIR/$BINARY"
 
-./$BINARY
+CONTROLLER="${CFW_NAME}" ./$BINARY
 
 pm_finish

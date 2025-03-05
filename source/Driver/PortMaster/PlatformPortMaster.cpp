@@ -1,5 +1,7 @@
 #include "Driver/Platform.hpp"
 
+#include "Driver/Common/SDL2/CreateSDL2.hpp"
+
 #include <SDL.h>
 
 #include <iostream>
@@ -9,6 +11,12 @@ namespace SuperHaxagon {
 
 	SDL_Window* getWindow(const Platform&) {
 		return SDL_CreateWindow("Super Haxagon", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 0, 0, SDL_WINDOW_FULLSCREEN_DESKTOP | SDL_WINDOW_ALLOW_HIGHDPI);
+	}
+
+	ControllerSettings getDefaultControllerSettings() {
+		// I am making the assumption that most PortMaster compatible handhelds use a Nintendo style layout,
+		// and REPORT THOSE BUTTONS CORRECTLY (looking at you, knulli)
+		return ControllerSettings::NINTENDO;
 	}
 
 	void Platform::message(const Dbg dbg, const std::string& where, const std::string& message) const {

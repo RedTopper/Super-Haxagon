@@ -103,6 +103,37 @@ namespace SuperHaxagon {
 			time = std::chrono::high_resolution_clock::now();
 			screen = createScreen(window, renderer);
 			controller = findController();
+			controllerSettings = getDefaultControllerSettings();
+
+			// This environment variable gets set in the SuperHaxagon.sh script (or manually by the user)
+			if (const auto* env = std::getenv("CONTROLLER")) {
+				const std::string layout = env;
+
+				// Fix for knulli using weird keys.
+				if (layout == "knulli") controllerSettings = ControllerSettings::SWAPPED_FACE_BUTTONS;
+
+				// Fix for if you want the face buttons of an xbox controller to map to the prompts.
+				// Any CFW using XBox style controls should be listed below
+				if (layout == "xbox") controllerSettings = ControllerSettings::XBOX;
+
+				// Fix for if you want the face buttons of an xbox controller to map to the prompts,
+				// but you also want "B" (east) to be your select button.
+				// This is a user preference.
+				if (layout == "xbox_b") controllerSettings = ControllerSettings::XBOX_B_SELECT;
+			}
+
+			switch (controllerSettings) {
+				default:
+				case ControllerSettings::NINTENDO:
+					platform.message(Dbg::INFO, "platform",  "nintendo controller layout"); break;
+				case ControllerSettings::XBOX:
+					platform.message(Dbg::INFO, "platform",  "xbox controller layout"); break;
+				case ControllerSettings::XBOX_B_SELECT:
+					platform.message(Dbg::INFO, "platform",  "xbox controller layout with b as select"); break;
+				case ControllerSettings::SWAPPED_FACE_BUTTONS:
+					platform.message(Dbg::INFO, "platform",  "controller knulli mode"); break;
+			}
+
 			loaded = true;
 
 			if (controller) showKbdControls = false;
@@ -152,7 +183,7 @@ namespace SuperHaxagon {
 					case SDL_CONTROLLERBUTTONDOWN:
 					case SDL_CONTROLLERBUTTONUP:
 						if (controller && ev.cdevice.which == SDL_JoystickInstanceID(SDL_GameControllerGetJoystick(controller))) {
-							setController(buttons, ev.cbutton.button, ev.cbutton.state == SDL_PRESSED);
+							setController(buttons, ev.cbutton.button, ev.cbutton.state == SDL_PRESSED, controllerSettings);
 							showKbdControls = false;
 						}
 						break;
@@ -170,6 +201,7 @@ namespace SuperHaxagon {
 		bool loaded = false;
 		bool showKbdControls = true;
 		bool software = false;
+		ControllerSettings controllerSettings = ControllerSettings::NINTENDO;
 		SDL_Window* window = nullptr;
 		SDL_Renderer* renderer = nullptr;
 		SDL_GameController* controller = nullptr;
@@ -217,7 +249,7 @@ namespace SuperHaxagon {
 	}
 
 	std::string Platform::getButtonName(ButtonName buttonName) {
-		return ::SuperHaxagon::getButtonName(buttonName, _impl->showKbdControls);
+		return ::SuperHaxagon::getButtonName(buttonName, _impl->showKbdControls, _impl->controllerSettings);
 	}
 
 	Buttons Platform::getPressed() const {

@@ -1,5 +1,7 @@
 #include "Driver/Platform.hpp"
 
+#include "Driver/Common/SDL2/CreateSDL2.hpp"
+
 #include <SDL.h>
 
 #include <iostream>
@@ -30,6 +32,12 @@ namespace SuperHaxagon {
 		displayHeight = dsHeight * scale;
 
 		return SDL_CreateWindow("Super Haxagon", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, displayWidth, displayHeight, SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
+	}
+
+	ControllerSettings getDefaultControllerSettings() {
+		// I'm making the assumption that most Desktop players are using a standard XBox controller,
+		// and prefer that "A" means select things.
+		return ControllerSettings::XBOX;
 	}
 
 	void Platform::message(const Dbg dbg, const std::string& where, const std::string& message) const {

@@ -8,9 +8,9 @@ set(PLATFORM_NAME "PORTMASTER")
 
 set(DRIVER_PLATFORM ${DRIVER_PLATFORM}
     source/Driver/Common/SDL2/ScreenSDL2.cpp
+    source/Driver/Common/SDL2/KeybindsSDL2.cpp
     source/Driver/Common/PlatformIsFullyRandom.cpp
     source/Driver/Common/PlatformSupportsFilesystem.cpp
-    source/Driver/PortMaster/KeybindsPortMaster.cpp
     source/Driver/PortMaster/PlatformPortMaster.cpp
 )
 

@@ -133,8 +133,8 @@ namespace SuperHaxagon {
 			}
 
 			const float maxWidth = maxWidthNames + maxWidthValues + 2*pad;
-			const float height = small.getHeight();
-			const Vec2f size = {maxWidth + 2.0f*pad, static_cast<float>(keys.size()) * height + 2.0f*pad};
+			const float height = small.getHeight() + pad;
+			const Vec2f size = {maxWidth + 2.0f*pad, static_cast<float>(keys.size()) * height + pad};
 			const Vec2f pos = {screen.x/2.0f - size.x/2.0f, screen.y/2.0f - size.y/2.0f};
 			const Vec2f posControls = {screen.x / 2.0f, screen.y/2.0f - size.y/2.0f - large.getHeight() - pad};
 
@@ -144,7 +144,7 @@ namespace SuperHaxagon {
 			for (const auto& key : keys) {
 				Vec2f posTextName = {pos.x + pad, pos.y + pad + height*static_cast<float>(index)};
 				small.draw(COLOR_WHITE, posTextName, Alignment::LEFT, key.first);
-				Vec2f posTextValue = {pos.x + maxWidthNames + pad*2, pos.y + pad + height*static_cast<float>(index)};
+				Vec2f posTextValue = {pos.x + maxWidthNames + pad*2.0f, pos.y + pad + height*static_cast<float>(index)};
 				small.draw(COLOR_WHITE, posTextValue, Alignment::LEFT, key.second);
 				index++;
 			}

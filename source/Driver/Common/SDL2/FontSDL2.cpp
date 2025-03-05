@@ -17,7 +17,8 @@ namespace SuperHaxagon {
 			surface(surface),
 			font(nullptr),
 			currentScale(1.0f),
-			size(size) {
+			size(size),
+			requestedSize(size) {
 			// font will be created on first call to setScale(..);
 		}
 
@@ -31,21 +32,21 @@ namespace SuperHaxagon {
 
 			// Scale slower than the true 3DS scale, to look nicer.
 			float realScale = (scale - 1.0f) / 1.5f + 1.0f;
-			auto realSize = static_cast<int>(realScale * static_cast<float>(size));
+			requestedSize = static_cast<int>(realScale * static_cast<float>(size));
 
 			if (font) TTF_CloseFont(font);
-			font = TTF_OpenFont(path.c_str(), realSize);
+			font = TTF_OpenFont(path.c_str(), requestedSize);
+			if (!font) return;
+
+			descent = TTF_FontDescent(font);
 
 			// Note: Newer versions of SDL2_ttf include TTF_SetFontSize(TTF_Font *font, int ptsize)
 			// But to target older devices and SDL2 versions, fall back to closing and re-opening the font.
-			platform.message(Dbg::INFO, "font", "font " + std::to_string(size) + "px auto resized to " + std::to_string(realSize));
+			platform.message(Dbg::INFO, "font", "font " + std::to_string(size) + "px auto resized to " + std::to_string(requestedSize));
 		}
 
 		float getHeight() const {
-			if (!font) return 0;
-			int w, h;
-			TTF_SizeUTF8(font, "W", &w, &h);
-			return static_cast<float>(h);
+			return static_cast<float>(requestedSize);
 		}
 
 		float getWidth(const std::string& str) const {
@@ -75,7 +76,7 @@ namespace SuperHaxagon {
 
 			rect.w = text_width;
 			rect.h = text_height;
-			rect.y = static_cast<int>(position.y);
+			rect.y = static_cast<int>(position.y) + descent;
 
 			const auto width = text_width;
 			if (alignment == Alignment::LEFT) rect.x = static_cast<int>(position.x);
@@ -100,6 +101,8 @@ namespace SuperHaxagon {
 		TTF_Font* font;
 		float currentScale;
 		int size;
+		int requestedSize;
+		int descent = 0;
 	};
 
 	Font::Font(std::unique_ptr<Font::FontImpl> impl) : _impl(std::move(impl)) {}

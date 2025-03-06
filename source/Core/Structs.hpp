@@ -24,6 +24,12 @@ namespace SuperHaxagon {
 		DEAD,
 	};
 
+	enum class Moving {
+		STATIONARY,
+		LEFT,
+		RIGHT
+	};
+
 	enum class LocColor {
 		FG = 0,
 		BG1,

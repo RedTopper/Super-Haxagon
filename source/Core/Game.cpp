@@ -93,6 +93,18 @@ namespace SuperHaxagon {
 		}
 	}
 
+	void Game::playTitleMusic() {
+		// First, try to load from the SD card if the player wants something custom
+		_bgm = _platform.loadMusic("/title", Location::USER);
+
+		if (!_bgm) _bgm = _platform.loadMusic("/bgm/bleepingDemo", Location::ROM);
+
+		if (_bgm) {
+			_bgm->setLoop(true);
+			_bgm->play();
+		}
+	}
+
 	void Game::playMusic(const std::string& music, const Location location, const bool loadMetadata, const bool loop) {
 		const auto base = "/bgm" + music;
 

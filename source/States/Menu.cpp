@@ -37,7 +37,7 @@ namespace SuperHaxagon {
 	Menu::~Menu() = default;
 
 	void Menu::enter() {
-		_game.playMusic("/bleepingDemo", Location::ROM, false);
+		_game.playTitleMusic();
 
 		const auto curPos = _game.getCam().currentPos(CameraLayer::MAIN);
 

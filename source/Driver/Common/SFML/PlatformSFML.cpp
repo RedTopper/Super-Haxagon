@@ -16,7 +16,7 @@
 #include <deque>
 
 namespace SuperHaxagon {
-	std::unique_ptr<Music> createMusic(std::unique_ptr<sf::Music> music);
+	std::unique_ptr<Music> createMusic(const std::string& path);
 	Screen createScreen(sf::RenderWindow& window);
 	std::unique_ptr<Sound> createSound(const std::string& path);
 	std::unique_ptr<Font> createFont(sf::RenderWindow& renderWindow, const std::string& path, int size);
@@ -151,11 +151,7 @@ namespace SuperHaxagon {
 	}
 
 	std::unique_ptr<Music> Platform::loadMusic(const std::string& base, const Location location) const {
-		auto music = std::make_unique<sf::Music>();
-		auto loaded = music->openFromFile(getPath(base, location) + ".ogg");
-		if (!loaded) return nullptr;
-
-		return createMusic(std::move(music));
+		return createMusic(getPath(base, location) + ".ogg");
 	}
 
 	Screen& Platform::getScreen() {

@@ -2,6 +2,8 @@
 
 #include <SFML/Audio.hpp>
 
+#include <filesystem>
+
 namespace SuperHaxagon {
 	struct Music::MusicImpl {
 		explicit MusicImpl(std::unique_ptr<sf::Music> music) : music(std::move(music)) {}
@@ -37,7 +39,13 @@ namespace SuperHaxagon {
 		return _impl->music->getPlayingOffset().asSeconds();
 	}
 
-	std::unique_ptr<Music> createMusic(std::unique_ptr<sf::Music> music) {
+	std::unique_ptr<Music> createMusic(const std::string& path) {
+		if (!std::filesystem::exists(path)) return nullptr;
+
+		auto music = std::make_unique<sf::Music>();
+		auto loaded = music->openFromFile(path);
+		if (!loaded) return nullptr;
+
 		return std::make_unique<Music>(std::make_unique<Music::MusicImpl>(std::move(music)));
 	}
 }

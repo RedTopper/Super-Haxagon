@@ -29,6 +29,7 @@ namespace SuperHaxagon {
 		~Game();
 
 		void run();
+		void playTitleMusic();
 		void playMusic(const std::string& music, Location location, bool loadMetadata, bool loop = true);
 		void playEffect(SoundEffect effect) const;
 		void addLevel(std::unique_ptr<LevelFactory> level);

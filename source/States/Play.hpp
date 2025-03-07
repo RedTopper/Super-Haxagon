@@ -4,6 +4,8 @@
 #include "State.hpp"
 
 #include "Core/Vector.hpp"
+#include "Core/Structs.hpp"
+#include "Driver/Platform.hpp"
 
 namespace SuperHaxagon {
 	class Game;
@@ -41,6 +43,9 @@ namespace SuperHaxagon {
 		float _scoreWidth = 0;
 		float _score = 0;
 		bool _skewing = false;
+		Moving _moving = Moving::STATIONARY;
+		Buttons _lastPressed;
+		Buttons _currentlyPressed;
 	};
 }
 

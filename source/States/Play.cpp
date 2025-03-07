@@ -107,8 +107,10 @@ namespace SuperHaxagon {
 		const auto previousFrame = _level->getFrame();
 		_level->update(_game.getTwister(), dilation);
 
-		// Button presses
-		const auto pressed = _platform.getPressed();
+		// Button presses, rotate this frame to last.
+		_lastPressed = _currentlyPressed;
+		_currentlyPressed = _platform.getPressed();
+		const auto pressed = _currentlyPressed;
 
 		// Check collision
 		const auto cursorDistance = HEX_LENGTH + PLAYER_PADDING_BETWEEN_HEX + PLAYER_TRI_HEIGHT;
@@ -147,10 +149,20 @@ namespace SuperHaxagon {
 			return std::make_unique<Transition>(_game, std::move(_level), _selected, _score);
 		}
 
+		// Keys are being released. If we are still holding the opposite key, resume moving in that direction.
+		if (_lastPressed.left && !pressed.left) _moving = pressed.right ? Moving::RIGHT : Moving::STATIONARY;
+		if (_lastPressed.right && !pressed.right) _moving = pressed.left ? Moving::LEFT : Moving::STATIONARY;
+
+		// Keys are being pressed, set movement to that direction, even if the other key is still held,
+		// so the most recent keypress takes priority.
+		// (While rare, pressing both keys down at EXACTLY the same time will favor Moving::RIGHT)
+		if (!_lastPressed.left && pressed.left)  _moving = Moving::LEFT;
+		if (!_lastPressed.right && pressed.right) _moving = Moving::RIGHT;
+
 		// Process movement
-		if (pressed.left && hit != Movement::CANNOT_MOVE_LEFT) {
+		if (_moving == Moving::LEFT && hit != Movement::CANNOT_MOVE_LEFT) {
 			_level->left(dilation);
-		} else if (pressed.right && hit != Movement::CANNOT_MOVE_RIGHT) {
+		} else if (_moving == Moving::RIGHT && hit != Movement::CANNOT_MOVE_RIGHT) {
 			_level->right(dilation);
 		}
 

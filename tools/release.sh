@@ -3,7 +3,12 @@
 # Packages everything into a ./GitHub folder for uploading with one drag and drop.
 # Aint nobody got time for manually doing this all when you have so many storming releases.
 
-cd ../release || (echo "release directory not found" && exit)
+cd ../release || {
+  echo "release directory does not exist!";
+  echo "Run \`podman-compose up --build --build-arg JOBS=32\` first."
+  echo "(Or the equivalent \`docker compose\` command)"
+  exit;
+}
 
 GAME="SuperHaxagon"
 DEST="./GitHub"

@@ -16,7 +16,9 @@ level editor called [Haxa Editor](https://github.com/RedTopper/Haxa-Editor).
 
 You can download the latest build on [the releases page](https://github.com/RedTopper/Super-Haxagon/releases) to the right.
 
-_Note: SFML requires a graphics adapter with OpenGL 3.2 or higher. Super Haxagon may be unsupported on first generation Intel processors, Remote Desktop sessions, or VMs with no hardware acceleration. See #22 for details._
+## Install
+
+SuperHaxagon supports many different devices. [Find your install instructions here](./INSTALL.md)!
 
 ## Features
 
@@ -29,7 +31,7 @@ _Note: SFML requires a graphics adapter with OpenGL 3.2 or higher. Super Haxagon
 
 ## Building
 
-Super Haxagon targets the 3DS, Switch, TI-Nspire, Windows (MSVC), and Linux. For desktop platforms, it uses a 
+SuperHaxagon targets the 3DS, Switch, TI-Nspire, Windows (MSVC), and Linux. For desktop platforms, it uses a 
 cross-platform library called SFML, so it will probably also compile on other platforms that support it.
 
 1. Clone this repository with `git clone https://github.com/RedTopper/Super-Haxagon.git --recursive`
@@ -50,7 +52,7 @@ Create the build environment with:
 
 `podman-compose build <platform> --build-arg JOBS=<cpus>`
 
-Then build Super Haxagon with:
+Then build SuperHaxagon with:
 
 `podman-compose up <platform>`
 
@@ -75,7 +77,7 @@ usually the one that ends in -dev or -devel). Then:
 4. `make`
 
 Note: This build will be dynamically linked with SFML and will require SFML to be 
-installed on any machine you want to run Super Haxagon on. For static building, 
+installed on any machine you want to run SuperHaxagon on. For static building, 
 use the container or build SFML yourself.
 
 ### For Flatpak Users:
@@ -169,7 +171,7 @@ Music Attribution
 
 ## Cross Platform
 
-Below are a few screenshots featuring the various platforms that Super Haxagon compiles on. The 3DS version is packaged 
+Below are a few screenshots featuring the various platforms that SuperHaxagon compiles on. The 3DS version is packaged 
 with a custom 3D banner to make it look official. Additionally, the gif was recorded on actual Nintendo Switch hardware.
 
 <img width="500" src="./media/screenshots/HNI_0013.JPG"                     alt="3D Banner"            title="3D Banner"/>

@@ -1,7 +1,0 @@
-{
-  "label": "Super Haxagon",
-  "icon": "./icon.png",
-  "launch": "launch.sh",
-  "noaudiofix": 1,
-  "description": "A Super Hexagon Clone"
-}

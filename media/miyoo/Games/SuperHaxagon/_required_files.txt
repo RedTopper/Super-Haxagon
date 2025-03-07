@@ -1,0 +1,56 @@
+The required "lib" files should be included in your download
+The romfs folder must be downloaded separately and placed here
+
+.
+├── lib
+│   ├── libEGL.so
+│   ├── libGLESv2.so
+│   ├── libjson-c.so.5
+│   ├── libneon.so
+│   ├── libSDL2-2.0.so.0
+│   ├── libSDL2_image-2.0.so.0
+│   ├── libSDL2_mixer-2.0.so.0
+│   ├── libSDL2_ttf-2.0.so.0
+│   └── libz.so.1
+├── romfs
+│   ├── bgm
+│   │   ├── bleepingDemo.ogg
+│   │   ├── callMeKatla.ogg
+│   │   ├── callMeKatla.txt
+│   │   ├── captainCool.ogg
+│   │   ├── captainCool.txt
+│   │   ├── commandoSteve.ogg
+│   │   ├── commandoSteve.txt
+│   │   ├── drFinkelfracken.ogg
+│   │   ├── drFinkelfracken.txt
+│   │   ├── esiannoyamFoEzam.ogg
+│   │   ├── esiannoyamFoEzam.txt
+│   │   ├── jackRussel.ogg
+│   │   ├── jackRussel.txt
+│   │   ├── mazeOfMayonnaise.ogg
+│   │   ├── mazeOfMayonnaise.txt
+│   │   ├── screenSaver.ogg
+│   │   └── screenSaver.txt
+│   ├── bump-it-up-16.bcfnt
+│   ├── bump-it-up-32.bcfnt
+│   ├── bump-it-up.ttf
+│   ├── levels.haxagon
+│   └── sound
+│       ├── awesome.wav
+│       ├── begin.wav
+│       ├── excellent.wav
+│       ├── go.wav
+│       ├── haxagon.wav
+│       ├── level.wav
+│       ├── over.wav
+│       ├── select.wav
+│       ├── shapes
+│       │   ├── heptagon.wav
+│       │   ├── hexagon.wav
+│       │   ├── line.wav
+│       │   ├── octagon.wav
+│       │   ├── pentagon.wav
+│       │   ├── square.wav
+│       │   └── triangle.wav
+│       └── wonderful.wav
+└── SuperHaxagon

@@ -1,0 +1,23 @@
+#!/bin/sh
+# Standalone Ports Script Template
+
+# main configuration :
+GameName="SuperHaxagon"
+GameDir="SuperHaxagon"
+GameExecutable="SuperHaxagon"
+GameDataFile="levels.haxagon"
+
+# additional configuration
+KillAudioserver=1
+PerformanceMode=0
+
+# specific to this port :
+Arguments=""
+
+# SDL2 drivers :
+export SDL_VIDEODRIVER=mmiyoo
+export EGL_VIDEODRIVER=mmiyoo
+export SDL_AUDIODRIVER=mmiyoo
+
+# running command line :
+/mnt/SDCARD/Emu/PORTS/launch_standalone.sh "$GameName" "$GameDir" "$GameExecutable" "$Arguments" "$GameDataFile" "$KillAudioserver" "$PerformanceMode"

@@ -22,25 +22,24 @@ services:
     image: super-haxagon-3ds
     container_name: super-haxagon-3ds
     hostname: super-haxagon-3ds
-    command: /root/git/tools/3ds/build.sh
+    command: build.sh
     working_dir: /root/git/build/3ds
     environment:
       - "CMAKE_ARGS=-DCMAKE_INSTALL_PREFIX=/root/git/release/3ds -DCMAKE_BUILD_TYPE=Release"
     volumes:
       - ../:/root/git:z
+      - ./3ds/build.sh:/usr/local/bin/build.sh
   switch:
-    build:
-      context: .
-      dockerfile: switch/Containerfile
-    image: super-haxagon-switch
+    image: devkitpro/devkita64
     container_name: super-haxagon-switch
     hostname: super-haxagon-switch
-    command: /root/git/tools/switch/build.sh
+    command: build.sh
     working_dir: /root/git/build/switch
     environment:
       - "CMAKE_ARGS=-DCMAKE_INSTALL_PREFIX=/root/git/release/switch -DCMAKE_BUILD_TYPE=Release"
     volumes:
       - ../:/root/git:z
+      - ./switch/build.sh:/usr/local/bin/build.sh
   nspire:
     build:
       context: .
@@ -48,12 +47,13 @@ services:
     image: super-haxagon-nspire
     container_name: super-haxagon-nspire
     hostname: super-haxagon-nspire
-    command: /root/git/tools/nspire/build.sh
+    command: build.sh
     working_dir: /root/git/build/nspire
     environment:
       - "CMAKE_ARGS=-DCMAKE_INSTALL_PREFIX=/root/git/release/nspire -DCMAKE_BUILD_TYPE=Release"
     volumes:
       - ../:/root/git:z
+      - ./nspire/build.sh:/usr/local/bin/build.sh
   linux:
     build:
       context: .
@@ -61,12 +61,13 @@ services:
     image: super-haxagon-linux
     container_name: super-haxagon-linux
     hostname: super-haxagon-linux
-    command: /root/git/tools/linux/build.sh
+    command: build.sh
     working_dir: /root/git/build/linux-sfml
     environment:
       - "CMAKE_ARGS=-DCMAKE_INSTALL_PREFIX=/root/git/release/linux-sfml -DCMAKE_BUILD_TYPE=Release"
     volumes:
       - ../:/root/git:z
+      - ./linux/build.sh:/usr/local/bin/build.sh
   linux-sdl2:
     build:
       context: .
@@ -74,12 +75,13 @@ services:
     image: super-haxagon-linux-sdl2
     container_name: super-haxagon-linux-sdl2
     hostname: super-haxagon-linux-sdl2
-    command: /root/git/tools/linux-sdl2/build.sh
+    command: build.sh
     working_dir: /root/git/build/linux-sdl2
     environment:
       - "CMAKE_ARGS=-DCMAKE_INSTALL_PREFIX=/root/git/release/linux-sdl2 -DCMAKE_BUILD_TYPE=Release"
     volumes:
       - ../:/root/git:z
+      - ./linux-sdl2/build.sh:/usr/local/bin/build.sh
   nothing:
     # Example driver and build tooling
     build:
@@ -88,20 +90,22 @@ services:
     image: super-haxagon-null
     container_name: super-haxagon-null
     hostname: super-haxagon-null
-    command: /root/git/tools/null/build.sh
+    command: build.sh
     working_dir: /root/git/build/null
     volumes:
       - ../:/root/git:z
+      - ./null/build.sh:/usr/local/bin/build.sh
   portmaster:
     image: monkeyx/retro_builder:arm64
     container_name: super-haxagon-portmaster
     hostname: super-haxagon-portmaster
-    command: /root/git/tools/portmaster/build.sh
+    command: build.sh
     working_dir: /root/git/build/portmaster
     environment:
       - "CMAKE_ARGS=-DCMAKE_INSTALL_PREFIX=/root/git/release/portmaster -DCMAKE_BUILD_TYPE=Release"
     volumes:
       - ../:/root/git:z
+      - ./portmaster/build.sh:/usr/local/bin/build.sh
   miyoo:
     build:
       context: .
@@ -109,9 +113,10 @@ services:
     image: super-haxagon-miyoo
     container_name: super-haxagon-miyoo
     hostname: super-haxagon-miyoo
-    command: /root/git/tools/miyoo/build.sh
+    command: build.sh
     working_dir: /root/git/build/miyoo
     environment:
       - "CMAKE_ARGS=-DCMAKE_INSTALL_PREFIX=/root/git/release/miyoo -DCMAKE_BUILD_TYPE=Release"
     volumes:
       - ../:/root/git:z
+      - ./miyoo/build.sh:/usr/local/bin/build.sh

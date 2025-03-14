@@ -1,8 +1,5 @@
 FROM fedora:41
 
-ARG JOBS=1
-ENV JOBS=${JOBS}
-
 RUN --mount=target=/var/cache/dnf,type=cache,sharing=locked \
     dnf update -y && \
     dnf install -y --nodocs \
@@ -20,11 +17,7 @@ RUN cd ndless-sdk/thirdparty/freetype2 && \
     git reset --hard 069083cccd73d1d68da68116c8d050bb62cdfe0e
 
 # This will take a while... Grab a coffee?
-# If it's taking a very long time, make sure you set the JOBS build argument to equal your CPU cores with '--build-arg JOBS=32'
-RUN cd ndless-sdk/toolchain && PARALLEL=-j${JOBS} PYTHON=/usr/bin/python3.11 ./build_toolchain.sh && rm -r ./download
+RUN cd ndless-sdk/toolchain && PARALLEL=-j${nproc} PYTHON=/usr/bin/python3.11 ./build_toolchain.sh && rm -r ./download
 ENV PATH="/opt/ndless/ndless-sdk/toolchain/install/bin:/opt/ndless/ndless-sdk/bin:${PATH}"
 ENV NDLESS="/opt/ndless"
-RUN make -j${JOBS}
-
-# Then add my tools to the PATH
-ENV PATH="/root/git/tools/ndless:${PATH}"
+RUN make -j${nproc}

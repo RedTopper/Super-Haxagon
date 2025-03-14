@@ -1,5 +1,6 @@
 #include "Driver/Platform.hpp"
 
+#include "Core/Configuration.hpp"
 #include "Driver/Common/SDL2/CreateSDL2.hpp"
 
 #include <SDL.h>
@@ -10,7 +11,7 @@ namespace SuperHaxagon {
 	void platformSpecificHints() {}
 
 	SDL_Window* getWindow(const Platform&) {
-		return SDL_CreateWindow("Super Haxagon", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 0, 0, SDL_WINDOW_FULLSCREEN_DESKTOP | SDL_WINDOW_ALLOW_HIGHDPI);
+		return SDL_CreateWindow(APP_NAME, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 0, 0, SDL_WINDOW_FULLSCREEN_DESKTOP | SDL_WINDOW_ALLOW_HIGHDPI);
 	}
 
 	ControllerSettings getDefaultControllerSettings() {

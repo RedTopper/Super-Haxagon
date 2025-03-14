@@ -1,9 +1,5 @@
 FROM fedora:41
 
-ARG JOBS=1
-ENV JOBS=${JOBS}
-ENV PATH=/root/git/tools/null:${PATH}
-
 RUN --mount=target=/var/cache/dnf,type=cache,sharing=locked \
     dnf update -y && \
     dnf install -y --nodocs \

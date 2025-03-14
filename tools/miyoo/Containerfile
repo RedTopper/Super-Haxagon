@@ -1,8 +1,5 @@
 FROM debian:buster
 
-ARG JOBS=1
-ENV JOBS=${JOBS}
-
 RUN --mount=target=/var/lib/apt/lists,type=cache,sharing=locked \
     --mount=target=/var/cache/apt,type=cache,sharing=locked \
     rm -f /etc/apt/apt.conf.d/docker-clean \
@@ -17,8 +14,6 @@ RUN wget https://github.com/shauninman/miyoomini-toolchain-buildroot/releases/do
     tar -xvf miyoomini-toolchain.tar.xz && \
     mv miyoomini-toolchain /opt && \
     rm miyoomini-toolchain.tar.xz
-
-ENV PATH=/opt/miyoomini-toolchain/bin/:$PATH
 
 # We don't actually need to build the SDL2 libraries for this toolchain, they have already
 # been built

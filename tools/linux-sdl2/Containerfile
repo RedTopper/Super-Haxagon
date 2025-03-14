@@ -1,12 +1,7 @@
 FROM fedora:41
 
-ARG JOBS=1
-ENV JOBS=${JOBS}
-
 RUN --mount=target=/var/cache/dnf,type=cache,sharing=locked \
     dnf update -y && \
     dnf install -y --nodocs \
     gcc gcc-c++ cmake git \
     SDL2-devel SDL2_mixer-devel SDL2_ttf-devel
-
-ENV PATH="/root/git/tools/linux-sdl2:${PATH}"

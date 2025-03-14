@@ -3,20 +3,14 @@ project(Super_Haxagon VERSION 3.8.3)
 
 set(CMAKE_CXX_STANDARD 17)
 
-set(APP_NAME "Super Haxagon")
+set(APP_NAME "SuperHaxagon")
 set(APP_DESCRIPTION "A Super Hexagon Clone")
 set(APP_AUTHOR "RedHat")
 
-include_directories("${CMAKE_CURRENT_SOURCE_DIR}/source")
+set(FETCHCONTENT_QUIET FALSE)
+set(STB_VER ae721c50eaf761660b4f90cc590453cdb0c2acd0)
 
-# If you are using containers and your IDE can't see the header files in there,
-# but you still want type completion, just git clone the libraries in cmake/libraries.cmake
-# and enable the -DHEADERS_FOR_IDE=TRUE CMake option.
-# (for CLion this is in Build, Execution, Deployment > CMake > CMake Options)
-# (you can also, like, remove the if() block too, but remember to put it back please!)
-if(HEADERS_FOR_IDE)
-    include(cmake/common/libraries.cmake)
-endif()
+include_directories("${CMAKE_CURRENT_SOURCE_DIR}/source")
 
 # Used in 3DS for a console on the bottom screen
 # and Switch for debug output to a file
@@ -68,11 +62,11 @@ elseif(CMAKE_SYSTEM_NAME MATCHES "Miyoo")
 elseif(CMAKE_SYSTEM_NAME MATCHES "Linux")
     if(DRIVER_SDL2)
         # cmake -DDRIVER_SDL2=TRUE ..
-        # The default SDL2 experience (like SFML but SDL2)
+        # SDL2 configuration for desktops
         include(cmake/linux-sdl2.cmake)
     elseif(DRIVER_PORTMASTER)
         # cmake -DDRIVER_PORTMASTER=TRUE ..
-        # Defaults to fullscreen and has different keybindings
+        # Defaults to fullscreen and says portmaster
         include(cmake/portmaster.cmake)
     else()
         # Default to using the SFML2 driver
@@ -87,3 +81,14 @@ else()
 endif()
 
 configure_file(source/Core/Configuration.hpp.in Core/Configuration.hpp)
+
+# If you are using containers and your IDE can't see the header files in there,
+# but you still want type completion, enable the -DHEADERS_FOR_IDE=TRUE CMake option.
+# (for CLion this is in Build, Execution, Deployment > CMake > CMake Options)
+
+# This will automatically clone the required headers into the build directories.
+# This will NOT allow those components to link though, you'll need the full
+# toolchain for that.
+if(HEADERS_FOR_IDE)
+    include(cmake/common/libraries.cmake)
+endif()

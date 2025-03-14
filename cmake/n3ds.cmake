@@ -2,12 +2,19 @@
 
 message(STATUS "Building for 3DS...")
 
+include(FetchContent)
+FetchContent_Declare(stb
+    GIT_REPOSITORY https://github.com/nothings/stb.git
+    GIT_TAG ${STB_VER}
+    GIT_PROGRESS TRUE
+    SOURCE_SUBDIR nonexistent)
+
+FetchContent_MakeAvailable(stb)
+
 set(PLATFORM_NAME "3DS")
 
 # Include platform extensions not in devkitpro for .cia and .3ds files
 include(cmake/toolchains/Platform/Nintendo3DSExtra.cmake)
-
-include_directories(SYSTEM "${CMAKE_CURRENT_SOURCE_DIR}/libraries/stb")
 
 set(DRIVER
     source/Driver/3DS/Platform3DS.cpp
@@ -24,6 +31,8 @@ add_executable(SuperHaxagon ${DRIVER} ${SOURCES})
 target_compile_options(SuperHaxagon PRIVATE -Wall -Wno-psabi -ffast-math)
 
 target_link_libraries(SuperHaxagon citro2d citro3d)
+
+target_include_directories(SuperHaxagon SYSTEM PUBLIC "${stb_SOURCE_DIR}")
 
 ctr_generate_smdh(SuperHaxagon.smdh
     NAME "${APP_NAME}"

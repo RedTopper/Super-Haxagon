@@ -1,7 +1,7 @@
 #!/usr/bin/env xdg-open
 [Desktop Entry]
 Type=Application
-Name=Super Haxagon
+Name=SuperHaxagon
 Comment=A Super Hexagon Clone
 Exec=/app/SuperHaxagon
 Icon=net.awalter.SuperHaxagon

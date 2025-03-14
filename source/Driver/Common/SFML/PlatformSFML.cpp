@@ -37,7 +37,7 @@ namespace SuperHaxagon {
 
 	struct Platform::PlatformImpl {
 		PlatformImpl(const std::string& sdmcPath, const std::string& romfsPath, const bool platformBackslash) :
-			window(getVideoMode(), "Super Haxagon", sf::Style::Default, getSettings()),
+			window(getVideoMode(), APP_NAME, sf::Style::Default, getSettings()),
 			screen(createScreen(window))
 		{
 			sdmc = sdmcPath;
@@ -49,9 +49,9 @@ namespace SuperHaxagon {
 			window.setVerticalSyncEnabled(true);
 			window.display();
 
-			// Set the window name to "Super Haxagon" first (above), to match the .desktop file,
+			// Set the window name to "SuperHaxagon" first (above), to match the .desktop file,
 			// then add the version after the window has loaded.
-			window.setTitle(std::string("Super Haxagon (") + VERSION + ")");
+			window.setTitle(APP_NAME " ("  VERSION ")");
 
 			loaded = true;
 		}

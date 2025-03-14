@@ -1,8 +1,5 @@
 FROM devkitpro/devkitarm
 
-ARG JOBS=1
-ENV JOBS=${JOBS}
-
 RUN --mount=target=/var/lib/apt/lists,type=cache,sharing=locked \
     --mount=target=/var/cache/apt,type=cache,sharing=locked \
     apt-get update && \
@@ -12,14 +9,12 @@ RUN --mount=target=/var/lib/apt/lists,type=cache,sharing=locked \
 RUN mkdir -p /root/bannertool
 WORKDIR /root/bannertool
 RUN git clone --depth=1 https://github.com/RedTopper/bannertool .
-RUN mkdir build && cd build && cmake .. && make -j${JOBS}
+RUN mkdir build && cd build && cmake .. && make -j"$(nproc)"
 RUN cp build/bannertool /opt/devkitpro/tools/bin
 
 # Build makerom
 RUN mkdir -p /root/Project_CTR
 WORKDIR /root/Project_CTR
 RUN git clone --depth=1 https://github.com/3DSGuy/Project_CTR.git .
-RUN cd makerom && make deps && make -j${JOBS}
+RUN cd makerom && make deps && make -j"$(nproc)"
 RUN cp makerom/bin/makerom /opt/devkitpro/tools/bin
-
-ENV PATH="/root/git/tools/3ds:${PATH}"

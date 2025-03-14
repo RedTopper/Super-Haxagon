@@ -1,4 +1,4 @@
 #!/bin/bash
 
 cmake -DDRIVER_NULL=TRUE ../../
-make -j${JOBS}
+make -j"$(nproc)"

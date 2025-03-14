@@ -1,5 +1,0 @@
-FROM devkitpro/devkita64
-
-ARG JOBS=1
-ENV JOBS=${JOBS}
-ENV PATH=/root/git/tools/switch:${PATH}

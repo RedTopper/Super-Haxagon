@@ -1,5 +1,6 @@
 #include "Driver/Platform.hpp"
 
+#include "Core/Configuration.hpp"
 #include "Driver/Common/SDL2/CreateSDL2.hpp"
 
 #include <SDL.h>
@@ -31,7 +32,7 @@ namespace SuperHaxagon {
 		displayWidth = dsWidth * scale;
 		displayHeight = dsHeight * scale;
 
-		return SDL_CreateWindow("Super Haxagon", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, displayWidth, displayHeight, SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
+		return SDL_CreateWindow(APP_NAME, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, displayWidth, displayHeight, SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
 	}
 
 	ControllerSettings getDefaultControllerSettings() {

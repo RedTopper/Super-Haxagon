@@ -31,26 +31,30 @@ SuperHaxagon supports many different devices. [Find your install instructions he
 
 ## Building
 
-SuperHaxagon targets the 3DS, Switch, TI-Nspire, Windows (MSVC), and Linux. For desktop platforms, it uses a 
-cross-platform library called SFML, so it will probably also compile on other platforms that support it.
+1. Clone this repository with `git clone https://github.com/RedTopper/Super-Haxagon.git`
 
-1. Clone this repository with `git clone https://github.com/RedTopper/Super-Haxagon.git --recursive`
-
-### For Users With Podman or Docker:
+### For Users With Podman or Docker (Recommended):
 
 You can use the provided `tools/compose.yaml` file for creating sane build environments.
 The following examples use `podman-compose` and `podman` on fedora, but a similar result
 can likely be done with `docker` by replacing `podman-compose` with `docker compose` 
 (untested).
 
-From within the `tools` directory, run the following commands replacing the placeholders:
+From within the `tools` directory, run the following commands replacing `<platform>` with
+the platform you want to build for:
 
- * `<platform>`: The platform to build for: 3ds switch nspire linux
- * `<cpus>`: The number of parallel jobs to default to, usually the CPU core count of your computer (ex: 8)
+ * 3ds
+ * switch
+ * nspire
+ * linux
+ * linux-sdl2
+ * nothing
+ * portmaster
+ * miyoo
 
 Create the build environment with:
 
-`podman-compose build <platform> --build-arg JOBS=<cpus>`
+`podman-compose build <platform>`
 
 Then build SuperHaxagon with:
 
@@ -60,25 +64,28 @@ If you need a shell within the build environment, run:
 
 `podman-compose run --rm <platform> bash`
 
-Then run the following to kick off a build from the `/haxagon/build` directory:
+Then run the following to kick off a build from the `~/git/build/<platform>` directory:
 
-`../build.sh`
+`build.sh`
 
 For more advanced users, feel free to modify the `compose.yaml` file to your needs.
 
 ### For Linux Users Without Containerization:
 
-Install `SFML`'s _developer_ package using your system's package manager (this is
-usually the one that ends in -dev or -devel). Then:
+Install SFML's dependencies through your package manager. An example for Fedora is in
+`tools/linux/Containerfile`. You may also want to see the instructions here:
+
+https://www.sfml-dev.org/faq/build-use/#link-static
+
+Then you can run the following commands:
 
 1. `mkdir build`
 2. `cd build`
 3. `cmake ..`
 4. `make`
 
-Note: This build will be dynamically linked with SFML and will require SFML to be 
-installed on any machine you want to run SuperHaxagon on. For static building, 
-use the container or build SFML yourself.
+Note: This will create a build targeting your current machine. If you want to build for a different
+platform, you'll need to replicate what's in the Containerfiles within tools.
 
 ### For Flatpak Users:
 
@@ -87,8 +94,7 @@ Run `flatpak.sh` from the `tools` directory.
 ### For Windows Users:
 
 1. Install Visual Studio 2022
-2. Place a copy of SFML in `libraries/SFML` (Create the directory)
-3. Open this repository in Visual Studio and press "Play"
+2. Open this repository in Visual Studio and press "Play"
 
 ## Editing the Beatmaps
 

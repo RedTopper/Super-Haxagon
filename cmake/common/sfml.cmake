@@ -1,10 +1,28 @@
 # cmake
 
+cmake_minimum_required(VERSION 3.28)
+
 message(STATUS "Using sfml driver...")
 
-find_package(SFML 2 COMPONENTS system window graphics audio)
+find_package(SFML 2 COMPONENTS system window graphics audio QUIET)
 
-include_directories(${SFML_INCLUDE_DIR})
+if (${SFML_FOUND})
+    message(STATUS "SFML found on your local system!")
+else()
+    message(STATUS "Fetching SFML...")
+    set(BUILD_SHARED_LIBS OFF)
+
+    include(FetchContent)
+    FetchContent_Declare(SFML
+        GIT_REPOSITORY https://github.com/SFML/SFML.git
+        GIT_TAG 2.6.x
+        GIT_SHALLOW TRUE
+        GIT_PROGRESS TRUE
+        EXCLUDE_FROM_ALL
+        SYSTEM)
+
+    FetchContent_MakeAvailable(SFML)
+endif()
 
 set(DRIVER ${DRIVER_PLATFORM}
     source/Driver/Common/SFML/MusicSFML.cpp

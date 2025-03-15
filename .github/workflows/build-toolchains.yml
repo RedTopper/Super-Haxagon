@@ -37,6 +37,10 @@ jobs:
           tags: |
             type=ref,event=branch
             type=ref,event=pr
+            type=match,pattern=build/(\d.\d.\d),group=1
+          # Don't tag latest here, just tag the version.
+          flavor: |
+            latest=false 
 
       - name: Get Changed Toolchains
         id: changed-files

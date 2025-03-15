@@ -15,8 +15,7 @@ RUN wget https://github.com/shauninman/miyoomini-toolchain-buildroot/releases/do
     mv miyoomini-toolchain /opt && \
     rm miyoomini-toolchain.tar.xz
 
-# We don't actually need to build the SDL2 libraries for this toolchain, they have already
-# been built
+# We don't actually need to build the SDL2 libraries for this toolchain, they have already been built
 RUN SDL2_VER=2.0.20 && \
     SDL2_PACKAGE=SDL2 && \
     wget https://github.com/libsdl-org/SDL/releases/download/release-${SDL2_VER}/${SDL2_PACKAGE}-${SDL2_VER}.tar.gz && \
@@ -48,7 +47,10 @@ RUN SDL2_VER=2.0.14 \
     mv ${SDL2_PACKAGE}-${SDL2_VER}/${SDL2_HEADER} /opt/miyoomini-toolchain/include/SDL2 && \
     rm -rf ${SDL2_PACKAGE}*
 
-COPY miyoo/lib.tar.gz lib.tar.gz
+# If you'd like to use a local copy of the libraries, swap the lines below.
+#COPY ./miyoo/lib.tar.gz ./
+RUN wget -O ./lib.tar.gz https://github.com/RedTopper/Super-Haxagon/releases/download/miyoo-libs/lib.tar.gz
+
 RUN tar -xzf lib.tar.gz && \
     mv lib/* /opt/miyoomini-toolchain/lib && \
     cd /opt/miyoomini-toolchain/lib && \

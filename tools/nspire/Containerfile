@@ -1,5 +1,6 @@
 FROM fedora:41
 
+# Note: The nspire toolchain expects a specific python version
 RUN --mount=target=/var/cache/dnf,type=cache,sharing=locked \
     dnf update -y && \
     dnf install -y --nodocs \
@@ -17,7 +18,7 @@ RUN cd ndless-sdk/thirdparty/freetype2 && \
     git reset --hard 069083cccd73d1d68da68116c8d050bb62cdfe0e
 
 # This will take a while... Grab a coffee?
-RUN cd ndless-sdk/toolchain && PARALLEL=-j${nproc} PYTHON=/usr/bin/python3.11 ./build_toolchain.sh && rm -r ./download
+RUN cd ndless-sdk/toolchain && PARALLEL=-j$(($(nproc) + 2)) PYTHON=/usr/bin/python3.11 ./build_toolchain.sh && rm -r ./download
 ENV PATH="/opt/ndless/ndless-sdk/toolchain/install/bin:/opt/ndless/ndless-sdk/bin:${PATH}"
 ENV NDLESS="/opt/ndless"
-RUN make -j${nproc}
+RUN make -j$(($(nproc) + 2))

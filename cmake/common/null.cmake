@@ -11,3 +11,5 @@ set(DRIVER
 )
 
 add_executable(SuperHaxagon ${DRIVER} ${SOURCES})
+
+install(TARGETS SuperHaxagon RUNTIME DESTINATION .)

@@ -28,6 +28,13 @@ target_link_libraries(SuperHaxagon SDL2 SDL2_image SDL2_mixer SDL2_ttf GLESv2 EG
 
 target_compile_options(SuperHaxagon PRIVATE -Wall -Wextra -pedantic)
 
+if(EXISTS "/root/lib.tar.gz")
+    add_custom_command(TARGET SuperHaxagon POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E tar x "/root/lib.tar.gz" WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+    )
+    install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/lib DESTINATION ./Roms/PORTS/Games/SuperHaxagon)
+endif()
+
 install(TARGETS SuperHaxagon RUNTIME DESTINATION ./Roms/PORTS/Games/SuperHaxagon)
 install(DIRECTORY ${CMAKE_SOURCE_DIR}/romfs DESTINATION ./Roms/PORTS/Games/SuperHaxagon)
 install(DIRECTORY ${CMAKE_SOURCE_DIR}/media/miyoo/ DESTINATION ./Roms/PORTS)

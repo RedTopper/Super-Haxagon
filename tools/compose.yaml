@@ -1,9 +1,9 @@
 version: '3.8'
 
 # For a build:
-# podman-compose up --build --build-arg JOBS=<cpu-cores> <service>
+# podman-compose up --build <service>
 # ex:
-# podman-compose up --build --build-arg JOBS=32 miyoo
+# podman-compose up --build miyoo
 
 # For a shell:
 # podman-compose run --build --rm <service> bash
@@ -17,7 +17,6 @@ version: '3.8'
 services:
   3ds:
     build:
-      context: .
       dockerfile: 3ds/Containerfile
     image: super-haxagon-3ds
     container_name: super-haxagon-3ds
@@ -42,7 +41,6 @@ services:
       - ./switch/build.sh:/usr/local/bin/build.sh
   nspire:
     build:
-      context: .
       dockerfile: nspire/Containerfile
     image: super-haxagon-nspire
     container_name: super-haxagon-nspire
@@ -56,7 +54,6 @@ services:
       - ./nspire/build.sh:/usr/local/bin/build.sh
   linux:
     build:
-      context: .
       dockerfile: linux/Containerfile
     image: super-haxagon-linux
     container_name: super-haxagon-linux
@@ -70,7 +67,6 @@ services:
       - ./linux/build.sh:/usr/local/bin/build.sh
   linux-sdl2:
     build:
-      context: .
       dockerfile: linux-sdl2/Containerfile
     image: super-haxagon-linux-sdl2
     container_name: super-haxagon-linux-sdl2
@@ -85,13 +81,14 @@ services:
   nothing:
     # Example driver and build tooling
     build:
-      context: .
       dockerfile: null/Containerfile
     image: super-haxagon-null
     container_name: super-haxagon-null
     hostname: super-haxagon-null
     command: build.sh
     working_dir: /root/git/build/null
+    environment:
+      - "CMAKE_ARGS=-DCMAKE_INSTALL_PREFIX=/root/git/release/null -DCMAKE_BUILD_TYPE=Debug"
     volumes:
       - ../:/root/git:z
       - ./null/build.sh:/usr/local/bin/build.sh

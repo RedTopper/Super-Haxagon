@@ -1,5 +1,6 @@
 FROM fedora:41
 
+# SDL2 Dependencies
 RUN --mount=target=/var/cache/dnf,type=cache,sharing=locked \
     dnf update -y && \
     dnf install -y --nodocs \

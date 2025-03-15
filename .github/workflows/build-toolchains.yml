@@ -1,0 +1,141 @@
+name: Build Toolchains and Compile
+
+on:
+  push:
+    branches:
+      - master
+    tags:
+      - build/*
+    paths:
+      - tools/*/Containerfile
+  pull_request:
+    types:
+      - opened
+      - synchronize
+    paths:
+      - tools/*/Containerfile
+
+env:
+  REPO: ghcr.io/${{ github.repository }}
+
+jobs:
+  generate-matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.matrix.outputs.matrix }}
+      tag: ${{ steps.tag.outputs.tags }}
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: '0'
+
+      - name: Get Container Tag
+        uses: docker/metadata-action@902fa8ec7d6ecbf8d84d538b9b233a880e428804 # v5.7.0
+        id: tag
+        with:
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+
+      - name: Get Changed Toolchains
+        id: changed-files
+        run: |
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            # Pull requests need to check back to Master for building
+            CHANGED_FILES=$(git diff --name-only origin/master -- 'tools/*/Containerfile')
+          elif [[ "${{ github.ref }}" == refs/tags/build/* ]]; then
+            # Tags will always rebuild all containers for a release
+            CHANGED_FILES=$(find tools -mindepth 2 -maxdepth 2 -name "Containerfile")
+          else
+            # Otherwise, just check the diff of the last commit
+            CHANGED_FILES=$(git diff --name-only HEAD~1 -- 'tools/*/Containerfile')
+          fi
+          
+          echo "CHANGED_FILES<<EOF" >> $GITHUB_ENV
+          echo "$CHANGED_FILES" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
+      - name: Build Matrix
+        uses: actions/github-script@v7
+        id: matrix
+        with:
+          script: |
+            const changedFiles = process.env.CHANGED_FILES.trim().split("\n").filter(f => f);
+
+            const matrix = changedFiles.map(file => ({
+              path: file,
+              image: (`${process.env.REPO}/` + file.split('/')[1]).toLowerCase(),
+              name: (file.split('/')[1]).toLowerCase()
+            }));
+
+            core.setOutput("matrix", JSON.stringify(matrix));
+
+  build-and-publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    needs:
+      - generate-matrix
+    strategy:
+      matrix:
+        images: ${{ fromJSON(needs.generate-matrix.outputs.matrix) }}
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Container Metadata
+        uses: docker/metadata-action@902fa8ec7d6ecbf8d84d538b9b233a880e428804 # v5.7.0
+        id: meta
+        with:
+          images: ${{ matrix.images.image }}
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=match,pattern=build/(\d.\d.\d),group=1
+
+      - name: Build Toolchain
+        id: build-image
+        uses: redhat-actions/buildah-build@7a95fa7ee0f02d552a32753e7414641a04307056 # v2.13
+        timeout-minutes: 60
+        with:
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          containerfiles: ${{ matrix.images.path }}
+
+      - name: Push Toolchain
+        uses: redhat-actions/push-to-registry@5ed88d269cf581ea9ef6dd6806d01562096bee9c # v2.8
+        with:
+          tags: ${{ steps.build-image.outputs.tags }}
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
+          extra-args: |
+            --disable-content-trust
+
+  compile:
+    runs-on: ubuntu-latest
+    needs:
+      - generate-matrix
+      - build-and-publish
+    strategy:
+      matrix:
+        images: ${{ fromJSON(needs.generate-matrix.outputs.matrix) }}
+    container:
+      image: ${{ matrix.images.image }}:${{ needs.generate-matrix.outputs.tag }}
+      options: --user root
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Build
+        run: |
+          mkdir -p artifacts/build
+          mkdir -p artifacts/install
+          cd artifacts/build
+          CMAKE_ARGS="-DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=../install" ../../tools/${{ matrix.images.name }}/build.sh
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: build-${{ matrix.images.name }}
+          path: |
+            artifacts/install
+            !artifacts/install/**/romfs/**

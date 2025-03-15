@@ -1,5 +1,6 @@
 FROM fedora:41
 
+# SFML dependencies, see https://www.sfml-dev.org/faq/build-use/#link-static
 RUN --mount=target=/var/cache/dnf,type=cache,sharing=locked \
     dnf update -y && \
     dnf install -y --nodocs \

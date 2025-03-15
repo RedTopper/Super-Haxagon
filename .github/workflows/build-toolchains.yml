@@ -1,0 +1,54 @@
+name: Build and Publish Toolchains
+
+on:
+  push:
+    branches: [ master ]
+    paths:
+      - tools/*/Containerfile
+  pull_request:
+    types: [ opened, synchronize ]
+    paths:
+      - tools/*/Containerfile
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        images:
+          - { image: 'super-haxagon-3ds', path: 'tools/3ds/Containerfile' }
+          - { image: 'super-haxagon-linux', path: 'tools/linux/Containerfile' }
+          - { image: 'super-haxagon-linux-sdl2', path: 'tools/linux-sdl2/Containerfile' }
+          - { image: 'super-haxagon-miyoo', path: 'tools/miyoo/Containerfile' }
+          - { image: 'super-haxagon-nspire', path: 'tools/nspire/Containerfile' }
+          - { image: 'super-haxagon-null', path: 'tools/null/Containerfile' }
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Get Changed Toolchains
+        id: changed-files
+        uses: tj-actions/changed-files@v45
+        with:
+          files: |
+            tools/*/Containerfile
+
+      - name: Build Toolchain
+        if: contains(steps.changed-files.outputs.modified_files, '${{ matrix.path }}')
+        id: build-image
+        uses: redhat-actions/buildah-build@v2
+        with:
+          image: ${{ matrix.images.image }}
+          tags: latest ${{ github.sha }}
+          containerfiles: ${{ matrix.images.path }}
+
+      - name: Push Toolchain
+        if: startsWith(github.ref, 'refs/heads/main') && contains(steps.changed-files.outputs.modified_files, '${{ matrix.path }}')
+        uses: redhat-actions/push-to-registry@v2
+        with:
+          image: ${{ steps.build-image.outputs.image }}
+          tags: ${{ steps.build-image.outputs.tags }}
+          registry: ghcr.io/${{ github.repository_owner }}
+          username: ${{ github.actor }}
+          password: ${{ github.token }}

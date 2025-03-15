@@ -23,4 +23,4 @@ add_custom_command(TARGET SuperHaxagon POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy ${SFML_SOURCE_DIR}/extlibs/bin/$<IF:$<EQUAL:${CMAKE_SIZEOF_VOID_P},8>,x64,x86>/openal32.dll $<TARGET_FILE_DIR:SuperHaxagon>
 )
 
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/openal32.dll DESTINATION .)
+install(FILES $<TARGET_FILE_DIR:SuperHaxagon>/openal32.dll DESTINATION .)

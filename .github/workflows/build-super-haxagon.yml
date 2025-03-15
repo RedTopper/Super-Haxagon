@@ -1,0 +1,151 @@
+name: Build SuperHaxagon
+
+on:
+  push:
+    branches:
+      - master
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]+'
+    paths:
+      - source/**
+      - cmake/**
+      - CMakeLists.txt
+      - CMakeSettings.json
+      - net.awalter.SuperHaxagon.yml
+  pull_request:
+    types:
+      - opened
+      - synchronize
+    paths:
+      - source/**
+      - cmake/**
+      - CMakeLists.txt
+      - CMakeSettings.json
+      - net.awalter.SuperHaxagon.yml
+
+env:
+  REPO: ghcr.io/${{ github.repository }}
+
+jobs:
+  compile-with-containers:
+    name: Build ${{ matrix.containers.artifact }}
+    runs-on: ${{ matrix.containers.os }}
+    strategy:
+      matrix:
+        containers:
+          - build: 'linux'
+            container: ghcr.io/redtopper/super-haxagon/linux:latest
+            artifact: LinuxSFML-x64
+            os: ubuntu-latest
+            romfs: no
+
+          - build: 'linux-sdl2'
+            container: ghcr.io/redtopper/super-haxagon/linux-sdl2:latest
+            artifact: LinuxSDL2-x64
+            os: ubuntu-latest
+            romfs: no
+
+          - build: 'null'
+            container: ghcr.io/redtopper/super-haxagon/null:latest
+            artifact: LinuxNull-x64
+            os: ubuntu-latest
+            romfs: no
+
+          - build: 'miyoo'
+            container: ghcr.io/redtopper/super-haxagon/miyoo:latest
+            artifact: MiyooMini-armhf
+            os: ubuntu-latest
+            romfs: no
+
+          - build: '3ds'
+            container: ghcr.io/redtopper/super-haxagon/3ds:latest
+            artifact: 3DS-arm
+            os: ubuntu-latest
+            romfs: yes
+
+          - build: 'nspire'
+            container: ghcr.io/redtopper/super-haxagon/nspire:latest
+            artifact: Nspire-arm
+            os: ubuntu-latest
+            romfs: yes
+
+          - build: 'switch'
+            container: docker.io/devkitpro/devkita64:latest
+            artifact: Switch-arm
+            os: ubuntu-latest
+            romfs: yes
+
+          - build: 'portmaster'
+            container: docker.io/monkeyx/retro_builder:arm64
+            artifact: PortMaster-arm64-autoinstall
+            os: ubuntu-24.04-arm
+            romfs: yes
+
+    container:
+      image: ${{ matrix.containers.container }}
+      options: --user root
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Build
+        run: |
+          mkdir -p artifacts/build
+          mkdir -p artifacts/install
+          cd artifacts/build
+          CMAKE_ARGS="-DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=../install" ../../tools/${{ matrix.containers.build }}/build.sh
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: SuperHaxagon-${{ matrix.containers.artifact }}${{ matrix.containers.romfs == 'no' && '-no-romfs' || '' }}
+          path: |
+            artifacts/install
+            ${{ matrix.containers.romfs == 'no' && '!artifacts/install/**/romfs/**' || '' }}
+
+  compile-native:
+    name: Build ${{ matrix.platforms.artifact }}
+    runs-on: ${{ matrix.platforms.os }}
+    strategy:
+      matrix:
+        platforms:
+          - artifact: Linux-arm64
+            os: ubuntu-24.04-arm
+          - artifact: macOS-arm64
+            os: macos-latest
+          - artifact: Windows-x64
+            os: windows-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Install SFML Dependencies
+        if: matrix.platforms.os == 'ubuntu-24.04-arm'
+        run: |
+          sudo apt-get update
+          sudo apt-get install  -y \
+            libgl1-mesa-dev \
+            libudev-dev \
+            libopenal-dev \
+            libvorbis-dev \
+            libflac-dev \
+            libx11-dev \
+            libxrandr-dev \
+            libx11-xcb-dev \
+            libxcb-randr0-dev \
+            libxcb-image0-dev \
+            libxcursor-dev \
+            libjpeg-dev \
+            libfreetype-dev
+
+      - name: Build
+        run: |
+          cmake -E make_directory build install
+          cmake -B build -S . -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=install
+          cmake --build build --config Release --target install --parallel 6
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: SuperHaxagon-${{ matrix.platforms.artifact }}-no-romfs
+          path: |
+            install
+            !install/**/romfs/**

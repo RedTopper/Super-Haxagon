@@ -48,7 +48,10 @@ RUN SDL2_VER=2.0.14 \
     mv ${SDL2_PACKAGE}-${SDL2_VER}/${SDL2_HEADER} /opt/miyoomini-toolchain/include/SDL2 && \
     rm -rf ${SDL2_PACKAGE}*
 
-COPY miyoo/lib.tar.gz lib.tar.gz
+# If you'd like to use a local copy of the libraries, swap the lines below.
+#COPY ./miyoo/lib.tar.gz ./
+RUN wget -O ./lib.tar.gz https://github.com/RedTopper/Super-Haxagon/releases/download/miyoo-libs/lib.tar.gz
+
 RUN tar -xzf lib.tar.gz && \
     mv lib/* /opt/miyoomini-toolchain/lib && \
     cd /opt/miyoomini-toolchain/lib && \

@@ -5,6 +5,9 @@ version: '3.8'
 # ex:
 # podman-compose up --build miyoo
 
+# If you don't want to build the container:
+# podman-compose up --no-build <service>
+
 # For a shell:
 # podman-compose run --build --rm <service> bash
 # Then you can run:
@@ -18,7 +21,7 @@ services:
   3ds:
     build:
       dockerfile: 3ds/Containerfile
-    image: super-haxagon-3ds
+    image: ghcr.io/redtopper/super-haxagon/3ds:latest
     container_name: super-haxagon-3ds
     hostname: super-haxagon-3ds
     command: build.sh
@@ -42,7 +45,7 @@ services:
   nspire:
     build:
       dockerfile: nspire/Containerfile
-    image: super-haxagon-nspire
+    image: ghcr.io/redtopper/super-haxagon/nspire:latest
     container_name: super-haxagon-nspire
     hostname: super-haxagon-nspire
     command: build.sh
@@ -55,7 +58,7 @@ services:
   linux:
     build:
       dockerfile: linux/Containerfile
-    image: super-haxagon-linux
+    image: ghcr.io/redtopper/super-haxagon/linux:latest
     container_name: super-haxagon-linux
     hostname: super-haxagon-linux
     command: build.sh
@@ -68,7 +71,7 @@ services:
   linux-sdl2:
     build:
       dockerfile: linux-sdl2/Containerfile
-    image: super-haxagon-linux-sdl2
+    image: ghcr.io/redtopper/super-haxagon/linux-sdl2:latest
     container_name: super-haxagon-linux-sdl2
     hostname: super-haxagon-linux-sdl2
     command: build.sh
@@ -82,7 +85,7 @@ services:
     # Example driver and build tooling
     build:
       dockerfile: null/Containerfile
-    image: super-haxagon-null
+    image: ghcr.io/redtopper/super-haxagon/null:latest
     container_name: super-haxagon-null
     hostname: super-haxagon-null
     command: build.sh
@@ -107,7 +110,7 @@ services:
     build:
       context: .
       dockerfile: miyoo/Containerfile
-    image: super-haxagon-miyoo
+    image: ghcr.io/redtopper/super-haxagon/miyoo:latest
     container_name: super-haxagon-miyoo
     hostname: super-haxagon-miyoo
     command: build.sh

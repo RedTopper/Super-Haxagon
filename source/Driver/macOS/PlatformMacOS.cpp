@@ -1,7 +1,8 @@
 #include "Driver/Platform.hpp"
 
-#include "Driver/Screen.hpp"
 #include "Driver/Common/SFML/CreateSFML.hpp"
+
+#include <CoreFoundation/CFBundle.h>
 
 #include <iostream>
 #include <sys/stat.h>
@@ -9,12 +10,28 @@
 namespace SuperHaxagon {
 	void osSpecificWindowSetup(sf::Window&) {}
 	void initializePlatform(std::string& sdmc, std::string& romfs, bool& platformBackslash) {
+
+		platformBackslash = false;
+		CFURLRef appUrlRef = CFBundleCopyResourceURL(CFBundleGetMainBundle(), CFSTR("levels"), CFSTR("haxagon"), nullptr);
+
 		sdmc = "./sdmc";
 		romfs = "./romfs";
 
-		platformBackslash = false;
+		if (const char* homeDir = getenv("HOME")) {
+			sdmc = std::string(homeDir) + "/Library/Application Support/net.awalter.SuperHaxagon";
+		}
 
 		mkdir(sdmc.c_str(), 0755);
+
+		if (appUrlRef) {
+			const CFStringRef filePathRef = CFURLCopyPath(appUrlRef);
+			const char* filePath = CFStringGetCStringPtr(filePathRef, kCFStringEncodingUTF8);
+			const auto path =  std::filesystem::path(std::string(filePath));
+
+			romfs = path.parent_path().string();
+			CFRelease(filePathRef);
+			CFRelease(appUrlRef);
+		}
 	}
 
 	void Platform::message(const Dbg dbg, const std::string& where, const std::string& message) const {

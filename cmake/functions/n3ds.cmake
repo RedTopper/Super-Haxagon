@@ -2,10 +2,6 @@
 # which are part of the devkitPro repo here:
 # https://github.com/devkitPro/pacman-packages/blob/master/cmake/3ds/Nintendo3DS.cmake
 
-# Side note:
-# This file is basically designed to extend Nintendo3DS.cmake from that repo, so it's
-# not really a full Platform file. I didn't want to stuff this all in n3ds.cmake though
-
 find_program(BANNERTOOL_EXE NAMES bannertool HINTS "${DEVKITPRO}/tools/bin")
 find_program(MAKEROM_EXE NAMES makerom HINTS "${DEVKITPRO}/tools/bin")
 
@@ -44,7 +40,7 @@ function(generate_bnr)
     )
 endfunction()
 
-function(generate_icn target)
+function(generate_icn)
     cmake_parse_arguments(PARSE_ARGV 0 BANNERTOOL_ICN "" "OUTPUT;NAME;DESCRIPTION;AUTHOR;ICON" "")
     if (NOT BANNERTOOL_EXE)
         message(WARNING "Could not find bannertool for .icn: try building bannertool\n"

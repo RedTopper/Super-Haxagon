@@ -147,15 +147,16 @@ jobs:
         platforms:
           - artifact: LinuxSFML-arm64
             os: ubuntu-24.04-arm
-          - artifact: macOS-arm64
+          - artifact: macOSUnixApplicationUnsigned-arm64
             os: macos-latest
           - artifact: Windows-x64
             os: windows-latest
+
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Install SFML Dependencies
+      - name: Install SFML Dependencies (ubuntu)
         if: matrix.platforms.os == 'ubuntu-24.04-arm'
         run: |
           sudo apt-get update
@@ -174,10 +175,16 @@ jobs:
             libjpeg-dev \
             libfreetype-dev
 
+      - name: Install SFML Dependencies (macOS)
+        if: matrix.platforms.os == 'macos-latest'
+        run: |
+          brew install openal-soft
+          brew install sfml@2
+
       - name: Build SuperHaxagon
         run: |
           cmake -E make_directory build install
-          cmake -B build -S . -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=install
+          cmake -B build -S . -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=install -DCMAKE_FIND_FRAMEWORK=LAST
           cmake --build build --config Release --target install --parallel 6
 
       - name: Upload Artifact
@@ -187,6 +194,48 @@ jobs:
           path: |
             install
             !install/**/romfs/**
+
+  build-macos-bundle:
+    name: Build macOS Bundle
+    if: contains(github.ref, 'refs/tags/') || github.ref == 'refs/heads/master'
+    runs-on: macos-latest
+    needs: build-test
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Build SuperHaxagon
+        run: |
+          cmake -E make_directory build install
+          cmake -B build -S . -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=install -DBUILD_BUNDLE=TRUE
+          cmake --build build --config Release --target install --parallel 6
+
+        # See: https://federicoterzi.com/blog/automatic-code-signing-and-notarization-for-macos-apps-using-github-actions/
+      - name: Codesign App Bundle
+        env:
+          MACOS_CERTIFICATE: ${{ secrets.APPLE_CERT_DATA }}
+          MACOS_CERTIFICATE_PWD: ${{ secrets.APPLE_CERT_PASSWORD }}
+          MACOS_CERTIFICATE_NAME: ${{ secrets.APPLE_CERT_ID }}
+          MACOS_CI_KEYCHAIN_PWD: ${{ secrets.APPLE_CERT_KEYCHAIN_PASSWORD }}
+        run: |
+          echo $MACOS_CERTIFICATE | base64 --decode > certificate.p12
+
+          security create-keychain -p "$MACOS_CI_KEYCHAIN_PWD" build.keychain
+          security default-keychain -s build.keychain
+          security unlock-keychain -p "$MACOS_CI_KEYCHAIN_PWD" build.keychain
+          security import certificate.p12 -k build.keychain -P "$MACOS_CERTIFICATE_PWD" -T /usr/bin/codesign
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$MACOS_CI_KEYCHAIN_PWD" build.keychain
+
+          /usr/bin/codesign --deep --force -s "$MACOS_CERTIFICATE_NAME" --options runtime install/SuperHaxagon.app -v
+
+          cd install
+          tar -cvf SuperHaxagon.app.tar SuperHaxagon.app
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: SuperHaxagon-macOS-arm.tar
+          path: install/SuperHaxagon.app.tar
 
   # Build flatpak repo
   build-flatpak:

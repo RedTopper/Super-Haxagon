@@ -13,8 +13,8 @@ FetchContent_MakeAvailable(stb)
 
 set(PLATFORM_NAME "3DS")
 
-# Include platform extensions not in devkitpro for .cia and .3ds files
-include(cmake/toolchains/Platform/Nintendo3DSExtra.cmake)
+# Include extra banner, icon, and rom functions
+include(cmake/functions/n3ds.cmake)
 
 set(DRIVER
     source/Driver/3DS/Platform3DS.cpp

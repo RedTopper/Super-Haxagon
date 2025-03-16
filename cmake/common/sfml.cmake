@@ -33,7 +33,11 @@ set(DRIVER ${DRIVER_PLATFORM}
     source/Driver/Common/PlatformSupportsFilesystem.cpp
 )
 
-add_executable(SuperHaxagon ${DRIVER} ${SOURCES})
+if (BUILD_BUNDLE)
+    add_executable(SuperHaxagon MACOSX_BUNDLE ${DRIVER} ${SOURCES})
+else()
+    add_executable(SuperHaxagon ${DRIVER} ${SOURCES})
+endif()
 
 target_link_libraries(SuperHaxagon sfml-graphics sfml-window sfml-audio sfml-system)
 
@@ -47,5 +51,7 @@ elseif (NOT "${REL_PATH}" STREQUAL "romfs")
     file(CREATE_LINK ${REL_PATH} ${CMAKE_CURRENT_BINARY_DIR}/romfs SYMBOLIC)
 endif()
 
-install(TARGETS SuperHaxagon RUNTIME DESTINATION .)
-install(DIRECTORY ${CMAKE_SOURCE_DIR}/romfs DESTINATION .)
+if (NOT BUILD_BUNDLE)
+    install(TARGETS SuperHaxagon RUNTIME DESTINATION .)
+    install(DIRECTORY ${CMAKE_SOURCE_DIR}/romfs DESTINATION .)
+endif()

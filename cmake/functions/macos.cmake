@@ -18,6 +18,8 @@ function(generate_icns target)
     set(ICONSET_DIR "${CMAKE_CURRENT_BINARY_DIR}/${target}.iconset")
     set(ICNS_OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/${target}.icns")
 
+    file(MAKE_DIRECTORY ${ICONSET_DIR})
+
     foreach(size IN ITEMS 16 32 64 128 256 512)
         set(ICON_OUT "${ICONSET_DIR}/icon_${size}x${size}.png")
         set(ICON_OUT2X "${ICONSET_DIR}/icon_${size}x${size}@2x.png")

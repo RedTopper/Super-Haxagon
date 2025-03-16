@@ -59,7 +59,7 @@ if (BUILD_BUNDLE)
                 VERBATIM
         )
 
-        target_add_dependencies(SuperHaxagon "${ICNS_OUT}")
+        add_dependencies(SuperHaxagon "${ICNS_OUT}")
         set(MACOSX_BUNDLE_ICON_FILE "${ICNS_OUT}")
     endif()
 

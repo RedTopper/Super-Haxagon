@@ -58,9 +58,7 @@ function(generate_icns target)
 
     add_dependencies(${target} ${outtarget})
 
-    add_custom_command(TARGET ${target} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy ${ICNS_OUTPUT} $<TARGET_BUNDLE_DIR:SuperHaxagon>/Resources/${target}.icns
-    )
+    set_property(SOURCE ${ICNS_OUTPUT} PROPERTY MACOSX_PACKAGE_LOCATION "Resources/${target}.icns")
 
     set(MACOSX_BUNDLE_ICON_FILE "${target}.icns" PARENT_SCOPE)
 endfunction()

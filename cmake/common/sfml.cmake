@@ -33,7 +33,11 @@ set(DRIVER ${DRIVER_PLATFORM}
     source/Driver/Common/PlatformSupportsFilesystem.cpp
 )
 
-add_executable(SuperHaxagon ${DRIVER} ${SOURCES})
+if (BUILD_BUNDLE)
+    add_executable(SuperHaxagon MACOSX_BUNDLE ${DRIVER} ${SOURCES})
+else()
+    add_executable(SuperHaxagon ${DRIVER} ${SOURCES})
+endif()
 
 target_link_libraries(SuperHaxagon sfml-graphics sfml-window sfml-audio sfml-system)
 

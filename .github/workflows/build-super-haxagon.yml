@@ -7,6 +7,7 @@ on:
     tags:
       - '[0-9]+.[0-9]+.[0-9]+'
     paths:
+      - .github/workflows/build-super-haxagon.yml
       - source/**
       - cmake/**
       - CMakeLists.txt
@@ -17,6 +18,7 @@ on:
       - opened
       - synchronize
     paths:
+      - .github/workflows/build-super-haxagon.yml
       - source/**
       - cmake/**
       - CMakeLists.txt
@@ -27,12 +29,42 @@ env:
   REPO: ghcr.io/${{ github.repository }}
 
 jobs:
-  compile-with-containers:
+  # First, try and build the Null driver before spending time with the more expensive runners (like macOS)
+  build-test:
+    name: Test Compile
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/redtopper/super-haxagon/null:latest
+      options: --user root
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Build
+        run: |
+          mkdir -p artifacts/build artifacts/install
+          cd artifacts/build
+          CMAKE_ARGS="-DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=../install" ../../tools/null/build.sh
+
+      - name: Upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: SuperHaxagon-LinuxNull-x64-no-romfs
+          path: artifacts/install
+
+  # Matrix of special platforms SuperHaxagon supports
+  build-with-containers:
     name: Build ${{ matrix.containers.artifact }}
     runs-on: ${{ matrix.containers.os }}
+    needs: build-test
     strategy:
       matrix:
         containers:
+          - build: '3ds'
+            artifact: 3DS-arm
+            container: ghcr.io/redtopper/super-haxagon/3ds:latest
+            os: ubuntu-latest
+
           - build: 'linux'
             container: ghcr.io/redtopper/super-haxagon/linux:latest
             artifact: LinuxSFML-x64
@@ -45,23 +77,11 @@ jobs:
             os: ubuntu-latest
             romfs: no
 
-          - build: 'null'
-            container: ghcr.io/redtopper/super-haxagon/null:latest
-            artifact: LinuxNull-x64
-            os: ubuntu-latest
-            romfs: no
-
           - build: 'miyoo'
             container: ghcr.io/redtopper/super-haxagon/miyoo:latest
             artifact: MiyooMini-armhf
             os: ubuntu-latest
             romfs: no
-
-          - build: '3ds'
-            container: ghcr.io/redtopper/super-haxagon/3ds:latest
-            artifact: 3DS-arm
-            os: ubuntu-latest
-            romfs: yes
 
           - build: 'nspire'
             container: ghcr.io/redtopper/super-haxagon/nspire:latest
@@ -88,27 +108,44 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Build
+      - name: Build SuperHaxagon
         run: |
-          mkdir -p artifacts/build
-          mkdir -p artifacts/install
+          mkdir -p artifacts/build artifacts/install
           cd artifacts/build
           CMAKE_ARGS="-DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=../install" ../../tools/${{ matrix.containers.build }}/build.sh
 
-      - uses: actions/upload-artifact@v4
+      - name: Upload Artifact
+        if: matrix.containers.build != '3ds'
+        uses: actions/upload-artifact@v4
         with:
           name: SuperHaxagon-${{ matrix.containers.artifact }}${{ matrix.containers.romfs == 'no' && '-no-romfs' || '' }}
           path: |
             artifacts/install
             ${{ matrix.containers.romfs == 'no' && '!artifacts/install/**/romfs/**' || '' }}
 
-  compile-native:
+        # Special uploads for 3DS
+      - name: Upload 3DS 3DSX
+        if: matrix.containers.build == '3ds'
+        uses: actions/upload-artifact@v4
+        with:
+          name: SuperHaxagon-${{ matrix.containers.artifact }}.3dsx
+          path: artifacts/install/SuperHaxagon.3dsx
+      - name: Upload 3DS CIA
+        if: matrix.containers.build == '3ds'
+        uses: actions/upload-artifact@v4
+        with:
+          name: SuperHaxagon-${{ matrix.containers.artifact }}.cia
+          path: artifacts/install/SuperHaxagon.cia
+
+  # Builds SuperHaxagon natively (as in, without containers)
+  build-native:
     name: Build ${{ matrix.platforms.artifact }}
     runs-on: ${{ matrix.platforms.os }}
+    needs: build-test
     strategy:
       matrix:
         platforms:
-          - artifact: Linux-arm64
+          - artifact: LinuxSFML-arm64
             os: ubuntu-24.04-arm
           - artifact: macOS-arm64
             os: macos-latest
@@ -137,15 +174,53 @@ jobs:
             libjpeg-dev \
             libfreetype-dev
 
-      - name: Build
+      - name: Build SuperHaxagon
         run: |
           cmake -E make_directory build install
           cmake -B build -S . -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=install
           cmake --build build --config Release --target install --parallel 6
 
-      - uses: actions/upload-artifact@v4
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
         with:
           name: SuperHaxagon-${{ matrix.platforms.artifact }}-no-romfs
           path: |
             install
             !install/**/romfs/**
+
+  # Build flatpak repo
+  build-flatpak:
+    name: Build Flatpak
+    runs-on: ubuntu-latest
+    needs: build-test
+    container:
+      image: bilelmoussaoui/flatpak-github-actions:gnome-47
+      options: --privileged
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Build SuperHaxagon
+        uses: flatpak/flatpak-github-actions/flatpak-builder@fc80c13788c1ba0f45add99b19cf26b616ccab4f # v6.4
+        with:
+          bundle: net.awalter.SuperHaxagon.flatpak
+          manifest-path: net.awalter.SuperHaxagon.yml
+          upload-artifact: true
+
+  # Finally, if all pipelines work, upload the current RomFS
+  upload-romfs:
+    name: Upload RomFS
+    runs-on: ubuntu-latest
+    needs:
+      - build-flatpak
+      - build-native
+      - build-with-containers
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Upload RomFS
+        uses: actions/upload-artifact@v4
+        with:
+          name: romfs
+          path: romfs

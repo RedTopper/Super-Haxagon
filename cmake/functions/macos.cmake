@@ -28,17 +28,17 @@ function(generate_icns target)
 
         add_custom_command(
             OUTPUT "${ICON_OUT}"
-            COMMAND "${SIPS_EXE}" -z "${size}" "${size}" ${ICONUTIL_ICNS_ICON} --out "${ICON_OUT}"
+            COMMAND "${SIPS_EXE}" -z "${size}" "${size}" ${ICONUTIL_ICNS_ICON} --out "${ICON_OUT}" > /dev/null
             DEPENDS "${ICONUTIL_ICNS_ICON}"
-            COMMENT "Creating icon ${size}x${size}"
+            COMMENT "Creating icon ${size}x${size} ${ICON_OUT}"
             VERBATIM
         )
 
         add_custom_command(
             OUTPUT "${ICON_OUT2X}"
-            COMMAND "${SIPS_EXE}" -z "${size2x}" "${size2x}" ${ICONUTIL_ICNS_ICON} --out "${ICON_OUT2X}"
+            COMMAND "${SIPS_EXE}" -z "${size2x}" "${size2x}" ${ICONUTIL_ICNS_ICON} --out "${ICON_OUT2X}" > /dev/null
             DEPENDS "${ICONUTIL_ICNS_ICON}"
-            COMMENT "Creating icon ${size}x${size}@2x"
+            COMMENT "Creating icon ${size}x${size}@2x ${ICON_OUT}"
             VERBATIM
         )
 
@@ -50,7 +50,7 @@ function(generate_icns target)
             OUTPUT "${ICNS_OUTPUT}"
             COMMAND "${ICONUTIL_EXE}" -c icns -o "${ICNS_OUTPUT}" "${ICONSET_DIR}"
             DEPENDS "${ICONS}"
-            COMMENT "Creating .icns"
+            COMMENT "Creating .icns ${ICNS_OUTPUT}"
             VERBATIM
     )
 

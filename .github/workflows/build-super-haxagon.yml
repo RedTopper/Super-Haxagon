@@ -147,10 +147,13 @@ jobs:
         platforms:
 #          - artifact: LinuxSFML-arm64
 #            os: ubuntu-24.04-arm
+#            romfs: no
           - artifact: macOS-arm64
             os: macos-latest
+            romfs: yes
 #          - artifact: Windows-x64
 #            os: windows-latest
+#            romfs: no
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -183,10 +186,10 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: SuperHaxagon-${{ matrix.platforms.artifact }}-no-romfs
+          name: SuperHaxagon-${{ matrix.platforms.artifact }}${{ matrix.containers.romfs == 'no' && '-no-romfs' || '' }}
           path: |
             install
-            !install/**/romfs/**
+            ${{ matrix.containers.romfs == 'no' && '!artifacts/install/**/romfs/**' || '' }}
 
   # Build flatpak repo
 #  build-flatpak:

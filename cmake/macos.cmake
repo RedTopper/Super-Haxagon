@@ -36,10 +36,13 @@ if (BUILD_BUNDLE)
         BUILD_WITH_INSTALL_RPATH TRUE
     )
 
-#    add_custom_command(TARGET SuperHaxagon POST_BUILD
-#        COMMAND rsync -a ${SFML_SOURCE_DIR}/extlibs/libs-osx/Frameworks/ $<TARGET_BUNDLE_DIR:SuperHaxagon>/Contents/Frameworks/
-#    )
+    add_custom_command(TARGET SuperHaxagon POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory ${SFML_SOURCE_DIR}/extlibs/libs-osx/Frameworks $<TARGET_BUNDLE_DIR:SuperHaxagon>/Contents/Frameworks
+    )
+
+    add_custom_command(TARGET SuperHaxagon POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/romfs $<TARGET_BUNDLE_DIR:SuperHaxagon>/Contents/MacOS/romfs
+    )
 
     install(TARGETS SuperHaxagon BUNDLE DESTINATION .)
-    install(DIRECTORY ${CMAKE_SOURCE_DIR}/romfs DESTINATION $<TARGET_BUNDLE_DIR:SuperHaxagon>/Contents/MacOS)
 endif()

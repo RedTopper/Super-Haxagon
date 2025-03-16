@@ -41,7 +41,7 @@ if (BUILD_BUNDLE)
     )
 
     add_custom_command(TARGET SuperHaxagon POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/romfs $<TARGET_BUNDLE_DIR:SuperHaxagon>/Contents/MacOS/romfs
+        COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/romfs $<TARGET_BUNDLE_DIR:SuperHaxagon>/Contents/MacOS/romfs
     )
 
     install(TARGETS SuperHaxagon BUNDLE DESTINATION .)

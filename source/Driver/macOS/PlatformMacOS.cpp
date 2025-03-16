@@ -9,7 +9,7 @@
 namespace SuperHaxagon {
 	void osSpecificWindowSetup(sf::Window&) {}
 	void initializePlatform(std::string& sdmc, std::string& romfs, bool& platformBackslash) {
-		sdmc = "./sdmc";
+		sdmc = "~/Library/Application Support/SuperHaxagon";
 		romfs = "./romfs";
 
 		platformBackslash = false;

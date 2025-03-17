@@ -38,7 +38,7 @@ function(generate_icns target)
             OUTPUT "${ICON_OUT2X}"
             COMMAND "${SIPS_EXE}" -z "${size2x}" "${size2x}" ${ICONUTIL_ICNS_ICON} --out "${ICON_OUT2X}" > /dev/null
             DEPENDS "${ICONUTIL_ICNS_ICON}"
-            COMMENT "Creating icon ${size}x${size}@2x ${ICON_OUT}"
+            COMMENT "Creating icon ${size}x${size}@2x ${ICON_OUT2X}"
             VERBATIM
         )
 
@@ -58,7 +58,9 @@ function(generate_icns target)
 
     add_dependencies(${target} ${outtarget})
 
-    set_property(SOURCE ${ICNS_OUTPUT} PROPERTY MACOSX_PACKAGE_LOCATION "Resources/${target}.icns")
+    add_custom_command(TARGET ${target} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy ${ICNS_OUTPUT} $<TARGET_BUNDLE_DIR:${target}>/Contents/Resources/${target}.icns
+    )
 
     set(MACOSX_BUNDLE_ICON_FILE "${target}.icns" PARENT_SCOPE)
 endfunction()

@@ -183,13 +183,18 @@ jobs:
           cmake -B build -S . -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=install
           cmake --build build --config Release --target install --parallel 6
 
+      - name: Tar Files
+        run: |
+          cd install
+          tar -cvf SuperHaxagon-${{ matrix.platforms.artifact }}.tar "SuperHaxagon.app"
+
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: SuperHaxagon-${{ matrix.platforms.artifact }}${{ matrix.containers.romfs == 'no' && '-no-romfs' || '' }}
           path: |
-            install
-            ${{ matrix.containers.romfs == 'no' && '!artifacts/install/**/romfs/**' || '' }}
+            install/SuperHaxagon-${{ matrix.platforms.artifact }}.tar
+  
 
   # Build flatpak repo
 #  build-flatpak:

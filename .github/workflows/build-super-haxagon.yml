@@ -186,7 +186,7 @@ jobs:
       - name: Sign binary
         uses: lando/code-sign-action@a5703d3b5486ada6e8efd08912110f8756e873e8 # v3.0.0
         with:
-          file: install/SuperHaxagon-${{ matrix.platforms.artifact }}.tar
+          file: install/SuperHaxagon.app
           certificate-data: ${{ secrets.APPLE_CERT_DATA }}
           certificate-id: ${{ secrets.APPLE_CERT_ID }}
           certificate-password: ${{ secrets.APPLE_CERT_PASSWORD }}

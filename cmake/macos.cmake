@@ -30,8 +30,9 @@ set_target_properties(SuperHaxagon PROPERTIES
     BUILD_WITH_INSTALL_RPATH TRUE
 )
 
+# Copy all frameworks into the app bundle
 add_custom_command(TARGET SuperHaxagon POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_directory ${SFML_SOURCE_DIR}/extlibs/libs-osx/Frameworks $<TARGET_BUNDLE_DIR:SuperHaxagon>/Contents/Frameworks
+    COMMAND rsync -a ${SFML_SOURCE_DIR}/extlibs/libs-osx/Frameworks/ $<TARGET_BUNDLE_DIR:SuperHaxagon>/Contents/Frameworks/
 )
 
 add_custom_command(TARGET SuperHaxagon POST_BUILD

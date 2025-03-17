@@ -144,7 +144,7 @@ namespace SuperHaxagon {
 
 			// For all walls
 			for(const auto& wall : pattern.getWalls()) {
-				const auto check = wall.collision(cursorDistance, _cursorPos, _factory->getSpeedCursor() * dilation, pattern.getSides());
+				const auto check = wall.collision(cursorDistance, _cursorPos, _factory->getSpeedCursor() * dilation/_multiplierWallsOriginal*_multiplierWalls, pattern.getSides());
 
 				// Update collision
 				if(collision == Movement::CAN_MOVE) collision = check; //If we can move, try and replace it with something else
@@ -172,11 +172,11 @@ namespace SuperHaxagon {
 	}
 
 	void Level::left(const float dilation) {
-		_cursorPos -= _factory->getSpeedCursor() * dilation * _multiplierWalls;
+		_cursorPos -= _factory->getSpeedCursor() * dilation / _multiplierWallsOriginal * _multiplierWalls;
 	}
 
 	void Level::right(const float dilation) {
-		_cursorPos += _factory->getSpeedCursor() * dilation * _multiplierWalls;
+		_cursorPos += _factory->getSpeedCursor() * dilation / _multiplierWallsOriginal * _multiplierWalls;
 	}
 
 	void Level::clamp() {

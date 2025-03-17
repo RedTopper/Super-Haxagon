@@ -85,6 +85,7 @@ namespace SuperHaxagon {
 		
 		float _multiplierRot = 0.9f; // Current direction and speed of rotation
 		float _multiplierWalls = 0.85f; // Current speed of the walls flying at you
+		float _multiplierWallsOriginal = _multiplierWalls; // needed to bring cursor speed back to what it was later.
 		float _cursorPos{};
 		float _rotation{};
 		float _sidesTween{};

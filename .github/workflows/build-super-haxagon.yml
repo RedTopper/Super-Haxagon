@@ -184,7 +184,7 @@ jobs:
           cmake --build build --config Release --target install --parallel 6
 
       - name: Upload certificates
-        uses: apple-actions/import-codesign-certs@a5703d3b5486ada6e8efd08912110f8756e873e8
+        uses: apple-actions/import-codesign-certs@63fff01cd422d4b7b855d40ca1e9d34d2de9427d
         with:
           p12-file-base64: ${{ secrets.APPLE_CERT_DATA }}
           p12-password: ${{ secrets.APPLE_CERT_PASSWORD }}]

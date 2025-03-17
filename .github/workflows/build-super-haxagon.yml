@@ -183,13 +183,11 @@ jobs:
           cmake -B build -S . -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=install
           cmake --build build --config Release --target install --parallel 6
 
-      - name: Sign binary
-        uses: lando/code-sign-action@a5703d3b5486ada6e8efd08912110f8756e873e8 # v3.0.0
+      - name: Upload certificates
+        uses: apple-actions/import-codesign-certs@a5703d3b5486ada6e8efd08912110f8756e873e8
         with:
-          file: install/SuperHaxagon.app
-          certificate-data: ${{ secrets.APPLE_CERT_DATA }}
-          certificate-id: ${{ secrets.APPLE_CERT_ID }}
-          certificate-password: ${{ secrets.APPLE_CERT_PASSWORD }}
+          p12-file-base64: ${{ secrets.APPLE_CERT_DATA }}
+          p12-password: ${{ secrets.APPLE_CERT_PASSWORD }}]
 
       - name: Tar Files
         run: |

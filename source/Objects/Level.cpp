@@ -172,11 +172,11 @@ namespace SuperHaxagon {
 	}
 
 	void Level::left(const float dilation) {
-		_cursorPos -= _factory->getSpeedCursor() * dilation;
+		_cursorPos -= _factory->getSpeedCursor() * dilation*_multiplierWalls;
 	}
 
 	void Level::right(const float dilation) {
-		_cursorPos += _factory->getSpeedCursor() * dilation;
+		_cursorPos += _factory->getSpeedCursor() * dilation * _multiplierWalls;
 	}
 
 	void Level::clamp() {

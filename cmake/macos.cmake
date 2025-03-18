@@ -48,4 +48,6 @@ if (BUILD_BUNDLE)
     )
 
     install(TARGETS SuperHaxagon BUNDLE DESTINATION .)
+else()
+    install(FILES ${CMAKE_SOURCE_DIR}/media/macos/SuperHaxagon-README.md DESTINATION .)
 endif()

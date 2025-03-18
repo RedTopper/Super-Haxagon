@@ -1,4 +1,4 @@
-# macOS Unsigned Unix Application Build
+# macOS Unsigned Unix Build
 
 > [!NOTE]  
 > This information does not apply to the SuperHaxagon.app builds!

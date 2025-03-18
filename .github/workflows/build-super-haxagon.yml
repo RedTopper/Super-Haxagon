@@ -63,43 +63,43 @@ jobs:
           - build: '3ds'
             artifact: 3DS-arm
             container: ghcr.io/redtopper/super-haxagon/3ds:latest
+            cache: 'yes'
+            romfs: 'yes'
             os: ubuntu-latest
 
           - build: 'linux'
             container: ghcr.io/redtopper/super-haxagon/linux:latest
             artifact: LinuxSFML-x64
+            cache: 'yes'
             os: ubuntu-latest
-            romfs: no
 
           - build: 'linux-sdl2'
             container: ghcr.io/redtopper/super-haxagon/linux-sdl2:latest
             artifact: LinuxSDL2-x64
             os: ubuntu-latest
-            romfs: no
 
           - build: 'miyoo'
             container: ghcr.io/redtopper/super-haxagon/miyoo:latest
             artifact: MiyooMini-armhf
             os: ubuntu-latest
-            romfs: no
 
           - build: 'nspire'
             container: ghcr.io/redtopper/super-haxagon/nspire:latest
             artifact: Nspire-arm
+            romfs: 'yes'
             os: ubuntu-latest
-            romfs: yes
 
           - build: 'switch'
             container: docker.io/devkitpro/devkita64:latest
             artifact: Switch-arm
+            romfs: 'yes'
             os: ubuntu-latest
-            romfs: yes
 
           - build: 'portmaster'
             container: docker.io/monkeyx/retro_builder:arm64
             artifact: PortMaster-arm64-autoinstall
+            romfs: 'yes'
             os: ubuntu-24.04-arm
-            romfs: yes
 
     container:
       image: ${{ matrix.containers.container }}
@@ -107,6 +107,14 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+
+      - name: Cache Deps
+        if: matrix.containers.cache == 'yes'
+        uses: actions/cache@v4
+        with:
+          path: artifacts/build/_deps
+          key: deps-${{ matrix.containers.artifact }}-${{ hashFiles('.github/workflows/**', 'CMakeLists.txt', 'cmake/**') }}
+          restore-keys: deps-${{ matrix.containers.artifact }}-
 
       - name: Build SuperHaxagon
         run: |
@@ -118,10 +126,10 @@ jobs:
         if: matrix.containers.build != '3ds'
         uses: actions/upload-artifact@v4
         with:
-          name: SuperHaxagon-${{ matrix.containers.artifact }}${{ matrix.containers.romfs == 'no' && '-no-romfs' || '' }}
+          name: SuperHaxagon-${{ matrix.containers.artifact }}${{ matrix.containers.romfs == 'yes' && '' || '-no-romfs' }}
           path: |
             artifacts/install
-            ${{ matrix.containers.romfs == 'no' && '!artifacts/install/**/romfs/**' || '' }}
+            ${{ matrix.containers.romfs == 'yes' && '' || '!artifacts/install/**/romfs/**' }}
 
         # Special uploads for 3DS
       - name: Upload 3DS 3DSX
@@ -147,7 +155,7 @@ jobs:
         platforms:
           - artifact: LinuxSFML-arm64
             os: ubuntu-24.04-arm
-          - artifact: macOSUnixApplicationUnsigned-arm64
+          - artifact: macOSUnsignedUnix-arm64
             os: macos-latest
           - artifact: Windows-x64
             os: windows-latest
@@ -155,6 +163,13 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+
+      - name: Cache Deps
+        uses: actions/cache@v4
+        with:
+          path: build/_deps
+          key: deps-${{ matrix.platforms.artifact }}-${{ hashFiles('.github/workflows/**', 'CMakeLists.txt', 'cmake/**') }}
+          restore-keys: deps-${{ matrix.platforms.artifact }}-
 
       - name: Install SFML Dependencies (ubuntu)
         if: matrix.platforms.os == 'ubuntu-24.04-arm'
@@ -203,6 +218,13 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+
+      - name: Cache Deps
+        uses: actions/cache@v4
+        with:
+          path: build/_deps
+          key: deps-SuperHaxagon-macOS-arm-${{ hashFiles('.github/workflows/**', 'CMakeLists.txt', 'cmake/**') }}
+          restore-keys: deps-SuperHaxagon-macOS-arm-
 
       - name: Build SuperHaxagon
         run: |

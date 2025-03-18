@@ -6,7 +6,10 @@ message(STATUS "Building for macOS...")
 
 set(PLATFORM_NAME "MACOS")
 
-find_package(OpenAL PATHS /opt/homebrew/opt/openal-soft/lib/cmake REQUIRED CONFIG)
+if (NOT BUILD_BUNDLE)
+    # We will use the Framework for OpenAL distributed by sfml's Git repo when building the bundle
+    find_package(OpenAL PATHS /opt/homebrew/opt/openal-soft/lib/cmake REQUIRED CONFIG)
+endif()
 
 set(DRIVER_PLATFORM
     source/Driver/macOS/PlatformMacOS.cpp

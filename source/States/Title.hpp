@@ -1,6 +1,9 @@
 #ifndef SUPER_HAXAGON_TITLE_HPP
 #define SUPER_HAXAGON_TITLE_HPP
 
+// SPDX-FileCopyrightText: 2025 AJ Walter
+// SPDX-License-Identifier: GPL-3.0
+
 #include "State.hpp"
 
 #include "Core/Structs.hpp"

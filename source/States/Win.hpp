@@ -1,6 +1,9 @@
 #ifndef SUPER_HAXAGON_WIN_HPP
 #define SUPER_HAXAGON_WIN_HPP
 
+// SPDX-FileCopyrightText: 2020 AJ Walter
+// SPDX-License-Identifier: GPL-3.0
+
 #include "State.hpp"
 
 #include <string>

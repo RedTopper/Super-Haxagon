@@ -1,9 +1,11 @@
+// SPDX-FileCopyrightText: 2020 AJ Walter
+// SPDX-License-Identifier: GPL-3.0
+
 #include "States/Menu.hpp"
 
 #include "Core/Game.hpp"
 #include "Core/Metadata.hpp"
 #include "Driver/Font.hpp"
-#include "Driver/Platform.hpp"
 #include "Factories/LevelFactory.hpp"
 #include "States/Play.hpp"
 #include "States/Title.hpp"

@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2020 AJ Walter
+// SPDX-License-Identifier: GPL-3.0
+
 #ifndef SUPER_HAXAGON_QUIT_HPP
 #define SUPER_HAXAGON_QUIT_HPP
 

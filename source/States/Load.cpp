@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2020 AJ Walter
+// SPDX-License-Identifier: GPL-3.0
+
 #include "States/Load.hpp"
 
 #include "Core/Game.hpp"

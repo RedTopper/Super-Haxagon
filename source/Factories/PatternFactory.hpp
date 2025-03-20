@@ -1,6 +1,9 @@
 #ifndef SUPER_HAXAGON_PATTERN_FACTORY_HPP
 #define SUPER_HAXAGON_PATTERN_FACTORY_HPP
 
+// SPDX-FileCopyrightText: 2020 AJ Walter
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 #include "Factories/WallFactory.hpp"
 #include "Objects/Pattern.hpp"
 

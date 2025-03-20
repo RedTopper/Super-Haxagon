@@ -1,6 +1,9 @@
 #ifndef SUPER_HAXAGON_LEVEL_FACTORY_HPP
 #define SUPER_HAXAGON_LEVEL_FACTORY_HPP
 
+// SPDX-FileCopyrightText: 2021 AJ Walter
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 #include "Core/Structs.hpp"
 #include "Driver/Platform.hpp"
 

@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2021 AJ Walter
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 #include "Factories/LevelFactory.hpp"
 
 #include "Core/Game.hpp"

@@ -1,6 +1,9 @@
 #ifndef SUPER_HAXAGON_METADATA_HPP
 #define SUPER_HAXAGON_METADATA_HPP
 
+// SPDX-FileCopyrightText: 2020 AJ Walter
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 #include <map>
 #include <memory>
 #include <string>

@@ -1,6 +1,9 @@
 #ifndef SUPER_HAXAGON_GAME_HPP
 #define SUPER_HAXAGON_GAME_HPP
 
+// SPDX-FileCopyrightText: 2020 AJ Walter
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 #include "Core/SurfaceGame.hpp"
 #include "Core/SurfaceUI.hpp"
 

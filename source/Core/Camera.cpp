@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2025 AJ Walter
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 #include "Camera.hpp"
 
 #include <array>

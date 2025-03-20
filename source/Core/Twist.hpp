@@ -1,6 +1,9 @@
 #ifndef SUPER_HAXAGON_TWIST_HPP
 #define SUPER_HAXAGON_TWIST_HPP
 
+// SPDX-FileCopyrightText: 2018 AJ Walter
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 #include "Vector.hpp"
 
 #include <algorithm>

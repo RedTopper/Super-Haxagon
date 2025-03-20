@@ -1,6 +1,9 @@
 #ifndef SUPER_HAXAGON_STRUCTS_HPP
 #define SUPER_HAXAGON_STRUCTS_HPP
 
+// SPDX-FileCopyrightText: 2020 AJ Walter
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 #include "Vector.hpp"
 
 #include <cstdint>

@@ -1,6 +1,9 @@
 #ifndef SUPER_HAXAGON_SURFACE_UI_HPP
 #define SUPER_HAXAGON_SURFACE_UI_HPP
 
+// SPDX-FileCopyrightText: 2025 AJ Walter
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 #include "Structs.hpp"
 
 #include <vector>

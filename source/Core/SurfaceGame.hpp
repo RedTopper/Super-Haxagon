@@ -1,6 +1,9 @@
 #ifndef SUPER_HAXAGON_SURFACE_GAME_HPP
 #define SUPER_HAXAGON_SURFACE_GAME_HPP
 
+// SPDX-FileCopyrightText: 2025 AJ Walter
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 #include "Core/Camera.hpp"
 #include "Core/Structs.hpp"
 #include "Core/Matrix.hpp"

@@ -1,6 +1,9 @@
 #ifndef CONFIGURATION_HPP
 #define CONFIGURATION_HPP
 
+// SPDX-FileCopyrightText: 2025 AJ Walter
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 #define APP_NAME "${APP_NAME}"
 #define VERSION "V${CMAKE_PROJECT_VERSION}"
 #define DEBUG_CONSOLE ${DEBUG_CONSOLE}

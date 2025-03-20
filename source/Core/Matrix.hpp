@@ -1,6 +1,9 @@
 #ifndef SUPER_HAXAGON_MATRIX_HPP
 #define SUPER_HAXAGON_MATRIX_HPP
 
+// SPDX-FileCopyrightText: 2021 AJ Walter
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 #include "Core/Vector.hpp"
 
 #include <cstdint>

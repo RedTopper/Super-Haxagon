@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2020 AJ Walter
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 #include "Structs.hpp"
 
 #include "Driver/Platform.hpp"

@@ -1,7 +1,9 @@
+// SPDX-FileCopyrightText: 2020 AJ Walter
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 #include "Game.hpp"
 
 #include "Metadata.hpp"
-#include "Twist.hpp"
 #include "Driver/Font.hpp"
 #include "Driver/Music.hpp"
 #include "Driver/Platform.hpp"

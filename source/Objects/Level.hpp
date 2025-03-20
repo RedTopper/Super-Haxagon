@@ -1,6 +1,9 @@
 #ifndef SUPER_HAXAGON_LEVEL_HPP
 #define SUPER_HAXAGON_LEVEL_HPP
 
+// SPDX-FileCopyrightText: 2020 AJ Walter
+// SPDX-License-Identifier: GPL-3.0
+
 #include "Core/Structs.hpp"
 #include "Objects/Pattern.hpp"
 

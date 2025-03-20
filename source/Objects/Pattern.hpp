@@ -1,6 +1,9 @@
 #ifndef SUPER_HAXAGON_PATTERN_HPP
 #define SUPER_HAXAGON_PATTERN_HPP
 
+// SPDX-FileCopyrightText: 2021 AJ Walter
+// SPDX-License-Identifier: GPL-3.0
+
 #include "Objects/Wall.hpp"
 
 #include <vector>

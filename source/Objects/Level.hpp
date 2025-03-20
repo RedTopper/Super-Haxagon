@@ -16,8 +16,10 @@ namespace SuperHaxagon {
 
 	class Level {
 	public:
+		static constexpr float STARTING_MULTIPLIER_WALLS = 0.85f;
+		static constexpr float STARTING_MULTIPLIER_ROT = 0.9f;
 		static constexpr float DIFFICULTY_SCALAR_WALLS = 0.0375f;
-		static constexpr float DIFFICULTY_SCALAR_ROT = 0.08f;
+		static constexpr float DIFFICULTY_SCALAR_ROT = 0.07f;
 		static constexpr float FLIP_FRAMES_MIN = 120.0f;
 		static constexpr float FLIP_FRAMES_MAX = 600.0f;
 		static constexpr float FRAMES_PER_CHANGE_SIDE = 30.0f;
@@ -83,8 +85,8 @@ namespace SuperHaxagon {
 		bool _showCursor = true;
 		bool _rotateToZero = false;
 		
-		float _multiplierRot = 0.9f; // Current direction and speed of rotation
-		float _multiplierWalls = 0.85f; // Current speed of the walls flying at you
+		float _multiplierRot = STARTING_MULTIPLIER_ROT; // Current direction and speed of rotation
+		float _multiplierWalls = STARTING_MULTIPLIER_WALLS; // Current speed of the walls flying at you
 		float _cursorPos{};
 		float _rotation{};
 		float _sidesTween{};

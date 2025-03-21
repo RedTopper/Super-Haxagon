@@ -1,16 +1,16 @@
 cmake_minimum_required(VERSION 3.13)
-project(Super_Haxagon VERSION 3.8.4)
+project(SuperHaxagon VERSION 3.8.4)
 
 set(CMAKE_CXX_STANDARD 17)
 
 set(APP_NAME "SuperHaxagon")
+set(APP_FQN "net.awalter.SuperHaxagon")
 set(APP_DESCRIPTION "A Super Hexagon Clone")
-set(APP_AUTHOR "RedHat")
+set(APP_AUTHOR "RedTopper")
+set(APP_PRODUCT_CODE "CTR-P-HAXA")
+set(APP_UNIQUE_ID "0x099AA")
 
-set(FETCHCONTENT_QUIET FALSE)
 set(STB_VER ae721c50eaf761660b4f90cc590453cdb0c2acd0)
-
-include_directories("${CMAKE_CURRENT_SOURCE_DIR}/source")
 
 # Used in 3DS for a console on the bottom screen
 # and Switch for debug output to a file
@@ -45,32 +45,30 @@ set(SOURCES
     source/Core/SurfaceUI.cpp
 )
 
-include_directories("${CMAKE_CURRENT_BINARY_DIR}")
-
-if(DRIVER_NULL)
+if(DRIVER_EXAMPLE)
     # Any platform should be able to build this
-    # if you force it to build with cmake -DDRIVER_NULL=TRUE
-    include(cmake/common/null.cmake)
+    # if you force it to build with cmake -DDRIVER_EXAMPLE=TRUE
+    include(driver/Example/example.cmake)
 elseif(CMAKE_SYSTEM_NAME MATCHES "Nintendo3DS")
-    include(cmake/n3ds.cmake)
+    include(driver/3DS/3ds.cmake)
 elseif(CMAKE_SYSTEM_NAME MATCHES "NintendoSwitch")
-    include(cmake/switch.cmake)
+    include(driver/Switch/switch.cmake)
 elseif(CMAKE_SYSTEM_NAME MATCHES "Nspire")
-    include(cmake/nspire.cmake)
+    include(driver/Nspire/nspire.cmake)
 elseif(CMAKE_SYSTEM_NAME MATCHES "Miyoo")
-    include(cmake/miyoo.cmake)
+    include(driver/Miyoo/miyoo.cmake)
 elseif(CMAKE_SYSTEM_NAME MATCHES "Linux")
     if(DRIVER_SDL2)
         # cmake -DDRIVER_SDL2=TRUE ..
-        # SDL2 configuration for desktops
-        include(cmake/linux-sdl2.cmake)
+        # Driver forces windowed and says LINUX
+        include(driver/Linux-SDL2/linux-sdl2.cmake)
     elseif(DRIVER_PORTMASTER)
         # cmake -DDRIVER_PORTMASTER=TRUE ..
-        # Defaults to fullscreen and says portmaster
-        include(cmake/portmaster.cmake)
+        # Driver forces fullscreen and says PORTMASTER
+        include(driver/PortMaster/portmaster.cmake)
     else()
         # Default to using the SFML2 driver
-        include(cmake/linux.cmake)
+        include(driver/Linux/linux.cmake)
     endif()
 elseif(CMAKE_SYSTEM_NAME MATCHES "Windows")
     include(cmake/windows.cmake)
@@ -79,6 +77,11 @@ elseif(CMAKE_SYSTEM_NAME MATCHES "Darwin")
 else()
     message(FATAL_ERROR "No viable platform to build for!")
 endif()
+
+include(driver/Common/common.cmake)
+
+target_include_directories(${PROJECT_NAME} PRIVATE "${CMAKE_SOURCE_DIR}/source")
+target_include_directories(${PROJECT_NAME} PRIVATE "${CMAKE_BINARY_DIR}")
 
 configure_file(source/Core/Configuration.hpp.in Core/Configuration.hpp)
 
@@ -90,5 +93,5 @@ configure_file(source/Core/Configuration.hpp.in Core/Configuration.hpp)
 # This will NOT allow those components to link though, you'll need the full
 # toolchain for that.
 if(HEADERS_FOR_IDE)
-    include(cmake/common/libraries.cmake)
+    include(driver/Common/cmake/libraries.cmake)
 endif()

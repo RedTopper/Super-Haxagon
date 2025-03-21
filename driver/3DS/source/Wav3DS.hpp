@@ -1,6 +1,9 @@
 #ifndef WAV_3DS_HPP
 #define WAV_3DS_HPP
 
+// SPDX-FileCopyrightText: 2025 AJ Walter, see driver/3DS/README.md for MIT usage.
+// SPDX-License-Identifier: GPL-3.0-or-later OR MIT
+
 #include <3ds.h>
 
 #include <string>

@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2025 AJ Walter, see driver/Example/README.md for MIT usage.
+// SPDX-License-Identifier: GPL-3.0-or-later OR MIT
+
 #include "Driver/Screen.hpp"
 
 #include "Core/Structs.hpp"

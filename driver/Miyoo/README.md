@@ -1,4 +1,24 @@
-# lib.tar.gz
+# Miyoo Mini Driver
+
+This driver supports the Miyoo Mini with the SDL2 backend.
+
+## Building
+
+A toolchain based on `debian:buster` is provided with the `Containerfile` in this directory.
+
+From within the parent directory, run the following commands:
+
+```bash
+podman-compose up --no-build Miyoo
+```
+
+If you want to build the container yourself:
+
+```bash
+podman-compose up --build Miyoo
+```
+
+## lib.tar.gz
 
 The tree for lib.tar.gz is as follows:
 
@@ -28,3 +48,7 @@ and comment out
 `RUN wget ...` 
 
 in the Containerfile to use your local copy instead.
+
+## License
+
+This driver follows the license scheme of the parent driver at `driver/SDL2`.

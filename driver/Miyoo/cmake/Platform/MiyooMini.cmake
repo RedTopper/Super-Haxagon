@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2025 AJ Walter, see driver/SDL2/README.md for MIT usage.
+# SPDX-License-Identifier: GPL-3.0-or-later OR MIT
+
 set(CMAKE_BUILD_TYPE_INIT "Release")
 
 set(MIYOO_ARCH_SETTINGS "-marm -mtune=cortex-a7 -mfpu=neon-vfpv4 -mfloat-abi=hard -march=armv7ve")

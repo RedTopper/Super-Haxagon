@@ -1,6 +1,8 @@
+// SPDX-FileCopyrightText: 2025 AJ Walter, see driver/SDL2/README.md for MIT usage.
+// SPDX-License-Identifier: GPL-3.0-or-later OR MIT
+
 #include "Driver/Screen.hpp"
 
-#include "Core/Configuration.hpp"
 #include "Core/Structs.hpp"
 
 #include <SDL2/SDL.h>
@@ -11,7 +13,8 @@ const int height = 480;
 namespace SuperHaxagon {
 	typedef Vec2<int> Vec2i;
 
-	// Thanks to https://fgiesen.wordpress.com/2013/02/10/optimizing-the-basic-rasterizer/
+	// Thanks to Fabian Giesen: https://fgiesen.wordpress.com/2013/02/10/optimizing-the-basic-rasterizer/
+	// Licensed under: https://creativecommons.org/publicdomain/zero/1.0/
 
 	inline int orient2d(const Vec2i& a, const Vec2i& b, const Vec2i& c) {
 		return (b.x-a.x)*(c.y-a.y) - (b.y-a.y)*(c.x-a.x);

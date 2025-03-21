@@ -1,6 +1,9 @@
 #ifndef SUPER_HAXAGON_FONT_HPP
 #define SUPER_HAXAGON_FONT_HPP
 
+// SPDX-FileCopyrightText: 2025 AJ Walter, see driver/Common/README.md for MIT usage.
+// SPDX-License-Identifier: GPL-3.0-or-later OR MIT
+
 #include "Core/Vector.hpp"
 
 #include <memory>

@@ -1,6 +1,9 @@
-#include "Driver/Platform.hpp"
+// SPDX-FileCopyrightText: 2025 AJ Walter and adc-ax, see driver/SFML/README.md for MIT usage.
+// SPDX-License-Identifier: GPL-3.0-or-later OR MIT
 
-#include "Driver/Common/SFML/CreateSFML.hpp"
+#include "CreateSFML.hpp"
+
+#include "Driver/Platform.hpp"
 
 #include <CoreFoundation/CFBundle.h>
 

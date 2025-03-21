@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2025 AJ Walter, see driver/SFML/README.md for MIT usage.
+# SPDX-License-Identifier: GPL-3.0-or-later OR MIT
+
 find_program(SIPS_EXE sips)
 find_program(ICONUTIL_EXE iconutil)
 

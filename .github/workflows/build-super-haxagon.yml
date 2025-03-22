@@ -9,7 +9,7 @@ on:
     paths:
       - .github/workflows/build-super-haxagon.yml
       - source/**
-      - cmake/**
+      - driver/**
       - CMakeLists.txt
       - CMakeSettings.json
       - net.awalter.SuperHaxagon.yml
@@ -20,7 +20,7 @@ on:
     paths:
       - .github/workflows/build-super-haxagon.yml
       - source/**
-      - cmake/**
+      - driver/**
       - CMakeLists.txt
       - CMakeSettings.json
       - net.awalter.SuperHaxagon.yml
@@ -44,12 +44,12 @@ jobs:
         run: |
           mkdir -p artifacts/build artifacts/install
           cd artifacts/build
-          CMAKE_ARGS="-DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=../install" ../../tools/null/build.sh
+          CMAKE_ARGS="-DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=../install" ../../driver/Example/build.sh
 
       - name: Upload
         uses: actions/upload-artifact@v4
         with:
-          name: SuperHaxagon-LinuxNull-x64-no-romfs
+          name: SuperHaxagon-LinuxExample-x64-no-romfs
           path: artifacts/install
 
   # Matrix of special platforms SuperHaxagon supports
@@ -60,42 +60,42 @@ jobs:
     strategy:
       matrix:
         containers:
-          - build: '3ds'
+          - build: '3DS'
             artifact: 3DS-arm
             container: ghcr.io/redtopper/super-haxagon/3ds:latest
             cache: 'yes'
             romfs: 'yes'
             os: ubuntu-latest
 
-          - build: 'linux'
+          - build: 'Linux'
             container: ghcr.io/redtopper/super-haxagon/linux:latest
             artifact: LinuxSFML-x64
             cache: 'yes'
             os: ubuntu-latest
 
-          - build: 'linux-sdl2'
+          - build: 'Linux-SDL2'
             container: ghcr.io/redtopper/super-haxagon/linux-sdl2:latest
             artifact: LinuxSDL2-x64
             os: ubuntu-latest
 
-          - build: 'miyoo'
+          - build: 'Miyoo'
             container: ghcr.io/redtopper/super-haxagon/miyoo:latest
             artifact: MiyooMini-armhf
             os: ubuntu-latest
 
-          - build: 'nspire'
+          - build: 'Nspire'
             container: ghcr.io/redtopper/super-haxagon/nspire:latest
             artifact: Nspire-arm
             romfs: 'yes'
             os: ubuntu-latest
 
-          - build: 'switch'
+          - build: 'Switch'
             container: docker.io/devkitpro/devkita64:latest
             artifact: Switch-arm
             romfs: 'yes'
             os: ubuntu-latest
 
-          - build: 'portmaster'
+          - build: 'PortMaster'
             container: docker.io/monkeyx/retro_builder:arm64
             artifact: PortMaster-arm64-autoinstall
             romfs: 'yes'
@@ -120,10 +120,10 @@ jobs:
         run: |
           mkdir -p artifacts/build artifacts/install
           cd artifacts/build
-          CMAKE_ARGS="-DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=../install" ../../tools/${{ matrix.containers.build }}/build.sh
+          CMAKE_ARGS="-DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=../install" ../../driver/${{ matrix.containers.build }}/build.sh
 
       - name: Upload Artifact
-        if: matrix.containers.build != '3ds'
+        if: matrix.containers.build != '3DS'
         uses: actions/upload-artifact@v4
         with:
           name: SuperHaxagon-${{ matrix.containers.artifact }}${{ matrix.containers.romfs == 'yes' && '' || '-no-romfs' }}
@@ -133,13 +133,13 @@ jobs:
 
         # Special uploads for 3DS
       - name: Upload 3DS 3DSX
-        if: matrix.containers.build == '3ds'
+        if: matrix.containers.build == '3DS'
         uses: actions/upload-artifact@v4
         with:
           name: SuperHaxagon-${{ matrix.containers.artifact }}.3dsx
           path: artifacts/install/SuperHaxagon.3dsx
       - name: Upload 3DS CIA
-        if: matrix.containers.build == '3ds'
+        if: matrix.containers.build == '3DS'
         uses: actions/upload-artifact@v4
         with:
           name: SuperHaxagon-${{ matrix.containers.artifact }}.cia
@@ -251,7 +251,7 @@ jobs:
           /usr/bin/codesign --deep --force -s "$MACOS_CERTIFICATE_NAME" --options runtime install/SuperHaxagon.app -v
 
           cd install
-          tar -cvf SuperHaxagon.app.tar SuperHaxagon.app
+          tar -cvf SuperHaxagon.app.tar *
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4

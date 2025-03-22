@@ -7,13 +7,13 @@ on:
     tags:
       - build/*
     paths:
-      - tools/*/Containerfile
+      - driver/*/Containerfile
   pull_request:
     types:
       - opened
       - synchronize
     paths:
-      - tools/*/Containerfile
+      - driver/*/Containerfile
 
 env:
   REPO: ghcr.io/${{ github.repository }}
@@ -48,13 +48,13 @@ jobs:
         run: |
           if [[ "${{ github.event_name }}" == "pull_request" ]]; then
             # Pull requests need to check back to Master for building
-            CHANGED_FILES=$(git diff --name-only origin/master -- 'tools/*/Containerfile')
+            CHANGED_FILES=$(git diff --name-only origin/master -- 'driver/*/Containerfile')
           elif [[ "${{ github.ref }}" == refs/tags/build/* ]]; then
             # Tags will always rebuild all containers for a release
-            CHANGED_FILES=$(find tools -mindepth 2 -maxdepth 2 -name "Containerfile")
+            CHANGED_FILES=$(find driver -mindepth 2 -maxdepth 2 -name "Containerfile")
           else
             # Otherwise, just check the diff of the last commit
-            CHANGED_FILES=$(git diff --name-only HEAD~1 -- 'tools/*/Containerfile')
+            CHANGED_FILES=$(git diff --name-only HEAD~1 -- 'driver/*/Containerfile')
           fi
           
           echo "CHANGED_FILES<<EOF" >> $GITHUB_ENV
@@ -138,7 +138,7 @@ jobs:
           mkdir -p artifacts/build
           mkdir -p artifacts/install
           cd artifacts/build
-          CMAKE_ARGS="-DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=../install" ../../tools/${{ matrix.images.name }}/build.sh
+          CMAKE_ARGS="-DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=../install" ../../driver/${{ matrix.images.name }}/build.sh
 
       - uses: actions/upload-artifact@v4
         with:

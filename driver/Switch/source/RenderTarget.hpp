@@ -1,6 +1,9 @@
 #ifndef SUPER_HAXAGON_RENDER_TARGET_HPP
 #define SUPER_HAXAGON_RENDER_TARGET_HPP
 
+// SPDX-FileCopyrightText: 2020 AJ Walter, see driver/Switch/README.md for MIT usage.
+// SPDX-License-Identifier: GPL-3.0-or-later OR MIT
+
 #include "Core/Structs.hpp"
 
 #include <glad/glad.h>

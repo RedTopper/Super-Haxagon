@@ -1,4 +1,7 @@
-#include "Driver/Switch/RenderTarget.hpp"
+// SPDX-FileCopyrightText: 2020 AJ Walter, see driver/Switch/README.md for MIT usage.
+// SPDX-License-Identifier: GPL-3.0-or-later OR MIT
+
+#include "RenderTarget.hpp"
 
 #include "Driver/Platform.hpp"
 #include "Driver/Screen.hpp"

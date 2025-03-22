@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2021 AJ Walter, see driver/Nspire/README.md for MIT usage.
+// SPDX-License-Identifier: GPL-3.0-or-later OR MIT
+
 /**
  * Note: This compiler seems to be missing some definitions.
  *       Stubs are defined here to fix compiler errors.

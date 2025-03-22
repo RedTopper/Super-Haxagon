@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2025 AJ Walter, see driver/Nspire/README.md for MIT usage.
+# SPDX-License-Identifier: GPL-3.0-or-later OR MIT
+
 set(CMAKE_BUILD_TYPE_INIT "Release")
 set(CMAKE_EXECUTABLE_SUFFIX .elf)
 set(BUILD_SHARED_LIBS OFF CACHE INTERNAL "Shared libs not available")

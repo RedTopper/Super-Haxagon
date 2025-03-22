@@ -4,7 +4,7 @@
 // Note from matrefeytontias:
 // Everything on HW timers is by aeTIos and Streetwalrus from http://www.omnimaga.org/
 // 
-// Note from RedHat:
+// Note from RedTopper:
 // This file is also sourced from n2DLib. So I'll drop the link to the original file below.
 // 
 // https://github.com/n2DLib/n2DLib/blob/master/n2DLib.h

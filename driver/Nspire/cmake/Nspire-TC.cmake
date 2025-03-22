@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2025 AJ Walter, see driver/Nspire/README.md for MIT usage.
+# SPDX-License-Identifier: GPL-3.0-or-later OR MIT
+
 set(CMAKE_SYSTEM_NAME Nspire)
 set(CMAKE_SYSTEM_VERSION 1)
 set(CMAKE_SYSTEM_PROCESSOR arm)

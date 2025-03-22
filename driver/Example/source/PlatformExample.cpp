@@ -36,7 +36,7 @@ namespace SuperHaxagon {
 		// You can either have the initialization list instantiate
 		// your platform's implementation (above), or do it here in
 		// the constructor body.
-		message(Dbg::INFO, "platform", "Congrats, you compiled the null driver!");
+		message(Dbg::INFO, "platform", "Congrats, you compiled the example driver!");
 	}
 
 	Platform::~Platform() = default;

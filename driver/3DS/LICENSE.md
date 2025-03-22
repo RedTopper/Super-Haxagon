@@ -10,33 +10,36 @@ This driver uses the following libraries, which are licensed with the following 
 
 ### stb
 
-* Website: https://github.com/nothings/stb
+* Source: https://github.com/nothings/stb
 * License: MIT (or public domain)
 * Copyright © 2017 Sean Barrett
 
 ## libctru
 
-* Website: https://github.com/devkitPro/libctru
-* License: zlib
+* Website: https://devkitpro.org/
+* Source: https://github.com/devkitPro/libctru
+* License: Zlib
 * Copyright © 2014-2023 libctru Authors
 
 ### citro2d
 
-* Website: https://github.com/devkitPro/citro2d
-* License: zlib
+* Website: https://devkitpro.org/
+* Source: https://github.com/devkitPro/citro2d
+* License: Zlib
 * Copyright © 2017-2018 fincs
 
 ### citro3d
 
-* Website: https://github.com/devkitPro/citro3d
-* License: zlib
+* Website: https://devkitpro.org/
+* Source: https://github.com/devkitPro/citro3d
+* License: Zlib
 * Copyright © 2014-2018 fincs
 
 # **License Texts**
 
 ## GPLv3 
 
-The license text is provided in LICENSE.md at the root of this repository.
+The license text is provided in LICENSE.md at the root of this repository or along with your binary.
 
 ## MIT
 
@@ -60,25 +63,22 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-## zlib
+## Zlib
 
 ```
 This software is provided 'as-is', without any express or implied
-warranty. In no event will the authors be held liable for any damages
+warranty.  In no event will the authors be held liable for any damages
 arising from the use of this software.
 
 Permission is granted to anyone to use this software for any purpose,
 including commercial applications, and to alter it and redistribute it
 freely, subject to the following restrictions:
 
-01. The origin of this software must not be misrepresented; you must not
-claim that you wrote the original software. If you use this software
-in a product, an acknowledgment in the product documentation would be
-appreciated but is not required.
-
-02. Altered source versions must be plainly marked as such, and must not be
-misrepresented as being the original software.
-
-03. This notice may not be removed or altered from any source
-distribution.
+1. The origin of this software must not be misrepresented; you must not
+   claim that you wrote the original software. If you use this software
+   in a product, an acknowledgment in the product documentation would be
+   appreciated but is not required.
+2. Altered source versions must be plainly marked as such, and must not be
+   misrepresented as being the original software.
+3. This notice may not be removed or altered from any source distribution.
 ```

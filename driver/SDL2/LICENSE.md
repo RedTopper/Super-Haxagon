@@ -46,10 +46,11 @@ This driver uses the following libraries, which are licensed with the following 
 ### flac, ogg, opusfile, vorbis
 
 * Website:https://www.xiph.org/
-* Source: https://github.com/xiph/flac
-          https://github.com/xiph/ogg
-          https://github.com/xiph/opusfile
-          https://github.com/xiph/vorbis
+* Sources:  
+  https://github.com/xiph/flac  
+  https://github.com/xiph/ogg  
+  https://github.com/xiph/opusfile  
+  https://github.com/xiph/vorbis  
 * License: BSD-3-Clause
 * Copyright © Xiph.org Foundation
 

@@ -20,11 +20,12 @@ This driver uses the following libraries, which are licensed with the following 
 _Disclaimer: I am not a lawyer_
 
 The Ndless source MPL-1.1 license may be technically incompatible with the GPLv3 given my limited research due to the
-additional restrictions it places on sharing statically linked binaries, which the GPLv3 disallows. 
+additional restrictions it places on sharing statically linked binaries, which the GPLv3 disallows.
 
 I'm going to invoke _The Rule of Cool™_ here and assume that the intent of creating public domain headers while keeping
 the source licensed under MPL-1.1 is intended so that target applications can use any license, including none. In this
-case, I believe a strong copyleft requirement is within the spirit of Ndless and the calculator community as a whole.
+case, I believe a strong copyleft requirement is within the spirit of Ndless and the calculator homebrew community as a
+whole.
 
 # **License Texts**
 

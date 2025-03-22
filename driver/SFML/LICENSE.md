@@ -12,14 +12,14 @@ This driver uses the following libraries, which are licensed with the following 
 
 * Website: https://www.sfml-dev.org/
 * Source: https://github.com/SFML/SFML/tree/2.6.2
-* License: zlib
+* License: Zlib
 * Copyright © 2007-2023 Laurent Gomila
 
 ### FreeType
 
 * Website: https://freetype.org/
 * Source: https://github.com/freetype/freetype
-* License: freetype
+* License: FTL
 * Copyright © 1996-2002, 2006 by David Turner, Robert Wilhelm, and Werner Lemberg
 
 ### OpenAL-soft
@@ -30,11 +30,12 @@ This driver uses the following libraries, which are licensed with the following 
 
 ### flac, ogg, opusfile, vorbis
 
-* Website:https://www.xiph.org/
-* Source: https://github.com/xiph/flac
-          https://github.com/xiph/ogg
-          https://github.com/xiph/opusfile
-          https://github.com/xiph/vorbis
+* Website: https://www.xiph.org/
+* Sources:  
+  https://github.com/xiph/flac  
+  https://github.com/xiph/ogg  
+  https://github.com/xiph/opusfile  
+  https://github.com/xiph/vorbis
 * License: BSD-3-Clause
 * Copyright © Xiph.org Foundation
 
@@ -66,7 +67,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-## zlib
+## Zlib
 
 ```
 This software is provided 'as-is', without any express or implied
@@ -86,7 +87,7 @@ freely, subject to the following restrictions:
 3. This notice may not be removed or altered from any source distribution.
 ```
 
-## FreeType
+## FTL
 
 ```
                     The FreeType Project LICENSE
@@ -286,7 +287,7 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ```
 
-## LGPLv2
+## LGPLv2-only
 
 ```
                   GNU LIBRARY GENERAL PUBLIC LICENSE

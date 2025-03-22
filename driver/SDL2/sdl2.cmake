@@ -28,3 +28,5 @@ if (NOT "${REL_PATH}" STREQUAL "romfs")
     # If the relative path is in another directory, create it.
     file(CREATE_LINK ${REL_PATH} ${CMAKE_BINARY_DIR}/romfs SYMBOLIC)
 endif()
+
+set(LICENSE_DRIVER "${CMAKE_CURRENT_LIST_DIR}/LICENSE.md")

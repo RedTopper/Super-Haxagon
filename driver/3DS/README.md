@@ -31,6 +31,7 @@ make -j4
 ```
 
 # License
+
 This driver is available under two licenses: GPLv3 (or later) OR MIT. 
 
 You may choose which license to use:

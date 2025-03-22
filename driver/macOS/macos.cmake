@@ -31,7 +31,7 @@ if (BUILD_BUNDLE)
     set(MACOSX_BUNDLE_SHORT_VERSION_STRING ${MACOSX_BUNDLE_BUNDLE_VERSION})
 
     generate_icns(${PROJECT_NAME}
-        ICON "${CMAKE_CURRENT_LIST_DIR}/resources/${PROJECT_NAME}.png"
+        ICON "${CMAKE_CURRENT_LIST_DIR}/resources/icon.png"
     )
 
     set_target_properties(${PROJECT_NAME} PROPERTIES
@@ -52,5 +52,5 @@ if (BUILD_BUNDLE)
 
     install(TARGETS ${PROJECT_NAME} BUNDLE DESTINATION .)
 else()
-    install(FILES "${CMAKE_SOURCE_DIR}/media/macos/${PROJECT_NAME}-README.md" DESTINATION .)
+    install(FILES "${CMAKE_CURRENT_LIST_DIR}/resources/README.md" DESTINATION .)
 endif()

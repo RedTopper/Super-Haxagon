@@ -1,15 +1,18 @@
+# SPDX-FileCopyrightText: 2025 AJ Walter
+# SPDX-License-Identifier: GPL-3.0-or-later OR MIT
+
 version: '3.8'
 
 # For a build:
 # podman-compose up --build <service>
 # ex:
-# podman-compose up --build miyoo
+# podman-compose up --build Miyoo
 
 # If you don't want to build the container:
 # podman-compose up --no-build <service>
 
 # For a shell:
-# podman-compose run --build --rm <service> bash
+# podman-compose run --rm <service> bash
 # Then you can run:
 # build.sh
 # in the current directory to start building the project.
@@ -18,7 +21,7 @@ version: '3.8'
 # and run tools/linux/flatpak.sh from the root of this repo
 
 services:
-  3ds:
+  3DS:
     build:
       dockerfile: 3ds/Containerfile
     image: ghcr.io/redtopper/super-haxagon/3ds:latest
@@ -30,8 +33,8 @@ services:
       - "CMAKE_ARGS=-DCMAKE_INSTALL_PREFIX=/root/git/release/3ds -DCMAKE_BUILD_TYPE=Release"
     volumes:
       - ../:/root/git:z
-      - ./3ds/build.sh:/usr/local/bin/build.sh
-  switch:
+      - ./3DS/build.sh:/usr/local/bin/build.sh
+  Switch:
     image: devkitpro/devkita64
     container_name: super-haxagon-switch
     hostname: super-haxagon-switch
@@ -41,8 +44,8 @@ services:
       - "CMAKE_ARGS=-DCMAKE_INSTALL_PREFIX=/root/git/release/switch -DCMAKE_BUILD_TYPE=Release"
     volumes:
       - ../:/root/git:z
-      - ./switch/build.sh:/usr/local/bin/build.sh
-  nspire:
+      - ./Switch/build.sh:/usr/local/bin/build.sh
+  Nspire:
     build:
       dockerfile: nspire/Containerfile
     image: ghcr.io/redtopper/super-haxagon/nspire:latest
@@ -54,10 +57,10 @@ services:
       - "CMAKE_ARGS=-DCMAKE_INSTALL_PREFIX=/root/git/release/nspire -DCMAKE_BUILD_TYPE=Release"
     volumes:
       - ../:/root/git:z
-      - ./nspire/build.sh:/usr/local/bin/build.sh
-  linux:
+      - ./Nspire/build.sh:/usr/local/bin/build.sh
+  Linux:
     build:
-      dockerfile: linux/Containerfile
+      dockerfile: Linux/Containerfile
     image: ghcr.io/redtopper/super-haxagon/linux:latest
     container_name: super-haxagon-linux
     hostname: super-haxagon-linux
@@ -67,10 +70,10 @@ services:
       - "CMAKE_ARGS=-DCMAKE_INSTALL_PREFIX=/root/git/release/linux-sfml -DCMAKE_BUILD_TYPE=Release"
     volumes:
       - ../:/root/git:z
-      - ./linux/build.sh:/usr/local/bin/build.sh
-  linux-sdl2:
+      - ./Linux/build.sh:/usr/local/bin/build.sh
+  Linux-SDL2:
     build:
-      dockerfile: linux-sdl2/Containerfile
+      dockerfile: Linux-SDL2/Containerfile
     image: ghcr.io/redtopper/super-haxagon/linux-sdl2:latest
     container_name: super-haxagon-linux-sdl2
     hostname: super-haxagon-linux-sdl2
@@ -80,22 +83,22 @@ services:
       - "CMAKE_ARGS=-DCMAKE_INSTALL_PREFIX=/root/git/release/linux-sdl2 -DCMAKE_BUILD_TYPE=Release"
     volumes:
       - ../:/root/git:z
-      - ./linux-sdl2/build.sh:/usr/local/bin/build.sh
-  nothing:
+      - ./Linux-SDL2/build.sh:/usr/local/bin/build.sh
+  Example:
     # Example driver and build tooling
     build:
-      dockerfile: null/Containerfile
+      dockerfile: Example/Containerfile
     image: ghcr.io/redtopper/super-haxagon/null:latest
-    container_name: super-haxagon-null
-    hostname: super-haxagon-null
+    container_name: super-haxagon-example
+    hostname: super-haxagon-example
     command: build.sh
-    working_dir: /root/git/build/null
+    working_dir: /root/git/build/example
     environment:
-      - "CMAKE_ARGS=-DCMAKE_INSTALL_PREFIX=/root/git/release/null -DCMAKE_BUILD_TYPE=Debug"
+      - "CMAKE_ARGS=-DCMAKE_INSTALL_PREFIX=/root/git/release/example -DCMAKE_BUILD_TYPE=Debug"
     volumes:
       - ../:/root/git:z
-      - ./null/build.sh:/usr/local/bin/build.sh
-  portmaster:
+      - ./Example/build.sh:/usr/local/bin/build.sh
+  PortMaster:
     image: monkeyx/retro_builder:arm64
     container_name: super-haxagon-portmaster
     hostname: super-haxagon-portmaster
@@ -105,11 +108,11 @@ services:
       - "CMAKE_ARGS=-DCMAKE_INSTALL_PREFIX=/root/git/release/portmaster -DCMAKE_BUILD_TYPE=Release"
     volumes:
       - ../:/root/git:z
-      - ./portmaster/build.sh:/usr/local/bin/build.sh
-  miyoo:
+      - ./PortMaster/build.sh:/usr/local/bin/build.sh
+  Miyoo:
     build:
       context: .
-      dockerfile: miyoo/Containerfile
+      dockerfile: Miyoo/Containerfile
     image: ghcr.io/redtopper/super-haxagon/miyoo:latest
     container_name: super-haxagon-miyoo
     hostname: super-haxagon-miyoo
@@ -119,4 +122,4 @@ services:
       - "CMAKE_ARGS=-DCMAKE_INSTALL_PREFIX=/root/git/release/miyoo -DCMAKE_BUILD_TYPE=Release"
     volumes:
       - ../:/root/git:z
-      - ./miyoo/build.sh:/usr/local/bin/build.sh
+      - ./Miyoo/build.sh:/usr/local/bin/build.sh

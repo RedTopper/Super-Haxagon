@@ -11,11 +11,11 @@ The first step is to download the release you need. The latest release can alway
 
 https://github.com/RedTopper/Super-Haxagon/releases
 
-Then, click on the install instructions you need below for your platform!
+> [!IMPORTANT]  
+> For any release containing `no-romfs.zip`, please ensure you _also_ download and extract the romfs folder, 
+> pictured below:
 
-## Assets
-
-For any release containing `no-romfs.zip`, please ensure you _also_ download and extract the romfs folder, pictured below:
+Before:
 
 ```
 └── SuperHaxagon
@@ -24,7 +24,8 @@ For any release containing `no-romfs.zip`, please ensure you _also_ download and
     └── SuperHaxagon
 ```
 
-#### Becomes
+After:
+
 ```
 └── SuperHaxagon
     ├── ...
@@ -33,6 +34,8 @@ For any release containing `no-romfs.zip`, please ensure you _also_ download and
     │   └── levels.haxagon
     └── SuperHaxagon
 ```
+
+Then, click on the installation instructions you need below for your platform!
 
 ## Windows (x86)
 
@@ -170,13 +173,13 @@ be supported.
 
 <details><summary>macOS install instructions</summary>
 
-Unfortunately I do not have a macOS machine to build and test SuperHaxagon with, but have no fear, you can run it on your
-Mac if you build it yourself!
+Unfortunately I do not have a macOS machine regularly test SuperHaxagon with, but it should always build!
 
-1. Clone this repository
-2. Use Brew to install SFML `brew install sfml@2`
-3. Create a build directory `mkdir build && cd build`
-4. Build with cmake `cmake -DSFML_DIR=/opt/homebrew/Cellar/sfml@2/2.6.2_1/lib/cmake/SFML/ ..`
+The release build is built for M1 processors (arm64). [Intel based macs will need to follow the Building instructions](./driver/macOS/README.md)
+
+1. Download `SuperHaxagon-macOS-arm.tar`
+2. Extract the files into any empty directory
+3. Launch the application by right-clicking and choosing "Open"
 
 </details>
 

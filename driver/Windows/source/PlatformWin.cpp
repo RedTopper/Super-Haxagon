@@ -1,8 +1,8 @@
-#include "Driver/Platform.hpp"
+#include "CreateSFML.hpp"
 
 #include "Core/Twist.hpp"
 #include "Driver/Screen.hpp"
-#include "Driver/Common/SFML/CreateSFML.hpp"
+#include "Driver/Platform.hpp"
 
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>

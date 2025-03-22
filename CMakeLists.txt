@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2025 AJ Walter
+# SPDX-License-Identifier: GPL-3.0-or-later
+
 cmake_minimum_required(VERSION 3.13)
 project(SuperHaxagon VERSION 3.8.4)
 
@@ -71,9 +74,9 @@ elseif(CMAKE_SYSTEM_NAME MATCHES "Linux")
         include(driver/Linux/linux.cmake)
     endif()
 elseif(CMAKE_SYSTEM_NAME MATCHES "Windows")
-    include(cmake/windows.cmake)
+    include(driver/Windows/windows.cmake)
 elseif(CMAKE_SYSTEM_NAME MATCHES "Darwin")
-    include(cmake/macos.cmake)
+    include(driver/macOS/macos.cmake)
 else()
     message(FATAL_ERROR "No viable platform to build for!")
 endif()
@@ -84,6 +87,21 @@ target_include_directories(${PROJECT_NAME} PRIVATE "${CMAKE_SOURCE_DIR}/source")
 target_include_directories(${PROJECT_NAME} PRIVATE "${CMAKE_BINARY_DIR}")
 
 configure_file(source/Core/Configuration.hpp.in Core/Configuration.hpp)
+
+if (NOT DEFINED LICENSE_PATH)
+    set(LICENSE_PATH .)
+endif()
+
+# Install main licenses
+install(FILES "${CMAKE_SOURCE_DIR}/LICENSE.md" DESTINATION ${LICENSE_PATH})
+if (NOT CMAKE_SYSTEM_NAME MATCHES "Nspire")  # Nspire does not use any assets.
+    install(FILES "${CMAKE_SOURCE_DIR}/CREDITS.md" DESTINATION ${LICENSE_PATH})
+endif()
+
+# Install library licenses, if provided
+if (DEFINED LICENSE_DRIVER)
+    install(FILES "${LICENSE_DRIVER}" RENAME "LICENSE.libs.md" DESTINATION ${LICENSE_PATH})
+endif()
 
 # If you are using containers and your IDE can't see the header files in there,
 # but you still want type completion, enable the -DHEADERS_FOR_IDE=TRUE CMake option.

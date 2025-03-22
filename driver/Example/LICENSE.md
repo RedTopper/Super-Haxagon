@@ -2,7 +2,7 @@
 
 This driver uses the following libraries, which are licensed with the following terms:
 
-## Common Driver
+## Example Driver
 
 * Directory: files in `driver/Example`
 * License: GPLv3-or-later (or MIT)
@@ -12,7 +12,7 @@ This driver uses the following libraries, which are licensed with the following 
 
 ## GPLv3
 
-The license text is provided in LICENSE.md at the root of this repository.
+The license text is provided in LICENSE.md at the root of this repository or along with your binary.
 
 ## MIT
 

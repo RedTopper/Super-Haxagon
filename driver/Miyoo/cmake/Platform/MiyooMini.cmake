@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2025 AJ Walter, see driver/SDL2/README.md for MIT usage.
+# SPDX-FileCopyrightText: 2025 AJ Walter
 # SPDX-License-Identifier: GPL-3.0-or-later OR MIT
 
 set(CMAKE_BUILD_TYPE_INIT "Release")

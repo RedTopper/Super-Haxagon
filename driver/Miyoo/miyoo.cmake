@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2025 AJ Walter, see driver/SDL2/README.md for MIT usage.
+# SPDX-FileCopyrightText: 2025 AJ Walter
 # SPDX-License-Identifier: GPL-3.0-or-later OR MIT
 
 # cmake -DCMAKE_TOOLCHAIN_FILE=driver/Miyoo/cmake/MiyooMini-TC.cmake ..

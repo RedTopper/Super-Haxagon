@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2021 AJ Walter, see driver/Nspire/README.md for MIT usage.
+// SPDX-FileCopyrightText: 2021 AJ Walter
 // SPDX-License-Identifier: GPL-3.0-or-later OR MIT
 
 /**

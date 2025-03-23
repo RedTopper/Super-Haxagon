@@ -1,7 +1,7 @@
 #ifndef DATA_SDL2_HPP
 #define DATA_SDL2_HPP
 
-// SPDX-FileCopyrightText: 2025 AJ Walter, see driver/SDL2/README.md for MIT usage.
+// SPDX-FileCopyrightText: 2025 AJ Walter
 // SPDX-License-Identifier: GPL-3.0-or-later OR MIT
 
 #include "Driver/Platform.hpp"

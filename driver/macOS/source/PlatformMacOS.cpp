@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2025 AJ Walter and adc-ax, see driver/SFML/README.md for MIT usage.
+// SPDX-FileCopyrightText: 2025 AJ Walter and adc-ax
 // SPDX-License-Identifier: GPL-3.0-or-later OR MIT
 
 #include "CreateSFML.hpp"

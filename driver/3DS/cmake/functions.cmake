@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2025 AJ Walter, see driver/3DS/README.md for MIT usage.
+# SPDX-FileCopyrightText: 2025 AJ Walter
 # SPDX-License-Identifier: GPL-3.0-or-later OR MIT
 
 # These 3DS functions follow a similar structure to those defined in Nintendo3DS.cmake,

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2020 AJ Walter, see driver/Switch/README.md for MIT usage.
+// SPDX-FileCopyrightText: 2020 AJ Walter
 // SPDX-License-Identifier: GPL-3.0-or-later OR MIT
 
 #include "Driver/Font.hpp"

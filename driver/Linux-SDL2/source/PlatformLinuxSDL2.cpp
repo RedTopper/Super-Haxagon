@@ -3,7 +3,7 @@
 
 #include "CreateSDL2.hpp"
 
-#include "Core/Configuration.hpp"
+#include "Driver/Tools/Configuration.hpp"
 #include "Driver/Platform.hpp"
 
 #include <SDL.h>

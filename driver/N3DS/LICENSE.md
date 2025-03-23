@@ -2,7 +2,7 @@
 
 This driver uses the following libraries, which are licensed with the following terms:
 
-## 3DS Driver
+## N3DS Driver
 
 * Directory: files in `driver/N3DS`
 * License: GPLv3-or-later (or MIT)

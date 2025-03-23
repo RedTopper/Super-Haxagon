@@ -4,7 +4,7 @@
 #include "Driver/Platform.hpp"
 
 #include "CreateSFML.hpp"
-#include "Core/Configuration.hpp"
+#include "Driver/Tools/Configuration.hpp"
 #include "Driver/Font.hpp"
 #include "Driver/Music.hpp"
 #include "Driver/Screen.hpp"

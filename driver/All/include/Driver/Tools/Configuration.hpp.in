@@ -2,7 +2,7 @@
 #define CONFIGURATION_HPP
 
 // SPDX-FileCopyrightText: 2025 AJ Walter
-// SPDX-License-Identifier: GPL-3.0-or-later
+// SPDX-License-Identifier: GPL-3.0-or-later OR MIT
 
 #define APP_NAME "${APP_NAME}"
 #define VERSION "V${CMAKE_PROJECT_VERSION}"

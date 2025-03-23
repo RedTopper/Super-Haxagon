@@ -60,13 +60,6 @@ jobs:
     strategy:
       matrix:
         containers:
-          - build: 'N3DS'
-            artifact: 3DS-arm
-            container: ghcr.io/redtopper/super-haxagon/n3ds:latest
-            cache: 'yes'
-            romfs: 'yes'
-            os: ubuntu-latest
-
           - build: 'Linux'
             container: ghcr.io/redtopper/super-haxagon/linux:latest
             artifact: LinuxSFML-x64
@@ -81,6 +74,13 @@ jobs:
           - build: 'Miyoo'
             container: ghcr.io/redtopper/super-haxagon/miyoo:latest
             artifact: MiyooMini-armhf
+            os: ubuntu-latest
+
+          - build: 'N3DS'
+            artifact: 3DS-arm
+            container: ghcr.io/redtopper/super-haxagon/n3ds:latest
+            cache: 'yes'
+            romfs: 'yes'
             os: ubuntu-latest
 
           - build: 'Nspire'

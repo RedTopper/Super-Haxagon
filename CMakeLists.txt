@@ -53,7 +53,7 @@ if(DRIVER_EXAMPLE)
     # if you force it to build with cmake -DDRIVER_EXAMPLE=TRUE
     include(driver/Example/example.cmake)
 elseif(CMAKE_SYSTEM_NAME MATCHES "Nintendo3DS")
-    include(driver/3DS/3ds.cmake)
+    include(driver/N3DS/3ds.cmake)
 elseif(CMAKE_SYSTEM_NAME MATCHES "NintendoSwitch")
     include(driver/Switch/switch.cmake)
 elseif(CMAKE_SYSTEM_NAME MATCHES "Nspire")
@@ -84,9 +84,6 @@ endif()
 include(driver/All/common.cmake)
 
 target_include_directories(${PROJECT_NAME} PRIVATE "${CMAKE_SOURCE_DIR}/source")
-target_include_directories(${PROJECT_NAME} PRIVATE "${CMAKE_BINARY_DIR}")
-
-configure_file(source/Core/Configuration.hpp.in Core/Configuration.hpp)
 
 if (NOT DEFINED LICENSE_PATH)
     set(LICENSE_PATH .)

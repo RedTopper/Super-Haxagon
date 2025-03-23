@@ -1,4 +1,4 @@
-# 3DS Driver
+# N3DS Driver
 
 This driver supports the Nintendo 3DS, both old and new, using libctru, citro2d, citro3d, and stb for audio decoding.
 

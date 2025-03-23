@@ -3,7 +3,6 @@
 
 #include "Driver/Platform.hpp"
 
-#include "Core/Configuration.hpp"
 #include "Driver/Tools/Random.hpp"
 #include "Driver/Font.hpp"
 #include "Driver/Music.hpp"

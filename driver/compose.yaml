@@ -21,9 +21,9 @@ version: '3.8'
 # and run tools/linux/flatpak.sh from the root of this repo
 
 services:
-  3DS:
+  N3DS:
     build:
-      dockerfile: 3ds/Containerfile
+      dockerfile: N3DS/Containerfile
     image: ghcr.io/redtopper/super-haxagon/3ds:latest
     container_name: super-haxagon-3ds
     hostname: super-haxagon-3ds
@@ -33,7 +33,7 @@ services:
       - "CMAKE_ARGS=-DCMAKE_INSTALL_PREFIX=/root/git/release/3ds -DCMAKE_BUILD_TYPE=Release"
     volumes:
       - ../:/root/git:z
-      - ./3DS/build.sh:/usr/local/bin/build.sh
+      - ./N3DS/build.sh:/usr/local/bin/build.sh
   Switch:
     image: devkitpro/devkita64
     container_name: super-haxagon-switch
@@ -47,7 +47,7 @@ services:
       - ./Switch/build.sh:/usr/local/bin/build.sh
   Nspire:
     build:
-      dockerfile: nspire/Containerfile
+      dockerfile: Nspire/Containerfile
     image: ghcr.io/redtopper/super-haxagon/nspire:latest
     container_name: super-haxagon-nspire
     hostname: super-haxagon-nspire

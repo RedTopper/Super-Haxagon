@@ -3,9 +3,9 @@
 
 #include "States/Title.hpp"
 
-#include "Core/Configuration.hpp"
 #include "Core/Game.hpp"
 #include "Core/Metadata.hpp"
+#include "Driver/Tools/Configuration.hpp"
 #include "Driver/Font.hpp"
 #include "Driver/Platform.hpp"
 #include "Driver/Music.hpp"

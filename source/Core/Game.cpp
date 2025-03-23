@@ -19,7 +19,7 @@ namespace SuperHaxagon {
 	Game::Game(Platform& platform) :
 		_platform(platform),
 		_screen(platform.getScreen()),
-		_twister(_platform.getTwister()),
+		_twister(_platform.getRandom()),
 		_camera(),
 		_surfaceGame(_screen, _camera),
 		_surfaceUI(_screen) {
@@ -48,7 +48,7 @@ namespace SuperHaxagon {
 
 		_fontSmall = platform.loadFont(16);
 		_fontLarge = platform.loadFont(32);
-		_twister = platform.getTwister();
+		_twister = platform.getRandom();
 
 		if (static_cast<int>(Platform::supports() & Supports::SHADOWS)) {
 			_surfaceShadows = std::make_unique<SurfaceGame>(_screen, _camera);

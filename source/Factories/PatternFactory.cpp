@@ -3,7 +3,7 @@
 
 #include "Factories/PatternFactory.hpp"
 
-#include "Core/Twist.hpp"
+#include "Driver/Tools/Random.hpp"
 #include "Driver/Platform.hpp"
 
 namespace SuperHaxagon {
@@ -35,7 +35,7 @@ namespace SuperHaxagon {
 
 	PatternFactory::~PatternFactory() = default;
 
-	Pattern PatternFactory::instantiate(Twist& rng, const float distance) const {
+	Pattern PatternFactory::instantiate(Random& rng, const float distance) const {
 		const auto offset = rng.rand(_sides - 1);
 		std::vector<Wall> active;
 		for(const auto& wall : _walls) {

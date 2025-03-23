@@ -59,4 +59,4 @@ namespace SuperHaxagon {
 	Wav::~Wav() {
 		linearFree(data);
 	}
-} // SuperHaxagon
+}

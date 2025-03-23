@@ -9,7 +9,7 @@
 #include <vector>
 
 namespace SuperHaxagon {
-	class Twist;
+	class Random;
 	class Pattern {
 	public:
 		Pattern(std::vector<Wall>& walls, int sides);

@@ -5,9 +5,8 @@
 
 #include "timer.h"
 #include "MemoryFS.hpp"
-#include "Core/Twist.hpp"
+#include "Driver/Tools/Random.hpp"
 #include "Core/Metadata.hpp"
-#include "Core/Structs.hpp"
 #include "Driver/Font.hpp"
 #include "Driver/Music.hpp"
 #include "Driver/Screen.hpp"
@@ -149,9 +148,9 @@ namespace SuperHaxagon {
 		return Supports::NOTHING;
 	}
 
-	Twist Platform::getTwister() {
+	Random Platform::getRandom() {
 		std::unique_ptr<std::seed_seq> seq;
 		seq.reset(new std::seed_seq{time(nullptr)});
-		return Twist(std::move(seq));
+		return Random(std::move(seq));
 	}
 }

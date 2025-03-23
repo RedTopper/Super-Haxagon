@@ -3,8 +3,6 @@
 
 #include "Driver/Font.hpp"
 
-#include "Core/Structs.hpp"
-
 #include <libndls.h>
 
 namespace SuperHaxagon {

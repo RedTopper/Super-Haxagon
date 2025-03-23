@@ -7,7 +7,9 @@ message(STATUS "Building for windows...")
 
 set(PLATFORM_NAME "WINDOWS")
 
-set(DRIVER_PLATFORM driver/Windows/source/PlatformWin.cpp)
+set(DRIVER_PLATFORM
+    driver/Windows/source/PlatformWin.cpp
+)
 
 # SFML sets the warning level to /W4 and Visual Studio sets it to /W3.
 # Clear the default flags (for ALL targets) then add /W4 back to our target later.

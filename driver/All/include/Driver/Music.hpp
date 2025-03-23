@@ -1,5 +1,5 @@
-#ifndef SUPER_HAXAGON_AUDIO_PLAYER_MUSIC_HPP
-#define SUPER_HAXAGON_AUDIO_PLAYER_MUSIC_HPP
+#ifndef DRIVER_MUSIC_HPP
+#define DRIVER_MUSIC_HPP
 
 // SPDX-FileCopyrightText: 2025 AJ Walter
 // SPDX-License-Identifier: GPL-3.0-or-later OR MIT
@@ -7,8 +7,6 @@
 #include <memory>
 
 namespace SuperHaxagon {
-
-
 	class Music {
 	public:
 		struct MusicImpl;
@@ -32,4 +30,4 @@ namespace SuperHaxagon {
 	};
 }
 
-#endif //SUPER_HAXAGON_AUDIO_PLAYER_MUSIC_HPP
+#endif //DRIVER_MUSIC_HPP

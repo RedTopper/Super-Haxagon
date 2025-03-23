@@ -6,8 +6,8 @@
 
 #include "State.hpp"
 
-#include "Core/Vector.hpp"
 #include "Core/Structs.hpp"
+#include "Driver/Tools/Vector.hpp"
 #include "Driver/Platform.hpp"
 
 namespace SuperHaxagon {

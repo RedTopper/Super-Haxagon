@@ -4,7 +4,7 @@
 #include "Factories/LevelFactory.hpp"
 
 #include "Core/Game.hpp"
-#include "Core/Twist.hpp"
+#include "Driver/Tools/Random.hpp"
 #include "Driver/Platform.hpp"
 #include "Factories/PatternFactory.hpp"
 #include "Objects/Level.hpp"
@@ -75,7 +75,7 @@ namespace SuperHaxagon {
 		_loaded = true;
 	}
 
-	std::unique_ptr<Level> LevelFactory::instantiate(Twist& rng, float renderDistance, float rotation, float cursorPos) const {
+	std::unique_ptr<Level> LevelFactory::instantiate(Random& rng, float renderDistance, float rotation, float cursorPos) const {
 		return std::make_unique<Level>(*this, rng, renderDistance, rotation, cursorPos);
 	}
 	bool LevelFactory::setHighScore(const int score) {

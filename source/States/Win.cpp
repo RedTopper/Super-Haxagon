@@ -156,7 +156,7 @@ namespace SuperHaxagon {
 		_timer -= dilation;
 
 		auto& level = *_level;
-		level.update(_game.getTwister(), dilation);
+		level.update(_game.getRandom(), dilation);
 		
 		return nullptr;
 	}

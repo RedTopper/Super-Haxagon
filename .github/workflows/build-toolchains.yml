@@ -71,7 +71,7 @@ jobs:
             const matrix = changedFiles.map(file => ({
               path: file,
               image: (`${process.env.REPO}/` + file.split('/')[1]).toLowerCase(),
-              name: (file.split('/')[1]).toLowerCase()
+              name: file.split('/')[1]
             }));
 
             core.setOutput("matrix", JSON.stringify(matrix));

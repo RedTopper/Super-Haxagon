@@ -28,12 +28,12 @@ else()
 endif()
 
 set(DRIVER ${DRIVER_PLATFORM}
+    driver/All/source/PlatformSupportsFilesystem.cpp
     driver/SFML/source/MusicSFML.cpp
     driver/SFML/source/ScreenSFML.cpp
     driver/SFML/source/SoundSFML.cpp
     driver/SFML/source/FontSFML.cpp
     driver/SFML/source/PlatformSFML.cpp
-    driver/Common/source/PlatformSupportsFilesystem.cpp
 )
 
 add_executable(${PROJECT_NAME} ${DRIVER} ${SOURCES})

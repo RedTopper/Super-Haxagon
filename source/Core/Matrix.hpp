@@ -4,7 +4,7 @@
 // SPDX-FileCopyrightText: 2021 AJ Walter
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#include "Core/Vector.hpp"
+#include "Driver/Tools/Vector.hpp"
 
 #include <cstdint>
 

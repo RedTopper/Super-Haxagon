@@ -4,7 +4,7 @@ This driver uses the following libraries, which are licensed with the following 
 
 ## 3DS Driver
 
-* Directory: files in `driver/3DS`
+* Directory: files in `driver/N3DS`
 * License: GPLv3-or-later (or MIT)
 * Copyright © 2020 AJ Walter
 

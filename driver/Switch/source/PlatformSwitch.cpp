@@ -5,7 +5,7 @@
 
 #include "RenderTarget.hpp"
 #include "Core/Configuration.hpp"
-#include "Core/Twist.hpp"
+#include "Driver/Tools/Random.hpp"
 #include "Driver/Font.hpp"
 #include "Driver/Music.hpp"
 #include "Driver/Screen.hpp"
@@ -50,7 +50,6 @@ namespace SuperHaxagon {
 		}
 
 		~PlatformImpl() {
-			for (auto& sfx : sfxBuffers) Mix_FreeChunk(sfx.second);
 			if (musicBuffer) Mix_FreeMusic(musicBuffer);
 			Mix_Quit();
 			SDL_Quit();
@@ -143,7 +142,6 @@ namespace SuperHaxagon {
 		VertexStorage targetVertex{};
 		VertexUVStorage targetVertexUV{};
 
-		std::vector<std::pair<SoundEffect, Mix_Chunk*>> sfxBuffers{};
 		Mix_Music* musicBuffer{};
 
 		std::unique_ptr<Screen> screen = nullptr;
@@ -213,11 +211,11 @@ namespace SuperHaxagon {
 		return _impl->getPressed();
 	}
 	
-	Twist Platform::getTwister() {
+	Random Platform::getRandom() {
 		// ALSO a shitty way to do this, but it's the best I got.
 		std::unique_ptr<std::seed_seq> seq;
 		seq.reset(new std::seed_seq{ svcGetSystemTick() });
-		return Twist(std::move(seq));
+		return Random(std::move(seq));
 	}
 	
 	void Platform::shutdown() {

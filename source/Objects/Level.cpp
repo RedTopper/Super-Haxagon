@@ -4,14 +4,14 @@
 #include "Objects/Level.hpp"
 
 #include "Core/Game.hpp"
-#include "Core/Twist.hpp"
+#include "Driver/Tools/Random.hpp"
 #include "Factories/LevelFactory.hpp"
 #include "Factories/PatternFactory.hpp"
 
 #include <algorithm>
 
 namespace SuperHaxagon {
-	Level::Level(const LevelFactory& factory, Twist& rng, const float patternDistCreate, const float rotation, const float cursorPos) : _factory(&factory) {
+	Level::Level(const LevelFactory& factory, Random& rng, const float patternDistCreate, const float rotation, const float cursorPos) : _factory(&factory) {
 		for (auto i = COLOR_LOCATION_FIRST; i != COLOR_LOCATION_LAST; i++) {
 			const auto location = static_cast<LocColor>(i);
 			const auto& colors = factory.getColors().at(location);
@@ -32,7 +32,7 @@ namespace SuperHaxagon {
 
 	Level::~Level() = default;
 
-	void Level::update(Twist& rng, const float dilation) {
+	void Level::update(Random& rng, const float dilation) {
 		// Update frame
 		_frame += dilation;
 		
@@ -226,7 +226,7 @@ namespace SuperHaxagon {
 		}
 	}
 
-	void Level::advanceWalls(Twist& rng, const float patternDistDelete, const float patternDistCreate) {
+	void Level::advanceWalls(Random& rng, const float patternDistDelete, const float patternDistCreate) {
 		// Shift patterns forward
 		if (_patterns.front().getFurthestWallDistance() < patternDistDelete) {
 			_sidesLast = _patterns.front().getSides();
@@ -246,7 +246,7 @@ namespace SuperHaxagon {
 		}
 	}
 
-	auto Level::reverseWalls(Twist& rng, const float patternDistDelete, const float patternDistCreate) -> void {
+	auto Level::reverseWalls(Random& rng, const float patternDistDelete, const float patternDistCreate) -> void {
 		if (_patterns.back().getClosestWallDistance() > patternDistDelete && _patterns.size() > 1) {
 			_patterns.pop_back();
 		}
@@ -262,7 +262,7 @@ namespace SuperHaxagon {
 		}
 	}
 
-	const PatternFactory& Level::getRandomPattern(Twist& rng) {
+	const PatternFactory& Level::getRandomPattern(Random& rng) {
 		const auto& patterns = _factory->getPatterns();
 		if (_sameCount <= 0) {
 			const auto& pattern = *patterns[rng.rand(static_cast<int>(patterns.size()) - 1)];

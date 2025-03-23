@@ -15,8 +15,8 @@ if (NOT BUILD_BUNDLE)
 endif()
 
 set(DRIVER_PLATFORM
+    driver/All/source/PlatformIsFullyRandom.cpp
     driver/macOS/source/PlatformMacOS.cpp
-    driver/Common/source/PlatformIsFullyRandom.cpp
 )
 
 include(driver/macOS/cmake/functions.cmake)

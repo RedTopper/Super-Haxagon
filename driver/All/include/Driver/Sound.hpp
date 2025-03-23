@@ -1,5 +1,5 @@
-#ifndef SUPER_HAXAGON_AUDIO_PLAYER_SOUND_HPP
-#define SUPER_HAXAGON_AUDIO_PLAYER_SOUND_HPP
+#ifndef DRIVER_SOUND_HPP
+#define DRIVER_SOUND_HPP
 
 // SPDX-FileCopyrightText: 2025 AJ Walter
 // SPDX-License-Identifier: GPL-3.0-or-later OR MIT
@@ -21,4 +21,4 @@ namespace SuperHaxagon {
 	};
 }
 
-#endif //SUPER_HAXAGON_AUDIO_PLAYER_SOUND_HPP
+#endif //DRIVER_SOUND_HPP

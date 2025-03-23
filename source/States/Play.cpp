@@ -21,7 +21,7 @@ namespace SuperHaxagon {
 		_platform(game.getPlatform()),
 		_factory(factory),
 		_selected(selected),
-		_level(factory.instantiate(game.getTwister(), BASE_DISTANCE, rotation, cursorPos)),
+		_level(factory.instantiate(game.getRandom(), BASE_DISTANCE, rotation, cursorPos)),
 		_score(startScore)
 	{}
 
@@ -107,7 +107,7 @@ namespace SuperHaxagon {
 
 		// Update level
 		const auto previousFrame = _level->getFrame();
-		_level->update(_game.getTwister(), dilation);
+		_level->update(_game.getRandom(), dilation);
 
 		// Button presses, rotate this frame to last.
 		_lastPressed = _currentlyPressed;

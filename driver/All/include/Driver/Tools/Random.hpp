@@ -1,10 +1,8 @@
-#ifndef SUPER_HAXAGON_TWIST_HPP
-#define SUPER_HAXAGON_TWIST_HPP
+#ifndef DRIVER_RANDOM_HPP
+#define DRIVER_RANDOM_HPP
 
 // SPDX-FileCopyrightText: 2018 AJ Walter
-// SPDX-License-Identifier: GPL-3.0-or-later
-
-#include "Vector.hpp"
+// SPDX-License-Identifier: GPL-3.0-or-later OR MIT
 
 #include <algorithm>
 #include <memory>
@@ -16,9 +14,9 @@ namespace SuperHaxagon {
 	 * Note: This class was taken from
 	 * https://github.com/RedTopper/Adventure-Commander
 	 */
-	class Twist {
+	class Random {
 	public:
-		explicit Twist(const std::unique_ptr<std::seed_seq> seeds) {
+		explicit Random(const std::unique_ptr<std::seed_seq> seeds) {
 			_mt = std::make_unique<std::mt19937>(*seeds);
 		}
 
@@ -49,16 +47,6 @@ namespace SuperHaxagon {
 		}
 
 		/**
-		 * Generates a random point within the specified
-		 * dimension from ( [0, x], [0, y] )
-		 * @param max The maximum point (Closed)
-		 * @return a random point
-		 */
-		Vec2f rand(const Vec2f& max) const {
-			return rand(Vec2f(), max);
-		}
-
-		/**
 		 * Generates an int between [min, max]
 		 * @param min The minimum integer (Closed)
 		 * @param max The maximum integer (Closed)
@@ -76,17 +64,6 @@ namespace SuperHaxagon {
 		 */
 		float rand(const float min, const float max) const {
 			return static_cast<float>(std::uniform_real_distribution<>(min, max)(*_mt));
-		}
-
-		/**
-		 * Generates a random point within the specified
-		 * dimension from ( [min.x, max.x], [min.y, max.y] )
-		 * @param min The minimum point (Closed)
-		 * @param max The maximum point (Closed)
-		 * @return a random point
-		 */
-		Vec2f rand(const Vec2f& min, const Vec2f& max) const {
-			return Vec2f{rand(min.x, max.x), rand(min.y, max.y)};
 		}
 
 		/**
@@ -125,4 +102,4 @@ namespace SuperHaxagon {
 	};
 }
 
-#endif //SUPER_HAXAGON_TWIST_HPP
+#endif //DRIVER_RANDOM_HPP

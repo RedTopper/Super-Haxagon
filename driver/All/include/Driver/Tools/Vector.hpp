@@ -1,12 +1,12 @@
-#ifndef SUPER_HAXAGON_VECTOR_HPP
-#define SUPER_HAXAGON_VECTOR_HPP
+#ifndef DRIVER_VECTOR_HPP
+#define DRIVER_VECTOR_HPP
 
 // SPDX-FileCopyrightText: 2021 AJ Walter
-// SPDX-License-Identifier: GPL-3.0-or-later
+// SPDX-License-Identifier: GPL-3.0-or-later OR MIT
 
+#include <algorithm>
 #include <cstdint>
 #include <cmath>
-#include <algorithm>
 
 namespace SuperHaxagon {
 
@@ -149,4 +149,4 @@ namespace SuperHaxagon {
 	typedef Vec3<float> Vec3f;
 }
 
-#endif //SUPER_HAXAGON_VECTOR_HPP
+#endif //DRIVER_VECTOR_HPP

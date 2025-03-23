@@ -3,8 +3,6 @@
 
 #include "Driver/Screen.hpp"
 
-#include "Core/Structs.hpp"
-
 #include <3ds.h>
 #include <citro2d.h>
 

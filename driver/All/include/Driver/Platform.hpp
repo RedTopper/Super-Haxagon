@@ -1,10 +1,11 @@
-#ifndef SUPER_HAXAGON_PLATFORM_HPP
-#define SUPER_HAXAGON_PLATFORM_HPP
+#ifndef DRIVER_PLATFORM_HPP
+#define DRIVER_PLATFORM_HPP
 
 // SPDX-FileCopyrightText: 2025 AJ Walter
 // SPDX-License-Identifier: GPL-3.0-or-later OR MIT
 
-#include "Core/Vector.hpp"
+#include "Driver/Tools/Color.hpp"
+#include "Driver/Tools/Vector.hpp"
 
 #include <memory>
 #include <string>
@@ -12,8 +13,7 @@
 #include <fstream>
 
 namespace SuperHaxagon {
-	struct Color;
-	class Twist;
+	class Random;
 	class Font;
 	class Music;
 	class Sound;
@@ -85,7 +85,7 @@ namespace SuperHaxagon {
 		std::string getButtonName(ButtonName buttonName);
 		Buttons getPressed() const;
 
-		Twist getTwister();
+		Random getRandom();
 
 		void shutdown();
 		void message(Dbg level, const std::string& where, const std::string& message) const;
@@ -101,4 +101,4 @@ namespace SuperHaxagon {
 	};
 }
 
-#endif //SUPER_HAXAGON_PLATFORM_HPP
+#endif //DRIVER_PLATFORM_HPP

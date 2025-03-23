@@ -3,8 +3,6 @@
 
 #include "Driver/Screen.hpp"
 
-#include "Core/Structs.hpp"
-
 #include <ngc.h>
 
 namespace SuperHaxagon {

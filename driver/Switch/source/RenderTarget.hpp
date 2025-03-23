@@ -4,7 +4,9 @@
 // SPDX-FileCopyrightText: 2020 AJ Walter
 // SPDX-License-Identifier: GPL-3.0-or-later OR MIT
 
-#include "Core/Structs.hpp"
+#include "Driver/Tools/Color.hpp"
+#include "Driver/Tools/Vector.hpp"
+#include "Driver/Platform.hpp"
 
 #include <glad/glad.h>
 

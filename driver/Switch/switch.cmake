@@ -11,13 +11,13 @@ include_directories(SYSTEM "$ENV{DEVKITPRO}/portlibs/switch/include")
 include_directories(SYSTEM "$ENV{DEVKITPRO}/portlibs/switch/include/freetype2")
 
 set(DRIVER
+    driver/All/source/PlatformSupportsFilesystem.cpp
     driver/Switch/source/MusicSwitch.cpp
     driver/Switch/source/ScreenSwitch.cpp
     driver/Switch/source/FontSwitch.cpp
     driver/Switch/source/PlatformSwitch.cpp
     driver/Switch/source/RenderTarget.cpp
     driver/SDL2/source/SoundSDL2.cpp
-    driver/Common/source/PlatformSupportsFilesystem.cpp
 )
 
 add_executable(${PROJECT_NAME} ${DRIVER} ${SOURCES})

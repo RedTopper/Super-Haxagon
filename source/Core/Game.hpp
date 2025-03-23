@@ -16,7 +16,7 @@ namespace SuperHaxagon {
 	class LevelFactory;
 	class State;
 	class Platform;
-	class Twist;
+	class Random;
 	class Font;
 	class Metadata;
 	class Sound;
@@ -41,7 +41,7 @@ namespace SuperHaxagon {
 		Music* getMusic() const {return _bgm.get();}
 		Metadata* getBGMMetadata() const {return _bgmMetadata.get();}
 		Platform& getPlatform() const {return _platform;}
-		Twist& getTwister() {return _twister;}
+		Random& getRandom() {return _twister;}
 		Font* getFontSmall() const {return _fontSmall.get();}
 		Font* getFontLarge() const {return _fontLarge.get();}
 
@@ -52,7 +52,7 @@ namespace SuperHaxagon {
 	private:
 		Platform& _platform;
 		Screen& _screen;
-		Twist _twister;
+		Random _twister;
 		Camera _camera;
 
 		SurfaceGame _surfaceGame;

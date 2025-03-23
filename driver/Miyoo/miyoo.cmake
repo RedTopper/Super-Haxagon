@@ -17,12 +17,12 @@ set(PLATFORM_NAME "MIYOO MINI")
 set(RENDER_QUARTER_RES TRUE)
 
 set(DRIVER
+    driver/All/source/PlatformIsFullyRandom.cpp
     driver/SDL2/source/MusicSDL2.cpp
     driver/SDL2/source/SoundSDL2.cpp
     driver/SDL2/source/FontSDL2.cpp
     driver/Miyoo/source/ScreenMiyooMini.cpp
     driver/Miyoo/source/PlatformMiyooMini.cpp
-    driver/Common/source/PlatformIsFullyRandom.cpp
 )
 
 add_executable(${PROJECT_NAME} ${DRIVER} ${SOURCES})

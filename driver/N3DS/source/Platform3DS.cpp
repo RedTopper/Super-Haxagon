@@ -4,8 +4,7 @@
 #include "Driver/Platform.hpp"
 
 #include "Core/Configuration.hpp"
-#include "Core/Structs.hpp"
-#include "Core/Twist.hpp"
+#include "Driver/Tools/Random.hpp"
 #include "Driver/Font.hpp"
 #include "Driver/Music.hpp"
 #include "Driver/Screen.hpp"
@@ -228,11 +227,11 @@ namespace SuperHaxagon {
 		return buttons;
 	}
 
-	Twist Platform::getTwister() {
+	Random Platform::getRandom() {
 		// Kind of a shitty way to do this, but it's the best I got.
 		std::unique_ptr<std::seed_seq> seq;
 		seq.reset(new std::seed_seq{svcGetSystemTick(), static_cast<u64>(time(nullptr))});
-		return Twist(std::move(seq));
+		return Random(std::move(seq));
 	}
 
 	void Platform::shutdown() {

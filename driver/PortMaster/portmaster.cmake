@@ -10,10 +10,10 @@ message(STATUS "Building for portmaster...")
 set(PLATFORM_NAME "PORTMASTER")
 
 set(DRIVER_PLATFORM ${DRIVER_PLATFORM}
+    driver/All/source/PlatformIsFullyRandom.cpp
+    driver/All/source/PlatformSupportsFilesystem.cpp
     driver/SDL2/source/ScreenSDL2.cpp
     driver/SDL2/source/KeybindsSDL2.cpp
-    driver/Common/source/PlatformIsFullyRandom.cpp
-    driver/Common/source/PlatformSupportsFilesystem.cpp
     driver/PortMaster/source/PlatformPortMaster.cpp
 )
 

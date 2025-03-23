@@ -5,7 +5,6 @@
 
 #include "CreateSFML.hpp"
 #include "Core/Configuration.hpp"
-#include "Core/Structs.hpp"
 #include "Driver/Font.hpp"
 #include "Driver/Music.hpp"
 #include "Driver/Screen.hpp"

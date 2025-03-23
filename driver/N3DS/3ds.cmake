@@ -18,16 +18,16 @@ FetchContent_MakeAvailable(stb)
 set(PLATFORM_NAME "3DS")
 
 # Include extra banner, icon, and rom functions
-include(driver/3DS/cmake/functions.cmake)
+include(driver/N3DS/cmake/functions.cmake)
 
 set(DRIVER
-    driver/3DS/source/Platform3DS.cpp
-    driver/3DS/source/Font3DS.cpp
-    driver/3DS/source/Music3DS.cpp
-    driver/3DS/source/Screen3DS.cpp
-    driver/3DS/source/Sound3DS.cpp
-    driver/3DS/source/Wav3DS.cpp
-    driver/Common/source/PlatformSupportsFilesystem.cpp
+    driver/All/source/PlatformSupportsFilesystem.cpp
+    driver/N3DS/source/Platform3DS.cpp
+    driver/N3DS/source/Font3DS.cpp
+    driver/N3DS/source/Music3DS.cpp
+    driver/N3DS/source/Screen3DS.cpp
+    driver/N3DS/source/Sound3DS.cpp
+    driver/N3DS/source/Wav3DS.cpp
 )
 
 add_executable(${PROJECT_NAME} ${DRIVER} ${SOURCES})

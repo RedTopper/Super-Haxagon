@@ -3,8 +3,6 @@
 
 #include "Driver/Font.hpp"
 
-#include "Core/Structs.hpp"
-
 #include <SFML/Graphics/Font.hpp>
 #include <SFML/Graphics/Text.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>

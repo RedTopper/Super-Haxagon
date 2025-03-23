@@ -14,7 +14,7 @@ namespace SuperHaxagon {
 	class Game;
 	class LevelFactory;
 	class PatternFactory;
-	class Twist;
+	class Random;
 	class SurfaceGame;
 
 	class Level {
@@ -33,11 +33,11 @@ namespace SuperHaxagon {
 		static constexpr int MIN_SAME_SIDES = 3;
 		static constexpr int MAX_SAME_SIDES = 5;
 
-		Level(const LevelFactory& factory, Twist& rng, float patternDistCreate, float rotation, float cursorPos);
+		Level(const LevelFactory& factory, Random& rng, float patternDistCreate, float rotation, float cursorPos);
 		Level(Level&) = delete;
 		~Level();
 
-		void update(Twist& rng, float dilation);
+		void update(Random& rng, float dilation);
 		void draw(SurfaceGame& game, SurfaceGame* shadows, float offset, float scaleFactor) const;
 		Movement collision(float cursorDistance, float dilation) const;
 
@@ -76,9 +76,9 @@ namespace SuperHaxagon {
 		void resetColors();
 
 	private:
-		void advanceWalls(Twist& rng, float patternDistDelete, float patternDistCreate);
-		void reverseWalls(Twist& rng, float patternDistDelete, float patternDistCreate);
-		const PatternFactory& getRandomPattern(Twist& rng);
+		void advanceWalls(Random& rng, float patternDistDelete, float patternDistCreate);
+		void reverseWalls(Random& rng, float patternDistDelete, float patternDistCreate);
+		const PatternFactory& getRandomPattern(Random& rng);
 		
 		const LevelFactory* _factory;
 

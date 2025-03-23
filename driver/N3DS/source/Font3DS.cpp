@@ -3,8 +3,6 @@
 
 #include "Driver/Font.hpp"
 
-#include "Core/Structs.hpp"
-
 #include <3ds/font.h>
 #include <citro2d.h>
 

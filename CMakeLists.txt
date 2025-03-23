@@ -81,7 +81,7 @@ else()
     message(FATAL_ERROR "No viable platform to build for!")
 endif()
 
-include(driver/Common/common.cmake)
+include(driver/All/common.cmake)
 
 target_include_directories(${PROJECT_NAME} PRIVATE "${CMAKE_SOURCE_DIR}/source")
 target_include_directories(${PROJECT_NAME} PRIVATE "${CMAKE_BINARY_DIR}")
@@ -111,5 +111,5 @@ endif()
 # This will NOT allow those components to link though, you'll need the full
 # toolchain for that.
 if(HEADERS_FOR_IDE)
-    include(driver/Common/cmake/libraries.cmake)
+    include(driver/All/cmake/libraries.cmake)
 endif()

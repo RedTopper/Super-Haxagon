@@ -11,7 +11,7 @@
 #include <string>
 
 namespace SuperHaxagon {
-	class Twist;
+	class Random;
 	class PatternFactory {
 	public:
 		static const char* PATTERN_HEADER;
@@ -21,7 +21,7 @@ namespace SuperHaxagon {
 		PatternFactory(std::istream& stream, Platform& platform);
 		~PatternFactory();
 
-		Pattern instantiate(Twist& rng, float distance) const;
+		Pattern instantiate(Random& rng, float distance) const;
 
 		bool isLoaded() const {return _loaded;}
 		int getSides() const {return _sides;}

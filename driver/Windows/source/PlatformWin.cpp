@@ -1,6 +1,6 @@
 #include "CreateSFML.hpp"
 
-#include "Core/Twist.hpp"
+#include "Driver/Tools/Random.hpp"
 #include "Driver/Screen.hpp"
 #include "Driver/Platform.hpp"
 
@@ -36,7 +36,7 @@ namespace SuperHaxagon {
 		}
 	}
 
-	Twist Platform::getTwister() {
+	Random Platform::getRandom() {
 		try {
 			std::random_device source;
 			if (source.entropy() == 0) {
@@ -46,11 +46,11 @@ namespace SuperHaxagon {
 
 			std::mt19937::result_type data[std::mt19937::state_size];
 			generate(std::begin(data), std::end(data), ref(source));
-			return Twist(std::make_unique<std::seed_seq>(std::begin(data), std::end(data)));
+			return Random(std::make_unique<std::seed_seq>(std::begin(data), std::end(data)));
 		} catch (std::runtime_error&) {
 			std::unique_ptr<std::seed_seq> seq;
 			seq.reset(new std::seed_seq{time(nullptr)});
-			return Twist(std::move(seq));
+			return Random(std::move(seq));
 		}
 	}
 }

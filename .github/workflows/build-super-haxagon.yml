@@ -29,12 +29,12 @@ env:
   REPO: ghcr.io/${{ github.repository }}
 
 jobs:
-  # First, try and build the Null driver before spending time with the more expensive runners (like macOS)
+  # First, try and build the example driver before spending time with the more expensive runners (like macOS)
   build-test:
     name: Test Compile
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/redtopper/super-haxagon/null:latest
+      image: ghcr.io/redtopper/super-haxagon/example:latest
       options: --user root
     steps:
       - name: Checkout Code
@@ -60,9 +60,9 @@ jobs:
     strategy:
       matrix:
         containers:
-          - build: '3DS'
+          - build: 'N3DS'
             artifact: 3DS-arm
-            container: ghcr.io/redtopper/super-haxagon/3ds:latest
+            container: ghcr.io/redtopper/super-haxagon/n3ds:latest
             cache: 'yes'
             romfs: 'yes'
             os: ubuntu-latest
@@ -123,7 +123,7 @@ jobs:
           CMAKE_ARGS="-DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=../install" ../../driver/${{ matrix.containers.build }}/build.sh
 
       - name: Upload Artifact
-        if: matrix.containers.build != '3DS'
+        if: matrix.containers.build != 'N3DS'
         uses: actions/upload-artifact@v4
         with:
           name: SuperHaxagon-${{ matrix.containers.artifact }}${{ matrix.containers.romfs == 'yes' && '' || '-no-romfs' }}
@@ -133,13 +133,13 @@ jobs:
 
         # Special uploads for 3DS
       - name: Upload 3DS 3DSX
-        if: matrix.containers.build == '3DS'
+        if: matrix.containers.build == 'N3DS'
         uses: actions/upload-artifact@v4
         with:
           name: SuperHaxagon-${{ matrix.containers.artifact }}.3dsx
           path: artifacts/install/SuperHaxagon.3dsx
       - name: Upload 3DS CIA
-        if: matrix.containers.build == '3DS'
+        if: matrix.containers.build == 'N3DS'
         uses: actions/upload-artifact@v4
         with:
           name: SuperHaxagon-${{ matrix.containers.artifact }}.cia

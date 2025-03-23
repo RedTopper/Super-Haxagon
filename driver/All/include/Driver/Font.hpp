@@ -1,10 +1,11 @@
-#ifndef SUPER_HAXAGON_FONT_HPP
-#define SUPER_HAXAGON_FONT_HPP
+#ifndef DRIVER_FONT_HPP
+#define DRIVER_FONT_HPP
 
 // SPDX-FileCopyrightText: 2025 AJ Walter
 // SPDX-License-Identifier: GPL-3.0-or-later OR MIT
 
-#include "Core/Vector.hpp"
+#include "Driver/Tools/Color.hpp"
+#include "Driver/Tools/Vector.hpp"
 
 #include <memory>
 #include <string>
@@ -15,8 +16,6 @@ namespace SuperHaxagon {
 		CENTER,
 		RIGHT
 	};
-
-	struct Color;
 
 	class Platform;
 
@@ -38,4 +37,4 @@ namespace SuperHaxagon {
 	};
 }
 
-#endif //SUPER_HAXAGON_FONT_HPP
+#endif //DRIVER_FONT_HPP

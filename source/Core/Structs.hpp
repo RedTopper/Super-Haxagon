@@ -4,7 +4,8 @@
 // SPDX-FileCopyrightText: 2020 AJ Walter
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#include "Vector.hpp"
+#include "Driver/Tools/Color.hpp"
+#include "Driver/Tools/Vector.hpp"
 
 #include <cstdint>
 #include <fstream>
@@ -12,13 +13,6 @@
 
 namespace SuperHaxagon {
 	class Platform;
-
-	struct Color {
-		uint8_t r;
-		uint8_t g;
-		uint8_t b;
-		uint8_t a;
-	};
 
 	enum class Movement {
 		CAN_MOVE,
@@ -78,12 +72,6 @@ namespace SuperHaxagon {
 	static constexpr float FRAMES_PER_PULSE_LEAD_UP = 3.0f;
 	static constexpr float FRAMES_PER_PULSE_LEAD_OUT = 10.0f;
 	static constexpr float MAX_PULSE_DISTANCE = 0.055f;
-
-	static const Color COLOR_SHADOW = {0, 0, 0, 0xC0};
-	static const Color COLOR_TRANSPARENT = {0, 0, 0, 0xA0};
-	static const Color COLOR_GREY = {0xA0, 0xA0, 0xA0, 0xFF};
-	static const Color COLOR_WHITE =  {0xFF, 0xFF, 0xFF, 0xFF};
-	static const Color COLOR_BLACK =  {0, 0, 0, 0xFF};
 
 	static const Color PULSE_LOW = {0xFF, 0xFF, 0xFF, 0x7F};
 	static const Color PULSE_HIGH = {0xFF, 0xFF, 0xFF, 0xFF};

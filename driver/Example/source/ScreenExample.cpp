@@ -3,8 +3,6 @@
 
 #include "Driver/Screen.hpp"
 
-#include "Core/Structs.hpp"
-
 namespace SuperHaxagon {
 	struct Screen::ScreenImpl {
 		ScreenImpl() {

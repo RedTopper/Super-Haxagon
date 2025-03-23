@@ -1,17 +1,16 @@
-#ifndef SUPER_HAXAGON_SCREEN_HPP
-#define SUPER_HAXAGON_SCREEN_HPP
+#ifndef DRIVER_SCREEN_HPP
+#define DRIVER_SCREEN_HPP
 
 // SPDX-FileCopyrightText: 2025 AJ Walter
 // SPDX-License-Identifier: GPL-3.0-or-later OR MIT
 
-#include "Core/Vector.hpp"
+#include "Driver/Tools/Color.hpp"
+#include "Driver/Tools/Vector.hpp"
 
 #include <vector>
 #include <memory>
 
 namespace SuperHaxagon {
-	struct Color;
-
 	class Screen {
 	public:
 		struct ScreenImpl;
@@ -33,4 +32,4 @@ namespace SuperHaxagon {
 	};
 }
 
-#endif //SUPER_HAXAGON_SCREEN_HPP
+#endif //DRIVER_SCREEN_HPP

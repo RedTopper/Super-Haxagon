@@ -3,7 +3,6 @@
 
 #include "Driver/Font.hpp"
 
-#include "Core/Structs.hpp"
 #include "Driver/Platform.hpp"
 
 #include <SDL2/SDL.h>

@@ -85,8 +85,8 @@ jobs:
             os: ubuntu-latest
 
           - build: 'N3DS'
-            artifact: 3DS-arm
             container: ghcr.io/redtopper/super-haxagon/n3ds:latest
+            artifact: 3DS-arm
             cache: 'yes'
             romfs: 'yes'
             os: ubuntu-latest
@@ -137,10 +137,10 @@ jobs:
         if: matrix.containers.build != 'N3DS'
         uses: actions/upload-artifact@v4
         with:
-          name: SuperHaxagon-${{ matrix.containers.artifact }}${{ matrix.containers.romfs == 'yes' && '' || '-no-romfs' }}
+          name: SuperHaxagon-${{ matrix.containers.artifact }}${{ matrix.containers.romfs == 'no' && '-no-romfs' || '' }}
           path: |
             artifacts/install
-            ${{ matrix.containers.romfs == 'yes' && '' || '!artifacts/install/**/romfs/**' }}
+            ${{ matrix.containers.romfs == 'no' && '!artifacts/install/**/romfs/**' || '' }}
 
         # Special uploads for 3DS
       - name: Upload 3DS 3DSX

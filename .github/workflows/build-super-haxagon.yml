@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2025 AJ Walter
+# SPDX-License-Identifier: GPL-3.0-or-later OR MIT
+
 name: Build SuperHaxagon
 
 on:
@@ -64,21 +67,26 @@ jobs:
             container: ghcr.io/redtopper/super-haxagon/linux:latest
             artifact: LinuxSFML-x64
             cache: 'yes'
+            romfs: 'no'
             os: ubuntu-latest
 
           - build: 'Linux-SDL2'
             container: ghcr.io/redtopper/super-haxagon/linux-sdl2:latest
             artifact: LinuxSDL2-x64
+            cache: 'no'
+            romfs: 'no'
             os: ubuntu-latest
 
           - build: 'Miyoo'
             container: ghcr.io/redtopper/super-haxagon/miyoo:latest
             artifact: MiyooMini-armhf
+            cache: 'no'
+            romfs: 'no'
             os: ubuntu-latest
 
           - build: 'N3DS'
-            artifact: 3DS-arm
             container: ghcr.io/redtopper/super-haxagon/n3ds:latest
+            artifact: 3DS-arm
             cache: 'yes'
             romfs: 'yes'
             os: ubuntu-latest
@@ -86,18 +94,21 @@ jobs:
           - build: 'Nspire'
             container: ghcr.io/redtopper/super-haxagon/nspire:latest
             artifact: Nspire-arm
+            cache: 'no'
             romfs: 'yes'
             os: ubuntu-latest
 
           - build: 'Switch'
             container: docker.io/devkitpro/devkita64:latest
             artifact: Switch-arm
+            cache: 'no'
             romfs: 'yes'
             os: ubuntu-latest
 
           - build: 'PortMaster'
             container: docker.io/monkeyx/retro_builder:arm64
             artifact: PortMaster-arm64-autoinstall
+            cache: 'no'
             romfs: 'yes'
             os: ubuntu-24.04-arm
 
@@ -126,10 +137,10 @@ jobs:
         if: matrix.containers.build != 'N3DS'
         uses: actions/upload-artifact@v4
         with:
-          name: SuperHaxagon-${{ matrix.containers.artifact }}${{ matrix.containers.romfs == 'yes' && '' || '-no-romfs' }}
+          name: SuperHaxagon-${{ matrix.containers.artifact }}${{ matrix.containers.romfs == 'no' && '-no-romfs' || '' }}
           path: |
             artifacts/install
-            ${{ matrix.containers.romfs == 'yes' && '' || '!artifacts/install/**/romfs/**' }}
+            ${{ matrix.containers.romfs == 'no' && '!artifacts/install/**/romfs/**' || '' }}
 
         # Special uploads for 3DS
       - name: Upload 3DS 3DSX

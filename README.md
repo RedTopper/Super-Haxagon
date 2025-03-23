@@ -14,14 +14,14 @@ level editor called [Haxa Editor](https://github.com/RedTopper/Haxa-Editor).
 
 ## Features
 
-* Cross-platform with modular drivers
-* Music timed camera and spin effects
-* Device independent 3D effects
-* Supports any aspect ratio
-* Supports high refresh rates
-* Create custom levels
-* Save files for scores
-* Build toolchain with cmake
+ * Cross-platform with modular drivers
+ * Music timed camera and spin effects
+ * Device independent 3D effects
+ * Supports any aspect ratio
+ * Supports high refresh rates
+ * Create custom levels
+ * Save files for scores
+ * Build toolchain with cmake
 
 ## Download
 
@@ -41,21 +41,22 @@ git clone https://github.com/RedTopper/Super-Haxagon.git
 
 Then, [find your device in the driver directory](./driver).
 
-* [3DS](./driver/3DS/README.md) for the Nintendo 3DS
-* [Example](./driver/Example/README.md) for building an example driver
-* [Linux](./driver/Linux/README.md) for Linux
-* [Linux-SDL2](./driver/Linux-SDL2/README.md) for Linux with the SDL2 backend
-* [macOS](./driver/macOS/README.md) for macOS
-* [Miyoo](./driver/Miyoo/README.md) for the MiyooMini
-* [Nspire](./driver/Nspire/README.md) for the TI-Nspire
-* [PortMaster](./driver/PortMaster/README.md) for PortMaster and retro gaming handhelds
-* [Switch](./driver/Switch/README.md) for the Nintendo Switch
-* [Windows](./driver/Switch/README.md) for Microsoft Windows
+ * [Example](./driver/Example/README.md) for building an example driver
+ * [Linux](./driver/Linux/README.md) for Linux
+ * [Linux-SDL2](./driver/Linux-SDL2/README.md) for Linux with the SDL2 backend
+ * [macOS](./driver/macOS/README.md) for macOS
+ * [Miyoo](./driver/Miyoo/README.md) for the MiyooMini
+ * [N3DS](./driver/N3DS/README.md) for the Nintendo 3DS
+ * [Nspire](./driver/Nspire/README.md) for the TI-Nspire
+ * [PortMaster](./driver/PortMaster/README.md) for PortMaster and retro gaming handhelds
+ * [Switch](./driver/Switch/README.md) for the Nintendo Switch
+ * [Windows](./driver/Switch/README.md) for Microsoft Windows
 
 ## Credits
 
- * The original game [Super Hexagon](http://superhexagon.com/) by Terry Cavanagh
- * The people on the [contributors page](https://github.com/RedTopper/Super-Haxagon/graphs/contributors) (seriously, you guys rock!)
+The original game [Super Hexagon](http://superhexagon.com/) by Terry Cavanagh
+
+The people on the [contributors page](https://github.com/RedTopper/Super-Haxagon/graphs/contributors) (seriously, you guys rock!)
 
 ### Assets
 
@@ -73,7 +74,7 @@ Individual library credits and licenses have moved to the device driver itself.
 Please check out these individual LICENSE.md files for links to the wonderful projects
 that make SuperHaxagon possible!
 
- * [3DS Driver](./driver/3DS/LICENSE.md) for the Nintendo 3DS
+ * [N3DS Driver](./driver/N3DS/LICENSE.md) for the Nintendo 3DS
  * [Switch Driver](./driver/Switch/LICENSE.md) for the Nintendo Switch
  * [Nspire Driver](./driver/Nspire/LICENSE.md) for the TI-Nspire
  * [SFML Driver](./driver/Switch/LICENSE.md) for Linux, macOS, and Windows

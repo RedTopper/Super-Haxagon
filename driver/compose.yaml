@@ -24,7 +24,7 @@ services:
   N3DS:
     build:
       dockerfile: N3DS/Containerfile
-    image: ghcr.io/redtopper/super-haxagon/3ds:latest
+    image: ghcr.io/redtopper/super-haxagon/n3ds:latest
     container_name: super-haxagon-3ds
     hostname: super-haxagon-3ds
     command: build.sh
@@ -88,7 +88,7 @@ services:
     # Example driver and build tooling
     build:
       dockerfile: Example/Containerfile
-    image: ghcr.io/redtopper/super-haxagon/null:latest
+    image: ghcr.io/redtopper/super-haxagon/example:latest
     container_name: super-haxagon-example
     hostname: super-haxagon-example
     command: build.sh

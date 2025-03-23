@@ -256,7 +256,7 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: SuperHaxagon-macOS-arm.tar
+          name: SuperHaxagon-macOS-arm64.tar
           path: install/SuperHaxagon.app.tar
 
   # Build flatpak repo

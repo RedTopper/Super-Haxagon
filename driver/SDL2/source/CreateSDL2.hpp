@@ -40,11 +40,12 @@ namespace SuperHaxagon {
 
 	// Required functions to implement a SDL2 based platform
 	SDL_Window* getWindow(const Platform& platform);
-	ControllerSettings getDefaultControllerSettings();
+	void initializePlatform(std::string& sdmc, std::string& romfs, bool& backslash, ControllerSettings& controllerSettings);
+
+	// Functions used for keybinds (default implementations in KeybindsSDL2.cpp)
 	void setKey(Buttons& buttons, int key, bool pressing);
 	void setController(Buttons& buttons, int key, bool pressing, ControllerSettings settings);
 	std::string getButtonName(ButtonName buttonName, bool showKbdControls, ControllerSettings settings);
-	void platformSpecificHints();
 }
 
 #endif //DATA_SDL2_HPP

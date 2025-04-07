@@ -53,6 +53,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: SuperHaxagon-LinuxExample-x64-no-romfs
+          compression-level: 9
           path: artifacts/install
 
   # Matrix of special platforms SuperHaxagon supports
@@ -138,6 +139,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: SuperHaxagon-${{ matrix.containers.artifact }}${{ matrix.containers.romfs == 'no' && '-no-romfs' || '' }}
+          compression-level: 9
           path: |
             artifacts/install
             ${{ matrix.containers.romfs == 'no' && '!artifacts/install/**/romfs/**' || '' }}
@@ -148,12 +150,14 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: SuperHaxagon-${{ matrix.containers.artifact }}.3dsx
+          compression-level: 9
           path: artifacts/install/SuperHaxagon.3dsx
       - name: Upload 3DS CIA
         if: matrix.containers.build == 'N3DS'
         uses: actions/upload-artifact@v4
         with:
           name: SuperHaxagon-${{ matrix.containers.artifact }}.cia
+          compression-level: 9
           path: artifacts/install/SuperHaxagon.cia
 
   # Builds SuperHaxagon natively (as in, without containers)
@@ -217,6 +221,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: SuperHaxagon-${{ matrix.platforms.artifact }}-no-romfs
+          compression-level: 9
           path: |
             install
             !install/**/romfs/**
@@ -267,7 +272,8 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: SuperHaxagon-macOS-arm64.tar
+          name: SuperHaxagon-macOS-arm64.app.tar
+          compression-level: 9
           path: install/SuperHaxagon.app.tar
 
   # Build flatpak repo
@@ -301,8 +307,14 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      - name: Move RomFS
+        run: |
+          mkdir upload
+          mv romfs upload
+
       - name: Upload RomFS
         uses: actions/upload-artifact@v4
         with:
           name: romfs
-          path: romfs
+          compression-level: 9
+          path: upload

@@ -43,7 +43,7 @@ Then, [find your device in the driver directory](./driver).
 
  * [Example](./driver/Example/README.md) for building an example driver
  * [Linux](./driver/Linux/README.md) for Linux
- * [Linux-SDL2](./driver/Linux-SDL2/README.md) for Linux with the SDL2 backend
+ * [Linux-SDL2](./driver/Linux-SDL2/README.md) for Linux with the SDL2 backend (incl. Flatpak)
  * [macOS](./driver/macOS/README.md) for macOS
  * [Miyoo](./driver/Miyoo/README.md) for the MiyooMini
  * [N3DS](./driver/N3DS/README.md) for the Nintendo 3DS

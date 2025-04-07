@@ -41,7 +41,6 @@ namespace SuperHaxagon {
 			case SDLK_BACKSPACE: // R2
 				buttons.right = pressing; return;
 			case SDLK_RETURN: // START
-			case SDLK_ESCAPE: // MENU
 				buttons.quit = pressing; return;
 			default:
 				return;

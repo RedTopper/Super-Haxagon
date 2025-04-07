@@ -29,6 +29,8 @@ emulation. This will not spin up a VM, but instead natively interpret the binari
 inside the docker container live. This is very similar to the "chroot" method, just
 using Docker as the chroot instead.
 
+(Note: If you are on an arm device, you do not need to use qeumu-aarch64-static)
+
 With that said, I am using "podman" for building these images. Things should work
 mostly the same, with the command `docker` swapped for `podman`.
 
@@ -49,7 +51,7 @@ podman run --rm --arch arm64 ubi9/ubi uname -m
 If aarch64 printed out, you are good to go! You should now be able to build with:
 
 ```bash
-podman-compose up --no-build PortMaster
+podman-compose up PortMaster
 ```
 
 ### Other Build:

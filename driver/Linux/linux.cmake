@@ -15,10 +15,3 @@ set(DRIVER_PLATFORM
 include(driver/SFML/sfml.cmake)
 
 target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -pedantic)
-
-# Icons and desktop entry for flatpak
-include(GNUInstallDirs)
-set(BASE_NAME "${CMAKE_SOURCE_DIR}/driver/Linux/resources")
-install(FILES "${BASE_NAME}/${APP_FQN}.desktop" DESTINATION "${CMAKE_INSTALL_DATADIR}/applications")
-install(FILES "${BASE_NAME}/${APP_FQN}.png" DESTINATION "${CMAKE_INSTALL_DATADIR}/icons/hicolor/256x256/apps" RENAME "${APP_FQN}.png")
-set(LICENSE_PATH "${CMAKE_INSTALL_DATAROOTDIR}/licenses/${APP_FQN}")

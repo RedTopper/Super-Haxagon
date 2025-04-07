@@ -5,21 +5,17 @@ sdk: org.freedesktop.Sdk
 command: /app/SuperHaxagon
 appdata-license: GPLv3-or-later
 modules:
-  - name: sfml
-    buildsystem: cmake
-    cleanup:
-      - /bin
-    sources:
-      - type: git
-        url: https://github.com/SFML/SFML.git
-        branch: 2.6.x
   - name: SuperHaxagon
     buildsystem: cmake
+    config-opts:
+      - -DDRIVER_SDL2=TRUE
     sources:
       - type: dir
         path: .
 finish-args:
   - "--socket=fallback-x11"
+  - "--socket=wayland"
   - "--socket=pulseaudio"
   - "--device=dri"
   - "--device=input"
+  - "--share=ipc"

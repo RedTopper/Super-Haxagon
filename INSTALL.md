@@ -56,17 +56,12 @@ See [#22](https://github.com/RedTopper/Super-Haxagon/issues/22) for details._
 
 <details><summary>Linux Install Instructions</summary>
 
-There are 3 different ways to install SuperHaxagon on Linux. Pick one that works best for you below!
-
-### Flatpak (SteamDeck or other immutable OS)
-
-1. Download `net.awalter.SuperHaxagon.flatpak`
-2. Run `flatpak --user install net.awalter.SuperHaxagon.flatpak`
-3. Find SuperHaxagon in your application launcher, or use `flatpak run net.awalter.SuperHaxagon`!
+There are 2 different native ways to install SuperHaxagon on Linux. Pick one that works best for you below!
+(For Flatpak, see Steam Deck instructions in the next section)
 
 ### SFML (Static Link)
 
-SFML is statically linked, so you shouldn't need it installed as a dependency.
+SFML is statically linked, so you shouldn't need it installed as a dependency!
 
 1. Download `SuperHaxagon-Linux-x86-SFML-no-romfs.zip` and `romfs.zip`
 2. Extract the files into any empty directory
@@ -75,14 +70,40 @@ SFML is statically linked, so you shouldn't need it installed as a dependency.
 
 ### SDL2 (Dynamic Link)
 
-SDL2 requires SDL2 installed on your system. Please find the appropriate command for your distro to install SDL2
-first! SDL2 comes with extra controller support, but is a newer driver and is less tested.
+The SDL2 driver requires SDL2 installed on your system. Please find the appropriate command for your distro to install 
+SDL2 first! SDL2 comes with native controller support.
 
-1. Install SDL2 from your distro's package manager
+1. Install SDL2 from your distro's package manager, if needed  
+   Fedora: `sudo dnf install -y SDL2 SDL2_mixer SDL2_ttf`  
+   Ubuntu: `sudo apt update && sudo apt install -y libsdl2 libsdl2-mixer libsdl2-ttf`  
 2. Download `SuperHaxagon-Linux-x86-SDL2-no-romfs.zip` and `romfs.zip`
 3. Extract the files into any empty directory
 4. Extract and place the `romfs` folder from `romfs.zip` next to the `SuperHaxagon` file
 5. `./SuperHaxagon`
+
+</details>
+
+## Steam Deck (Flatpak)
+
+<details><summary>SteamDeck Install Instructions</summary>
+
+### Easy Installation via Discover and Steam
+
+1. Download `net.awalter.SuperHaxagon.flatpak`
+2. Open the `.flatpak` file in Discover and press install:  
+   ![Discover Install Screen](./media/screenshots/Screenshot_20250406_193243.png)  
+3. Test SuperHaxagon by launching the game through the Application Launcher  
+   ![Application Launcher with SuperHaxagon Selected](./media/screenshots/Screenshot_20250406_193403.png)  
+4. Add SuperHaxagon as a Non-Steam Game  
+   ![Location of Add a Non-Steam Game in Steam Client](./media/screenshots/Screenshot_20250406_193424.png)  
+   ![SuperHaxagon Selected in Program List](./media/screenshots/Screenshot_20250406_193548.png)  
+5. Leave Desktop Mode and launch via "NON-STEAM" tab on the Library view
+
+### Via CLI (All other platforms)
+
+1. Download `net.awalter.SuperHaxagon.flatpak`
+2. Run `flatpak --user install net.awalter.SuperHaxagon.flatpak`
+3. Run `flatpak run net.awalter.SuperHaxagon` or find SuperHaxagon in your system's application launcher!
 
 </details>
 

@@ -12,11 +12,11 @@
 #include <windows.h>
 
 namespace SuperHaxagon {
-	void initializePlatform(std::string& sdmc, std::string& romfs, bool& platformBackslash) {
+	void initializePlatform(std::string& sdmc, std::string& romfs, bool& backslash) {
 		sdmc = ".\\sdmc";
 		romfs = ".\\romfs";
 
-		platformBackslash = true;
+		backslash = true;
 
 		_mkdir(".\\sdmc");
 	}

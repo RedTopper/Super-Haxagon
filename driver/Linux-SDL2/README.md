@@ -35,6 +35,16 @@ cmake -DDRIVER_SDL2=TRUE ..
 make -j4
 ```
 
+### Flatpak Build:
+
+You can build the flatpak with the `flatpak.sh` script in the parent directory. Make sure to run it directly in the 
+`driver` directory and not here.
+
+```bash
+cd driver
+./flatpak.sh
+```
+
 ## License
 
 This driver follows the license scheme of the parent driver at `driver/SDL2`.

@@ -38,13 +38,13 @@ namespace SuperHaxagon {
 	}
 
 	struct Platform::PlatformImpl {
-		PlatformImpl(const std::string& sdmcPath, const std::string& romfsPath, const bool platformBackslash) :
+		PlatformImpl() :
 			window(getVideoMode(), APP_NAME, sf::Style::Default, getSettings()),
 			screen(createScreen(window))
 		{
-			sdmc = sdmcPath;
-			romfs = romfsPath;
-			backslash = platformBackslash;
+			// Get information about our platform and setup anything
+			// platform specific (like creating folders)
+			initializePlatform(sdmc, romfs, backslash);
 
 			clock.restart();
 
@@ -116,14 +116,7 @@ namespace SuperHaxagon {
 	};
 
 	Platform::Platform() {
-		bool backslash;
-		std::string sdmc, romfs;
-
-		// Get information about our platform and setup anything
-		// platform specific (like creating folders)
-		initializePlatform(sdmc, romfs, backslash);
-
-		_impl = std::make_unique<PlatformImpl>(sdmc, romfs, backslash);
+		_impl = std::make_unique<PlatformImpl>();
 
 		// Let windows do whatever it needs with the Window
 		osSpecificWindowSetup(_impl->window);

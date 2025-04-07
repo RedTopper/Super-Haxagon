@@ -12,10 +12,10 @@
 
 namespace SuperHaxagon {
 	void osSpecificWindowSetup(sf::Window&) {}
-	void initializePlatform(std::string& sdmc, std::string& romfs, bool& platformBackslash) {
+	void initializePlatform(std::string& sdmc, std::string& romfs, bool& backslash) {
 		if (std::getenv("container") && std::filesystem::exists("/app")) {
 			// If we are in a container and /app exists, we're very likely
-			// in the flaptak version.
+			// in the flatpak version.
 			const auto* data = std::getenv("XDG_DATA_HOME");
 			sdmc = std::string(data) + "/sdmc";
 			romfs = std::string("/app/romfs");
@@ -24,7 +24,8 @@ namespace SuperHaxagon {
 			romfs = "./romfs";
 		}
 
-		platformBackslash = false;
+		// Linux does not use backslashes for path separation.
+		backslash = false;
 
 		mkdir(sdmc.c_str(), 0755);
 	}

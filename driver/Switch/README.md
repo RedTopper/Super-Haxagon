@@ -11,7 +11,7 @@ The switch builds with `devkitpro/devkita64` provided on Dockerhub.
 From within the parent directory, run the following commands:
 
 ```bash
-podman-compose up --no-build Switch
+podman-compose up Switch
 ```
 
 ### Native Build:

@@ -12,13 +12,13 @@
 
 namespace SuperHaxagon {
 	void osSpecificWindowSetup(sf::Window&) {}
-	void initializePlatform(std::string& sdmc, std::string& romfs, bool& platformBackslash) {
+	void initializePlatform(std::string& sdmc, std::string& romfs, bool& backslash) {
 
-		platformBackslash = false;
 		CFURLRef appUrlRef = CFBundleCopyResourceURL(CFBundleGetMainBundle(), CFSTR("levels"), CFSTR("haxagon"), nullptr);
 
 		sdmc = "./sdmc";
 		romfs = "./romfs";
+		backslash = false;
 
 		if (const char* homeDir = getenv("HOME")) {
 			sdmc = std::string(homeDir) + "/Library/Application Support/net.awalter.SuperHaxagon";

@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: 2025 AJ Walter
 // SPDX-License-Identifier: GPL-3.0-or-later OR MIT
 
+#include "Driver/Tools/Configuration.hpp"
 #include "Driver/Screen.hpp"
 
 #include <SDL2/SDL.h>

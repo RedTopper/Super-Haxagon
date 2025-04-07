@@ -21,10 +21,11 @@ namespace SuperHaxagon {
 	public:
 		static constexpr float STARTING_MULTIPLIER_WALLS = 0.85f;
 		static constexpr float STARTING_MULTIPLIER_ROT = 0.9f;
-		static constexpr float DIFFICULTY_SCALAR_WALLS = 0.0375f;
+		static constexpr float DIFFICULTY_SCALAR_WALLS = 0.3f;
 		static constexpr float DIFFICULTY_SCALAR_ROT = 0.07f;
 		static constexpr float FLIP_FRAMES_MIN = 120.0f;
 		static constexpr float FLIP_FRAMES_MAX = 600.0f;
+		static constexpr float FRAMES_DIFFICULTY_INCREASE = 120.0f;
 		static constexpr float FRAMES_PER_CHANGE_SIDE = 30.0f;
 		static constexpr float FRAMES_PER_SPIN = 75.0f;
 		static constexpr float SPIN_SPEED = TAU / 100.0f;
@@ -41,7 +42,8 @@ namespace SuperHaxagon {
 		void draw(SurfaceGame& game, SurfaceGame* shadows, float offset, float scaleFactor) const;
 		Movement collision(float cursorDistance, float dilation) const;
 
-		void increaseMultiplier();
+		void increaseRotationMultiplier();
+		void queueDifficultyIncrease();
 		void clearPatterns();
 		void rotate(float distance, float dilation);
 		void left(float dilation);
@@ -53,7 +55,8 @@ namespace SuperHaxagon {
 		void invertBG();
 
 		// Time
-		float getFrame() const {return _frame;}
+		float getScore() const {return _score;}
+		bool isDelaying() const {return _delayFrame > 0.0f;}
 
 		// Transition information
 		GameColors getCurrentColor() const {return _colorCurrent;}
@@ -69,7 +72,7 @@ namespace SuperHaxagon {
 		void setWinMultiplierWalls(const float multiplier) {_multiplierWalls = multiplier;}
 		void setWinAutoPatternCreate(const bool autoPatternCreate) {_autoPatternCreate = autoPatternCreate;}
 		void setWinShowCursor(const bool show) {_showCursor = show;}
-		void setWinFrame(const float frame) {_frame = frame;}
+		void setWinScore(const float frame) { _score = frame;}
 		void setWinRotationToZero() {_rotateToZero = true;}
 		void setWinFactory(const LevelFactory* factory);
 		void setWinSides(int sides);
@@ -87,6 +90,7 @@ namespace SuperHaxagon {
 		bool _autoPatternCreate = false;
 		bool _showCursor = true;
 		bool _rotateToZero = false;
+		bool _difficultyIncrease = false;
 		
 		float _multiplierRot = STARTING_MULTIPLIER_ROT; // Current direction and speed of rotation
 		float _multiplierWalls = STARTING_MULTIPLIER_WALLS; // Current speed of the walls flying at you
@@ -99,7 +103,7 @@ namespace SuperHaxagon {
 		int _sidesCurrent{}; // The sides we are transitioning TO
 
 		// Event timings
-		float _frame{}; // Frame this level is on
+		float _score{}; // Internal score for this level
 		float _delayFrame{}; // Tween between side switches
 		float _delayMax{};   // When a delay starts, this is the initial value of _delayFrame
 		float _tweenFrame{}; // Tween colors

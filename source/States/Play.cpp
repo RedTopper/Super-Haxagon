@@ -106,7 +106,7 @@ namespace SuperHaxagon {
 		}
 
 		// Update level
-		const auto previousFrame = _level->getFrame();
+		const auto previousScore = _level->getScore();
 		_level->update(_game.getRandom(), dilation);
 
 		// Button presses, rotate this frame to last.
@@ -146,8 +146,8 @@ namespace SuperHaxagon {
 		// Go to the next level
 		const auto next = _factory.getNextIndex();
 		if (next >= 0 && 
-		    static_cast<size_t>(next) < _game.getLevels().size() && 
-		    _level->getFrame() > 60.0f * _level->getLevelFactory().getNextTime()) {
+		    static_cast<size_t>(next) < _game.getLevels().size() &&
+		    _level->getScore() > 60.0f * _level->getLevelFactory().getNextTime()) {
 			return std::make_unique<Transition>(_game, std::move(_level), _selected, _score);
 		}
 
@@ -171,13 +171,20 @@ namespace SuperHaxagon {
 		// Make sure the cursor doesn't extend too far
 		_level->clamp();
 
-		// Update score
-		_score += dilation;
+		// Update score if not delaying
+		if (!_level->isDelaying()) {
+			_score += dilation;
+		}
 
-		const auto* lastScoreText = getScoreText(static_cast<int>(previousFrame), false);
-		if (lastScoreText != getScoreText(static_cast<int>(_level->getFrame()), false)) {
-			_level->increaseMultiplier();
-			_game.playEffect(getEffect(static_cast<int>(_level->getFrame())));
+		const auto* lastScoreText = getScoreText(static_cast<int>(previousScore), false);
+		if (lastScoreText != getScoreText(static_cast<int>(_level->getScore()), false)) {
+			auto effect = getEffect(static_cast<int>(_level->getScore()));
+			_level->increaseRotationMultiplier();
+			_game.playEffect(effect);
+
+			if (effect == SoundEffect::SHAPE_HEXAGON) {
+				_level->queueDifficultyIncrease();
+			}
 		}
 
 		return nullptr;
@@ -208,7 +215,7 @@ namespace SuperHaxagon {
 
 		// Draw the top left POINT/LINE thing
 		// Note, 400 is kind of arbitrary. Perhaps it's needed to update this later.
-		const auto* levelUp = getScoreText(static_cast<int>(_level->getFrame()), surface.getScreenDim().x <= 400);
+		const auto* levelUp = getScoreText(static_cast<int>(_level->getScore()), surface.getScreenDim().x <= 400);
 		const Vec2f levelUpPosText = {pad, pad};
 		const Vec2f levelUpBkgSize = {
 			small.getWidth(levelUp) + pad * 2,

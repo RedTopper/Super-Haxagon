@@ -116,7 +116,7 @@ namespace SuperHaxagon {
 			_level->setWinMultiplierRot(0.6f);
 			_level->setWinMultiplierWalls(-0.6f);
 			_level->setWinAutoPatternCreate(i != LEVEL_VOID);
-			_level->setWinFrame(0);
+			_level->setWinScore(0);
 			_level->resetColors();
 			if (i == LEVEL_VOID) {
 				_level->setWinRotationToZero();
@@ -130,7 +130,7 @@ namespace SuperHaxagon {
 		// Apply effects. More can be added here if needed.
 		auto& cam = _game.getCam();
 		if (metadata.getMetadata(time, "HYPER")) {
-			_level->setWinFrame(60.0 * 60.0);
+			_level->setWinScore(60.0 * 60.0);
 			_level->spin();
 		}
 

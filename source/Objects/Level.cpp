@@ -33,8 +33,8 @@ namespace SuperHaxagon {
 	Level::~Level() = default;
 
 	void Level::update(Random& rng, const float dilation) {
-		// Update frame
-		_frame += dilation;
+		// Update score if we aren't being delayed
+		if (!isDelaying()) _score += dilation;
 		
 		// Update color frame and clamp
 		_tweenFrame += dilation;
@@ -47,7 +47,7 @@ namespace SuperHaxagon {
 				_color[location] = _colorNext[location];
 				_colorNextIndex[location] = _colorNextIndex[location] + 1 < availableColors.size() ? _colorNextIndex[location] + 1 : 0;
 				_colorNext[location] = availableColors[_colorNextIndex[location]];
-				if (_frame > 60.0f * 60.0f) {
+				if (_score > 60.0f * 60.0f) {
 					_colorNext[location] = rotateColor(_colorNext[location], 90);
 				} 
 			}
@@ -169,10 +169,13 @@ namespace SuperHaxagon {
 		return collision;
 	}
 
-	void Level::increaseMultiplier() {
+	void Level::increaseRotationMultiplier() {
 		const auto dir = (_multiplierRot > 0 ? 1 : -1);
 		_multiplierRot += static_cast<float>(dir) * DIFFICULTY_SCALAR_ROT;
-		_multiplierWalls += DIFFICULTY_SCALAR_WALLS;
+	}
+
+	void Level::queueDifficultyIncrease() {
+		_difficultyIncrease = true;
 	}
 
 	void Level::clearPatterns() {
@@ -237,6 +240,14 @@ namespace SuperHaxagon {
 			if (_sidesLast != _sidesCurrent) {
 				_delayMax = FRAMES_PER_CHANGE_SIDE * static_cast<float>(std::abs(_sidesCurrent - _sidesLast));
 				_delayFrame = _delayMax;
+			}
+
+			// Delay the level and increase speed if we have queued it up.
+			if (_difficultyIncrease) {
+				_multiplierWalls += DIFFICULTY_SCALAR_WALLS;
+				_delayFrame = FRAMES_DIFFICULTY_INCREASE;
+				_delayMax = FRAMES_DIFFICULTY_INCREASE;
+				_difficultyIncrease = false;
 			}
 		}
 

@@ -174,7 +174,7 @@ namespace SuperHaxagon {
 			small.draw(COLOR_WHITE, posSelect, Alignment::LEFT, pressSelect);
 			small.draw(COLOR_WHITE, posVersion, Alignment::RIGHT, version);
 
-			if (sizeof(PLATFORM_NAME) > 1) {
+			if constexpr (sizeof(PLATFORM_NAME) > 1) {
 				const auto platform = PLATFORM_NAME;
 				const Vec2f posPlatform = {screen.x/2.0f, pad};
 				//const Vec2f platformSize = {small.getWidth(platform) + pad * 2, small.getHeight() + pad * 2};

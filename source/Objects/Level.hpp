@@ -19,9 +19,9 @@ namespace SuperHaxagon {
 
 	class Level {
 	public:
-		static constexpr float STARTING_MULTIPLIER_WALLS = 0.85f;
+		static constexpr float STARTING_MULTIPLIER_WALLS = 0.9f;
 		static constexpr float STARTING_MULTIPLIER_ROT = 0.9f;
-		static constexpr float DIFFICULTY_SCALAR_WALLS = 0.3f;
+		static constexpr float DIFFICULTY_SCALAR_WALLS = 0.2f;
 		static constexpr float DIFFICULTY_SCALAR_ROT = 0.07f;
 		static constexpr float FLIP_FRAMES_MIN = 120.0f;
 		static constexpr float FLIP_FRAMES_MAX = 600.0f;

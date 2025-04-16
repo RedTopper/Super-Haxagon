@@ -30,6 +30,8 @@ on:
 
 env:
   REPO: ghcr.io/${{ github.repository }}
+  ROMFS_TEXT: "Place the 'romfs' folder from the GitHub release here (the whole romfs folder, not the contents!) or the game will not launch."
+  ROMFS_PLACEHOLDER: "PLACE_ROMFS_FOLDER_HERE.txt"
 
 jobs:
   # First, try and build the example driver before spending time with the more expensive runners (like macOS)
@@ -49,13 +51,6 @@ jobs:
           cd artifacts/build
           CMAKE_ARGS="-DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=../install" ../../driver/Example/build.sh
 
-      - name: Upload
-        uses: actions/upload-artifact@v4
-        with:
-          name: SuperHaxagon-LinuxExample-x64-no-romfs
-          compression-level: 9
-          path: artifacts/install
-
   # Matrix of special platforms SuperHaxagon supports
   build-with-containers:
     name: Build ${{ matrix.containers.artifact }}
@@ -66,14 +61,14 @@ jobs:
         containers:
           - build: 'Linux'
             container: ghcr.io/redtopper/super-haxagon/linux:latest
-            artifact: LinuxSFML-x64
+            artifact: LinuxSFML-x86_64
             cache: 'yes'
             romfs: 'no'
             os: ubuntu-latest
 
           - build: 'Linux-SDL2'
             container: ghcr.io/redtopper/super-haxagon/linux-sdl2:latest
-            artifact: LinuxSDL2-x64
+            artifact: LinuxSDL2-x86_64
             cache: 'no'
             romfs: 'no'
             os: ubuntu-latest
@@ -87,30 +82,30 @@ jobs:
 
           - build: 'N3DS'
             container: ghcr.io/redtopper/super-haxagon/n3ds:latest
-            artifact: 3DS-arm
+            artifact: 3DS-armhf
             cache: 'yes'
             romfs: 'yes'
             os: ubuntu-latest
 
           - build: 'Nspire'
             container: ghcr.io/redtopper/super-haxagon/nspire:latest
-            artifact: Nspire-arm
+            artifact: Nspire-armel
             cache: 'no'
             romfs: 'yes'
             os: ubuntu-latest
 
           - build: 'Switch'
             container: docker.io/devkitpro/devkita64:latest
-            artifact: Switch-arm
+            artifact: Switch-arm64
             cache: 'no'
             romfs: 'yes'
             os: ubuntu-latest
 
           - build: 'PortMaster'
             container: docker.io/monkeyx/retro_builder:arm64
-            artifact: PortMaster-arm64-autoinstall
+            artifact: PortMaster-arm64
             cache: 'no'
-            romfs: 'yes'
+            romfs: ${{ (contains(github.ref, 'refs/tags/') || github.ref == 'refs/heads/master') && 'yes' || 'no' }}
             os: ubuntu-24.04-arm
 
     container:
@@ -134,15 +129,24 @@ jobs:
           cd artifacts/build
           CMAKE_ARGS="-DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=../install" ../../driver/${{ matrix.containers.build }}/build.sh
 
+      - name: Delete RomFS
+        if: matrix.containers.romfs == 'no'
+        run: |
+          set -e
+          romfs_dir=$(find artifacts/install -type d -name romfs -print -quit)
+          if [ -n "$romfs_dir" ]; then
+            parent_dir="$(dirname "$romfs_dir")"
+            rm -rf "$romfs_dir"
+            echo "$ROMFS_TEXT" > "$parent_dir/$ROMFS_PLACEHOLDER"
+          fi
+
       - name: Upload Artifact
         if: matrix.containers.build != 'N3DS'
         uses: actions/upload-artifact@v4
         with:
           name: SuperHaxagon-${{ matrix.containers.artifact }}${{ matrix.containers.romfs == 'no' && '-no-romfs' || '' }}
           compression-level: 9
-          path: |
-            artifacts/install
-            ${{ matrix.containers.romfs == 'no' && '!artifacts/install/**/romfs/**' || '' }}
+          path: artifacts/install
 
         # Special uploads for 3DS
       - name: Upload 3DS 3DSX
@@ -172,7 +176,7 @@ jobs:
             os: ubuntu-24.04-arm
           - artifact: macOSUnsignedUnix-arm64
             os: macos-latest
-          - artifact: Windows-x64
+          - artifact: Windows-x86_64
             os: windows-latest
 
     steps:
@@ -217,14 +221,19 @@ jobs:
           cmake -B build -S . -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=install -DCMAKE_FIND_FRAMEWORK=LAST
           cmake --build build --config Release --target install --parallel 6
 
+      - name: Delete RomFS
+        shell: bash
+        run: |
+          set -e
+          rm -rf install/romfs
+          echo "$ROMFS_TEXT" > "install/$ROMFS_PLACEHOLDER"
+
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: SuperHaxagon-${{ matrix.platforms.artifact }}-no-romfs
           compression-level: 9
-          path: |
-            install
-            !install/**/romfs/**
+          path: install
 
   build-macos-bundle:
     name: Build macOS Bundle

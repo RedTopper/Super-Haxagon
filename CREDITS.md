@@ -4,15 +4,17 @@ SuperHaxagon's assets are provided by these amazing people:
 
 ## Sound Effects
 
-* All new sound effects created by [TwistBit](https://github.com/TwistBit)
+### TwistBit ([github.com/TwistBit](https://github.com/TwistBit))
 
-And previously
+All new and original sound effects! Thanks!
 
-* Sound Effects from Open Hexagon ([SuperV1234/SSVOpenHexagon](https://github.com/vittorioromeo/SSVOpenHexagon))
+### Open Hexagon ([SuperV1234/SSVOpenHexagon](https://github.com/vittorioromeo/SSVOpenHexagon))
+
+Sound effects for versions <= 3.7.0
 
 ## Font
 
-* aaronamar ([fontstruct.com](http://fontstruct.com/fontstructions/show/155156/bump_it_up))
+### aaronamar ([fontstruct.com](http://fontstruct.com/fontstructions/show/155156/bump_it_up))
 
 > Bump IT UP aaronamar  
 > Licensed under Creative Commons: By Attribution 3.0 Share Alike License  
@@ -20,27 +22,28 @@ And previously
 
 ## Music
 
-* Kevin MacLeod ([incompetech.com](http://incompetech.com/))
+### Kevin MacLeod ([incompetech.com](http://incompetech.com/))
 
 > Bleeping Demo Kevin MacLeod (incompetech.com)  
 > Licensed under Creative Commons: By Attribution 3.0 License  
 > https://creativecommons.org/licenses/by/3.0/
 
 > Screen Saver Kevin MacLeod (incompetech.com)  
-> Licensed under Creative Commons: By Attribution 3.0 License
+> Licensed under Creative Commons: By Attribution 3.0 License  
 > https://creativecommons.org/licenses/by/3.0/
 
-* Dunderpatrullen ([dunderpatrullen.nu](https://dunderpatrullen.nu/))
+### Dunderpatrullen ([dunderpatrullen.nu](https://dunderpatrullen.nu/))
 
 > Call Me Katla, Baby by Dunderpatrullen  
-> Licensed _non-commercially_
+> No License
 
-> [!IMPORTANT]  
-> Do not use Dunderpatrullen's assets commercially!  
-> Their website states the following:  
-> Feel free to use our music in your YouTube or Twitch videos etc. as long as proper credits are given in the description or visible on screen.
+> [!WARNING]
+> I do not encourage using these assets commercally.  
+> With that said, Dunderpatrullen's website states the following: Feel free to use our
+> music in your YouTube or Twitch videos etc. as long as proper credits are given in
+> the description or visible on screen.  
 
-* Bossfight ([bossfightmusic.com](https://www.bossfightmusic.com/))
+### Bossfight ([bossfightmusic.com](https://www.bossfightmusic.com/))
 
 > Captain Cool by Bossfight  
 > Commando Steve by Bossfight  
@@ -48,7 +51,8 @@ And previously
 > Jack Russel by Bossfight  
 > The Maze Of Mayonnaise by Bossfight  
 > From [SuperV1234/SSVOpenHexagon](https://github.com/vittorioromeo/SSVOpenHexagon)  
+> No License
 
-> [!WARNING]  
-> Presumably the above assets by Bossfight may have a commercial agreement with OpenHexagon
-> and redistribution, particularly commercial redistribution, is discouraged.
+> [!WARNING]
+> I do not encourage using these assets commercally.  
+> Presumably the above assets by Bossfight may have a commercial agreement with OpenHexagon.

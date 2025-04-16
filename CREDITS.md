@@ -1,8 +1,32 @@
-# Assets
+# SuperHaxagon Credits
 
-SuperHaxagon's assets are provided by these amazing people:
+SuperHaxagon is a cross-platform, open source [Super Hexagon](http://superhexagon.com/) clone.
 
-## Sound Effects
+You can obtain a free copy of the source code at:
+
+https://github.com/RedTopper/Super-Haxagon
+
+
+## Thanks
+
+### Terry Cavanagh ([terrycavanaghgames.com](https://terrycavanaghgames.com/))
+
+Thank you for creating such influential and inspiring games, SuperHaxagon
+would not exist without you!
+
+
+## Programming
+
+### AJ Walter ([github.com/RedTopper](https://github.com/RedTopper))
+
+That's me!
+
+### Libraries
+
+Credits and licenses for your copy of SuperHaxagon are provided in LICENSE.libs.md
+
+
+## Sounds
 
 ### TwistBit ([github.com/TwistBit](https://github.com/TwistBit))
 
@@ -12,23 +36,25 @@ All new and original sound effects! Thanks!
 
 Sound effects for versions <= 3.7.0
 
+
 ## Font
 
 ### aaronamar ([fontstruct.com](http://fontstruct.com/fontstructions/show/155156/bump_it_up))
 
-> Bump IT UP aaronamar  
+> Bump IT UP by aaronamar  
 > Licensed under Creative Commons: By Attribution 3.0 Share Alike License  
 > https://creativecommons.org/licenses/by-sa/3.0/
+
 
 ## Music
 
 ### Kevin MacLeod ([incompetech.com](http://incompetech.com/))
 
-> Bleeping Demo Kevin MacLeod (incompetech.com)  
+> Bleeping Demo by Kevin MacLeod (incompetech.com)  
 > Licensed under Creative Commons: By Attribution 3.0 License  
 > https://creativecommons.org/licenses/by/3.0/
 
-> Screen Saver Kevin MacLeod (incompetech.com)  
+> Screen Saver by Kevin MacLeod (incompetech.com)  
 > Licensed under Creative Commons: By Attribution 3.0 License  
 > https://creativecommons.org/licenses/by/3.0/
 

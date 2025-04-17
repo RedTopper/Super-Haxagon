@@ -67,7 +67,7 @@ function(generate_icn)
         set(BANNERTOOL_ICN_NAME "${CMAKE_PROJECT_NAME}")
     endif()
     if (NOT DEFINED BANNERTOOL_ICN_DESCRIPTION)
-        set(BANNERTOOL_ICN_DESCRIPTION "Built with devkitARM & libctru")
+        set(BANNERTOOL_ICN_DESCRIPTION "Built with devkitARM \\& libctru")
     endif()
     if (NOT DEFINED BANNERTOOL_ICN_AUTHOR)
         set(BANNERTOOL_ICN_AUTHOR "Unspecified Author")
@@ -75,7 +75,8 @@ function(generate_icn)
 
     list(APPEND BANNERTOOL_ICN_ARGS "makesmdh")
     list(APPEND BANNERTOOL_ICN_ARGS "-s" "${BANNERTOOL_ICN_NAME}")
-    list(APPEND BANNERTOOL_ICN_ARGS "-l" "${BANNERTOOL_ICN_NAME} - ${BANNERTOOL_ICN_DESCRIPTION}")
+    # Ugly hack to get a newline into bannertool.
+    list(APPEND BANNERTOOL_ICN_ARGS "-l" \"`printf ${BANNERTOOL_ICN_NAME}:'\\n'${BANNERTOOL_ICN_DESCRIPTION}`\")
     list(APPEND BANNERTOOL_ICN_ARGS "-p" "${BANNERTOOL_ICN_AUTHOR}")
     list(APPEND BANNERTOOL_ICN_ARGS "-i" "${BANNERTOOL_ICN_ICON}")
 
@@ -99,7 +100,6 @@ function(generate_icn)
             OUTPUT "${BANNERTOOL_ICN_OUTPUT}"
             COMMAND "${BANNERTOOL_EXE}" ${BANNERTOOL_ICN_ARGS}
             DEPENDS "${BANNERTOOL_BNR_AUDIO}"
-            VERBATIM
     )
 endfunction()
 

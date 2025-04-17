@@ -155,14 +155,18 @@ jobs:
         with:
           name: SuperHaxagon-${{ matrix.containers.artifact }}.3dsx
           compression-level: 9
-          path: artifacts/install/SuperHaxagon.3dsx
+          path: |
+            artifacts/install
+            !SuperHaxagon.cia
       - name: Upload 3DS CIA
         if: matrix.containers.build == 'N3DS'
         uses: actions/upload-artifact@v4
         with:
           name: SuperHaxagon-${{ matrix.containers.artifact }}.cia
           compression-level: 9
-          path: artifacts/install/SuperHaxagon.cia
+          path: |
+            artifacts/install
+            !SuperHaxagon.3dsx
 
   # Builds SuperHaxagon natively (as in, without containers)
   build-native:

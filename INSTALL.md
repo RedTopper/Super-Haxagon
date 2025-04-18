@@ -37,7 +37,7 @@ After:
 
 Then, click on the installation instructions you need below for your platform!
 
-## Windows (x86)
+## Windows (x86_64)
 
 <details><summary>Windows Install Instructions</summary>
 
@@ -45,30 +45,30 @@ _Note: SFML requires a graphics adapter with OpenGL 3.2 or higher. SuperHaxagon 
 first generation Intel processors, Remote Desktop sessions, or VMs with no hardware acceleration. 
 See [#22](https://github.com/RedTopper/Super-Haxagon/issues/22) for details._
 
-1. Download `SuperHaxagon-Windows-x86-no-romfs.zip` and `romfs.zip`
+1. Download `SuperHaxagon-Windows-x86_64-no-romfs.zip` and `romfs.zip`
 2. Extract the files into any empty directory
 3. Place the `romfs` folder from `romfs.zip` next to the `.exe` file
 4. Launch the game!
 
 </details>
 
-## Desktop Linux (x86)
+## Desktop Linux (x86_64/arm64)
 
 <details><summary>Linux Install Instructions</summary>
 
 There are 2 different native ways to install SuperHaxagon on Linux. Pick one that works best for you below!
 (For Flatpak, see Steam Deck instructions in the next section)
 
-### SFML (Static Link)
+### SFML (Static Link, x86_64/arm64)
 
 SFML is statically linked, so you shouldn't need it installed as a dependency!
 
-1. Download `SuperHaxagon-Linux-x86-SFML-no-romfs.zip` and `romfs.zip`
+1. Download `SuperHaxagon-LinuxSFML-<arch>-no-romfs.zip` and `romfs.zip`
 2. Extract the files into any empty directory
 3. Extract and place the `romfs` folder from `romfs.zip` next to the `SuperHaxagon` file
 4. `./SuperHaxagon`
 
-### SDL2 (Dynamic Link)
+### SDL2 (Dynamic Link, x86_64)
 
 The SDL2 driver requires SDL2 installed on your system. Please find the appropriate command for your distro to install 
 SDL2 first! SDL2 comes with native controller support.
@@ -76,10 +76,12 @@ SDL2 first! SDL2 comes with native controller support.
 1. Install SDL2 from your distro's package manager, if needed  
    Fedora: `sudo dnf install -y SDL2 SDL2_mixer SDL2_ttf`  
    Ubuntu: `sudo apt update && sudo apt install -y libsdl2 libsdl2-mixer libsdl2-ttf`  
-2. Download `SuperHaxagon-Linux-x86-SDL2-no-romfs.zip` and `romfs.zip`
+2. Download `SuperHaxagon-LinuxSDL2-x86_64-no-romfs.zip` and `romfs.zip`
 3. Extract the files into any empty directory
 4. Extract and place the `romfs` folder from `romfs.zip` next to the `SuperHaxagon` file
 5. `./SuperHaxagon`
+
+Note: Consider using the PortMaster build for arm64 SDL2 usage.
 
 </details>
 
@@ -89,7 +91,7 @@ SDL2 first! SDL2 comes with native controller support.
 
 ### Easy Installation via Discover and Steam
 
-1. Download `net.awalter.SuperHaxagon.flatpak`
+1. Download and extract `net.awalter.SuperHaxagon-x86_64.zip`
 2. Open the `.flatpak` file in Discover and press install:  
    ![Discover Install Screen](./media/screenshots/Screenshot_20250406_193243.png)  
 3. Test SuperHaxagon by launching the game through the Application Launcher  
@@ -101,7 +103,7 @@ SDL2 first! SDL2 comes with native controller support.
 
 ### Via CLI (All other platforms)
 
-1. Download `net.awalter.SuperHaxagon.flatpak`
+1. Download and extract `net.awalter.SuperHaxagon-x86_64.zip`
 2. Run `flatpak --user install net.awalter.SuperHaxagon.flatpak`
 3. Run `flatpak run net.awalter.SuperHaxagon` or find SuperHaxagon in your system's application launcher!
 
@@ -116,15 +118,17 @@ The Nintendo 3DS ***REQUIRES*** the DSP firmware to be dumped to hear audio! Ple
 
 ### .cia
 
-1. Download `SuperHaxagon.cia` and place it on your SD card
-2. Install `SuperHaxagon.cia` using FBI or a similar installer
-3. Launch SuperHaxagon from your home menu
+1. Download and extract `SuperHaxagon-3DS-armhf.cia.zip`
+2. Place `SuperHaxagon.cia` somewhere on your SD Card
+3. Install `SuperHaxagon.cia` using FBI or a similar installer
+4. Launch SuperHaxagon from your home menu
 
 ### .3dsx
 
-1. Download `SuperHaxagon.3dsx` and place it in `sdmc:/3ds`
-2. Launch the homebrew launcher
-3. Launch SuperHaxagon
+1. Download and extract `SuperHaxagon-3DS-armhf.3dsx.zip`
+2. Place `SuperHaxagon.3dsx` in `sdmc:/3ds/SuperHaxagon`
+3. Launch the homebrew launcher
+4. Launch SuperHaxagon
 
 If you want to change the title screen music, you can additionally place any .ogg file on your SD card at
 `sdmc:/3ds/data/haxagon/title.ogg`
@@ -135,9 +139,10 @@ If you want to change the title screen music, you can additionally place any .og
 
 <details><summary>Switch Install Instructions</summary>
 
-1. Download `SuperHaxagon.nro` and place it in `sdmc:/switch/SuperHaxagon`
-2. Launch the homebrew launcher (either in Applet mode (Album) or Game mode (R) )
-3. Launch SuperHaxagon
+1. Download and extract `SuperHaxagon-Switch-arm64.zip`
+2. Merge `switch` into your SD card, placing `SuperHaxagon.nro` in `sdmc:/switch/SuperHaxagon`
+3. Launch the homebrew launcher (either in Applet mode (Album) or Game mode (R) )
+4. Launch SuperHaxagon
 
 If you want to change the title screen music, you can additionally place any .ogg file on your SD card at
 `sdmc:/switch/SuperHaxagon/title.ogg`
@@ -166,7 +171,7 @@ The PortMaster should work on any CFW where PortMaster is supported. Please use 
 folder to install the zip manually from this repo. It is "Ready to Run" and contains all assets, 
 including the romfs folder.
 
-1. Download `SuperHaxagon-PortMaster-arm64-autoinstall.zip`
+1. Download `SuperHaxagon-PortMaster-arm64.zip`
 2. Place it in your PortMaster's `autoinstall` folder
    * For muOS: `/mnt/mmc/MUOS/PortMaster/autoinstall/`
    * For Knulli: `/media/SHARE/system/.local/share/PortMaster/autoinstall/`
@@ -184,8 +189,8 @@ including the romfs folder.
 Before installing, make sure you have [ndless](https://ndless.me/) for your calculator. Newer versions of the TI-Nspire may not
 be supported.
 
-1. Download `SuperHaxagon.tns`
-2. Transfer it to your calculator with the [Computer Link](https://education.ti.com/en/products/computer-software/ti-nspire-computer-link) Software
+1. Download and extract `SuperHaxagon-Nspire-armel.zip`
+2. Transfer `SuperHaxagon.tns` to your calculator with the [Computer Link](https://education.ti.com/en/products/computer-software/ti-nspire-computer-link) Software
 3. Launch the game!
 
 </details>
@@ -198,9 +203,8 @@ Unfortunately I do not have a macOS machine regularly test SuperHaxagon with, bu
 
 The release build is built for M1 processors (arm64). [Intel based macs will need to follow the Building instructions](./driver/macOS/README.md)
 
-1. Download `SuperHaxagon-macOS-arm.tar`
-2. Extract the files into any empty directory
-3. Launch the application by right-clicking and choosing "Open"
+1. Download and extract `SuperHaxagon-macOS-arm64.app.tar.zip`
+2. Launch the application by right-clicking and choosing "Open"
 
 </details>
 
@@ -208,8 +212,8 @@ The release build is built for M1 processors (arm64). [Intel based macs will nee
 
 <details><summary>All other platforms</summary>
 
-It may be possible to build and run SuperHaxagon on other platforms, as it is designed to be portable. I don't supply builds,
-for Windows or Linux on ARM (excluding PortMaster), but you can likely build it by following the instructions in the
-[README.md](./README.md). I'd love to hear any success for building for other platforms!
+It may be possible to build and run SuperHaxagon on other platforms, as it is designed to be portable. 
+You can likely build it by following the instructions in the [README.md](./README.md). I'd love to hear
+any success for building for other platforms!
 
 </details>

@@ -59,26 +59,33 @@ jobs:
     strategy:
       matrix:
         containers:
-          - build: 'Linux'
+          - build: 'SFML-Linux'
             container: ghcr.io/redtopper/super-haxagon/linux:latest
-            artifact: LinuxSFML-x86_64
+            artifact: SFMLLinux-x86_64
             cache: 'yes'
             romfs: 'no'
             os: ubuntu-latest
 
-          - build: 'Linux-SDL2'
+          - build: 'SDL2-Linux'
             container: ghcr.io/redtopper/super-haxagon/linux-sdl2:latest
-            artifact: LinuxSDL2-x86_64
+            artifact: SDL2Linux-x86_64
             cache: 'no'
             romfs: 'no'
             os: ubuntu-latest
 
-          - build: 'Miyoo'
+          - build: 'SDL2-Miyoo'
             container: ghcr.io/redtopper/super-haxagon/miyoo:latest
-            artifact: MiyooMini-armhf
+            artifact: SDL2MiyooMini-armhf
             cache: 'no'
             romfs: 'no'
             os: ubuntu-latest
+
+          - build: 'SDL2-PortMaster'
+            container: docker.io/monkeyx/retro_builder:arm64
+            artifact: SDL2PortMaster-arm64
+            cache: 'no'
+            romfs: ${{ (contains(github.ref, 'refs/tags/') || github.ref == 'refs/heads/master') && 'yes' || 'no' }}
+            os: ubuntu-24.04-arm
 
           - build: 'N3DS'
             container: ghcr.io/redtopper/super-haxagon/n3ds:latest
@@ -100,13 +107,6 @@ jobs:
             cache: 'no'
             romfs: 'yes'
             os: ubuntu-latest
-
-          - build: 'PortMaster'
-            container: docker.io/monkeyx/retro_builder:arm64
-            artifact: PortMaster-arm64
-            cache: 'no'
-            romfs: ${{ (contains(github.ref, 'refs/tags/') || github.ref == 'refs/heads/master') && 'yes' || 'no' }}
-            os: ubuntu-24.04-arm
 
     container:
       image: ${{ matrix.containers.container }}
@@ -176,11 +176,11 @@ jobs:
     strategy:
       matrix:
         platforms:
-          - artifact: LinuxSFML-arm64
+          - artifact: SFMLLinux-arm64
             os: ubuntu-24.04-arm
-          - artifact: macOSUnsignedUnix-arm64
+          - artifact: SFMLmacOSUnix-arm64
             os: macos-latest
-          - artifact: Windows-x86_64
+          - artifact: SFMLWindows-x86_64
             os: windows-latest
 
     steps:
@@ -285,7 +285,7 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: SuperHaxagon-macOS-arm64.app.tar
+          name: SuperHaxagon-SFMLmacOS-arm64.app.tar
           compression-level: 9
           path: install/SuperHaxagon.app.tar
 

@@ -14,7 +14,7 @@ set(DRIVER_PLATFORM ${DRIVER_PLATFORM}
     driver/All/source/PlatformSupportsFilesystem.cpp
     driver/SDL2/source/ScreenSDL2.cpp
     driver/SDL2/source/KeybindsSDL2.cpp
-    driver/Linux-SDL2/source/PlatformLinuxSDL2.cpp
+    driver/SDL2-Linux/source/PlatformLinuxSDL2.cpp
 )
 
 include(driver/SDL2/sdl2.cmake)

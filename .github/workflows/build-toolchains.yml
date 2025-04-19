@@ -69,13 +69,24 @@ jobs:
         id: matrix
         with:
           script: |
+            const repo = process.env.REPO.toLowerCase();
             const changedFiles = process.env.CHANGED_FILES.trim().split("\n").filter(f => f);
+            const driverMap = {
+              "SDL2-Linux": "linux-sdl2",
+              "SDL2-Miyoo": "miyoo",
+              "SDL2-PortMaster": "portmaster",
+              "SFML-Linux": "linux"
+            };
 
-            const matrix = changedFiles.map(file => ({
-              path: file,
-              image: (`${process.env.REPO}/` + file.split('/')[1]).toLowerCase(),
-              name: file.split('/')[1]
-            }));
+            const matrix = changedFiles.map(file => {
+              const folder = file.split('/')[1];
+              const image = driverMap.hasOwnProperty(folder) ? driverMap[folder] : folder.toLowerCase();
+              return {
+                path: file,
+                image: `${repo}/${image}`,
+                folder: folder
+              };
+            });
 
             core.setOutput("matrix", JSON.stringify(matrix));
 
@@ -121,7 +132,7 @@ jobs:
             --disable-content-trust
 
   compile:
-    name: Build ${{ matrix.images.name }}
+    name: Build ${{ matrix.images.folder }}
     runs-on: ubuntu-latest
     needs:
       - generate-matrix
@@ -141,11 +152,11 @@ jobs:
           mkdir -p artifacts/build
           mkdir -p artifacts/install
           cd artifacts/build
-          CMAKE_ARGS="-DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=../install" ../../driver/${{ matrix.images.name }}/build.sh
+          CMAKE_ARGS="-DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=../install" ../../driver/${{ matrix.images.folder }}/build.sh
 
       - uses: actions/upload-artifact@v4
         with:
-          name: build-${{ matrix.images.name }}
+          name: build-${{ matrix.images.folder }}
           path: |
             artifacts/install
             !artifacts/install/**/romfs/**

@@ -21,8 +21,8 @@ set(DRIVER
     driver/SDL2/source/MusicSDL2.cpp
     driver/SDL2/source/SoundSDL2.cpp
     driver/SDL2/source/FontSDL2.cpp
-    driver/Miyoo/source/ScreenMiyooMini.cpp
-    driver/Miyoo/source/PlatformMiyooMini.cpp
+    driver/SDL2-Miyoo/source/ScreenMiyooMini.cpp
+    driver/SDL2-Miyoo/source/PlatformMiyooMini.cpp
 )
 
 add_executable(${PROJECT_NAME} ${DRIVER} ${SOURCES})

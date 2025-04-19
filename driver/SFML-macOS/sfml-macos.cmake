@@ -16,10 +16,10 @@ endif()
 
 set(DRIVER_PLATFORM
     driver/All/source/PlatformIsFullyRandom.cpp
-    driver/macOS/source/PlatformMacOS.cpp
+    driver/SFML-macOS/source/PlatformMacOS.cpp
 )
 
-include(driver/macOS/cmake/functions.cmake)
+include(driver/SFML-macOS/cmake/functions.cmake)
 
 include(driver/SFML/sfml.cmake)
 

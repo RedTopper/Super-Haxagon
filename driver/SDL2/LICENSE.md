@@ -4,7 +4,7 @@ This driver uses the following libraries, which are licensed with the following 
 
 ## SDL2 Driver
 
-* Directory: files in `driver/SDL2`, `driver/Linux-SDL2`, and `driver/PortMaster`
+* Directory: files in `driver/SDL2-Linux`, `driver/SDL2-Miyoo`, `driver/SDL2-PortMaster`, and `driver/SDL2`
 * License: GPLv3-or-later (or MIT)
 * Copyright © 2025 AJ Walter
 

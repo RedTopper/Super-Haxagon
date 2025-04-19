@@ -4,7 +4,7 @@ This driver uses the following libraries, which are licensed with the following 
 
 ## SFML Driver
 
-* Directory: files in `driver/SFML`, `driver/Linux`, `driver/Windows`, and `driver/macOS`
+* Directory: files in `driver/SFML-Linux`, `driver/SFML-Windows`, `driver/SFML-macOS`, and `driver/SFML`
 * License: GPLv3-or-later (or MIT)
 * Copyright © 2020 AJ Walter
 

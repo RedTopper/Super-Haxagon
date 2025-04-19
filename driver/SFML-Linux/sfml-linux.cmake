@@ -9,7 +9,7 @@ set(PLATFORM_NAME "LINUX SFML")
 
 set(DRIVER_PLATFORM
     driver/All/source/PlatformIsFullyRandom.cpp
-    driver/Linux/source/PlatformLinux.cpp
+    driver/SFML-Linux/source/PlatformLinux.cpp
 )
 
 include(driver/SFML/sfml.cmake)

@@ -42,15 +42,15 @@ git clone https://github.com/RedTopper/Super-Haxagon.git
 Then, [find your device in the driver directory](./driver).
 
  * [Example](./driver/Example/README.md) for building an example driver
- * [Linux](./driver/Linux/README.md) for Linux
- * [Linux-SDL2](./driver/Linux-SDL2/README.md) for Linux with the SDL2 backend (incl. Flatpak)
- * [macOS](./driver/macOS/README.md) for macOS
- * [Miyoo](./driver/Miyoo/README.md) for the MiyooMini
  * [N3DS](./driver/N3DS/README.md) for the Nintendo 3DS
  * [Nspire](./driver/Nspire/README.md) for the TI-Nspire
- * [PortMaster](./driver/PortMaster/README.md) for PortMaster and retro gaming handhelds
+ * [SDL2-Linux](./driver/SDL2-Linux/README.md) for Linux with the SDL2 backend (incl. Flatpak)
+ * [SDL2-Miyoo](./driver/SDL2-Miyoo/README.md) for the MiyooMini
+ * [SDL2-PortMaster](./driver/SDL2-PortMaster/README.md) for PortMaster and retro gaming handhelds
+ * [SFML-Linux](./driver/SFML-Linux/README.md) for Linux with the SFML2 backend
+ * [SFML-macOS](./driver/SFML-macOS/README.md) for macOS
+ * [SFML-Windows](./driver/SFML-Windows/README.md) for Microsoft Windows
  * [Switch](./driver/Switch/README.md) for the Nintendo Switch
- * [Windows](./driver/Switch/README.md) for Microsoft Windows
 
 ## Credits
 

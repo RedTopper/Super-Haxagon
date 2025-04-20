@@ -39,6 +39,8 @@ Then, click on the installation instructions you need below for your platform!
 
 ## [Nintendo 3DS](./driver/N3DS/INSTALL.md)
 
+## [TI-Nspire (First Gen)](./driver/Nspire/INSTALL.md)
+
 ## Windows (x86_64)
 
 <details><summary>Windows Install Instructions</summary>
@@ -157,19 +159,6 @@ including the romfs folder.
 3. Launch the PortMaster app and watch it install
 4. Refresh your game list (varies by CFW)
 5. Find SuperHaxagon (likely in Ports) and launch it!
-
-</details>
-
-## TI-Nspire (First Gen)
-
-<details><summary>TI Nspire install instructions</summary>
-
-Before installing, make sure you have [ndless](https://ndless.me/) for your calculator. Newer versions of the TI-Nspire may not
-be supported.
-
-1. Download and extract `SuperHaxagon-Nspire-armel.zip`
-2. Transfer `SuperHaxagon.tns` to your calculator with the [Computer Link](https://education.ti.com/en/products/computer-software/ti-nspire-computer-link) Software
-3. Launch the game!
 
 </details>
 

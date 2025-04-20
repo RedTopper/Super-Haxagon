@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 cmake_minimum_required(VERSION 3.13)
-project(SuperHaxagon VERSION 3.9.0)
+project(SuperHaxagon VERSION 3.9.1)
 
 set(CMAKE_CXX_STANDARD 17)
 

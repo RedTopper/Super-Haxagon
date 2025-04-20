@@ -2,8 +2,8 @@
 
 # ![SuperHaxagon](./media/icon-3ds.png "SuperHaxagon Icon") SuperHaxagon
 
-[SuperHaxagon](https://github.com/RedTopper/Super-Haxagon), like the original game [Super Hexagon](http://superhexagon.com/)
-by Terry Cavanagh, has only one goal. Survive as long as possible by avoiding the falling walls in a trippy, spinny frenzy!
+SuperHaxagon, like the original game [Super Hexagon](http://superhexagon.com/) by Terry Cavanagh, has only one goal.
+Survive as long as possible by avoiding the falling walls in a trippy, spinny frenzy!
 
 SuperHaxagon is a cross-platform, open source _Super Hexagon_ clone for the Nintendo 3DS, Nintendo Switch, Windows,
 Linux, Portmaster, Miyoo Mini, and the [TI-Nspire](https://education.ti.com/en/products/calculators/graphing-calculators/ti-nspire-cx-cas) 
@@ -23,11 +23,36 @@ to port to new platforms. It also has a GUI based level editor called [Haxa Edit
 
 ## Download
 
-You can download the latest build on [the releases page](https://github.com/RedTopper/Super-Haxagon/releases).
+The latest release can always be found here:
+
+https://github.com/RedTopper/Super-Haxagon/releases
+
+(You may need to click "Show all assets" to find the download for your platform)
 
 ## Install
 
-SuperHaxagon supports many different devices. [Find your install instructions here](./INSTALL.md)!
+![Platforms SuperHaxagon runs on](/media/screenshots/install-banner.jpg)
+
+You can view the latest instructions with the links below:
+
+ * [Nintendo 3DS](./driver/N3DS/INSTALL.md)
+ * [Nintendo Switch](./driver/Switch/INSTALL.md)
+ * [TI-Nspire (Calculator)](./driver/Nspire/INSTALL.md)
+ * [MiyooMini (OnionOS)](./driver/SDL2-Miyoo/INSTALL.md)
+ * [PortMaster (Retro Handhelds)](./driver/SDL2-PortMaster/INSTALL.md)
+ * [macOS](./driver/SFML-macOS/INSTALL.bundle.md) arm64
+ * [Windows](./driver/SFML-Windows/INSTALL.md) x86_64
+ * [Flatpak (Steam Deck/Immutable Distro)](./driver/SDL2-Linux/INSTALL.flatpak.md) x86_64
+ * [Linux (SDL2 with controller support)](./driver/SDL2-Linux/INSTALL.native.md) x86_64
+ * [Linux (SFML static link)](./driver/SDL2-Linux/INSTALL.native.md) x86_64/arm64
+
+Offline install instructions are included in your download inside the `README.md`.
+
+### Other platforms
+
+It may be possible to build and run SuperHaxagon on other platforms, as it is designed to be portable.
+You can likely build it by following the instructions below. I'd love to hear any success for building
+for other platforms!
 
 ## Building
 
@@ -116,10 +141,12 @@ currently as follows:
 
 _(Yes, deleting these files is cheating)_
 
-## Cross Platform
+## Screenshots
 
 Below are a few screenshots featuring the various platforms that SuperHaxagon compiles on. The 3DS version is packaged 
 with a custom 3D banner to make it look official. Additionally, the gif was recorded on actual Nintendo Switch hardware.
+
+<details><summary>Screenshots</summary>
 
 <img width="500" src="./media/screenshots/HNI_0013.JPG"                     alt="3D Banner"            title="3D Banner"/>
 <img width="500" src="./media/screenshots/Windows_2020-07-10_014324.png"    alt="In Game Windows"      title="Windows"/>
@@ -127,6 +154,8 @@ with a custom 3D banner to make it look official. Additionally, the gif was reco
 <img width="500" src="./media/screenshots/switch.gif"                       alt="In Game Switch (GIF)" title="In Game Switch (GIF)"/>
 <img width="500" src="./media/screenshots/nspire.png"                       alt="TI-Nspire"            title="TI-Nspire"/>
 <img width="500" src="./media/screenshots/20200727_015021.jpg"              alt="Hardware"             title="Hardware"/>
+
+</details>
 
 <details><summary>More Screenshots</summary>
 

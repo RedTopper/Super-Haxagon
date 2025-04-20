@@ -1,24 +1,6 @@
 # PortMaster Driver
 
-This driver is intended for PortMaster builds. Learn more about PortMaster here:
-
-https://portmaster.games/index.html
-
-For additional instructions on different platforms, see the original README at:
-
-https://github.com/RedTopper/Super-Haxagon
-
-## Controls
-
-The controls are shown on the title screen, but here's a copy if it's needed:
-
-| Button | Action |
-|--|--| 
-|A|Select|
-|B|Back|
-|DPAD L, L1, L2, X|Rotate Left|
-|DPAD R, R1, R2, Y|Rotate Right|
-|Menu|Quit Game|
+This driver supports retro gaming handhelds using PortMaster with the SDL2 backend.
 
 ## Building
 

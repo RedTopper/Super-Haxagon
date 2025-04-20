@@ -30,14 +30,15 @@ install(FILES ${CMAKE_CURRENT_LIST_DIR}/resources/${CMAKE_PROJECT_NAME}.sh DESTI
 install(TARGETS ${CMAKE_PROJECT_NAME} RUNTIME DESTINATION ./${PROJECT_NAME_LOWER})
 install(DIRECTORY ${CMAKE_SOURCE_DIR}/romfs DESTINATION ./${PROJECT_NAME_LOWER})
 
-# Licenses
-set(LICENSE_DRIVER "${CMAKE_SOURCE_DIR}/driver/SDL2/LICENSE.md")
+# Licenses and README
 set(LICENSE_PATH "./${PROJECT_NAME_LOWER}/licenses")
+set(LICENSE_DRIVER "${CMAKE_SOURCE_DIR}/driver/SDL2/LICENSE.md")
+set(README_PATH "./${PROJECT_NAME_LOWER}")
+set(README_DRIVER "${CMAKE_CURRENT_LIST_DIR}/INSTALL.md")
 
 # PortMaster packaging files
 install(FILES
     ${CMAKE_CURRENT_LIST_DIR}/resources/port.json
-    ${CMAKE_CURRENT_LIST_DIR}/README.md
     ${CMAKE_CURRENT_LIST_DIR}/resources/screenshot.png
     ${CMAKE_CURRENT_LIST_DIR}/resources/gameinfo.xml
     ${CMAKE_CURRENT_LIST_DIR}/resources/cover.png

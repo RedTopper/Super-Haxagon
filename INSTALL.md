@@ -47,6 +47,9 @@ Then, click on the installation instructions you need below for your platform!
 
 ### [MiyooMini (OnionOS)](./driver/SDL2-Miyoo/INSTALL.md) x86_64
 
+### [PortMaster (Retro Handhelds)](./driver/SDL2-PortMaster/INSTALL.md)
+
+
 ## Windows (x86_64)
 
 <details><summary>Windows Install Instructions</summary>
@@ -93,25 +96,6 @@ SFML is statically linked, so you shouldn't need it installed as a dependency!
 
 If you want to change the title screen music, you can additionally place any .ogg file on your SD card at
 `sdmc:/switch/SuperHaxagon/title.ogg`
-
-</details>
-
-## PortMaster (Retro Handhelds)
-
-<details><summary>PortMaster install instructions</summary>
-
-The PortMaster should work on any CFW where PortMaster is supported. Please use the "autoinstall" 
-folder to install the zip manually from this repo. It is "Ready to Run" and contains all assets, 
-including the romfs folder.
-
-1. Download `SuperHaxagon-PortMaster-arm64.zip`
-2. Place it in your PortMaster's `autoinstall` folder
-   * For muOS: `/mnt/mmc/MUOS/PortMaster/autoinstall/`
-   * For Knulli: `/media/SHARE/system/.local/share/PortMaster/autoinstall/`
-   * For other CFWs, see the PortMaster documentation for your platform.
-3. Launch the PortMaster app and watch it install
-4. Refresh your game list (varies by CFW)
-5. Find SuperHaxagon (likely in Ports) and launch it!
 
 </details>
 

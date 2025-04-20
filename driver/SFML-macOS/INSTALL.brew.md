@@ -1,8 +1,12 @@
-# macOS Unsigned Unix Build
+# SuperHaxagon for macOS (SFML with Brew)
 
-> [!NOTE]  
-> This information does not apply to the SuperHaxagon.app builds!
-> For those builds, simply Ctrl-Click on the app, select "Open", then allow the app to run.
+SuperHaxagon is a cross-platform, open source [Super Hexagon](http://superhexagon.com/) clone.
+
+You can obtain a free copy of the source code licensed under the GPLv3 at:
+
+https://github.com/RedTopper/Super-Haxagon
+
+## Install
 
 This build was created without signing and depends on `brew` libraries.
 
@@ -20,5 +24,3 @@ run the application from Finder, the current working directory will not be set
 properly and **the assets will not be found**. Instead, launch the app through 
 Terminal with `./SuperHaxagon`.
 
-You can also download a signed (but not notarized) version of the application via
-the Releases page.

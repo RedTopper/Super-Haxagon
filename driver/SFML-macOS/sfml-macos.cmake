@@ -51,6 +51,8 @@ if (BUILD_BUNDLE)
     )
 
     install(TARGETS ${PROJECT_NAME} BUNDLE DESTINATION .)
+
+    set(README_DRIVER "${CMAKE_CURRENT_LIST_DIR}/INSTALL.bundle.md")
 else()
-    install(FILES "${CMAKE_CURRENT_LIST_DIR}/resources/README.md" DESTINATION .)
+    set(README_DRIVER "${CMAKE_CURRENT_LIST_DIR}/INSTALL.brew.md")
 endif()

@@ -51,6 +51,8 @@ Then, click on the installation instructions you need below for your platform!
 
 ### [PortMaster (Retro Handhelds)](./driver/SDL2-PortMaster/INSTALL.md)
 
+### [macOS](./driver/SFML-macOS/INSTALL.bundle.md) arm64
+
 
 ## Windows (x86_64)
 
@@ -83,18 +85,6 @@ If you want to change the title screen music, you can additionally place any .og
 
 </details>
 
-## macOS (M or Intel)
-
-<details><summary>macOS install instructions</summary>
-
-Unfortunately I do not have a macOS machine regularly test SuperHaxagon with, but it should always build!
-
-The release build is built for M1 processors (arm64). [Intel based macs will need to follow the Building instructions](./driver/SFML-macOS/README.md)
-
-1. Download and extract `SuperHaxagon-macOS-arm64.app.tar.zip`
-2. Launch the application by right-clicking and choosing "Open"
-
-</details>
 
 ## Other platforms
 

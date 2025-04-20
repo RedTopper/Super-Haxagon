@@ -1,16 +1,14 @@
-<p align="center"><img style="text-align:center" src="./media/rendersmall.png" alt="Banner Render" title="Banner Render"/></p>
+<p align="center"><img style="text-align:center" src="./media/rendersmall.png" alt="Banner"/></p>
 
-<!-- Note: icon-3ds.png name kept for backwards compatability with old readmes. -->
-
-# ![Icon](./media/icon-3ds.png "Icon") SuperHaxagon
+# ![SuperHaxagon](./media/icon-3ds.png "SuperHaxagon Icon") SuperHaxagon
 
 [SuperHaxagon](https://github.com/RedTopper/Super-Haxagon), like the original game [Super Hexagon](http://superhexagon.com/)
 by Terry Cavanagh, has only one goal. Survive as long as possible by avoiding the falling walls in a trippy, spinny frenzy!
 
 SuperHaxagon is a cross-platform, open source _Super Hexagon_ clone for the Nintendo 3DS, Nintendo Switch, Windows,
-Linux, Portmaster, Miyoo Mini, and the [TI-Nspire](https://education.ti.com/en/products/calculators/graphing-calculators/ti-nspire-cx-cas) (yes, the calculator). It is developed in C++ and uses no 
-additional libraries for the core logic, making it easy (in theory) to port to new platforms. It also has a GUI based 
-level editor called [Haxa Editor](https://github.com/RedTopper/Haxa-Editor).
+Linux, Portmaster, Miyoo Mini, and the [TI-Nspire](https://education.ti.com/en/products/calculators/graphing-calculators/ti-nspire-cx-cas) 
+(yes, the calculator). It is developed in C++ and uses no additional libraries for the core logic, making it easy (in theory) 
+to port to new platforms. It also has a GUI based level editor called [Haxa Editor](https://github.com/RedTopper/Haxa-Editor).
 
 ## Features
 
@@ -25,7 +23,7 @@ level editor called [Haxa Editor](https://github.com/RedTopper/Haxa-Editor).
 
 ## Download
 
-You can download the latest build on [the releases page](https://github.com/RedTopper/Super-Haxagon/releases) to the right.
+You can download the latest build on [the releases page](https://github.com/RedTopper/Super-Haxagon/releases).
 
 ## Install
 

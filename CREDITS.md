@@ -1,11 +1,6 @@
 # SuperHaxagon Credits
 
-SuperHaxagon is a cross-platform, open source [Super Hexagon](http://superhexagon.com/) clone.
-
-You can obtain a free copy of the source code at:
-
-https://github.com/RedTopper/Super-Haxagon
-
+SuperHaxagon's assets are provided by these amazing people:
 
 ## Thanks
 
@@ -64,7 +59,7 @@ Sound effects for versions <= 3.7.0
 > No License
 
 > [!WARNING]
-> I do not encourage using these assets commercally.  
+> I do not encourage using these assets commercially.  
 > With that said, Dunderpatrullen's website states the following: Feel free to use our
 > music in your YouTube or Twitch videos etc. as long as proper credits are given in
 > the description or visible on screen.  
@@ -80,5 +75,5 @@ Sound effects for versions <= 3.7.0
 > No License
 
 > [!WARNING]
-> I do not encourage using these assets commercally.  
+> I do not encourage using these assets commercially.  
 > Presumably the above assets by Bossfight may have a commercial agreement with OpenHexagon.

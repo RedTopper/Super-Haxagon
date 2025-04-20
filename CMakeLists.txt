@@ -85,20 +85,27 @@ include(driver/All/common.cmake)
 
 target_include_directories(${PROJECT_NAME} PRIVATE "${CMAKE_SOURCE_DIR}/source")
 
+if (NOT DEFINED README_PATH)
+    set(README_PATH .)
+endif()
+
 if (NOT DEFINED LICENSE_PATH)
-    set(LICENSE_PATH .)
+    set(LICENSE_PATH "${README_PATH}")
 endif()
 
-# Install main licenses
+if (NOT DEFINED README_DRIVER)
+    message(FATAL_ERROR "Driver does not provide a README.md!")
+endif()
+
+if (NOT DEFINED LICENSE_DRIVER)
+    message(FATAL_ERROR "Driver does not provide a LICENSE.libs.md!")
+endif()
+
+# Install documents
+install(FILES "${README_DRIVER}" RENAME "README.md" DESTINATION ${README_PATH})
+install(FILES "${LICENSE_DRIVER}" RENAME "LICENSE.libs.md" DESTINATION ${LICENSE_PATH})
 install(FILES "${CMAKE_SOURCE_DIR}/LICENSE.md" DESTINATION ${LICENSE_PATH})
-if (NOT CMAKE_SYSTEM_NAME MATCHES "Nspire")  # Nspire does not use any assets.
-    install(FILES "${CMAKE_SOURCE_DIR}/CREDITS.md" DESTINATION ${LICENSE_PATH})
-endif()
-
-# Install library licenses, if provided
-if (DEFINED LICENSE_DRIVER)
-    install(FILES "${LICENSE_DRIVER}" RENAME "LICENSE.libs.md" DESTINATION ${LICENSE_PATH})
-endif()
+install(FILES "${CMAKE_SOURCE_DIR}/CREDITS.md" DESTINATION ${LICENSE_PATH})
 
 # If you are using containers and your IDE can't see the header files in there,
 # but you still want type completion, enable the -DHEADERS_FOR_IDE=TRUE CMake option.

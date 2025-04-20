@@ -53,22 +53,7 @@ Then, click on the installation instructions you need below for your platform!
 
 ### [macOS](./driver/SFML-macOS/INSTALL.bundle.md) arm64
 
-
-## Windows (x86_64)
-
-<details><summary>Windows Install Instructions</summary>
-
-_Note: SFML requires a graphics adapter with OpenGL 3.2 or higher. SuperHaxagon may be unsupported on 
-first generation Intel processors, Remote Desktop sessions, or VMs with no hardware acceleration. 
-See [#22](https://github.com/RedTopper/Super-Haxagon/issues/22) for details._
-
-1. Download `SuperHaxagon-Windows-x86_64-no-romfs.zip` and `romfs.zip`
-2. Extract the files into any empty directory
-3. Place the `romfs` folder from `romfs.zip` next to the `.exe` file
-4. Launch the game!
-
-</details>
-
+### [Windows](./driver/SFML-Windows/INSTALL.md) x86_64
 
 
 ## Nintendo Switch

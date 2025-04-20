@@ -1,0 +1,19 @@
+[Version]
+App: ${APP_NAME}
+Version: v${CMAKE_PROJECT_VERSION}
+Platform: ${PLATFORM_NAME}
+
+[Git]
+Changes: ${GIT_CHANGES}
+Branch: ${GIT_BRANCH}
+Hash: ${GIT_HASH}
+Date: ${GIT_DATE}
+
+[Build]
+Type: ${CMAKE_BUILD_TYPE}
+System: ${CMAKE_SYSTEM_NAME}
+Architecture: ${CMAKE_SYSTEM_PROCESSOR}
+Compiler: ${CMAKE_CXX_COMPILER}
+
+[Runner]
+${RUNNER_INFORMATION}

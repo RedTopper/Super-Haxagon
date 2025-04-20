@@ -106,6 +106,7 @@ install(FILES "${README_DRIVER}" RENAME "README.md" DESTINATION ${README_PATH})
 install(FILES "${LICENSE_DRIVER}" RENAME "LICENSE.libs.md" DESTINATION ${LICENSE_PATH})
 install(FILES "${CMAKE_SOURCE_DIR}/LICENSE.md" DESTINATION ${LICENSE_PATH})
 install(FILES "${CMAKE_SOURCE_DIR}/CREDITS.md" DESTINATION ${LICENSE_PATH})
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/VERSION.txt" RENAME "v${CMAKE_PROJECT_VERSION}.txt" DESTINATION ${README_PATH})
 
 # If you are using containers and your IDE can't see the header files in there,
 # but you still want type completion, enable the -DHEADERS_FOR_IDE=TRUE CMake option.

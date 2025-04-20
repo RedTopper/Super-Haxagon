@@ -32,6 +32,7 @@ env:
   REPO: ghcr.io/${{ github.repository }}
   ROMFS_TEXT: "Place the 'romfs' folder from the GitHub release here (the whole romfs folder, not the contents!) or the game will not launch."
   ROMFS_PLACEHOLDER: "PLACE_ROMFS_FOLDER_HERE.txt"
+  BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
 
 jobs:
   # First, try and build the example driver before spending time with the more expensive runners (like macOS)
@@ -47,6 +48,7 @@ jobs:
 
       - name: Build
         run: |
+          git config --global --add safe.directory $GITHUB_WORKSPACE
           mkdir -p artifacts/build artifacts/install
           cd artifacts/build
           CMAKE_ARGS="-DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=../install" ../../driver/Example/build.sh
@@ -125,6 +127,7 @@ jobs:
 
       - name: Build SuperHaxagon
         run: |
+          git config --global --add safe.directory $GITHUB_WORKSPACE
           mkdir -p artifacts/build artifacts/install
           cd artifacts/build
           CMAKE_ARGS="-DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=../install" ../../driver/${{ matrix.containers.build }}/build.sh
@@ -158,6 +161,7 @@ jobs:
           path: |
             artifacts/install/*.3dsx
             artifacts/install/*.md
+            artifacts/install/*.txt
       - name: Upload 3DS CIA
         if: matrix.containers.build == 'N3DS'
         uses: actions/upload-artifact@v4
@@ -167,6 +171,7 @@ jobs:
           path: |
             artifacts/install/*.cia
             artifacts/install/*.md
+            artifacts/install/*.txt
 
   # Builds SuperHaxagon natively (as in, without containers)
   build-native:

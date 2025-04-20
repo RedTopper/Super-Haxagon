@@ -45,6 +45,8 @@ Then, click on the installation instructions you need below for your platform!
 
 ### [Linux (SDL2 with controller support)](./driver/SDL2-Linux/INSTALL.native.md) x86_64
 
+### [MiyooMini (OnionOS)](./driver/SDL2-Miyoo/INSTALL.md) x86_64
+
 ## Windows (x86_64)
 
 <details><summary>Windows Install Instructions</summary>
@@ -91,20 +93,6 @@ SFML is statically linked, so you shouldn't need it installed as a dependency!
 
 If you want to change the title screen music, you can additionally place any .ogg file on your SD card at
 `sdmc:/switch/SuperHaxagon/title.ogg`
-
-</details>
-
-## Miyoo Mini (OnionOS)
-
-<details><summary>Miyoo Mini install instructions</summary>
-
-The stock OS is not supported or tested. Please use OnionOS.
-
-1. Download `SuperHaxagon-MiyooMini-armhf-no-romfs.zip` and `romfs.zip`
-2. Extract and merge the `Roms` folder to the root of your SD card
-3. Navigate to `Roms/PORTS/Games/SuperHaxagon/` and extract the `romfs` folder from `romfs.zip`
-4. On the Miyoo device, navigate to Games > Ports > ~Import ports
-5. Find SuperHaxagon in the Arcade folder and launch!
 
 </details>
 

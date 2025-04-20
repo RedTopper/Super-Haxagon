@@ -63,28 +63,28 @@ jobs:
         containers:
           - build: 'SFML-Linux'
             container: ghcr.io/redtopper/super-haxagon/linux:latest
-            artifact: SFMLLinux-x86_64
+            artifact: SFML-Linux-x86_64
             cache: 'yes'
             romfs: 'no'
             os: ubuntu-latest
 
           - build: 'SDL2-Linux'
             container: ghcr.io/redtopper/super-haxagon/linux-sdl2:latest
-            artifact: SDL2Linux-x86_64
+            artifact: SDL2-Linux-x86_64
             cache: 'no'
             romfs: 'no'
             os: ubuntu-latest
 
           - build: 'SDL2-Miyoo'
             container: ghcr.io/redtopper/super-haxagon/miyoo:latest
-            artifact: SDL2MiyooMini-armhf
+            artifact: SDL2-MiyooMini-armhf
             cache: 'no'
             romfs: 'no'
             os: ubuntu-latest
 
           - build: 'SDL2-PortMaster'
             container: docker.io/monkeyx/retro_builder:arm64
-            artifact: SDL2PortMaster-arm64
+            artifact: SDL2-PortMaster-arm64
             cache: 'no'
             romfs: ${{ (contains(github.ref, 'refs/tags/') || github.ref == 'refs/heads/master') && 'yes' || 'no' }}
             os: ubuntu-24.04-arm
@@ -181,11 +181,11 @@ jobs:
     strategy:
       matrix:
         platforms:
-          - artifact: SFMLLinux-arm64
+          - artifact: SFML-Linux-arm64
             os: ubuntu-24.04-arm
-          - artifact: SFMLmacOSUnix-arm64
+          - artifact: SFML-macOSBrewUnix-arm64
             os: macos-latest
-          - artifact: SFMLWindows-x86_64
+          - artifact: SFML-Windows-x86_64
             os: windows-latest
 
     steps:
@@ -285,14 +285,14 @@ jobs:
           /usr/bin/codesign --deep --force -s "$MACOS_CERTIFICATE_NAME" --options runtime install/SuperHaxagon.app -v
 
           cd install
-          tar -cvf SuperHaxagon.app.tar *
+          tar -cvf SuperHaxagon-SFML-macOS-arm64.tar *
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: SuperHaxagon-SFMLmacOS-arm64.app.tar
+          name: SuperHaxagon-SFML-macOS-arm64
           compression-level: 9
-          path: install/SuperHaxagon.app.tar
+          path: install/SuperHaxagon-SFML-macOS-arm64.tar
 
   # Build flatpak repo
   build-flatpak:

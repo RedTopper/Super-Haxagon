@@ -12,7 +12,7 @@ _Note: SFML requires a graphics adapter with OpenGL 3.2 or higher. SuperHaxagon 
 first generation Intel processors, Remote Desktop sessions, or VMs with no hardware acceleration.
 See [#22](https://github.com/RedTopper/Super-Haxagon/issues/22) for details._
 
-1. Download `SuperHaxagon-Windows-x86_64-no-romfs.zip` and `romfs.zip`
+1. Download `SuperHaxagon-SFML-Windows-x86_64-no-romfs.zip` and `romfs.zip`
 2. Extract the files into any empty directory
 3. Place the `romfs` folder from `romfs.zip` next to the `.exe` file
 4. Launch the game!

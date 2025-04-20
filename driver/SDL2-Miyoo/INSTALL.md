@@ -10,7 +10,7 @@ https://github.com/RedTopper/Super-Haxagon
 
 The stock OS is not supported or tested. Please use OnionOS.
 
-1. Download `SuperHaxagon-MiyooMini-armhf-no-romfs.zip` and `romfs.zip`
+1. Download `SuperHaxagon-SDL2-MiyooMini-armhf-no-romfs.zip` and `romfs.zip`
 2. Extract and merge the `Roms` folder to the root of your SD card
 3. Navigate to `Roms/PORTS/Games/SuperHaxagon/` and extract the `romfs` folder from `romfs.zip`
 4. On the Miyoo device, navigate to Games > Ports > ~Import ports

@@ -26,7 +26,7 @@ The PortMaster should work on any CFW where PortMaster is supported. Please use 
 folder to install the zip manually from this repo. It is "Ready to Run" and contains all assets,
 including the romfs folder.
 
-1. Download `SuperHaxagon-PortMaster-arm64.zip`
+1. Download `SuperHaxagon-SDL2-PortMaster-arm64.zip`
 2. Place it in your PortMaster's `autoinstall` folder
     * For muOS: `/mnt/mmc/MUOS/PortMaster/autoinstall/`
     * For Knulli: `/media/SHARE/system/.local/share/PortMaster/autoinstall/`

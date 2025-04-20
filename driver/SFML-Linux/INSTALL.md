@@ -10,7 +10,7 @@ https://github.com/RedTopper/Super-Haxagon
 
 SFML is statically linked, so you shouldn't need it installed as a dependency!
 
-1. Download `SuperHaxagon-LinuxSFML-<arch>-no-romfs.zip` and `romfs.zip`
+1. Download `SuperHaxagon-SFML-Linux-<arch>-no-romfs.zip` and `romfs.zip`
 2. Extract the files into any empty directory
 3. Extract and place the `romfs` folder from `romfs.zip` next to the `SuperHaxagon` file
 4. `./SuperHaxagon`

@@ -12,7 +12,7 @@ SDL2 comes with native controller support, but requires SDL2 installed on your s
 
 Please find the appropriate command for your distro to install SDL2 first!
 
-1. Download `SuperHaxagon-LinuxSDL2-x86_64-no-romfs.zip` and `romfs.zip`
+1. Download `SuperHaxagon-SDL2-Linux-x86_64-no-romfs.zip` and `romfs.zip`
 2. Install SDL2 from your distro's package manager, if needed  
    Fedora: `sudo dnf install -y SDL2 SDL2_mixer SDL2_ttf`  
    Ubuntu: `sudo apt update && sudo apt install -y libsdl2 libsdl2-mixer libsdl2-ttf`

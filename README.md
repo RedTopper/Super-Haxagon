@@ -44,7 +44,7 @@ You can view the latest instructions with the links below:
  * [Windows](./driver/SFML-Windows/INSTALL.md) x86_64
  * [Flatpak (Steam Deck/Immutable Distro)](./driver/SDL2-Linux/INSTALL.flatpak.md) x86_64
  * [Linux (SDL2 with controller support)](./driver/SDL2-Linux/INSTALL.native.md) x86_64
- * [Linux (SFML static link)](./driver/SDL2-Linux/INSTALL.native.md) x86_64/arm64
+ * [Linux (SFML static link)](./driver/SFML-Linux/INSTALL.md) x86_64/arm64
 
 Offline install instructions are included in your download inside the `README.md`.
 

@@ -24,6 +24,8 @@ target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -pedantic)
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION .)
 install(DIRECTORY ${CMAKE_SOURCE_DIR}/romfs DESTINATION .)
 
+set(README_DRIVER "${CMAKE_CURRENT_LIST_DIR}/INSTALL.native.md")
+
 # Icons and desktop entry for flatpak
 include(GNUInstallDirs)
 set(BASE_NAME "${CMAKE_CURRENT_LIST_DIR}/resources")

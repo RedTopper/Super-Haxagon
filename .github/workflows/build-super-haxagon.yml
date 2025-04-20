@@ -306,7 +306,23 @@ jobs:
         with:
           bundle: net.awalter.SuperHaxagon.flatpak
           manifest-path: net.awalter.SuperHaxagon.yml
-          upload-artifact: true
+          upload-artifact: false
+
+      - name: Prepare Release
+        run: |
+          mkdir install
+          cp net.awalter.SuperHaxagon.flatpak install
+          cp driver/SDL2/LICENSE.md install/LICENSE.libs.md
+          cp driver/SDL2-Linux/INSTALL.flatpak.md install/README.md
+          cp LICENSE.md install/LICENSE.md
+          cp CREDITS.md install/CREDITS.md
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: net.awalter.SuperHaxagon-x86_64
+          compression-level: 9
+          path: install
 
   # Finally, if all pipelines work, upload the current RomFS
   upload-romfs:

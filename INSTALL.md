@@ -45,7 +45,9 @@ Then, click on the installation instructions you need below for your platform!
 
 ### [Linux (SDL2 with controller support)](./driver/SDL2-Linux/INSTALL.native.md) x86_64
 
-### [MiyooMini (OnionOS)](./driver/SDL2-Miyoo/INSTALL.md) x86_64
+### [Linux (SFML static link)](./driver/SDL2-Linux/INSTALL.native.md) x86_64/arm64
+
+### [MiyooMini (OnionOS)](./driver/SDL2-Miyoo/INSTALL.md)
 
 ### [PortMaster (Retro Handhelds)](./driver/SDL2-PortMaster/INSTALL.md)
 
@@ -62,24 +64,6 @@ See [#22](https://github.com/RedTopper/Super-Haxagon/issues/22) for details._
 2. Extract the files into any empty directory
 3. Place the `romfs` folder from `romfs.zip` next to the `.exe` file
 4. Launch the game!
-
-</details>
-
-## Desktop Linux (x86_64/arm64)
-
-<details><summary>Linux Install Instructions</summary>
-
-There are 2 different native ways to install SuperHaxagon on Linux. Pick one that works best for you below!
-(For Flatpak, see Steam Deck instructions in the next section)
-
-### SFML (Static Link, x86_64/arm64)
-
-SFML is statically linked, so you shouldn't need it installed as a dependency!
-
-1. Download `SuperHaxagon-LinuxSFML-<arch>-no-romfs.zip` and `romfs.zip`
-2. Extract the files into any empty directory
-3. Extract and place the `romfs` folder from `romfs.zip` next to the `SuperHaxagon` file
-4. `./SuperHaxagon`
 
 </details>
 

@@ -15,3 +15,5 @@ set(DRIVER_PLATFORM
 include(driver/SFML/sfml.cmake)
 
 target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -pedantic)
+
+set(README_DRIVER "${CMAKE_CURRENT_LIST_DIR}/INSTALL.md")

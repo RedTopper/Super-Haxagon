@@ -9,6 +9,7 @@ modules:
     buildsystem: cmake
     config-opts:
       - -DDRIVER_SDL2=TRUE
+      - -DCMAKE_BUILD_TYPE=Release
     sources:
       - type: dir
         path: .

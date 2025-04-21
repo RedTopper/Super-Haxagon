@@ -7,6 +7,7 @@
 /build
 /cmake-build-debug
 /cmake-build-release
+/flatpak_app
 /install
 /out
 /output

@@ -81,32 +81,20 @@ else()
     message(FATAL_ERROR "No viable platform to build for!")
 endif()
 
-include(driver/All/common.cmake)
-
+target_include_directories(${PROJECT_NAME} PRIVATE "${CMAKE_SOURCE_DIR}/driver/All/include")
+target_include_directories(${PROJECT_NAME} PRIVATE "${CMAKE_BINARY_DIR}/include")
 target_include_directories(${PROJECT_NAME} PRIVATE "${CMAKE_SOURCE_DIR}/source")
 
-if (NOT DEFINED README_PATH)
-    set(README_PATH .)
-endif()
+# Create vX.X.X.txt version information
+include(driver/All/cmake/version.cmake)
 
-if (NOT DEFINED LICENSE_PATH)
-    set(LICENSE_PATH "${README_PATH}")
-endif()
+# Install README.md, LICENSE.md, etc
+include(driver/All/cmake/documents.cmake)
 
-if (NOT DEFINED README_DRIVER)
-    message(FATAL_ERROR "Driver does not provide a README.md!")
-endif()
-
-if (NOT DEFINED LICENSE_DRIVER)
-    message(FATAL_ERROR "Driver does not provide a LICENSE.libs.md!")
-endif()
-
-# Install documents
-install(FILES "${README_DRIVER}" RENAME "README.md" DESTINATION ${README_PATH})
-install(FILES "${LICENSE_DRIVER}" RENAME "LICENSE.libs.md" DESTINATION ${LICENSE_PATH})
-install(FILES "${CMAKE_SOURCE_DIR}/LICENSE.md" DESTINATION ${LICENSE_PATH})
-install(FILES "${CMAKE_SOURCE_DIR}/CREDITS.md" DESTINATION ${LICENSE_PATH})
-install(FILES "${CMAKE_CURRENT_BINARY_DIR}/VERSION.txt" RENAME "v${CMAKE_PROJECT_VERSION}.txt" DESTINATION ${README_PATH})
+configure_file(
+    ${CMAKE_SOURCE_DIR}/driver/All/include/Driver/Tools/Configuration.hpp.in
+    include/Driver/Tools/Configuration.hpp
+)
 
 # If you are using containers and your IDE can't see the header files in there,
 # but you still want type completion, enable the -DHEADERS_FOR_IDE=TRUE CMake option.

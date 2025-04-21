@@ -321,6 +321,7 @@ jobs:
           cp driver/SDL2-Linux/INSTALL.flatpak.md install/README.md
           cp LICENSE.md install/LICENSE.md
           cp CREDITS.md install/CREDITS.md
+          cp flatpak_app/files/v*.txt install
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4

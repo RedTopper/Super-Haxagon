@@ -160,7 +160,7 @@ jobs:
           compression-level: 9
           path: |
             artifacts/install/*.3dsx
-            artifacts/install/*.md
+            artifacts/install/**/*.md
             artifacts/install/*.txt
       - name: Upload 3DS CIA
         if: matrix.containers.build == 'N3DS'
@@ -170,7 +170,7 @@ jobs:
           compression-level: 9
           path: |
             artifacts/install/*.cia
-            artifacts/install/*.md
+            artifacts/install/**/*.md
             artifacts/install/*.txt
 
   # Builds SuperHaxagon natively (as in, without containers)
@@ -317,11 +317,8 @@ jobs:
         run: |
           mkdir install
           cp net.awalter.SuperHaxagon.flatpak install
-          cp driver/SDL2/LICENSE.md install/LICENSE.libs.md
-          cp driver/SDL2-Linux/INSTALL.flatpak.md install/README.md
-          cp LICENSE.md install/LICENSE.md
-          cp CREDITS.md install/CREDITS.md
           cp flatpak_app/files/v*.txt install
+          cp -r flatpak_app/files/licenses install
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4

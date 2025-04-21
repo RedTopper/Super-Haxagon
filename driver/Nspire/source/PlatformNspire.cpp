@@ -110,22 +110,22 @@ namespace SuperHaxagon {
 
 	std::string Platform::getButtonName(ButtonName buttonName) {
 		switch (buttonName) {
-			case ButtonName::BACK: return "ESC";
-			case ButtonName::SELECT: return "ENTER";
-			case ButtonName::LEFT: return "KPD 4";
-			case ButtonName::RIGHT: return "KPD 6";
-			case ButtonName::QUIT: return "MENU";
+			case ButtonName::BACK: return "DEL | ESC";
+			case ButtonName::SELECT: return "CTRL | ENTER";
+			case ButtonName::LEFT: return "SHIFT | 7,4,1";
+			case ButtonName::RIGHT: return "VAR | 9,6,3";
+			case ButtonName::QUIT: return "MENU | HOME";
 			default: return "?";
 		}
 	}
 
 	Buttons Platform::getPressed() const {
 		Buttons buttons{};
-		buttons.select = isKeyPressed(KEY_NSPIRE_ENTER) > 0;
-		buttons.back = isKeyPressed(KEY_NSPIRE_ESC) > 0;
+		buttons.select = isKeyPressed(KEY_NSPIRE_ENTER) > 0 || isKeyPressed(KEY_NSPIRE_CTRL) > 0;
+		buttons.back = isKeyPressed(KEY_NSPIRE_ESC) > 0 || isKeyPressed(KEY_NSPIRE_DEL) > 0;
 		buttons.quit = isKeyPressed(KEY_NSPIRE_HOME) > 0 || isKeyPressed(KEY_NSPIRE_MENU) > 0;
-		buttons.left = isKeyPressed(KEY_NSPIRE_4) > 0;
-		buttons.right = isKeyPressed(KEY_NSPIRE_6)  > 0;
+		buttons.left = isKeyPressed(KEY_NSPIRE_7) > 0 || isKeyPressed(KEY_NSPIRE_4)  > 0 || isKeyPressed(KEY_NSPIRE_1)  > 0  || isKeyPressed(KEY_NSPIRE_SHIFT)  > 0;
+		buttons.right = isKeyPressed(KEY_NSPIRE_9) > 0 || isKeyPressed(KEY_NSPIRE_6)  > 0 || isKeyPressed(KEY_NSPIRE_3)  > 0  || isKeyPressed(KEY_NSPIRE_VAR)  > 0;
 		return buttons;
 	}
 

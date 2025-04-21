@@ -317,7 +317,7 @@ jobs:
         run: |
           mkdir install
           cp net.awalter.SuperHaxagon.flatpak install
-          cp flatpak_app/files/v*.txt install
+          cp flatpak_app/files/v*.txt flatpak_app/files/*.md install
           cp -r flatpak_app/files/licenses install
 
       - name: Upload Artifact

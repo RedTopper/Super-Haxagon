@@ -2,7 +2,7 @@
 
 SuperHaxagon is a cross-platform, open source [Super Hexagon](http://superhexagon.com/) clone!
 
-You can obtain a free copy of the source code licensed under the GPLv3 at:
+You can obtain a free copy of the source code or the latest builds licensed under the GPLv3 at:
 
 https://github.com/RedTopper/Super-Haxagon
 
@@ -10,10 +10,10 @@ https://github.com/RedTopper/Super-Haxagon
 
 This port is ready to run!
 
-If you have downloaded the `.zip` manually (from PortMaster, GitHub Actions, or a release), please see the instructions
-in the `INSTALL.md` file in your download for using PortMaster's autoinstall feature.
+If you downloaded a release from GitHub, you can use PortMaster's autoinstall feature described in 
+`superhaxagon/INSTALL.md` within the .zip or described in the link below.
 
-[View INSTALL.md on GitHub](https://github.com/PortsMaster/PortMaster-New/blob/main/ports/superhaxagon/superhaxagon/INSTALL.md)
+https://portmaster.games/faq.html#do-i-have-to-use-portmaster-to-install-ports
 
 ### Controls
 
@@ -43,4 +43,4 @@ Once you have obtained a copy of the source code, the detailed building instruct
 
 [/driver/SDL2-Portmaster/README.md](https://github.com/RedTopper/Super-Haxagon/blob/master/driver/SDL2-PortMaster/README.md)
 
-GitHub action scripts are also available to build new autoinstall.zip files automatically.
+GitHub Actions are also available to build new autoinstall.zip files automatically.

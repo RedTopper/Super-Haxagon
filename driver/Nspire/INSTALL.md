@@ -8,8 +8,6 @@ https://github.com/RedTopper/Super-Haxagon
 
 ## Controls
 
-The controls are shown on the title screen, but here's a copy if it's needed:
-
 | Button             | Action       |
 |--------------------|--------------| 
 | CTRL  or ENTER     | Select       |
@@ -18,9 +16,11 @@ The controls are shown on the title screen, but here's a copy if it's needed:
 | VAR   or KPD 9,6,3 | Rotate Right |
 | MENU  or HOME      | Quit Game    |
 
+The controls are also available in game on the title screen.
+
 ## Install
 
-Before installing, make sure you have [ndless](https://ndless.me/) for your calculator.
+Before installing, make sure you have [ndless](https://ndless.me/) for your calculator (at least version 3.6).
 
 Newer versions of the TI-Nspire may not be supported.
 

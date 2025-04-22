@@ -1,6 +1,8 @@
 # PortMaster Driver
 
-This driver supports retro gaming handhelds using PortMaster with the SDL2 backend.
+This driver is intended for PortMaster, a porting system for retro handhelds. Learn more about PortMaster here:
+
+https://portmaster.games/index.html
 
 ## Building
 

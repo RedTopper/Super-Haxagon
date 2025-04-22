@@ -34,7 +34,7 @@ install(DIRECTORY ${CMAKE_SOURCE_DIR}/romfs DESTINATION ./${PROJECT_NAME_LOWER})
 set(LICENSE_PATH "./${PROJECT_NAME_LOWER}/licenses")
 set(LICENSE_DRIVER "${CMAKE_SOURCE_DIR}/driver/SDL2/LICENSE.md")
 set(README_PATH "./${PROJECT_NAME_LOWER}")
-set(README_DRIVER "${CMAKE_CURRENT_LIST_DIR}/INSTALL.md")
+set(README_DRIVER "${CMAKE_CURRENT_LIST_DIR}/resources/README.md")
 
 # PortMaster packaging files
 install(FILES
@@ -42,5 +42,6 @@ install(FILES
     ${CMAKE_CURRENT_LIST_DIR}/resources/screenshot.png
     ${CMAKE_CURRENT_LIST_DIR}/resources/gameinfo.xml
     ${CMAKE_CURRENT_LIST_DIR}/resources/cover.png
+    ${CMAKE_CURRENT_LIST_DIR}/INSTALL.md
     DESTINATION ./${PROJECT_NAME_LOWER}
 )
